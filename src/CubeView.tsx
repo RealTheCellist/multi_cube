@@ -1,0 +1,102 @@
+import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import { TwistyPlayer } from "cubing/twisty";
+import { randomScrambleForEvent } from "cubing/scramble";
+import type { KPattern } from "cubing/kpuzzle";
+import { attachSwipeTurning } from "./swipeControls";
+
+export interface CubeViewHandle {
+  scramble: () => Promise<void>;
+  resetToSolved: () => void;
+}
+
+interface CubeViewProps {
+  onMoveCountChange: (count: number) => void;
+  onFirstMove: () => void;
+  onSolvedChange: (solved: boolean) => void;
+}
+
+const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
+  { onMoveCountChange, onFirstMove, onSolvedChange },
+  ref,
+) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<TwistyPlayer | null>(null);
+  const hasMovedRef = useRef(false);
+
+  const callbacksRef = useRef({ onMoveCountChange, onFirstMove, onSolvedChange });
+  callbacksRef.current = { onMoveCountChange, onFirstMove, onSolvedChange };
+
+  useEffect(() => {
+    const player = new TwistyPlayer({
+      puzzle: "3x3x3",
+      visualization: "PG3D",
+      background: "none",
+      controlPanel: "none",
+      hintFacelets: "none",
+      experimentalDragInput: "none",
+      cameraLatitude: 20,
+    });
+    player.style.width = "100%";
+    player.style.height = "100%";
+    playerRef.current = player;
+    containerRef.current?.appendChild(player);
+
+    let cancelled = false;
+    let detachSwipe: (() => void) | null = null;
+    attachSwipeTurning(player).then((detach) => {
+      if (cancelled) {
+        detach();
+      } else {
+        detachSwipe = detach;
+      }
+    });
+
+    let solvedPattern: KPattern | null = null;
+    player.experimentalModel.kpuzzle.get().then((kpuzzle) => {
+      solvedPattern = kpuzzle.defaultPattern();
+    });
+
+    player.experimentalModel.alg.addFreshListener(({ alg }) => {
+      const count = [...alg.childAlgNodes()].length;
+      callbacksRef.current.onMoveCountChange(count);
+      if (count > 0 && !hasMovedRef.current) {
+        hasMovedRef.current = true;
+        callbacksRef.current.onFirstMove();
+      }
+    });
+
+    player.experimentalModel.currentPattern.addFreshListener((pattern) => {
+      if (!solvedPattern) return;
+      callbacksRef.current.onSolvedChange(pattern.isIdentical(solvedPattern));
+    });
+
+    return () => {
+      cancelled = true;
+      detachSwipe?.();
+      player.remove();
+      playerRef.current = null;
+    };
+  }, []);
+
+  useImperativeHandle(ref, () => ({
+    scramble: async () => {
+      const player = playerRef.current;
+      if (!player) return;
+      player.alg = "";
+      hasMovedRef.current = false;
+      const scramble = await randomScrambleForEvent("333");
+      player.experimentalSetupAlg = scramble;
+    },
+    resetToSolved: () => {
+      const player = playerRef.current;
+      if (!player) return;
+      player.alg = "";
+      player.experimentalSetupAlg = "";
+      hasMovedRef.current = false;
+    },
+  }));
+
+  return <div className="cube-view" ref={containerRef} />;
+});
+
+export default CubeView;
