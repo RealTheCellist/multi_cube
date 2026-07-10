@@ -91,6 +91,31 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<() => vo
     );
   }
 
+  // Finds the puzzle's turn axis whose direction most closely matches
+  // `target` (same argmax cubing.js itself uses internally to turn a click
+  // into a move — reused here so we can feed it either the touched point or
+  // a synthetic direction vector).
+  function bestAxisFor(target: THREE.Vector3): [number, number, number] | null {
+    let best: [number, number, number] | null = null;
+    let bestDot = 0;
+    for (const axis of puzzleObj.stickerDat.axis) {
+      const d = target.dot(new THREE.Vector3(...axis.coordinates));
+      if (d > bestDot) {
+        bestDot = d;
+        best = axis.coordinates;
+      }
+    }
+    return best;
+  }
+
+  // Screen-space direction (Y flipped to match pointer coordinates) that a
+  // point moves in when nudged slightly along `worldDir`.
+  function screenDirFrom(point: THREE.Vector3, worldDir: THREE.Vector3): { x: number; y: number } {
+    const p0 = point.clone().project(camera);
+    const p1 = point.clone().add(worldDir.clone().multiplyScalar(0.1)).project(camera);
+    return { x: p1.x - p0.x, y: -(p1.y - p0.y) };
+  }
+
   function onPointerDown(e: PointerEvent) {
     raycaster.setFromCamera(ndcFromEvent(e), camera);
     const [hit] = raycaster.intersectObjects(puzzleObj.experimentalGetControlTargets(), true);
@@ -109,34 +134,50 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<() => vo
     };
   }
 
-  // Determines which move the swipe means (from the initial direction) and
-  // adds it to the alg, then immediately rewinds to just before it so the
-  // subsequent scrub in onPointerMove can play it back under the pointer.
+  // Determines which move the swipe means and adds it to the alg, then
+  // immediately rewinds to just before it so the subsequent scrub in
+  // onPointerMove can play it back under the pointer.
+  //
+  // A swipe across a face doesn't just spin that face — dragging sideways
+  // turns the horizontal layer (U/E/D) the touched sticker's row belongs to,
+  // while dragging up/down turns the vertical layer (L/M/R) its column
+  // belongs to (the classic virtual-cube gesture). So first we find the
+  // touched face just to get its own in-plane basis {u, v}, then compare the
+  // swipe direction (projected to screen space) against u and v: whichever
+  // one the swipe aligns with, the move happens around the *other* axis —
+  // rotating around v means the visible motion sweeps along u, and vice
+  // versa. The touched point's position along that other axis (its sign)
+  // picks which of the two opposite faces (e.g. U vs D) is meant.
   async function lockDrag(target: DragState, dx0: number, dy0: number) {
     const { point } = target;
 
-    let bestAxisCoords: [number, number, number] | null = null;
-    let bestDot = 0;
-    for (const axis of puzzleObj.stickerDat.axis) {
-      const axisVec = new THREE.Vector3(...axis.coordinates);
-      const d = point.dot(axisVec);
-      if (d > bestDot) {
-        bestDot = d;
-        bestAxisCoords = axis.coordinates;
-      }
-    }
-    if (!bestAxisCoords) return;
+    const touchedFaceAxis = bestAxisFor(point);
+    if (!touchedFaceAxis) return;
+    const faceNormal = new THREE.Vector3(...touchedFaceAxis).normalize();
 
-    const axisVec = new THREE.Vector3(...bestAxisCoords).normalize();
-    const tangent = new THREE.Vector3().crossVectors(axisVec, point).normalize();
+    const reference = Math.abs(faceNormal.y) < 0.9 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0);
+    const u = new THREE.Vector3().crossVectors(reference, faceNormal).normalize();
+    const v = new THREE.Vector3().crossVectors(faceNormal, u).normalize();
 
-    const p0 = point.clone().project(camera);
-    const p1 = point.clone().add(tangent.multiplyScalar(0.1)).project(camera);
-    const screenDirX = p1.x - p0.x;
-    const screenDirY = -(p1.y - p0.y);
+    const uScreen = screenDirFrom(point, u);
+    const vScreen = screenDirFrom(point, v);
+    const uMag = Math.hypot(uScreen.x, uScreen.y) || 1;
+    const vMag = Math.hypot(vScreen.x, vScreen.y) || 1;
+    const uAlign = Math.abs((uScreen.x * dx0 + uScreen.y * dy0) / uMag);
+    const vAlign = Math.abs((vScreen.x * dx0 + vScreen.y * dy0) / vMag);
 
-    const invert = screenDirX * dx0 + screenDirY * dy0 < 0;
-    const result = puzzleObj.getClosestMoveToAxis(point, { invert, depth: "none" });
+    const rotationAxisDir = uAlign >= vAlign ? v : u;
+    const sign = Math.sign(point.dot(rotationAxisDir)) || 1;
+    const targetVec = rotationAxisDir.clone().multiplyScalar(sign);
+
+    const moveAxisCoords = bestAxisFor(targetVec);
+    if (!moveAxisCoords) return;
+    const moveAxisVec = new THREE.Vector3(...moveAxisCoords).normalize();
+    const tangent = new THREE.Vector3().crossVectors(moveAxisVec, point).normalize();
+    const tangentScreen = screenDirFrom(point, tangent);
+
+    const invert = tangentScreen.x * dx0 + tangentScreen.y * dy0 < 0;
+    const result = puzzleObj.getClosestMoveToAxis(targetVec, { invert, depth: "none" });
     if (!result?.move) return;
 
     const originalAlg = await player.experimentalGet.alg();
