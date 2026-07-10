@@ -41,6 +41,7 @@ function App() {
   );
 
   const handleScramble = useCallback(async () => {
+    setMode("play");
     setJustSolved(false);
     setMoveCount(0);
     timer.reset();
@@ -59,11 +60,6 @@ function App() {
   const handleLookAround = useCallback(() => {
     setMode("look");
   }, []);
-
-  const handleStart = useCallback(async () => {
-    setMode("play");
-    await handleScramble();
-  }, [handleScramble]);
 
   return (
     <div className="app">
@@ -109,7 +105,7 @@ function App() {
         <button
           type="button"
           className={mode === "play" ? "primary" : ""}
-          onClick={handleStart}
+          onClick={handleScramble}
         >
           시작하기
         </button>
