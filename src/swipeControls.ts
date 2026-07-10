@@ -101,6 +101,18 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTur
   // the wrong slice entirely.
   const faceAxes = puzzleObj.stickerDat.axis.filter((axis) => axis.quantumMove.family.length === 1);
 
+  // Fixed world-space axis each slice family's *unprimed* direction rotates
+  // around (unlike the per-touch `rotationAxisDir` computed below, whose sign
+  // flips depending on which of the up to 4 surrounding faces was touched).
+  // M follows L's turn direction, which is a positive (right-hand-rule) turn
+  // about R's axis, not L's; same pattern for E~D (axis: U) and S~F (axis: B).
+  const CANONICAL_SLICE_AXIS_FAMILY: Record<"M" | "E" | "S", string> = { M: "R", E: "U", S: "B" };
+  function canonicalSliceAxis(family: "M" | "E" | "S"): THREE.Vector3 {
+    const refFamily = CANONICAL_SLICE_AXIS_FAMILY[family];
+    const axis = faceAxes.find((a) => a.quantumMove.family === refFamily)!;
+    return new THREE.Vector3(...axis.coordinates).normalize();
+  }
+
   const raycaster = new THREE.Raycaster();
   let drag: DragState | null = null;
 
@@ -203,13 +215,16 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTur
 
     let moveString: string;
     if (isMiddleLayer) {
-      const family =
+      const family: "M" | "E" | "S" =
         Math.abs(rotationAxisDir.x) > 0.5 ? "M" : Math.abs(rotationAxisDir.y) > 0.5 ? "E" : "S";
-      const tangent = new THREE.Vector3().crossVectors(rotationAxisDir, point).normalize();
+      // Use the family's fixed canonical axis here, not `rotationAxisDir` —
+      // that vector is derived from the touched face's own in-plane basis, so
+      // its sign flips depending on which of the (up to 4) surrounding faces
+      // was touched, which previously made the same swipe gesture resolve to
+      // opposite moves depending on which face you grabbed.
+      const canonicalAxis = canonicalSliceAxis(family);
+      const tangent = new THREE.Vector3().crossVectors(canonicalAxis, point).normalize();
       const tangentScreen = screenDirFrom(point, tangent);
-      // M/E/S follow a named face's convention (M~L, E~D, S~F) rather than
-      // the raw right-hand-rule around their own positive axis, so their
-      // "invert" sign runs opposite to the outer-layer moves below.
       const invert = tangentScreen.x * dx0 + tangentScreen.y * dy0 < 0;
       moveString = invert ? `${family}'` : family;
     } else {
