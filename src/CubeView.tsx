@@ -28,6 +28,11 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
   const swipeControllerRef = useRef<SwipeTurningController | null>(null);
   const orbitModeRef = useRef(orbitMode);
   orbitModeRef.current = orbitMode;
+  // The solve preview temporarily adds a move to the alg and then restores
+  // the original — without this, that transient blip would count as the
+  // user's "first move" (starting the timer) and could momentarily read as
+  // solved, even though nothing actually changed once it reverts.
+  const suppressStateCallbacksRef = useRef(false);
 
   const callbacksRef = useRef({ onMoveCountChange, onFirstMove, onSolvedChange });
   callbacksRef.current = { onMoveCountChange, onFirstMove, onSolvedChange };
@@ -63,6 +68,7 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
     });
 
     player.experimentalModel.alg.addFreshListener(({ alg }) => {
+      if (suppressStateCallbacksRef.current) return;
       const count = [...alg.childAlgNodes()].length;
       callbacksRef.current.onMoveCountChange(count);
       if (count > 0 && !hasMovedRef.current) {
@@ -72,7 +78,7 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
     });
 
     player.experimentalModel.currentPattern.addFreshListener((pattern) => {
-      if (!solvedPattern) return;
+      if (!solvedPattern || suppressStateCallbacksRef.current) return;
       callbacksRef.current.onSolvedChange(pattern.isIdentical(solvedPattern));
     });
 
@@ -113,9 +119,11 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
       if (!player) return { move: null, movesRemaining: 0 };
       swipeControllerRef.current?.setEnabled(false);
       player.experimentalDragInput = "none";
+      suppressStateCallbacksRef.current = true;
       try {
         return await computeAndPlayNextSolveMove(player);
       } finally {
+        suppressStateCallbacksRef.current = false;
         swipeControllerRef.current?.setEnabled(!orbitModeRef.current);
         player.experimentalDragInput = orbitModeRef.current ? "auto" : "none";
       }

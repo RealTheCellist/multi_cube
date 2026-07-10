@@ -102,9 +102,9 @@ function App() {
 
       <p className="mode-hint">
         {isSolving
-          ? "다음 수 재생 중..."
+          ? "다음 수 미리보기 재생 중..."
           : lastHint
-            ? `힌트: ${lastHint.move} (남은 ${lastHint.movesRemaining}수) — 솔버를 다시 눌러 다음 수 보기`
+            ? `다음 수: ${lastHint.move} (총 ${lastHint.movesRemaining + 1}수 필요) — 직접 돌려보세요`
             : mode === "look"
               ? "드래그해서 큐브를 둘러보세요"
               : "스와이프로 면을 돌려보세요"}
