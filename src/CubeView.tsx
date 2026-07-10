@@ -1,7 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { TwistyPlayer } from "cubing/twisty";
 import { randomScrambleForEvent } from "cubing/scramble";
-import type { KPattern } from "cubing/kpuzzle";
 import { attachSwipeTurning, type SwipeTurningController } from "./swipeControls";
 import { computeAndPlayNextSolveMove, type SolveHint } from "./solvePlayback";
 
@@ -62,11 +61,6 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
       swipeControllerRef.current = controller;
     });
 
-    let solvedPattern: KPattern | null = null;
-    player.experimentalModel.kpuzzle.get().then((kpuzzle) => {
-      solvedPattern = kpuzzle.defaultPattern();
-    });
-
     player.experimentalModel.alg.addFreshListener(({ alg }) => {
       if (suppressStateCallbacksRef.current) return;
       const count = [...alg.childAlgNodes()].length;
@@ -78,8 +72,16 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
     });
 
     player.experimentalModel.currentPattern.addFreshListener((pattern) => {
-      if (!solvedPattern || suppressStateCallbacksRef.current) return;
-      callbacksRef.current.onSolvedChange(pattern.isIdentical(solvedPattern));
+      if (suppressStateCallbacksRef.current) return;
+      // Plain isIdentical() would consider an M/E/S-touched cube "unsolved"
+      // even when every face is visually a single solid color again, since
+      // an M/E/S move changes which internal CENTERS piece occupies each
+      // slot (see solvePlayback.ts) even though same-colored centers are
+      // visually indistinguishable from each other. experimentalIsSolved
+      // ignores exactly that.
+      callbacksRef.current.onSolvedChange(
+        pattern.experimentalIsSolved({ ignorePuzzleOrientation: true, ignoreCenterOrientation: true }),
+      );
     });
 
     return () => {

@@ -88,9 +88,8 @@ function App() {
       setLastHint(hint?.move ? { move: hint.move, movesRemaining: hint.movesRemaining } : null);
     } catch {
       // The solver is a third-party library reached through an experimental
-      // API and throws once an M/E/S middle-slice move has ever been
-      // applied (it assumes centers stay in their original positions) — keep
-      // the button from getting stuck disabled forever when that happens.
+      // API — keep the button from getting stuck disabled forever if it
+      // ever throws for a reason we haven't seen yet.
       setSolveError(true);
       setLastHint(null);
     } finally {
