@@ -177,23 +177,46 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<() => vo
     const vAlign = Math.abs((vScreen.x * dx0 + vScreen.y * dy0) / vMag);
 
     const rotationAxisDir = uAlign >= vAlign ? v : u;
-    const sign = Math.sign(point.dot(rotationAxisDir)) || 1;
-    const targetVec = rotationAxisDir.clone().multiplyScalar(sign);
 
-    const moveAxisCoords = bestAxisFor(targetVec);
-    if (!moveAxisCoords) return;
-    const moveAxisVec = new THREE.Vector3(...moveAxisCoords).normalize();
-    const tangent = new THREE.Vector3().crossVectors(moveAxisVec, point).normalize();
-    const tangentScreen = screenDirFrom(point, tangent);
+    // The touched sticker's offset along the rotation axis tells us which
+    // layer it's in: near zero means the middle layer (M/E/S), otherwise an
+    // outer layer (picked by sign, e.g. +X vs -X for R vs L). A 3x3 face
+    // spans roughly [-faceDist, faceDist] split into 3 equal bands, so the
+    // boundary between the middle band and an outer band sits at faceDist/3
+    // — not faceDist/2, which would swallow a quarter of each outer
+    // sticker's own territory into the middle-layer zone.
+    const faceDist = Math.abs(point.dot(faceNormal));
+    const alongAxis = point.dot(rotationAxisDir);
+    const isMiddleLayer = Math.abs(alongAxis) < faceDist / 3;
 
-    const invert = tangentScreen.x * dx0 + tangentScreen.y * dy0 < 0;
-    const result = puzzleObj.getClosestMoveToAxis(targetVec, { invert, depth: "none" });
-    if (!result?.move) return;
+    let moveString: string;
+    if (isMiddleLayer) {
+      const family =
+        Math.abs(rotationAxisDir.x) > 0.5 ? "M" : Math.abs(rotationAxisDir.y) > 0.5 ? "E" : "S";
+      const tangent = new THREE.Vector3().crossVectors(rotationAxisDir, point).normalize();
+      const tangentScreen = screenDirFrom(point, tangent);
+      const invert = tangentScreen.x * dx0 + tangentScreen.y * dy0 < 0;
+      moveString = invert ? `${family}'` : family;
+    } else {
+      const sign = Math.sign(alongAxis) || 1;
+      const targetVec = rotationAxisDir.clone().multiplyScalar(sign);
+
+      const moveAxisCoords = bestAxisFor(targetVec);
+      if (!moveAxisCoords) return;
+      const moveAxisVec = new THREE.Vector3(...moveAxisCoords).normalize();
+      const tangent = new THREE.Vector3().crossVectors(moveAxisVec, point).normalize();
+      const tangentScreen = screenDirFrom(point, tangent);
+
+      const invert = tangentScreen.x * dx0 + tangentScreen.y * dy0 < 0;
+      const result = puzzleObj.getClosestMoveToAxis(targetVec, { invert, depth: "none" });
+      if (!result?.move) return;
+      moveString = result.move.toString();
+    }
 
     const originalAlg = await player.experimentalGet.alg();
     player.timestamp = "end";
     const t0 = await player.experimentalGet.timestamp();
-    player.experimentalAddMove(result.move.toString());
+    player.experimentalAddMove(moveString);
     player.pause();
     player.timestamp = "end";
     const t1 = await player.experimentalGet.timestamp();
