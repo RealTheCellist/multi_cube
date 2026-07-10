@@ -39,6 +39,41 @@ async function waitForNonEmpty<T>(getter: () => Promise<T[]>, timeoutMs = 5000):
   return [];
 }
 
+const RELEASE_ANIMATION_MS = 150;
+const easeOutCubic = (t: number) => 1 - (1 - t) ** 3;
+
+// The finger drives `player.timestamp` 1:1 during the drag itself, but on
+// release we still need to cover whatever fraction of the turn is left — a
+// hard jump there reads as an abrupt stutter rather than a continuation of
+// the same motion. Ease the remaining distance out over a short, fixed
+// duration instead of snapping straight to the end/start.
+function animateTimestampTo(
+  player: TwistyPlayer,
+  fromTimestamp: number,
+  toTimestamp: number,
+  isStillCurrent: () => boolean,
+): Promise<void> {
+  return new Promise((resolve) => {
+    const start = performance.now();
+    function step(now: number) {
+      if (!isStillCurrent()) {
+        resolve();
+        return;
+      }
+      const t = Math.min((now - start) / RELEASE_ANIMATION_MS, 1);
+      const eased = easeOutCubic(t);
+      player.timestamp = (fromTimestamp +
+        eased * (toTimestamp - fromTimestamp)) as ExperimentalMillisecondTimestamp;
+      if (t < 1) {
+        requestAnimationFrame(step);
+      } else {
+        resolve();
+      }
+    }
+    requestAnimationFrame(step);
+  });
+}
+
 interface LockedTurn {
   dragDirX: number;
   dragDirY: number;
@@ -300,11 +335,15 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTur
     if (target.lockingPromise) await target.lockingPromise;
     const locked = target.locked;
     if (!locked) return;
+
+    const current = locked.t0 + locked.progress * (locked.t1 - locked.t0);
+    const isStillCurrent = () => drag === null;
     if (locked.progress >= COMMIT_PROGRESS_THRESHOLD) {
-      player.timestamp = "end";
+      await animateTimestampTo(player, current, locked.t1, isStillCurrent);
+      if (isStillCurrent()) player.timestamp = "end";
     } else {
-      player.timestamp = locked.t0 as ExperimentalMillisecondTimestamp;
-      player.alg = locked.originalAlg;
+      await animateTimestampTo(player, current, locked.t0, isStillCurrent);
+      if (isStillCurrent()) player.alg = locked.originalAlg;
     }
   }
 
