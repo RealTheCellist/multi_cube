@@ -3,10 +3,12 @@ import { TwistyPlayer } from "cubing/twisty";
 import { randomScrambleForEvent } from "cubing/scramble";
 import type { KPattern } from "cubing/kpuzzle";
 import { attachSwipeTurning, type SwipeTurningController } from "./swipeControls";
+import { playSolve, type SolveProgress } from "./solvePlayback";
 
 export interface CubeViewHandle {
   scramble: () => Promise<void>;
   resetToSolved: () => void;
+  solve: (onProgress: (progress: SolveProgress) => void) => Promise<void>;
 }
 
 interface CubeViewProps {
@@ -26,6 +28,7 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
   const swipeControllerRef = useRef<SwipeTurningController | null>(null);
   const orbitModeRef = useRef(orbitMode);
   orbitModeRef.current = orbitMode;
+  const solveCancelRef = useRef(false);
 
   const callbacksRef = useRef({ onMoveCountChange, onFirstMove, onSolvedChange });
   callbacksRef.current = { onMoveCountChange, onFirstMove, onSolvedChange };
@@ -94,6 +97,7 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
     scramble: async () => {
       const player = playerRef.current;
       if (!player) return;
+      solveCancelRef.current = true;
       player.alg = "";
       hasMovedRef.current = false;
       const scramble = await randomScrambleForEvent("333");
@@ -102,9 +106,23 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
     resetToSolved: () => {
       const player = playerRef.current;
       if (!player) return;
+      solveCancelRef.current = true;
       player.alg = "";
       player.experimentalSetupAlg = "";
       hasMovedRef.current = false;
+    },
+    solve: async (onProgress) => {
+      const player = playerRef.current;
+      if (!player) return;
+      solveCancelRef.current = false;
+      swipeControllerRef.current?.setEnabled(false);
+      player.experimentalDragInput = "none";
+      try {
+        await playSolve(player, onProgress, () => solveCancelRef.current);
+      } finally {
+        swipeControllerRef.current?.setEnabled(!orbitModeRef.current);
+        player.experimentalDragInput = orbitModeRef.current ? "auto" : "none";
+      }
     },
   }));
 

@@ -46,12 +46,14 @@ const easeOutCubic = (t: number) => 1 - (1 - t) ** 3;
 // release we still need to cover whatever fraction of the turn is left — a
 // hard jump there reads as an abrupt stutter rather than a continuation of
 // the same motion. Ease the remaining distance out over a short, fixed
-// duration instead of snapping straight to the end/start.
-function animateTimestampTo(
+// duration instead of snapping straight to the end/start. Also reused by
+// solvePlayback.ts to animate each solver move at a controlled pace.
+export function animateTimestampTo(
   player: TwistyPlayer,
   fromTimestamp: number,
   toTimestamp: number,
   isStillCurrent: () => boolean,
+  durationMs: number = RELEASE_ANIMATION_MS,
 ): Promise<void> {
   return new Promise((resolve) => {
     const start = performance.now();
@@ -60,7 +62,7 @@ function animateTimestampTo(
         resolve();
         return;
       }
-      const t = Math.min((now - start) / RELEASE_ANIMATION_MS, 1);
+      const t = Math.min((now - start) / durationMs, 1);
       const eased = easeOutCubic(t);
       player.timestamp = (fromTimestamp +
         eased * (toTimestamp - fromTimestamp)) as ExperimentalMillisecondTimestamp;

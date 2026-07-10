@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import CubeView, { type CubeViewHandle } from "./CubeView";
+import type { SolveProgress } from "./solvePlayback";
 import { formatTime, useTimer } from "./useTimer";
 import "./App.css";
 
@@ -12,6 +13,8 @@ function App() {
   const [moveCount, setMoveCount] = useState(0);
   const [, setHasScrambled] = useState(false);
   const [justSolved, setJustSolved] = useState(false);
+  const [solveProgress, setSolveProgress] = useState<SolveProgress | null>(null);
+  const isSolving = solveProgress !== null;
 
   const handleMoveCountChange = useCallback((count: number) => {
     setMoveCount(count);
@@ -66,6 +69,13 @@ function App() {
     setMode("play");
   }, []);
 
+  const handleSolve = useCallback(async () => {
+    setJustSolved(false);
+    setSolveProgress({ movesDone: 0, movesTotal: 0 });
+    await cubeRef.current?.solve((progress) => setSolveProgress(progress));
+    setSolveProgress(null);
+  }, []);
+
   return (
     <div className="app">
       <header className="app-header">
@@ -85,7 +95,11 @@ function App() {
       </div>
 
       <p className="mode-hint">
-        {mode === "look" ? "드래그해서 큐브를 둘러보세요" : "스와이프로 면을 돌려보세요"}
+        {isSolving
+          ? `해법 재생 중... (${solveProgress.movesDone}/${solveProgress.movesTotal})`
+          : mode === "look"
+            ? "드래그해서 큐브를 둘러보세요"
+            : "스와이프로 면을 돌려보세요"}
       </p>
 
       <div className="cube-stage">
@@ -104,6 +118,7 @@ function App() {
           type="button"
           className={mode === "look" ? "primary" : ""}
           onClick={handleLookAround}
+          disabled={isSolving}
         >
           둘러보기
         </button>
@@ -111,14 +126,18 @@ function App() {
           type="button"
           className={mode === "play" ? "primary" : ""}
           onClick={handleStart}
+          disabled={isSolving}
         >
           시작하기
         </button>
-        <button type="button" onClick={handleScramble}>
+        <button type="button" onClick={handleScramble} disabled={isSolving}>
           스크램블
         </button>
-        <button type="button" onClick={handleReset}>
+        <button type="button" onClick={handleReset} disabled={isSolving}>
           리셋
+        </button>
+        <button type="button" onClick={handleSolve} disabled={isSolving}>
+          솔버
         </button>
       </div>
     </div>
