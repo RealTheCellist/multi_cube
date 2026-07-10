@@ -46,6 +46,12 @@
   color: var(--text-h);
 }
 
+.mode-hint {
+  color: var(--text);
+  font-size: 14px;
+  margin: 4px 0 0;
+}
+
 .cube-stage {
   position: relative;
   width: min(90vw, 480px);
@@ -88,6 +94,8 @@
 
 .controls {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 12px;
 }
 

@@ -2,7 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { TwistyPlayer } from "cubing/twisty";
 import { randomScrambleForEvent } from "cubing/scramble";
 import type { KPattern } from "cubing/kpuzzle";
-import { attachSwipeTurning } from "./swipeControls";
+import { attachSwipeTurning, type SwipeTurningController } from "./swipeControls";
 
 export interface CubeViewHandle {
   scramble: () => Promise<void>;
@@ -13,15 +13,19 @@ interface CubeViewProps {
   onMoveCountChange: (count: number) => void;
   onFirstMove: () => void;
   onSolvedChange: (solved: boolean) => void;
+  orbitMode: boolean;
 }
 
 const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
-  { onMoveCountChange, onFirstMove, onSolvedChange },
+  { onMoveCountChange, onFirstMove, onSolvedChange, orbitMode },
   ref,
 ) {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<TwistyPlayer | null>(null);
   const hasMovedRef = useRef(false);
+  const swipeControllerRef = useRef<SwipeTurningController | null>(null);
+  const orbitModeRef = useRef(orbitMode);
+  orbitModeRef.current = orbitMode;
 
   const callbacksRef = useRef({ onMoveCountChange, onFirstMove, onSolvedChange });
   callbacksRef.current = { onMoveCountChange, onFirstMove, onSolvedChange };
@@ -33,7 +37,7 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
       background: "none",
       controlPanel: "none",
       hintFacelets: "none",
-      experimentalDragInput: "none",
+      experimentalDragInput: orbitModeRef.current ? "auto" : "none",
       cameraLatitude: 20,
     });
     player.style.width = "100%";
@@ -42,13 +46,13 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
     containerRef.current?.appendChild(player);
 
     let cancelled = false;
-    let detachSwipe: (() => void) | null = null;
-    attachSwipeTurning(player).then((detach) => {
+    attachSwipeTurning(player).then((controller) => {
       if (cancelled) {
-        detach();
-      } else {
-        detachSwipe = detach;
+        controller.detach();
+        return;
       }
+      controller.setEnabled(!orbitModeRef.current);
+      swipeControllerRef.current = controller;
     });
 
     let solvedPattern: KPattern | null = null;
@@ -72,11 +76,19 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
 
     return () => {
       cancelled = true;
-      detachSwipe?.();
+      swipeControllerRef.current?.detach();
+      swipeControllerRef.current = null;
       player.remove();
       playerRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    const player = playerRef.current;
+    if (!player) return;
+    player.experimentalDragInput = orbitMode ? "auto" : "none";
+    swipeControllerRef.current?.setEnabled(!orbitMode);
+  }, [orbitMode]);
 
   useImperativeHandle(ref, () => ({
     scramble: async () => {

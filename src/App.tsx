@@ -8,6 +8,7 @@ function App() {
   const cubeRef = useRef<CubeViewHandle>(null);
   const timer = useTimer();
 
+  const [mode, setMode] = useState<"look" | "play">("look");
   const [moveCount, setMoveCount] = useState(0);
   const [, setHasScrambled] = useState(false);
   const [justSolved, setJustSolved] = useState(false);
@@ -55,6 +56,15 @@ function App() {
     timer.reset();
   }, [timer]);
 
+  const handleLookAround = useCallback(() => {
+    setMode("look");
+  }, []);
+
+  const handleStart = useCallback(async () => {
+    setMode("play");
+    await handleScramble();
+  }, [handleScramble]);
+
   return (
     <div className="app">
       <header className="app-header">
@@ -73,9 +83,14 @@ function App() {
         </div>
       </div>
 
+      <p className="mode-hint">
+        {mode === "look" ? "드래그해서 큐브를 둘러보세요" : "스와이프로 면을 돌려보세요"}
+      </p>
+
       <div className="cube-stage">
         <CubeView
           ref={cubeRef}
+          orbitMode={mode === "look"}
           onMoveCountChange={handleMoveCountChange}
           onFirstMove={handleFirstMove}
           onSolvedChange={handleSolvedChange}
@@ -84,7 +99,21 @@ function App() {
       </div>
 
       <div className="controls">
-        <button type="button" className="primary" onClick={handleScramble}>
+        <button
+          type="button"
+          className={mode === "look" ? "primary" : ""}
+          onClick={handleLookAround}
+        >
+          둘러보기
+        </button>
+        <button
+          type="button"
+          className={mode === "play" ? "primary" : ""}
+          onClick={handleStart}
+        >
+          시작하기
+        </button>
+        <button type="button" onClick={handleScramble}>
           스크램블
         </button>
         <button type="button" onClick={handleReset}>

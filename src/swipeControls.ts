@@ -52,6 +52,16 @@ interface DragState {
   locked: LockedTurn | null;
 }
 
+export interface SwipeTurningController {
+  /** Turns swipe-to-turn gestures on/off without tearing down the listeners
+   * (used to hand the same canvas over to cubing.js's own camera-orbit drag
+   * while the user is just looking around, not solving). */
+  setEnabled: (enabled: boolean) => void;
+  detach: () => void;
+}
+
+const NOOP_CONTROLLER: SwipeTurningController = { setEnabled: () => {}, detach: () => {} };
+
 /**
  * Wires up real swipe-to-turn gestures on a TwistyPlayer's canvas, bypassing
  * cubing.js's built-in interaction (which only supports camera-orbit drags
@@ -69,16 +79,17 @@ interface DragState {
  * the scrub to the end (commit) or jump back and drop the move (abort),
  * depending on whether the user dragged past the halfway point.
  */
-export async function attachSwipeTurning(player: TwistyPlayer): Promise<() => void> {
+export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTurningController> {
   const [canvas] = await waitForNonEmpty(() => player.experimentalCurrentCanvases());
   const [vantage] = await waitForNonEmpty(async () => [...(await player.experimentalCurrentVantages())]);
-  if (!canvas || !vantage) return () => {};
+  if (!canvas || !vantage) return NOOP_CONTROLLER;
 
   const camera = await vantage.camera();
   const puzzleObj = (await player.experimentalCurrentThreeJSPuzzleObject()) as unknown as PG3DLike;
-  if (!("experimentalGetControlTargets" in puzzleObj)) return () => {};
+  if (!("experimentalGetControlTargets" in puzzleObj)) return NOOP_CONTROLLER;
 
   canvas.style.touchAction = "none";
+  let enabled = true;
 
   // stickerDat.axis holds 26 entries on a 3x3x3: 6 outer-face axes (F/B/U/D/L/R,
   // single-letter families) plus 8 corner axes (whole-cube "rotation" moves,
@@ -127,6 +138,7 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<() => vo
   }
 
   function onPointerDown(e: PointerEvent) {
+    if (!enabled) return;
     raycaster.setFromCamera(ndcFromEvent(e), camera);
     const [hit] = raycaster.intersectObjects(puzzleObj.experimentalGetControlTargets(), true);
     if (!hit) {
@@ -294,10 +306,16 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<() => vo
   canvas.addEventListener("pointerup", onPointerUp);
   canvas.addEventListener("pointercancel", onPointerCancel);
 
-  return () => {
-    canvas.removeEventListener("pointerdown", onPointerDown);
-    canvas.removeEventListener("pointermove", onPointerMove);
-    canvas.removeEventListener("pointerup", onPointerUp);
-    canvas.removeEventListener("pointercancel", onPointerCancel);
+  return {
+    setEnabled: (value: boolean) => {
+      enabled = value;
+      if (!value) drag = null;
+    },
+    detach: () => {
+      canvas.removeEventListener("pointerdown", onPointerDown);
+      canvas.removeEventListener("pointermove", onPointerMove);
+      canvas.removeEventListener("pointerup", onPointerUp);
+      canvas.removeEventListener("pointercancel", onPointerCancel);
+    },
   };
 }
