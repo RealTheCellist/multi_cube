@@ -24,6 +24,13 @@ const FULL_TURN_FRACTION_OF_WIDTH = 0.22;
 // once a swipe's direction is recognized at all, releasing commits it — while
 // still letting an explicit drag back toward the start cancel the move.
 const COMMIT_PROGRESS_THRESHOLD = 0.12;
+// How long a full (100%-of-the-turn) release animation takes; scaled down by
+// however little distance is actually left so a short flick — which barely
+// moved the face during the drag itself — doesn't suddenly snap through the
+// remaining ~90% far faster than the drag was moving, which read as a
+// second, separate turn instead of one continuous motion.
+const FULL_RELEASE_ANIMATION_MS = 300;
+const MIN_RELEASE_ANIMATION_MS = 60;
 
 // experimentalCurrentVantages()/experimentalCurrentCanvases() only return
 // results once TwistyPlayer's internal visualization wrapper has finished
@@ -39,21 +46,21 @@ async function waitForNonEmpty<T>(getter: () => Promise<T[]>, timeoutMs = 5000):
   return [];
 }
 
-const RELEASE_ANIMATION_MS = 150;
 const easeOutCubic = (t: number) => 1 - (1 - t) ** 3;
 
 // The finger drives `player.timestamp` 1:1 during the drag itself, but on
 // release we still need to cover whatever fraction of the turn is left — a
 // hard jump there reads as an abrupt stutter rather than a continuation of
-// the same motion. Ease the remaining distance out over a short, fixed
-// duration instead of snapping straight to the end/start. Also reused by
-// solvePlayback.ts to animate each solver move at a controlled pace.
+// the same motion. Ease the remaining distance out over `durationMs` instead
+// of snapping straight to the end/start (callers scale this by how much
+// distance is actually left, so a short flick doesn't visibly speed up at
+// the hand-off). Also reused by solvePlayback.ts to animate each solver move.
 export function animateTimestampTo(
   player: TwistyPlayer,
   fromTimestamp: number,
   toTimestamp: number,
   isStillCurrent: () => boolean,
-  durationMs: number = RELEASE_ANIMATION_MS,
+  durationMs: number,
 ): Promise<void> {
   return new Promise((resolve) => {
     const start = performance.now();
@@ -297,7 +304,17 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTur
     const t1 = await player.experimentalGet.timestamp();
     player.timestamp = t0;
 
-    if (drag !== target) return; // pointer released/canceled while we were awaiting
+    if (drag !== target) {
+      // Pointer released/canceled while we were awaiting the setup above —
+      // by this point we've already committed moveString to the alg and
+      // rewound the timestamp to just before it. Left alone, that stray
+      // move sits permanently queued past a timestamp that never advances
+      // to show it, desyncing the alg from what's on screen (and silently
+      // inflating the move count) since nothing else will clean it up.
+      player.alg = originalAlg;
+      player.timestamp = "end";
+      return;
+    }
 
     const dragMag = Math.hypot(dx0, dy0) || 1;
     const rect = canvas.getBoundingClientRect();
@@ -341,10 +358,14 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTur
     const current = locked.t0 + locked.progress * (locked.t1 - locked.t0);
     const isStillCurrent = () => drag === null;
     if (locked.progress >= COMMIT_PROGRESS_THRESHOLD) {
-      await animateTimestampTo(player, current, locked.t1, isStillCurrent);
+      const remaining = 1 - locked.progress;
+      const durationMs = Math.max(MIN_RELEASE_ANIMATION_MS, remaining * FULL_RELEASE_ANIMATION_MS);
+      await animateTimestampTo(player, current, locked.t1, isStillCurrent, durationMs);
       if (isStillCurrent()) player.timestamp = "end";
     } else {
-      await animateTimestampTo(player, current, locked.t0, isStillCurrent);
+      const remaining = locked.progress;
+      const durationMs = Math.max(MIN_RELEASE_ANIMATION_MS, remaining * FULL_RELEASE_ANIMATION_MS);
+      await animateTimestampTo(player, current, locked.t0, isStillCurrent, durationMs);
       if (isStillCurrent()) player.alg = locked.originalAlg;
     }
   }
