@@ -41,7 +41,7 @@ function App() {
   );
 
   const handleScramble = useCallback(async () => {
-    setMode("play");
+    setMode("look");
     setJustSolved(false);
     setMoveCount(0);
     timer.reset();
@@ -51,6 +51,7 @@ function App() {
 
   const handleReset = useCallback(() => {
     cubeRef.current?.resetToSolved();
+    setMode("look");
     setJustSolved(false);
     setMoveCount(0);
     setHasScrambled(false);
@@ -59,6 +60,10 @@ function App() {
 
   const handleLookAround = useCallback(() => {
     setMode("look");
+  }, []);
+
+  const handleStart = useCallback(() => {
+    setMode("play");
   }, []);
 
   return (
@@ -105,7 +110,7 @@ function App() {
         <button
           type="button"
           className={mode === "play" ? "primary" : ""}
-          onClick={handleScramble}
+          onClick={handleStart}
         >
           시작하기
         </button>
