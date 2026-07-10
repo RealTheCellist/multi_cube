@@ -17,7 +17,12 @@ interface PG3DLike extends THREE.Object3D {
 
 const DRAG_THRESHOLD_PX = 12;
 const FULL_TURN_FRACTION_OF_WIDTH = 0.22;
-const COMMIT_PROGRESS_THRESHOLD = 0.5;
+// Requiring most of a full-turn drag to commit is a bad match for speed-
+// solving, where turns are short flicks rather than slow full swipes. This
+// only needs to clear a bit more than the direction-lock distance itself, so
+// once a swipe's direction is recognized at all, releasing commits it — while
+// still letting an explicit drag back toward the start cancel the move.
+const COMMIT_PROGRESS_THRESHOLD = 0.12;
 
 // experimentalCurrentVantages()/experimentalCurrentCanvases() only return
 // results once TwistyPlayer's internal visualization wrapper has finished
