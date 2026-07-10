@@ -19,6 +19,7 @@ function App() {
   const [justSolved, setJustSolved] = useState(false);
   const [isSolving, setIsSolving] = useState(false);
   const [lastHint, setLastHint] = useState<SolveHintDisplay | null>(null);
+  const [solveUnsupported, setSolveUnsupported] = useState(false);
 
   const handleMoveCountChange = useCallback((count: number) => {
     setMoveCount(count);
@@ -52,6 +53,7 @@ function App() {
     setJustSolved(false);
     setMoveCount(0);
     setLastHint(null);
+    setSolveUnsupported(false);
     timer.reset();
     await cubeRef.current?.scramble();
     setHasScrambled(true);
@@ -63,6 +65,7 @@ function App() {
     setJustSolved(false);
     setMoveCount(0);
     setLastHint(null);
+    setSolveUnsupported(false);
     setHasScrambled(false);
     timer.reset();
   }, [timer]);
@@ -76,11 +79,15 @@ function App() {
   }, []);
 
   const handleSolve = useCallback(async () => {
+    const wasTimerRunning = timer.running;
+    if (wasTimerRunning) timer.pause();
     setIsSolving(true);
     const hint = await cubeRef.current?.solveNextMove();
     setIsSolving(false);
+    setSolveUnsupported(!!hint?.unsupported);
     setLastHint(hint?.move ? { move: hint.move, movesRemaining: hint.movesRemaining } : null);
-  }, []);
+    if (wasTimerRunning) timer.resume();
+  }, [timer]);
 
   return (
     <div className="app">
@@ -103,11 +110,13 @@ function App() {
       <p className="mode-hint">
         {isSolving
           ? "다음 수 미리보기 재생 중..."
-          : lastHint
-            ? `다음 수: ${lastHint.move} (총 ${lastHint.movesRemaining + 1}수 필요) — 직접 돌려보세요`
-            : mode === "look"
-              ? "드래그해서 큐브를 둘러보세요"
-              : "스와이프로 면을 돌려보세요"}
+          : solveUnsupported
+            ? "가운데줄(M/E/S) 이동이 포함된 상태는 솔버가 지원하지 않습니다"
+            : lastHint
+              ? `다음 수: ${lastHint.move} (총 ${lastHint.movesRemaining + 1}수 필요) — 직접 돌려보세요`
+              : mode === "look"
+                ? "드래그해서 큐브를 둘러보세요"
+                : "스와이프로 면을 돌려보세요"}
       </p>
 
       <div className="cube-stage">

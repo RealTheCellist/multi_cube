@@ -31,12 +31,26 @@ export function useTimer() {
     });
   }, []);
 
+  // Same freeze as stop(), but paired with resume() (which continues from
+  // the frozen elapsed time) rather than a later start() resetting to 0 —
+  // for briefly holding the clock during something like a solver preview
+  // mid-attempt.
+  const pause = stop;
+
+  const resume = useCallback(() => {
+    setElapsedMs((currentElapsed) => {
+      startedAtRef.current = performance.now() - currentElapsed;
+      return currentElapsed;
+    });
+    setRunning(true);
+  }, []);
+
   const reset = useCallback(() => {
     setRunning(false);
     setElapsedMs(0);
   }, []);
 
-  return { elapsedMs, running, start, stop, reset };
+  return { elapsedMs, running, start, stop, pause, resume, reset };
 }
 
 export function formatTime(ms: number): string {

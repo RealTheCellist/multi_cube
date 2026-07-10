@@ -13,6 +13,12 @@ function sleep(ms: number): Promise<void> {
 export interface SolveHint {
   move: string | null;
   movesRemaining: number;
+  // cubing.js's solver can't handle a pattern once an M/E/S middle-slice
+  // move has ever been applied (its internal Reid-notation conversion
+  // requires centers to stay in their original slots, which those moves
+  // break) — set when that happens so the caller can show a clear message
+  // instead of the promise hanging or throwing.
+  unsupported?: boolean;
 }
 
 /**
@@ -24,7 +30,12 @@ export interface SolveHint {
  */
 export async function computeAndPlayNextSolveMove(player: TwistyPlayer): Promise<SolveHint> {
   const currentPattern = await player.experimentalModel.currentPattern.get();
-  const solutionAlg = await experimentalSolve3x3x3IgnoringCenters(currentPattern);
+  let solutionAlg;
+  try {
+    solutionAlg = await experimentalSolve3x3x3IgnoringCenters(currentPattern);
+  } catch {
+    return { move: null, movesRemaining: 0, unsupported: true };
+  }
   const moves = [...solutionAlg.childAlgNodes()].map((node) => node.toString());
   if (moves.length === 0) return { move: null, movesRemaining: 0 };
 
