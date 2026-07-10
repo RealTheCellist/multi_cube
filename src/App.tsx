@@ -1,9 +1,13 @@
 import { useCallback, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import CubeView, { type CubeViewHandle } from "./CubeView";
-import type { SolveProgress } from "./solvePlayback";
 import { formatTime, useTimer } from "./useTimer";
 import "./App.css";
+
+interface SolveHintDisplay {
+  move: string;
+  movesRemaining: number;
+}
 
 function App() {
   const cubeRef = useRef<CubeViewHandle>(null);
@@ -13,8 +17,8 @@ function App() {
   const [moveCount, setMoveCount] = useState(0);
   const [, setHasScrambled] = useState(false);
   const [justSolved, setJustSolved] = useState(false);
-  const [solveProgress, setSolveProgress] = useState<SolveProgress | null>(null);
-  const isSolving = solveProgress !== null;
+  const [isSolving, setIsSolving] = useState(false);
+  const [lastHint, setLastHint] = useState<SolveHintDisplay | null>(null);
 
   const handleMoveCountChange = useCallback((count: number) => {
     setMoveCount(count);
@@ -47,6 +51,7 @@ function App() {
     setMode("look");
     setJustSolved(false);
     setMoveCount(0);
+    setLastHint(null);
     timer.reset();
     await cubeRef.current?.scramble();
     setHasScrambled(true);
@@ -57,6 +62,7 @@ function App() {
     setMode("look");
     setJustSolved(false);
     setMoveCount(0);
+    setLastHint(null);
     setHasScrambled(false);
     timer.reset();
   }, [timer]);
@@ -70,10 +76,10 @@ function App() {
   }, []);
 
   const handleSolve = useCallback(async () => {
-    setJustSolved(false);
-    setSolveProgress({ movesDone: 0, movesTotal: 0 });
-    await cubeRef.current?.solve((progress) => setSolveProgress(progress));
-    setSolveProgress(null);
+    setIsSolving(true);
+    const hint = await cubeRef.current?.solveNextMove();
+    setIsSolving(false);
+    setLastHint(hint?.move ? { move: hint.move, movesRemaining: hint.movesRemaining } : null);
   }, []);
 
   return (
@@ -96,10 +102,12 @@ function App() {
 
       <p className="mode-hint">
         {isSolving
-          ? `해법 재생 중... (${solveProgress.movesDone}/${solveProgress.movesTotal})`
-          : mode === "look"
-            ? "드래그해서 큐브를 둘러보세요"
-            : "스와이프로 면을 돌려보세요"}
+          ? "다음 수 재생 중..."
+          : lastHint
+            ? `힌트: ${lastHint.move} (남은 ${lastHint.movesRemaining}수) — 솔버를 다시 눌러 다음 수 보기`
+            : mode === "look"
+              ? "드래그해서 큐브를 둘러보세요"
+              : "스와이프로 면을 돌려보세요"}
       </p>
 
       <div className="cube-stage">

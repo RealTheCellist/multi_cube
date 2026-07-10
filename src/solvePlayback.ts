@@ -3,50 +3,36 @@ import { experimentalSolve3x3x3IgnoringCenters } from "cubing/search";
 import { animateTimestampTo } from "./swipeControls";
 
 const MOVE_ANIMATION_MS = 350;
-const PAUSE_BETWEEN_MOVES_MS = 250;
 
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-export interface SolveProgress {
-  movesDone: number;
-  movesTotal: number;
+export interface SolveHint {
+  move: string | null;
+  movesRemaining: number;
 }
 
 /**
- * Finds a solution for the puzzle's current pattern and plays it back one
- * move at a time (not an instant snap to solved), so the user can follow
- * along with what each move does. `isCancelled` is polled between moves so a
- * scramble/reset mid-playback can stop it early.
+ * Solves for the puzzle's *current* pattern from scratch and plays just its
+ * first move — a step-through hint rather than an auto-played full solve, so
+ * pressing the button again re-solves from wherever the cube actually is
+ * (including any manual turns made in between) and reveals the next move.
  */
-export async function playSolve(
-  player: TwistyPlayer,
-  onProgress: (progress: SolveProgress) => void,
-  isCancelled: () => boolean,
-): Promise<void> {
+export async function computeAndPlayNextSolveMove(player: TwistyPlayer): Promise<SolveHint> {
   const currentPattern = await player.experimentalModel.currentPattern.get();
   const solutionAlg = await experimentalSolve3x3x3IgnoringCenters(currentPattern);
   const moves = [...solutionAlg.childAlgNodes()].map((node) => node.toString());
+  if (moves.length === 0) return { move: null, movesRemaining: 0 };
 
-  onProgress({ movesDone: 0, movesTotal: moves.length });
+  const [move] = moves;
 
-  for (let i = 0; i < moves.length; i++) {
-    if (isCancelled()) return;
+  player.timestamp = "end";
+  const tStart = await player.experimentalGet.timestamp();
+  player.experimentalAddMove(move);
+  player.pause();
+  player.timestamp = "end";
+  const tEnd = await player.experimentalGet.timestamp();
+  player.timestamp = tStart;
 
-    player.timestamp = "end";
-    const tStart = await player.experimentalGet.timestamp();
-    player.experimentalAddMove(moves[i]);
-    player.pause();
-    player.timestamp = "end";
-    const tEnd = await player.experimentalGet.timestamp();
-    player.timestamp = tStart;
+  await animateTimestampTo(player, tStart, tEnd, () => true, MOVE_ANIMATION_MS);
+  player.timestamp = "end";
 
-    await animateTimestampTo(player, tStart, tEnd, () => !isCancelled(), MOVE_ANIMATION_MS);
-    if (isCancelled()) return;
-    player.timestamp = "end";
-
-    onProgress({ movesDone: i + 1, movesTotal: moves.length });
-    if (i < moves.length - 1) await sleep(PAUSE_BETWEEN_MOVES_MS);
-  }
+  return { move, movesRemaining: moves.length - 1 };
 }
