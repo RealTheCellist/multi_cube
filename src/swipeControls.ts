@@ -12,7 +12,7 @@ interface PG3DLike extends THREE.Object3D {
     point: THREE.Vector3,
     transformations: { invert: boolean; depth: "none" | "secondSlice" | "rotation" },
   ): { move: { toString(): string } } | null;
-  stickerDat: { axis: { coordinates: [number, number, number] }[] };
+  stickerDat: { axis: { coordinates: [number, number, number]; quantumMove: { family: string } }[] };
 }
 
 const DRAG_THRESHOLD_PX = 12;
@@ -80,6 +80,16 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<() => vo
 
   canvas.style.touchAction = "none";
 
+  // stickerDat.axis holds 26 entries on a 3x3x3: 6 outer-face axes (F/B/U/D/L/R,
+  // single-letter families) plus 8 corner axes (whole-cube "rotation" moves,
+  // e.g. UFR) and 12 edge axes (slice moves, e.g. UF, used for "secondSlice").
+  // We only ever want outer-face turns here, so the argmax search below must
+  // be restricted to the 6 single-letter entries — otherwise a touch point
+  // anywhere near an edge or corner of the cube (extremely common) matches a
+  // corner/edge axis instead, producing a nonsense in-plane basis and turning
+  // the wrong slice entirely.
+  const faceAxes = puzzleObj.stickerDat.axis.filter((axis) => axis.quantumMove.family.length === 1);
+
   const raycaster = new THREE.Raycaster();
   let drag: DragState | null = null;
 
@@ -91,14 +101,14 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<() => vo
     );
   }
 
-  // Finds the puzzle's turn axis whose direction most closely matches
+  // Finds the outer-face turn axis whose direction most closely matches
   // `target` (same argmax cubing.js itself uses internally to turn a click
   // into a move — reused here so we can feed it either the touched point or
   // a synthetic direction vector).
   function bestAxisFor(target: THREE.Vector3): [number, number, number] | null {
     let best: [number, number, number] | null = null;
     let bestDot = 0;
-    for (const axis of puzzleObj.stickerDat.axis) {
+    for (const axis of faceAxes) {
       const d = target.dot(new THREE.Vector3(...axis.coordinates));
       if (d > bestDot) {
         bestDot = d;
