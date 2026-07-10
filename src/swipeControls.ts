@@ -195,6 +195,9 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<() => vo
         Math.abs(rotationAxisDir.x) > 0.5 ? "M" : Math.abs(rotationAxisDir.y) > 0.5 ? "E" : "S";
       const tangent = new THREE.Vector3().crossVectors(rotationAxisDir, point).normalize();
       const tangentScreen = screenDirFrom(point, tangent);
+      // M/E/S follow a named face's convention (M~L, E~D, S~F) rather than
+      // the raw right-hand-rule around their own positive axis, so their
+      // "invert" sign runs opposite to the outer-layer moves below.
       const invert = tangentScreen.x * dx0 + tangentScreen.y * dy0 < 0;
       moveString = invert ? `${family}'` : family;
     } else {
@@ -207,7 +210,7 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<() => vo
       const tangent = new THREE.Vector3().crossVectors(moveAxisVec, point).normalize();
       const tangentScreen = screenDirFrom(point, tangent);
 
-      const invert = tangentScreen.x * dx0 + tangentScreen.y * dy0 < 0;
+      const invert = tangentScreen.x * dx0 + tangentScreen.y * dy0 > 0;
       const result = puzzleObj.getClosestMoveToAxis(targetVec, { invert, depth: "none" });
       if (!result?.move) return;
       moveString = result.move.toString();
