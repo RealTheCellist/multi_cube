@@ -19,7 +19,7 @@ function App() {
   const [justSolved, setJustSolved] = useState(false);
   const [isSolving, setIsSolving] = useState(false);
   const [lastHint, setLastHint] = useState<SolveHintDisplay | null>(null);
-  const [solveUnsupported, setSolveUnsupported] = useState(false);
+  const [solveError, setSolveError] = useState(false);
 
   const handleMoveCountChange = useCallback((count: number) => {
     setMoveCount(count);
@@ -53,7 +53,7 @@ function App() {
     setJustSolved(false);
     setMoveCount(0);
     setLastHint(null);
-    setSolveUnsupported(false);
+    setSolveError(false);
     timer.reset();
     await cubeRef.current?.scramble();
     setHasScrambled(true);
@@ -65,7 +65,7 @@ function App() {
     setJustSolved(false);
     setMoveCount(0);
     setLastHint(null);
-    setSolveUnsupported(false);
+    setSolveError(false);
     setHasScrambled(false);
     timer.reset();
   }, [timer]);
@@ -82,11 +82,21 @@ function App() {
     const wasTimerRunning = timer.running;
     if (wasTimerRunning) timer.pause();
     setIsSolving(true);
-    const hint = await cubeRef.current?.solveNextMove();
-    setIsSolving(false);
-    setSolveUnsupported(!!hint?.unsupported);
-    setLastHint(hint?.move ? { move: hint.move, movesRemaining: hint.movesRemaining } : null);
-    if (wasTimerRunning) timer.resume();
+    try {
+      const hint = await cubeRef.current?.solveNextMove();
+      setSolveError(false);
+      setLastHint(hint?.move ? { move: hint.move, movesRemaining: hint.movesRemaining } : null);
+    } catch {
+      // The solver is a third-party library reached through an experimental
+      // API and throws once an M/E/S middle-slice move has ever been
+      // applied (it assumes centers stay in their original positions) — keep
+      // the button from getting stuck disabled forever when that happens.
+      setSolveError(true);
+      setLastHint(null);
+    } finally {
+      setIsSolving(false);
+      if (wasTimerRunning) timer.resume();
+    }
   }, [timer]);
 
   return (
@@ -110,8 +120,8 @@ function App() {
       <p className="mode-hint">
         {isSolving
           ? "다음 수 미리보기 재생 중..."
-          : solveUnsupported
-            ? "가운데줄(M/E/S) 이동이 포함된 상태는 솔버가 지원하지 않습니다"
+          : solveError
+            ? "솔버 실행 중 오류가 발생했습니다. 다시 시도해보세요"
             : lastHint
               ? `다음 수: ${lastHint.move} (총 ${lastHint.movesRemaining + 1}수 필요) — 직접 돌려보세요`
               : mode === "look"
