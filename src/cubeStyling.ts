@@ -34,12 +34,31 @@ function isMeshBasicMaterial(material: THREE.Material): material is THREE.MeshBa
 function litVersionOf(material: THREE.Material): THREE.Material {
   if (!isMeshBasicMaterial(material) || !material.visible) return material;
   return new THREE.MeshLambertMaterial({
-    color: material.color,
+    // The non-vertex-colored material is the single shared "foundation"
+    // body/grout piece visible in the gaps between stickers — recolor it
+    // white so those cell-dividing lines read as white instead of black.
+    color: material.vertexColors ? material.color : new THREE.Color(0xffffff),
     vertexColors: material.vertexColors,
     side: material.side,
     transparent: material.transparent,
     opacity: material.opacity,
   });
+}
+
+// The white sticker's own vertex color is pure white (1,1,1), which is now
+// indistinguishable from the white grout lines between cells (see
+// litVersionOf below). Nudge it to a slightly off-white so the divider is
+// still visible on the white face, without touching any other sticker color.
+const OFF_WHITE = new THREE.Color(0xdcdcdc);
+function recolorPureWhiteVertices(geometry: THREE.BufferGeometry) {
+  const color = geometry.getAttribute("color");
+  if (!color) return;
+  for (let i = 0; i < color.count; i++) {
+    if (color.getX(i) > 0.95 && color.getY(i) > 0.95 && color.getZ(i) > 0.95) {
+      color.setXYZ(i, OFF_WHITE.r, OFF_WHITE.g, OFF_WHITE.b);
+    }
+  }
+  color.needsUpdate = true;
 }
 
 export async function applyRealisticCubeStyling(puzzleObj: THREE.Object3D, vantage: VantageLike): Promise<void> {
@@ -59,9 +78,14 @@ export async function applyRealisticCubeStyling(puzzleObj: THREE.Object3D, vanta
     return lit;
   };
 
+  const seenGeometries = new Set<THREE.BufferGeometry>();
   puzzleObj.traverse((obj) => {
     if (!isMesh(obj)) return;
     obj.material = Array.isArray(obj.material) ? obj.material.map(replace) : replace(obj.material);
+    if (!seenGeometries.has(obj.geometry)) {
+      seenGeometries.add(obj.geometry);
+      recolorPureWhiteVertices(obj.geometry);
+    }
   });
 
   const scene = await vantage.scene?.scene();
