@@ -91,6 +91,7 @@ interface LockedTurn {
   t1: number;
   originalAlg: Alg;
   progress: number;
+  settled: boolean;
 }
 
 interface DragState {
@@ -168,6 +169,30 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTur
   const raycaster = new THREE.Raycaster();
   let drag: DragState | null = null;
 
+  // If a new swipe begins while the *previous* move's release animation is
+  // still easing to completion, the two would otherwise race to set
+  // player.timestamp on alternating frames — which could yank the display
+  // backward mid-animation right as the new turn begins, read as the cube
+  // glitching before turning again. (Making a new gesture *wait* for the old
+  // one to finish naturally was tried and rejected: a fast enough swipe's
+  // pointermove events are all dispatched and ignored — since lockDrag
+  // hasn't set `locked` yet — before the wait ever resolves, silently
+  // dropping the move entirely.) So instead, settle the old one instantly —
+  // jump straight to its end state, no animation — the moment the new one
+  // locks in, rather than leaving it to fight over timestamp writes.
+  let activeLocked: LockedTurn | null = null;
+
+  function finalizeLocked(locked: LockedTurn) {
+    if (locked.settled) return;
+    locked.settled = true;
+    if (activeLocked === locked) activeLocked = null;
+    if (locked.progress >= COMMIT_PROGRESS_THRESHOLD) {
+      player.timestamp = "end";
+    } else {
+      player.alg = locked.originalAlg;
+    }
+  }
+
   function ndcFromEvent(e: PointerEvent): THREE.Vector2 {
     const rect = canvas.getBoundingClientRect();
     return new THREE.Vector2(
@@ -235,6 +260,8 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTur
   // versa. The touched point's position along that other axis (its sign)
   // picks which of the two opposite faces (e.g. U vs D) is meant.
   async function lockDrag(target: DragState, dx0: number, dy0: number) {
+    if (activeLocked) finalizeLocked(activeLocked);
+
     const { point } = target;
 
     const touchedFaceAxis = bestAxisFor(point);
@@ -326,7 +353,12 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTur
       t1,
       originalAlg,
       progress: 0,
+      settled: false,
     };
+    // Registered as soon as the move is committed to the alg (not only once
+    // the pointer is released) so a fast next swipe can find and settle it
+    // even if this one's finishDrag hasn't run yet.
+    activeLocked = target.locked;
   }
 
   function onPointerMove(e: PointerEvent) {
@@ -350,24 +382,24 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTur
     player.timestamp = scrubbed as ExperimentalMillisecondTimestamp;
   }
 
-  async function finishDrag(target: DragState) {
+  async function finishDrag(target: DragState): Promise<void> {
     if (target.lockingPromise) await target.lockingPromise;
     const locked = target.locked;
     if (!locked) return;
 
     const current = locked.t0 + locked.progress * (locked.t1 - locked.t0);
-    const isStillCurrent = () => drag === null;
+    const isStillCurrent = () => !locked.settled;
+
     if (locked.progress >= COMMIT_PROGRESS_THRESHOLD) {
       const remaining = 1 - locked.progress;
       const durationMs = Math.max(MIN_RELEASE_ANIMATION_MS, remaining * FULL_RELEASE_ANIMATION_MS);
       await animateTimestampTo(player, current, locked.t1, isStillCurrent, durationMs);
-      if (isStillCurrent()) player.timestamp = "end";
     } else {
       const remaining = locked.progress;
       const durationMs = Math.max(MIN_RELEASE_ANIMATION_MS, remaining * FULL_RELEASE_ANIMATION_MS);
       await animateTimestampTo(player, current, locked.t0, isStillCurrent, durationMs);
-      if (isStillCurrent()) player.alg = locked.originalAlg;
     }
+    finalizeLocked(locked);
   }
 
   function onPointerUp(e: PointerEvent) {
