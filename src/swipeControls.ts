@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import type { Alg } from "cubing/alg";
 import type { ExperimentalMillisecondTimestamp, TwistyPlayer } from "cubing/twisty";
+import { applyRealisticCubeStyling } from "./cubeStyling";
 
 // Duck-typed view of cubing.js's internal PG3D puzzle object. Not part of the
 // public API surface, but it's the only way to reach per-axis turn data for
@@ -92,6 +93,8 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTur
   const camera = await vantage.camera();
   const puzzleObj = (await player.experimentalCurrentThreeJSPuzzleObject()) as unknown as PG3DLike;
   if (!("experimentalGetControlTargets" in puzzleObj)) return NOOP_CONTROLLER;
+
+  void applyRealisticCubeStyling(puzzleObj, vantage);
 
   canvas.style.touchAction = "none";
   let enabled = true;
