@@ -14,6 +14,7 @@ function App() {
   const timer = useTimer();
 
   const [mode, setMode] = useState<"look" | "play">("look");
+  const [gridSize, setGridSize] = useState(3);
   const [moveCount, setMoveCount] = useState(0);
   const [, setHasScrambled] = useState(false);
   const [justSolved, setJustSolved] = useState(false);
@@ -74,6 +75,20 @@ function App() {
     setMode("look");
   }, []);
 
+  const handleGridSizeChange = useCallback(
+    (size: number) => {
+      setGridSize(size);
+      setMode("look");
+      setJustSolved(false);
+      setMoveCount(0);
+      setLastHint(null);
+      setSolveError(false);
+      setHasScrambled(false);
+      timer.reset();
+    },
+    [timer],
+  );
+
   const handleStart = useCallback(() => {
     setMode("play");
   }, []);
@@ -102,8 +117,22 @@ function App() {
     <div className="app">
       <header className="app-header">
         <h1>Poly Puzzle</h1>
-        <p className="subtitle">정6면체 3×3 프로토타입</p>
+        <p className="subtitle">정6면체 {gridSize}×{gridSize} 프로토타입</p>
       </header>
+
+      <div className="controls" style={{ marginBottom: "0.5rem" }}>
+        {[2, 3, 4].map((size) => (
+          <button
+            key={size}
+            type="button"
+            className={gridSize === size ? "primary" : ""}
+            onClick={() => handleGridSizeChange(size)}
+            disabled={isSolving}
+          >
+            {size}×{size}
+          </button>
+        ))}
+      </div>
 
       <div className="stat-row">
         <div className="stat">
@@ -132,6 +161,7 @@ function App() {
         <CubeView
           ref={cubeRef}
           orbitMode={mode === "look"}
+          gridSize={gridSize}
           onMoveCountChange={handleMoveCountChange}
           onFirstMove={handleFirstMove}
           onSolvedChange={handleSolvedChange}
@@ -162,7 +192,7 @@ function App() {
         <button type="button" onClick={handleReset} disabled={isSolving}>
           리셋
         </button>
-        <button type="button" onClick={handleSolve} disabled={isSolving}>
+        <button type="button" onClick={handleSolve} disabled={isSolving || gridSize !== 3} title={gridSize !== 3 ? "3×3에서만 지원돼요" : undefined}>
           솔버
         </button>
       </div>

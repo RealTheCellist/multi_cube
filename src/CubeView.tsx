@@ -15,10 +15,11 @@ interface CubeViewProps {
   onFirstMove: () => void;
   onSolvedChange: (solved: boolean) => void;
   orbitMode: boolean;
+  gridSize: number;
 }
 
 const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
-  { onMoveCountChange, onFirstMove, onSolvedChange, orbitMode },
+  { onMoveCountChange, onFirstMove, onSolvedChange, orbitMode, gridSize },
   ref,
 ) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -35,7 +36,9 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    const scene = new CustomCubeScene(container);
+    hasMovedRef.current = false;
+    moveCountRef.current = 0;
+    const scene = new CustomCubeScene(container, gridSize);
     sceneRef.current = scene;
     scene.setOrbitEnabled(orbitModeRef.current);
 
@@ -57,7 +60,11 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
       scene.dispose();
       sceneRef.current = null;
     };
-  }, []);
+    // gridSize intentionally triggers a full teardown/rebuild rather than an
+    // in-place resize -- switching sizes is rare enough (an explicit picker,
+    // not a drag) that rebuilding the whole scene is simpler than making
+    // every mesh/geometry path handle a live size change.
+  }, [gridSize]);
 
   useEffect(() => {
     sceneRef.current?.setOrbitEnabled(orbitMode);

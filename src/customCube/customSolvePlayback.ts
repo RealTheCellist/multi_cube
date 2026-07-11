@@ -55,6 +55,10 @@ async function currentPatternFor(scene: CustomCubeScene) {
  * untouched, mirroring computeAndPlayNextSolveMove for the PG3D player.
  */
 export async function previewNextSolveMove(scene: CustomCubeScene): Promise<SolveHint> {
+  // The solver (and the move-history letter notation it reads) only exists
+  // for the 3x3x3 -- see cubeState.ts. The UI already disables the solver
+  // button for other sizes; this is just a defensive backstop.
+  if (scene.gridSize !== 3) return { move: null, movesRemaining: 0 };
   const pattern = await currentPatternFor(scene);
   const hint = await computeSolveHint(pattern);
   if (!hint.move) return hint;

@@ -15,18 +15,20 @@ import {
   faceLetterForAxisSign,
   isSolved,
   middleSliceLetterForAxis,
+  randomLayerScramble,
   randomScramble,
 } from "./cubeState";
 
-// Spacing between cubie centers and each cubie's own size -- the gap between
-// them (SPACING - CUBIE_SIZE) is deliberate: real cubes have a visible seam
-// between pieces at rest, so the same seam opening up further mid-turn reads
-// as pieces separating (like a real cube) rather than as a rendering glitch,
-// which is the whole point of this custom renderer over the edge-to-edge
-// PG3D one.
-const SPACING = 1.06;
-const CUBIE_SIZE = 0.96;
-const CORNER_RADIUS = 0.07;
+// The whole cube always spans roughly this many world units regardless of
+// gridSize, so switching between 2x2/3x3/4x4 doesn't change how big the
+// cube looks on screen -- only how many, and how small, its cubies are.
+// SPACING/CUBIE_SIZE/CORNER_RADIUS below are this extent's original 3x3x3
+// values (spacing 1.06 * 3 cubies ~= 3.2), kept as the ratios each
+// instance's actual per-cubie dimensions are derived from.
+const CUBE_EXTENT = 3.18;
+const SPACING_RATIO = 1; // spacing == CUBE_EXTENT / gridSize
+const CUBIE_SIZE_RATIO = 0.96 / 1.06; // cubie size relative to spacing
+const CORNER_RADIUS_RATIO = 0.07 / 1.06; // bevel radius relative to spacing
 
 const LOCAL_FACE_SLOTS: { dir: THREE.Vector3 }[] = [
   { dir: new THREE.Vector3(1, 0, 0) },
@@ -50,7 +52,7 @@ function stickerMaterial(face: Face): THREE.MeshLambertMaterial {
 
 export interface ActiveTurn {
   axis: Axis;
-  layer: -1 | 0 | 1;
+  layer: number;
   group: THREE.Group;
   cubieIds: Set<number>;
 }
@@ -61,6 +63,8 @@ export class CustomCubeScene {
   readonly camera: THREE.PerspectiveCamera;
   readonly cubeGroup: THREE.Group;
   readonly controls: OrbitControls;
+  readonly gridSize: number;
+  private spacing: number;
   private container: HTMLElement;
   private cubies: Cubie[];
   private meshById = new Map<number, THREE.Mesh>();
@@ -68,14 +72,16 @@ export class CustomCubeScene {
   private resizeObserver: ResizeObserver;
   private disposed = false;
   // Every committed move token in order since the last resetToSolved(),
-  // including scramble moves. This is the only thing the solver hint needs:
-  // replaying it onto a fresh cubing/kpuzzle pattern reproduces the exact
-  // current state without this renderer having to know anything about
-  // cubing.js's own piece/orientation encoding.
+  // including scramble moves -- 3x3x3 only (see cubeState.ts). This is all
+  // the solver hint needs: replaying it onto a fresh cubing/kpuzzle pattern
+  // reproduces the exact current state without this renderer having to
+  // know anything about cubing.js's own piece/orientation encoding.
   private moveHistory: string[] = [];
 
-  constructor(container: HTMLElement) {
+  constructor(container: HTMLElement, gridSize = 3) {
     this.container = container;
+    this.gridSize = gridSize;
+    this.spacing = (CUBE_EXTENT / gridSize) * SPACING_RATIO;
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
     this.camera.position.set(5.4, 4.5, 6.6);
@@ -96,7 +102,7 @@ export class CustomCubeScene {
     this.cubeGroup = new THREE.Group();
     this.scene.add(this.cubeGroup);
 
-    this.cubies = buildSolvedCube();
+    this.cubies = buildSolvedCube(this.gridSize);
     for (const cubie of this.cubies) {
       const mesh = this.buildCubieMesh(cubie);
       this.meshById.set(cubie.id, mesh);
@@ -118,7 +124,9 @@ export class CustomCubeScene {
   }
 
   private buildCubieMesh(cubie: Cubie): THREE.Mesh {
-    const geometry = new RoundedBoxGeometry(CUBIE_SIZE, CUBIE_SIZE, CUBIE_SIZE, 2, CORNER_RADIUS);
+    const size = this.spacing * CUBIE_SIZE_RATIO;
+    const radius = this.spacing * CORNER_RADIUS_RATIO;
+    const geometry = new RoundedBoxGeometry(size, size, size, 2, radius);
     const materials = LOCAL_FACE_SLOTS.map((slot) => {
       const sticker = cubie.stickers.find((s) => s.direction.distanceToSquared(slot.dir) < 1e-6);
       return sticker ? stickerMaterial(sticker.color) : PLASTIC_MATERIAL;
@@ -142,7 +150,7 @@ export class CustomCubeScene {
   }
 
   private syncMeshTransform(cubie: Cubie, mesh = this.meshById.get(cubie.id)!): void {
-    mesh.position.copy(cubie.position).multiplyScalar(SPACING);
+    mesh.position.copy(cubie.position).multiplyScalar(this.spacing);
     mesh.quaternion.copy(cubie.orientation);
   }
 
@@ -167,7 +175,7 @@ export class CustomCubeScene {
   }
 
   /** Starts a live-scrubbable turn: reparents the layer's meshes under a pivot group. */
-  beginTurn(axis: Axis, layer: -1 | 0 | 1): void {
+  beginTurn(axis: Axis, layer: number): void {
     if (this.activeTurn) return;
     const layerCubies = cubiesInLayer(this.cubies, axis, layer);
     const group = new THREE.Group();
@@ -200,12 +208,16 @@ export class CustomCubeScene {
     try {
       if (commitSign !== null) {
         applyRawQuarterTurn(this.cubies, turn.axis, turn.layer, commitSign);
-        if (turn.layer === 0) {
-          const letter = middleSliceLetterForAxis(turn.axis);
-          this.moveHistory.push(commitSign === MIDDLE_SLICE_TURNS[letter].sign ? letter : `${letter}'`);
-        } else {
-          const face = faceLetterForAxisSign(turn.axis, turn.layer);
-          this.moveHistory.push(commitSign === FACE_TURNS[face].sign ? face : `${face}'`);
+        // Letter-notation move history only makes sense (and is only ever
+        // read, by the solver) for the 3x3x3 -- see cubeState.ts.
+        if (this.gridSize === 3) {
+          if (turn.layer === 0) {
+            const letter = middleSliceLetterForAxis(turn.axis);
+            this.moveHistory.push(commitSign === MIDDLE_SLICE_TURNS[letter].sign ? letter : `${letter}'`);
+          } else if (turn.layer === 1 || turn.layer === -1) {
+            const face = faceLetterForAxisSign(turn.axis, turn.layer);
+            this.moveHistory.push(commitSign === FACE_TURNS[face].sign ? face : `${face}'`);
+          }
         }
       }
     } finally {
@@ -235,18 +247,21 @@ export class CustomCubeScene {
   }
 
   resetToSolved(): void {
-    this.cubies = buildSolvedCube();
+    this.cubies = buildSolvedCube(this.gridSize);
     for (const cubie of this.cubies) {
       this.syncMeshTransform(cubie);
     }
     this.moveHistory = [];
   }
 
-  scramble(): string[] {
+  scramble(): void {
     this.resetToSolved();
-    const moves = randomScramble();
-    for (const move of moves) this.applyInstantMove(move);
-    return moves;
+    if (this.gridSize === 3) {
+      for (const move of randomScramble()) this.applyInstantMove(move);
+    } else {
+      randomLayerScramble(this.cubies, this.gridSize);
+      for (const cubie of this.cubies) this.syncMeshTransform(cubie);
+    }
   }
 
   dispose(): void {

@@ -16,13 +16,13 @@ export interface CustomSwipeController {
 
 interface Candidate {
   axis: Axis;
-  layer: -1 | 0 | 1;
+  layer: number;
   screenDir: THREE.Vector2;
 }
 
 interface LockedTurn {
   axis: Axis;
-  layer: -1 | 0 | 1;
+  layer: number;
   screenDir: THREE.Vector2;
   fullTurnPx: number;
   progress: number;
@@ -144,11 +144,15 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
     const faceAxis: Axis = ax >= ay && ax >= az ? "x" : ay >= az ? "y" : "z";
     const otherAxes: Axis[] = (["x", "y", "z"] as Axis[]).filter((a) => a !== faceAxis);
     const candidates = otherAxes.map((axis) => {
-      // 0 here means a middle-slice (M/E/S) turn -- a touched edge or
+      // A valid grid coordinate is an exact integer for odd grid sizes and
+      // an exact half-integer for even ones (see cubeState.ts) -- snapping
+      // to the nearest integer here would be wrong for a 4x4's inner layers
+      // (e.g. 1.5 rounds to 2, a layer that doesn't exist). 0 specifically
+      // means a middle-slice (M/E/S) turn on a 3x3x3 -- a touched edge or
       // center piece has one or both of its non-face-axis coordinates at 0.
       // CustomCubeScene.endTurn knows how to commit and name that turn, so
       // this is passed through as-is rather than forced to an outer layer.
-      const layer = Math.round(cubie.position[axis]) as -1 | 0 | 1;
+      const layer = Math.round(cubie.position[axis] * 2) / 2;
       return { axis, layer, screenDir: screenTangent(scene, hit.point, axis, rect) };
     }) as [Candidate, Candidate];
 
