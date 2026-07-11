@@ -17,7 +17,18 @@ interface PG3DLike extends THREE.Object3D {
 }
 
 const DRAG_THRESHOLD_PX = 12;
-const FULL_TURN_FRACTION_OF_WIDTH = 0.22;
+// How much of the canvas width a full 90-degree drag needs to cover. The
+// turning layer visibly separates from the rest of the cube mid-turn (real
+// geometry of a rotating layer -- its corners sweep out past the resting
+// footprint around the 45-degree mark, same as on a real cube -- not
+// something camera distance/FOV changes, confirmed empirically). Previous
+// attempts at reducing how "poppy" that looks only shortened the *release*
+// animation, leaving the live-drag portion (which tracks the finger 1:1, so
+// its own pace is however fast the finger happens to move) untouched. A
+// smaller fraction here means the same finger speed covers the 45-degree
+// midpoint in less real time and less distance, cutting down how long the
+// gap is visible during the drag too, not just after release.
+const FULL_TURN_FRACTION_OF_WIDTH = 0.14;
 // Requiring most of a full-turn drag to commit is a bad match for speed-
 // solving, where turns are short flicks rather than slow full swipes. This
 // only needs to clear a bit more than the direction-lock distance itself, so
