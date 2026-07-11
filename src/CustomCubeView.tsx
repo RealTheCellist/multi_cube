@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { CustomCubeScene } from "./customCube/CustomCubeScene";
 import { attachCustomSwipeTurning, type CustomSwipeController } from "./customCube/customSwipeControls";
+import { previewNextSolveMove } from "./customCube/customSolvePlayback";
 import type { CubeViewHandle } from "./CubeView";
 
 interface CustomCubeViewProps {
@@ -69,8 +70,14 @@ const CustomCubeView = forwardRef<CubeViewHandle, CustomCubeViewProps>(function 
       callbacksRef.current.onMoveCountChange(0);
     },
     solveNextMove: async () => {
-      // Solver-hint preview isn't implemented in this prototype renderer yet.
-      return { move: null, movesRemaining: 0 };
+      const scene = sceneRef.current;
+      if (!scene) return { move: null, movesRemaining: 0 };
+      controllerRef.current?.setEnabled(false);
+      try {
+        return await previewNextSolveMove(scene);
+      } finally {
+        controllerRef.current?.setEnabled(!orbitModeRef.current);
+      }
     },
   }));
 

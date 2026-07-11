@@ -81,6 +81,23 @@ function findEquivalentMove(pattern: KPattern, reorientAlg: Alg, solverMove: str
 }
 
 /**
+ * Solves for the given pattern and returns just its first move (plus how
+ * many moves remain after it) -- pure KPattern/Alg logic, independent of
+ * any particular rendering engine, so both the cubing.js/PG3D player and
+ * the custom Three.js renderer can share it.
+ */
+export async function computeSolveHint(currentPattern: KPattern): Promise<SolveHint> {
+  const reorientAlg = getReorientAlg(currentPattern);
+  const normalizedPattern = currentPattern.applyAlg(reorientAlg);
+  const solutionAlg = await experimentalSolve3x3x3IgnoringCenters(normalizedPattern);
+  const moves = [...solutionAlg.childAlgNodes()].map((node) => node.toString());
+  if (moves.length === 0) return { move: null, movesRemaining: 0 };
+
+  const move = findEquivalentMove(currentPattern, reorientAlg, moves[0]);
+  return { move, movesRemaining: moves.length - 1 };
+}
+
+/**
  * Solves for the puzzle's *current* pattern and previews just its first
  * move: plays it forward, holds briefly so the resulting position is
  * visible, then plays it back in reverse and restores the original alg —
@@ -89,13 +106,9 @@ function findEquivalentMove(pattern: KPattern, reorientAlg: Alg, solverMove: str
  */
 export async function computeAndPlayNextSolveMove(player: TwistyPlayer): Promise<SolveHint> {
   const currentPattern = await player.experimentalModel.currentPattern.get();
-  const reorientAlg = getReorientAlg(currentPattern);
-  const normalizedPattern = currentPattern.applyAlg(reorientAlg);
-  const solutionAlg = await experimentalSolve3x3x3IgnoringCenters(normalizedPattern);
-  const moves = [...solutionAlg.childAlgNodes()].map((node) => node.toString());
-  if (moves.length === 0) return { move: null, movesRemaining: 0 };
-
-  const move = findEquivalentMove(currentPattern, reorientAlg, moves[0]);
+  const hint = await computeSolveHint(currentPattern);
+  if (!hint.move) return hint;
+  const move = hint.move;
 
   const originalAlg: Alg = await player.experimentalGet.alg();
   player.timestamp = "end";
@@ -114,5 +127,5 @@ export async function computeAndPlayNextSolveMove(player: TwistyPlayer): Promise
   player.timestamp = tStart as ExperimentalMillisecondTimestamp;
   player.alg = originalAlg;
 
-  return { move, movesRemaining: moves.length - 1 };
+  return hint;
 }

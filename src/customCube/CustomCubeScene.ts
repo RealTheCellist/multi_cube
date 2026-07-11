@@ -6,10 +6,12 @@ import {
   type Cubie,
   type Face,
   FACE_COLORS,
+  FACE_TURNS,
   applyMoveToken,
   applyRawQuarterTurn,
   buildSolvedCube,
   cubiesInLayer,
+  faceLetterForAxisSign,
   isSolved,
   randomScramble,
 } from "./cubeState";
@@ -63,6 +65,12 @@ export class CustomCubeScene {
   private activeTurn: ActiveTurn | null = null;
   private resizeObserver: ResizeObserver;
   private disposed = false;
+  // Every committed move token in order since the last resetToSolved(),
+  // including scramble moves. This is the only thing the solver hint needs:
+  // replaying it onto a fresh cubing/kpuzzle pattern reproduces the exact
+  // current state without this renderer having to know anything about
+  // cubing.js's own piece/orientation encoding.
+  private moveHistory: string[] = [];
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -184,7 +192,11 @@ export class CustomCubeScene {
   endTurn(commitSign: 1 | -1 | null): void {
     const turn = this.activeTurn;
     if (!turn) return;
-    if (commitSign !== null) applyRawQuarterTurn(this.cubies, turn.axis, turn.layer, commitSign);
+    if (commitSign !== null) {
+      applyRawQuarterTurn(this.cubies, turn.axis, turn.layer, commitSign);
+      const face = faceLetterForAxisSign(turn.axis, turn.layer);
+      this.moveHistory.push(commitSign === FACE_TURNS[face].sign ? face : `${face}'`);
+    }
     for (const cubie of this.cubies) {
       if (!turn.cubieIds.has(cubie.id)) continue;
       const mesh = this.meshById.get(cubie.id)!;
@@ -202,6 +214,11 @@ export class CustomCubeScene {
   applyInstantMove(token: string): void {
     applyMoveToken(this.cubies, token);
     for (const cubie of this.cubies) this.syncMeshTransform(cubie);
+    this.moveHistory.push(token);
+  }
+
+  getMoveHistory(): string[] {
+    return [...this.moveHistory];
   }
 
   resetToSolved(): void {
@@ -209,6 +226,7 @@ export class CustomCubeScene {
     for (const cubie of this.cubies) {
       this.syncMeshTransform(cubie);
     }
+    this.moveHistory = [];
   }
 
   scramble(): string[] {

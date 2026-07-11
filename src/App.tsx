@@ -205,7 +205,7 @@ function App() {
         <button type="button" onClick={handleReset} disabled={isSolving}>
           리셋
         </button>
-        <button type="button" onClick={handleSolve} disabled={isSolving || engine === "new"}>
+        <button type="button" onClick={handleSolve} disabled={isSolving}>
           솔버
         </button>
       </div>
