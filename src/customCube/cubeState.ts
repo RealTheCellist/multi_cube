@@ -118,8 +118,18 @@ export function buildSolvedCube(gridSize: number): Cubie[] {
 // half-integers for even ones, and this one formula lands correctly on
 // either (e.g. round(1.48*2)/2 = 1.5, round(0.97*2)/2 = 1) without needing
 // to know which parity is in play.
-function roundedComponent(v: THREE.Vector3, axis: Axis): number {
+export function roundedComponent(v: THREE.Vector3, axis: Axis): number {
   return Math.round(v[axis] * 2) / 2;
+}
+
+export function cloneCubies(cubies: Cubie[]): Cubie[] {
+  return cubies.map((c) => ({
+    id: c.id,
+    originalPosition: c.originalPosition,
+    position: c.position.clone(),
+    orientation: c.orientation.clone(),
+    stickers: c.stickers,
+  }));
 }
 
 export function cubiesInLayer(cubies: Cubie[], axis: Axis, layer: number): Cubie[] {
