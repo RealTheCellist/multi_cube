@@ -33,11 +33,14 @@ const COMMIT_PROGRESS_THRESHOLD = 0.12;
 // The turning layer visibly separates from the rest of the cube mid-turn —
 // real perspective on a rotating layer, not a bug, but the longer that gap
 // lingers open before snapping shut, the more it reads as the layer
-// "popping" rather than smoothly finishing. Shortened once already (was
-// 300/60, then 180/45) and confirmed to help — pushing further in the same
-// direction.
-const FULL_RELEASE_ANIMATION_MS = 100;
-const MIN_RELEASE_ANIMATION_MS = 30;
+// "popping" rather than smoothly finishing. Shortened twice already (was
+// 300/60, then 180/45, then 100/30), each time confirmed to help — now down
+// to effectively instant: 1ms still goes through animateTimestampTo's own
+// requestAnimationFrame loop (so it's never literally synchronous), but
+// resolves on the very first frame no matter what, which is as fast as this
+// can go without restructuring the release path to skip animation entirely.
+const FULL_RELEASE_ANIMATION_MS = 1;
+const MIN_RELEASE_ANIMATION_MS = 1;
 
 // experimentalCurrentVantages()/experimentalCurrentCanvases() only return
 // results once TwistyPlayer's internal visualization wrapper has finished
@@ -233,7 +236,11 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTur
   // the first's existing promise), and `requestExpedite` lets an interrupting
   // caller shrink its remaining duration instead of leaving it at its
   // original, un-rushed pace.
-  const INTERRUPT_CATCHUP_MS = 40;
+  // Moot now that the natural release itself is already ~instant (1ms), but
+  // kept (rather than removed) so requestExpedite still has a well-defined,
+  // always-at-least-this-fast floor if the release durations above ever grow
+  // again.
+  const INTERRUPT_CATCHUP_MS = 1;
   let activeLocked: LockedTurn | null = null;
 
   // The old version of this always sized the release purely off how much
