@@ -192,19 +192,25 @@ export class CustomCubeScene {
   endTurn(commitSign: 1 | -1 | null): void {
     const turn = this.activeTurn;
     if (!turn) return;
-    if (commitSign !== null) {
-      applyRawQuarterTurn(this.cubies, turn.axis, turn.layer, commitSign);
-      const face = faceLetterForAxisSign(turn.axis, turn.layer);
-      this.moveHistory.push(commitSign === FACE_TURNS[face].sign ? face : `${face}'`);
+    // The reparent/cleanup below must always run, even if committing throws
+    // (e.g. an invalid layer) -- otherwise activeTurn is never cleared and
+    // every future beginTurn() call silently no-ops forever.
+    try {
+      if (commitSign !== null) {
+        applyRawQuarterTurn(this.cubies, turn.axis, turn.layer, commitSign);
+        const face = faceLetterForAxisSign(turn.axis, turn.layer);
+        this.moveHistory.push(commitSign === FACE_TURNS[face].sign ? face : `${face}'`);
+      }
+    } finally {
+      for (const cubie of this.cubies) {
+        if (!turn.cubieIds.has(cubie.id)) continue;
+        const mesh = this.meshById.get(cubie.id)!;
+        this.cubeGroup.attach(mesh);
+        this.syncMeshTransform(cubie, mesh);
+      }
+      this.cubeGroup.remove(turn.group);
+      this.activeTurn = null;
     }
-    for (const cubie of this.cubies) {
-      if (!turn.cubieIds.has(cubie.id)) continue;
-      const mesh = this.meshById.get(cubie.id)!;
-      this.cubeGroup.attach(mesh);
-      this.syncMeshTransform(cubie, mesh);
-    }
-    this.cubeGroup.remove(turn.group);
-    this.activeTurn = null;
   }
 
   isTurning(): boolean {
