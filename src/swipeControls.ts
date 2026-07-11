@@ -29,8 +29,15 @@ const COMMIT_PROGRESS_THRESHOLD = 0.12;
 // moved the face during the drag itself — doesn't suddenly snap through the
 // remaining ~90% far faster than the drag was moving, which read as a
 // second, separate turn instead of one continuous motion.
-const FULL_RELEASE_ANIMATION_MS = 300;
-const MIN_RELEASE_ANIMATION_MS = 60;
+//
+// The turning layer visibly separates from the rest of the cube mid-turn —
+// real perspective on a rotating layer, not a bug, but the longer that gap
+// lingers open before snapping shut, the more it reads as the layer
+// "popping" rather than smoothly finishing. Shortening these (previously
+// 300/60) makes the close-out snappier without changing anything about how
+// the live drag itself tracks the finger.
+const FULL_RELEASE_ANIMATION_MS = 180;
+const MIN_RELEASE_ANIMATION_MS = 45;
 
 // experimentalCurrentVantages()/experimentalCurrentCanvases() only return
 // results once TwistyPlayer's internal visualization wrapper has finished
