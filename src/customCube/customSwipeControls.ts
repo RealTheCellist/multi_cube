@@ -3,9 +3,7 @@ import type { CustomCubeScene } from "./CustomCubeScene";
 import { type Axis, axisVector } from "./cubeMath";
 
 const DRAG_THRESHOLD_PX = 12;
-// How much of the canvas width a full 90-degree drag needs to cover -- see
-// the analogous constant (and its rationale) in ../swipeControls.ts. Reused
-// verbatim here for a fair A/B comparison between the two renderers.
+// How much of the canvas width a full 90-degree drag needs to cover.
 const FULL_TURN_FRACTION_OF_WIDTH = 0.14;
 const COMMIT_PROGRESS_THRESHOLD = 0.3;
 const RELEASE_ANIMATION_MS = 220;

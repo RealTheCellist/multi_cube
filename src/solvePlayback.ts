@@ -1,15 +1,6 @@
 import { Alg } from "cubing/alg";
 import type { KPattern } from "cubing/kpuzzle";
-import type { ExperimentalMillisecondTimestamp, TwistyPlayer } from "cubing/twisty";
 import { experimentalSolve3x3x3IgnoringCenters } from "cubing/search";
-import { animateTimestampTo } from "./swipeControls";
-
-const MOVE_ANIMATION_MS = 350;
-const HOLD_MS = 500;
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 export interface SolveHint {
   move: string | null;
@@ -82,9 +73,7 @@ function findEquivalentMove(pattern: KPattern, reorientAlg: Alg, solverMove: str
 
 /**
  * Solves for the given pattern and returns just its first move (plus how
- * many moves remain after it) -- pure KPattern/Alg logic, independent of
- * any particular rendering engine, so both the cubing.js/PG3D player and
- * the custom Three.js renderer can share it.
+ * many moves remain after it).
  */
 export async function computeSolveHint(currentPattern: KPattern): Promise<SolveHint> {
   const reorientAlg = getReorientAlg(currentPattern);
@@ -95,37 +84,4 @@ export async function computeSolveHint(currentPattern: KPattern): Promise<SolveH
 
   const move = findEquivalentMove(currentPattern, reorientAlg, moves[0]);
   return { move, movesRemaining: moves.length - 1 };
-}
-
-/**
- * Solves for the puzzle's *current* pattern and previews just its first
- * move: plays it forward, holds briefly so the resulting position is
- * visible, then plays it back in reverse and restores the original alg —
- * a pure preview that leaves the puzzle's actual state untouched, so the
- * user can go perform the move themselves.
- */
-export async function computeAndPlayNextSolveMove(player: TwistyPlayer): Promise<SolveHint> {
-  const currentPattern = await player.experimentalModel.currentPattern.get();
-  const hint = await computeSolveHint(currentPattern);
-  if (!hint.move) return hint;
-  const move = hint.move;
-
-  const originalAlg: Alg = await player.experimentalGet.alg();
-  player.timestamp = "end";
-  const tStart = await player.experimentalGet.timestamp();
-  player.experimentalAddMove(move);
-  player.pause();
-  player.timestamp = "end";
-  const tEnd = await player.experimentalGet.timestamp();
-  player.timestamp = tStart;
-
-  await animateTimestampTo(player, tStart, tEnd, () => true, () => MOVE_ANIMATION_MS);
-  player.timestamp = tEnd as ExperimentalMillisecondTimestamp;
-  await sleep(HOLD_MS);
-  await animateTimestampTo(player, tEnd, tStart, () => true, () => MOVE_ANIMATION_MS);
-
-  player.timestamp = tStart as ExperimentalMillisecondTimestamp;
-  player.alg = originalAlg;
-
-  return hint;
 }

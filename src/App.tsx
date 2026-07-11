@@ -1,7 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import CubeView, { type CubeViewHandle } from "./CubeView";
-import CustomCubeView from "./CustomCubeView";
 import { formatTime, useTimer } from "./useTimer";
 import "./App.css";
 
@@ -15,7 +14,6 @@ function App() {
   const timer = useTimer();
 
   const [mode, setMode] = useState<"look" | "play">("look");
-  const [engine, setEngine] = useState<"old" | "new">("old");
   const [moveCount, setMoveCount] = useState(0);
   const [, setHasScrambled] = useState(false);
   const [justSolved, setJustSolved] = useState(false);
@@ -76,20 +74,6 @@ function App() {
     setMode("look");
   }, []);
 
-  const handleEngineChange = useCallback(
-    (next: "old" | "new") => {
-      setEngine(next);
-      setMode("look");
-      setJustSolved(false);
-      setMoveCount(0);
-      setLastHint(null);
-      setSolveError(false);
-      setHasScrambled(false);
-      timer.reset();
-    },
-    [timer],
-  );
-
   const handleStart = useCallback(() => {
     setMode("play");
   }, []);
@@ -121,23 +105,6 @@ function App() {
         <p className="subtitle">정6면체 3×3 프로토타입</p>
       </header>
 
-      <div className="controls" style={{ marginBottom: "0.5rem" }}>
-        <button
-          type="button"
-          className={engine === "old" ? "primary" : ""}
-          onClick={() => handleEngineChange("old")}
-        >
-          기존 버전
-        </button>
-        <button
-          type="button"
-          className={engine === "new" ? "primary" : ""}
-          onClick={() => handleEngineChange("new")}
-        >
-          새 버전 (베타)
-        </button>
-      </div>
-
       <div className="stat-row">
         <div className="stat">
           <span className="stat-label">시간</span>
@@ -162,23 +129,13 @@ function App() {
       </p>
 
       <div className="cube-stage">
-        {engine === "old" ? (
-          <CubeView
-            ref={cubeRef}
-            orbitMode={mode === "look"}
-            onMoveCountChange={handleMoveCountChange}
-            onFirstMove={handleFirstMove}
-            onSolvedChange={handleSolvedChange}
-          />
-        ) : (
-          <CustomCubeView
-            ref={cubeRef}
-            orbitMode={mode === "look"}
-            onMoveCountChange={handleMoveCountChange}
-            onFirstMove={handleFirstMove}
-            onSolvedChange={handleSolvedChange}
-          />
-        )}
+        <CubeView
+          ref={cubeRef}
+          orbitMode={mode === "look"}
+          onMoveCountChange={handleMoveCountChange}
+          onFirstMove={handleFirstMove}
+          onSolvedChange={handleSolvedChange}
+        />
         {justSolved && <div className="solved-banner">Solved! 🎉</div>}
       </div>
 
