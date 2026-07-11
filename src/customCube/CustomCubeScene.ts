@@ -68,7 +68,7 @@ export class CustomCubeScene {
     this.container = container;
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
-    this.camera.position.set(3.6, 3, 4.4);
+    this.camera.position.set(5.4, 4.5, 6.6);
     this.camera.lookAt(0, 0, 0);
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
