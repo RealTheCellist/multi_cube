@@ -51,16 +51,20 @@ const easeOutCubic = (t: number) => 1 - (1 - t) ** 3;
 // The finger drives `player.timestamp` 1:1 during the drag itself, but on
 // release we still need to cover whatever fraction of the turn is left — a
 // hard jump there reads as an abrupt stutter rather than a continuation of
-// the same motion. Ease the remaining distance out over `durationMs` instead
-// of snapping straight to the end/start (callers scale this by how much
-// distance is actually left, so a short flick doesn't visibly speed up at
-// the hand-off). Also reused by solvePlayback.ts to animate each solver move.
+// the same motion. Ease the remaining distance out over the duration
+// `getDurationMs()` reports instead of snapping straight to the end/start
+// (callers scale this by how much distance is actually left, so a short
+// flick doesn't visibly speed up at the hand-off). Reading the duration via
+// a callback each frame — rather than taking a fixed number — lets a caller
+// shrink it mid-flight to cut the animation short (see settleLocked's
+// `requestExpedite`). Also reused by solvePlayback.ts to animate each solver
+// move, with a callback that always returns the same fixed duration.
 export function animateTimestampTo(
   player: TwistyPlayer,
   fromTimestamp: number,
   toTimestamp: number,
   isStillCurrent: () => boolean,
-  durationMs: number,
+  getDurationMs: () => number,
 ): Promise<void> {
   return new Promise((resolve) => {
     const start = performance.now();
@@ -69,7 +73,7 @@ export function animateTimestampTo(
         resolve();
         return;
       }
-      const t = Math.min((now - start) / durationMs, 1);
+      const t = Math.min((now - start) / getDurationMs(), 1);
       const eased = easeOutCubic(t);
       player.timestamp = (fromTimestamp +
         eased * (toTimestamp - fromTimestamp)) as ExperimentalMillisecondTimestamp;
@@ -91,7 +95,14 @@ interface LockedTurn {
   t1: number;
   originalAlg: Alg;
   progress: number;
-  settled: boolean;
+  // Set once settling starts (by whichever happens first: the natural
+  // release, or a new gesture interrupting this one) so a second caller
+  // reuses the same in-flight settle instead of starting a competing one.
+  settlePromise: Promise<void> | null;
+  // Lets a later interrupting caller shrink an already-running settle's
+  // remaining duration instead of leaving it to finish at its original,
+  // un-rushed pace.
+  requestExpedite: (() => void) | null;
 }
 
 interface DragState {
@@ -101,6 +112,13 @@ interface DragState {
   point: THREE.Vector3;
   lockingPromise: Promise<void> | null;
   locked: LockedTurn | null;
+  // Kept up to date on every pointermove even before locking (and even
+  // during the interrupt-settle wait inside lockDrag, while events are
+  // otherwise ignored) so that once locking finishes, progress can be
+  // computed from where the finger actually is right now instead of
+  // defaulting to 0 -- see the comment in lockDrag for why that matters.
+  latestDx: number;
+  latestDy: number;
 }
 
 export interface SwipeTurningController {
@@ -169,28 +187,77 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTur
   const raycaster = new THREE.Raycaster();
   let drag: DragState | null = null;
 
-  // If a new swipe begins while the *previous* move's release animation is
-  // still easing to completion, the two would otherwise race to set
-  // player.timestamp on alternating frames — which could yank the display
-  // backward mid-animation right as the new turn begins, read as the cube
-  // glitching before turning again. (Making a new gesture *wait* for the old
-  // one to finish naturally was tried and rejected: a fast enough swipe's
-  // pointermove events are all dispatched and ignored — since lockDrag
-  // hasn't set `locked` yet — before the wait ever resolves, silently
-  // dropping the move entirely.) So instead, settle the old one instantly —
-  // jump straight to its end state, no animation — the moment the new one
-  // locks in, rather than leaving it to fight over timestamp writes.
+  // Turns out three different designs for handling a new swipe starting
+  // while the *previous* move is still settling were all broken in their own
+  // way:
+  //
+  // 1. Let both animate concurrently, each racing to set player.timestamp on
+  //    its own rAF schedule. Two different LockedTurns can each be mid-
+  //    settle at once — e.g. three fast swipes queue up faster than their
+  //    own natural releases finish — so this isn't just the *most recent*
+  //    turn fighting the new one; an older, already-superseded turn's own
+  //    delayed natural release can still be running and stomping writes,
+  //    which read as a just-turned layer suddenly popping back out.
+  // 2. Make the new gesture *wait* for the old one's full release to finish
+  //    naturally before touching anything: a fast enough swipe's pointermove
+  //    events are all dispatched and ignored — since lockDrag hasn't set
+  //    `locked` yet — before the wait ever resolves, silently dropping the
+  //    move entirely.
+  // 3. Force an *instant*, unanimated snap the moment a new turn locks in:
+  //    trades the problem for a different visible glitch — a fast swipe
+  //    could interrupt the previous move a long way from finished, so the
+  //    snap covered a large, sudden jump that itself looked like a pop.
+  //
+  // The actual fix: there must only ever be *one* settle in flight per
+  // locked turn (not per "most recent" turn), and interrupting it should
+  // speed up that same animation rather than start a second one alongside
+  // it. `settleLocked` is idempotent per turn (a second caller just awaits
+  // the first's existing promise), and `requestExpedite` lets an interrupting
+  // caller shrink its remaining duration instead of leaving it at its
+  // original, un-rushed pace.
+  const INTERRUPT_CATCHUP_MS = 80;
   let activeLocked: LockedTurn | null = null;
 
-  function finalizeLocked(locked: LockedTurn) {
-    if (locked.settled) return;
-    locked.settled = true;
-    if (activeLocked === locked) activeLocked = null;
-    if (locked.progress >= COMMIT_PROGRESS_THRESHOLD) {
-      player.timestamp = "end";
-    } else {
-      player.alg = locked.originalAlg;
-    }
+  function releaseDurationFor(locked: LockedTurn): number {
+    const remaining = locked.progress >= COMMIT_PROGRESS_THRESHOLD ? 1 - locked.progress : locked.progress;
+    return Math.max(MIN_RELEASE_ANIMATION_MS, remaining * FULL_RELEASE_ANIMATION_MS);
+  }
+
+  // Deliberately does NOT clear `activeLocked` here, even when it currently
+  // points at `locked` -- it gets left alone and simply superseded whenever
+  // lockDrag assigns a newer turn to it. Nulling it out as soon as *any*
+  // settle starts (the natural release included) was the actual remaining
+  // bug: if a turn's own natural release won the race to call this before
+  // the next swipe's lockDrag ran its interrupt check, that check would find
+  // activeLocked already null and skip straight past -- so the next swipe
+  // never expedited or awaited it, and the two settles (each unaware of the
+  // other) animated concurrently, each stomping the other's writes to
+  // player.timestamp. Once settled, calling this again is a cheap no-op (the
+  // `settlePromise` guard below resolves immediately), so there's no harm in
+  // activeLocked continuing to point at an already-finished turn until the
+  // next lockDrag replaces it.
+  function settleLocked(locked: LockedTurn): Promise<void> {
+    if (locked.settlePromise) return locked.settlePromise;
+    const committing = locked.progress >= COMMIT_PROGRESS_THRESHOLD;
+
+    const promise = (async () => {
+      const current = await player.experimentalGet.timestamp();
+      let durationMs = releaseDurationFor(locked);
+      const start = performance.now();
+      locked.requestExpedite = () => {
+        durationMs = Math.min(durationMs, performance.now() - start + INTERRUPT_CATCHUP_MS);
+      };
+      await animateTimestampTo(player, current, committing ? locked.t1 : locked.t0, () => true, () => durationMs);
+      locked.requestExpedite = null;
+      if (committing) {
+        player.timestamp = "end";
+      } else {
+        player.alg = locked.originalAlg;
+      }
+    })();
+
+    locked.settlePromise = promise;
+    return promise;
   }
 
   function ndcFromEvent(e: PointerEvent): THREE.Vector2 {
@@ -242,6 +309,8 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTur
       point: hit.point.clone(),
       lockingPromise: null,
       locked: null,
+      latestDx: 0,
+      latestDy: 0,
     };
   }
 
@@ -260,7 +329,10 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTur
   // versa. The touched point's position along that other axis (its sign)
   // picks which of the two opposite faces (e.g. U vs D) is meant.
   async function lockDrag(target: DragState, dx0: number, dy0: number) {
-    if (activeLocked) finalizeLocked(activeLocked);
+    if (activeLocked) {
+      activeLocked.requestExpedite?.();
+      await settleLocked(activeLocked);
+    }
 
     const { point } = target;
 
@@ -331,18 +403,17 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTur
     const t1 = await player.experimentalGet.timestamp();
     player.timestamp = t0;
 
-    if (drag !== target) {
-      // Pointer released/canceled while we were awaiting the setup above —
-      // by this point we've already committed moveString to the alg and
-      // rewound the timestamp to just before it. Left alone, that stray
-      // move sits permanently queued past a timestamp that never advances
-      // to show it, desyncing the alg from what's on screen (and silently
-      // inflating the move count) since nothing else will clean it up.
-      player.alg = originalAlg;
-      player.timestamp = "end";
-      return;
-    }
-
+    // Deliberately doesn't bail out here just because `drag` has already
+    // moved on to a newer gesture (e.g. the pointer was released, or even a
+    // whole new swipe already started, while the interrupt-settle above was
+    // in flight) -- finishDrag is already waiting on this same lockDrag call
+    // via `target.lockingPromise` and will correctly commit or revert once
+    // target.locked exists below, using progress caught up from the finger's
+    // actual last-known position (see the catch-up block after this). An
+    // earlier version reverted the move outright whenever `drag !== target`,
+    // which conflated "this gesture was legitimately released" with "this
+    // gesture never happened" -- discarding perfectly valid swipes whenever
+    // the next one started before this one's async setup had finished.
     const dragMag = Math.hypot(dx0, dy0) || 1;
     const rect = canvas.getBoundingClientRect();
     target.locked = {
@@ -353,18 +424,34 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTur
       t1,
       originalAlg,
       progress: 0,
-      settled: false,
+      settlePromise: null,
+      requestExpedite: null,
     };
     // Registered as soon as the move is committed to the alg (not only once
     // the pointer is released) so a fast next swipe can find and settle it
     // even if this one's finishDrag hasn't run yet.
     activeLocked = target.locked;
+
+    // Catch up to wherever the finger actually is right now. While this
+    // function was busy locking in the move (interrupt-settling the
+    // previous turn included), onPointerMove kept updating latestDx/Dy but
+    // skipped touching player.timestamp or progress -- target.locked didn't
+    // exist yet for it to update. Left at progress 0, a swipe that was
+    // dragged far (or even fully released) *during* that wait would look
+    // aborted once finishDrag runs, since nothing else will have advanced
+    // progress past its default in the meantime.
+    const locked = target.locked;
+    const projected = target.latestDx * locked.dragDirX + target.latestDy * locked.dragDirY;
+    locked.progress = Math.min(Math.max(projected / locked.fullTurnPx, 0), 1);
+    player.timestamp = (locked.t0 + locked.progress * (locked.t1 - locked.t0)) as ExperimentalMillisecondTimestamp;
   }
 
   function onPointerMove(e: PointerEvent) {
     if (!drag) return;
     const dx = e.clientX - drag.startClientX;
     const dy = e.clientY - drag.startClientY;
+    drag.latestDx = dx;
+    drag.latestDy = dy;
 
     if (!drag.locked) {
       if (drag.lockingPromise || Math.hypot(dx, dy) < DRAG_THRESHOLD_PX) return;
@@ -386,20 +473,7 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTur
     if (target.lockingPromise) await target.lockingPromise;
     const locked = target.locked;
     if (!locked) return;
-
-    const current = locked.t0 + locked.progress * (locked.t1 - locked.t0);
-    const isStillCurrent = () => !locked.settled;
-
-    if (locked.progress >= COMMIT_PROGRESS_THRESHOLD) {
-      const remaining = 1 - locked.progress;
-      const durationMs = Math.max(MIN_RELEASE_ANIMATION_MS, remaining * FULL_RELEASE_ANIMATION_MS);
-      await animateTimestampTo(player, current, locked.t1, isStillCurrent, durationMs);
-    } else {
-      const remaining = locked.progress;
-      const durationMs = Math.max(MIN_RELEASE_ANIMATION_MS, remaining * FULL_RELEASE_ANIMATION_MS);
-      await animateTimestampTo(player, current, locked.t0, isStillCurrent, durationMs);
-    }
-    finalizeLocked(locked);
+    await settleLocked(locked);
   }
 
   function onPointerUp(e: PointerEvent) {

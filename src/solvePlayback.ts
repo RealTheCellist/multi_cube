@@ -106,10 +106,10 @@ export async function computeAndPlayNextSolveMove(player: TwistyPlayer): Promise
   const tEnd = await player.experimentalGet.timestamp();
   player.timestamp = tStart;
 
-  await animateTimestampTo(player, tStart, tEnd, () => true, MOVE_ANIMATION_MS);
+  await animateTimestampTo(player, tStart, tEnd, () => true, () => MOVE_ANIMATION_MS);
   player.timestamp = tEnd as ExperimentalMillisecondTimestamp;
   await sleep(HOLD_MS);
-  await animateTimestampTo(player, tEnd, tStart, () => true, MOVE_ANIMATION_MS);
+  await animateTimestampTo(player, tEnd, tStart, () => true, () => MOVE_ANIMATION_MS);
 
   player.timestamp = tStart as ExperimentalMillisecondTimestamp;
   player.alg = originalAlg;
