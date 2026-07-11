@@ -103,6 +103,17 @@ interface LockedTurn {
   // remaining duration instead of leaving it to finish at its original,
   // un-rushed pace.
   requestExpedite: (() => void) | null;
+  // How fast progress has been changing lately (progress-fraction per ms),
+  // updated on every drag-scrub tick. A slow, deliberate drag and a fast
+  // flick can cover the exact same remaining distance at release, but a
+  // release duration sized only off that distance (the old
+  // releaseDurationFor behavior) ran a fast flick's hand-off several times
+  // slower than the finger had actually been moving -- feeling like a
+  // sudden deceleration right where the finger let go, i.e. "not as smooth
+  // as a slow drag." Tracking real velocity lets the release continue at
+  // roughly the pace the finger was already going instead.
+  progressPerMs: number;
+  lastMoveAt: number;
 }
 
 interface DragState {
@@ -218,8 +229,26 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTur
   const INTERRUPT_CATCHUP_MS = 80;
   let activeLocked: LockedTurn | null = null;
 
+  // The old version of this always sized the release purely off how much
+  // distance was left, as if every drag moved at the same reference speed
+  // (the whole turn in FULL_RELEASE_ANIMATION_MS). A slow, deliberate drag
+  // already covers most of the distance during the drag itself, so its
+  // (short) release is barely noticeable either way. But a fast flick
+  // released more of the turn's distance for the release phase to cover, at
+  // that same fixed reference pace — several times slower than the finger
+  // had actually been moving — which read as an abrupt deceleration right
+  // at the hand-off. If the finger's own measured speed is faster than the
+  // reference, matching it keeps the release feeling like a continuation of
+  // the same flick instead of suddenly downshifting. Slow/held drags (where
+  // measured speed is at or below the reference) keep the old formula,
+  // which already behaves fine there.
   function releaseDurationFor(locked: LockedTurn): number {
     const remaining = locked.progress >= COMMIT_PROGRESS_THRESHOLD ? 1 - locked.progress : locked.progress;
+    const referenceSpeed = 1 / FULL_RELEASE_ANIMATION_MS;
+    const speed = Math.abs(locked.progressPerMs);
+    if (speed > referenceSpeed) {
+      return Math.max(MIN_RELEASE_ANIMATION_MS, remaining / speed);
+    }
     return Math.max(MIN_RELEASE_ANIMATION_MS, remaining * FULL_RELEASE_ANIMATION_MS);
   }
 
@@ -426,6 +455,8 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTur
       progress: 0,
       settlePromise: null,
       requestExpedite: null,
+      progressPerMs: 0,
+      lastMoveAt: performance.now(),
     };
     // Registered as soon as the move is committed to the alg (not only once
     // the pointer is released) so a fast next swipe can find and settle it
@@ -464,7 +495,19 @@ export async function attachSwipeTurning(player: TwistyPlayer): Promise<SwipeTur
 
     const locked = drag.locked;
     const projected = dx * locked.dragDirX + dy * locked.dragDirY;
-    locked.progress = Math.min(Math.max(projected / locked.fullTurnPx, 0), 1);
+    const newProgress = Math.min(Math.max(projected / locked.fullTurnPx, 0), 1);
+
+    const now = performance.now();
+    const dt = now - locked.lastMoveAt;
+    if (dt > 0) {
+      const instantaneous = (newProgress - locked.progress) / dt;
+      // Light smoothing so one noisy/coalesced event (a big dt with a big
+      // jump, or vice versa) doesn't single-handedly set the release speed.
+      locked.progressPerMs = locked.progressPerMs === 0 ? instantaneous : locked.progressPerMs * 0.5 + instantaneous * 0.5;
+    }
+    locked.progress = newProgress;
+    locked.lastMoveAt = now;
+
     const scrubbed = locked.t0 + locked.progress * (locked.t1 - locked.t0);
     player.timestamp = scrubbed as ExperimentalMillisecondTimestamp;
   }
