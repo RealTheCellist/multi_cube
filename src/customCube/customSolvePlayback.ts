@@ -1,9 +1,10 @@
 import { Alg } from "cubing/alg";
-import type { KPuzzle } from "cubing/kpuzzle";
-import { cube3x3x3 } from "cubing/puzzles";
+import type { KPattern, KPuzzle } from "cubing/kpuzzle";
+import { cube2x2x2, cube3x3x3 } from "cubing/puzzles";
+import { experimentalSolve2x2x2 } from "cubing/search";
 import { computeSolveHint, type SolveHint } from "../solvePlayback";
 import type { CustomCubeScene } from "./CustomCubeScene";
-import { FACE_TURNS, type Face } from "./cubeState";
+import { FACE_TURNS, outerLayerCoordinate, type Face } from "./cubeState";
 
 const MOVE_ANIMATION_MS = 350;
 const HOLD_MS = 500;
@@ -29,10 +30,14 @@ function animateProgress(scene: CustomCubeScene, from: number, to: number, durat
   });
 }
 
-let kpuzzlePromise: Promise<KPuzzle> | null = null;
-function getKpuzzle(): Promise<KPuzzle> {
-  if (!kpuzzlePromise) kpuzzlePromise = cube3x3x3.kpuzzle();
-  return kpuzzlePromise;
+const kpuzzlePromises = new Map<number, Promise<KPuzzle>>();
+function getKpuzzle(gridSize: number): Promise<KPuzzle> {
+  let promise = kpuzzlePromises.get(gridSize);
+  if (!promise) {
+    promise = (gridSize === 2 ? cube2x2x2 : cube3x3x3).kpuzzle();
+    kpuzzlePromises.set(gridSize, promise);
+  }
+  return promise;
 }
 
 /**
@@ -42,10 +47,17 @@ function getKpuzzle(): Promise<KPuzzle> {
  * same state via the move list (rather than reading it out of the scene) is
  * the simplest way to hand off to the shared solver.
  */
-async function currentPatternFor(scene: CustomCubeScene) {
-  const kpuzzle = await getKpuzzle();
+async function currentPatternFor(scene: CustomCubeScene): Promise<KPattern> {
+  const kpuzzle = await getKpuzzle(scene.gridSize);
   const historyAlg = Alg.fromString(scene.getMoveHistory().join(" "));
   return kpuzzle.defaultPattern().applyAlg(historyAlg);
+}
+
+async function solve2x2Hint(pattern: KPattern): Promise<SolveHint> {
+  const solutionAlg = await experimentalSolve2x2x2(pattern);
+  const moves = [...solutionAlg.childAlgNodes()].map((node) => node.toString());
+  if (moves.length === 0) return { move: null, movesRemaining: 0 };
+  return { move: moves[0], movesRemaining: moves.length - 1 };
 }
 
 /**
@@ -53,20 +65,21 @@ async function currentPatternFor(scene: CustomCubeScene) {
  * turns the layer forward, holds briefly, then turns it back and reverts --
  * a pure preview that leaves the actual cube state (and move history)
  * untouched, mirroring computeAndPlayNextSolveMove for the PG3D player.
+ * Only the 2x2x2 and 3x3x3 have a solver available -- see cubeState.ts for
+ * why a 4x4x4 doesn't have a single well-defined letter scheme to solve
+ * toward, and cubing/search doesn't ship a 4x4x4 solver at all.
  */
 export async function previewNextSolveMove(scene: CustomCubeScene): Promise<SolveHint> {
-  // The solver (and the move-history letter notation it reads) only exists
-  // for the 3x3x3 -- see cubeState.ts. The UI already disables the solver
-  // button for other sizes; this is just a defensive backstop.
-  if (scene.gridSize !== 3) return { move: null, movesRemaining: 0 };
+  if (scene.gridSize !== 2 && scene.gridSize !== 3) return { move: null, movesRemaining: 0 };
   const pattern = await currentPatternFor(scene);
-  const hint = await computeSolveHint(pattern);
+  const hint = scene.gridSize === 2 ? await solve2x2Hint(pattern) : await computeSolveHint(pattern);
   if (!hint.move) return hint;
 
   const token = hint.move;
   const face = token[0] as Face;
   const suffix = token.slice(1);
-  const { axis, layer, sign: canonicalSign } = FACE_TURNS[face];
+  const { axis, sign: canonicalSign } = FACE_TURNS[face];
+  const layer = outerLayerCoordinate(face, scene.gridSize);
   const dirSign: 1 | -1 = suffix === "'" ? -1 : 1;
   const magnitude = suffix === "2" ? 2 : 1;
   const target = canonicalSign * dirSign * magnitude;

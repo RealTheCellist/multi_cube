@@ -209,15 +209,17 @@ export class CustomCubeScene {
       if (commitSign !== null) {
         applyRawQuarterTurn(this.cubies, turn.axis, turn.layer, commitSign);
         // Letter-notation move history only makes sense (and is only ever
-        // read, by the solver) for the 3x3x3 -- see cubeState.ts.
-        if (this.gridSize === 3) {
-          if (turn.layer === 0) {
-            const letter = middleSliceLetterForAxis(turn.axis);
-            this.moveHistory.push(commitSign === MIDDLE_SLICE_TURNS[letter].sign ? letter : `${letter}'`);
-          } else if (turn.layer === 1 || turn.layer === -1) {
-            const face = faceLetterForAxisSign(turn.axis, turn.layer);
-            this.moveHistory.push(commitSign === FACE_TURNS[face].sign ? face : `${face}'`);
-          }
+        // read, by the solver) for sizes with a well-defined scheme -- the
+        // 3x3x3 (one middle slice + two outer layers per axis) and the
+        // 2x2x2 (every layer is an outer one, so any turn maps to a face
+        // letter). A 4x4x4 has two inner layers per axis instead of one
+        // named middle slice, so it's skipped -- see cubeState.ts.
+        if (this.gridSize === 3 && turn.layer === 0) {
+          const letter = middleSliceLetterForAxis(turn.axis);
+          this.moveHistory.push(commitSign === MIDDLE_SLICE_TURNS[letter].sign ? letter : `${letter}'`);
+        } else if (this.gridSize === 3 || this.gridSize === 2) {
+          const face = faceLetterForAxisSign(turn.axis, Math.sign(turn.layer) as 1 | -1);
+          this.moveHistory.push(commitSign === FACE_TURNS[face].sign ? face : `${face}'`);
         }
       }
     } finally {
@@ -237,7 +239,7 @@ export class CustomCubeScene {
   }
 
   applyInstantMove(token: string): void {
-    applyMoveToken(this.cubies, token);
+    applyMoveToken(this.cubies, token, this.gridSize);
     for (const cubie of this.cubies) this.syncMeshTransform(cubie);
     this.moveHistory.push(token);
   }
@@ -256,7 +258,10 @@ export class CustomCubeScene {
 
   scramble(): void {
     this.resetToSolved();
-    if (this.gridSize === 3) {
+    // Letter-notation scrambling (which also records move history for the
+    // solver -- see applyInstantMove) works at any size with a full letter
+    // scheme: 3x3x3 and 2x2x2. Other sizes fall back to raw layer turns.
+    if (this.gridSize === 3 || this.gridSize === 2) {
       for (const move of randomScramble()) this.applyInstantMove(move);
     } else {
       randomLayerScramble(this.cubies, this.gridSize);

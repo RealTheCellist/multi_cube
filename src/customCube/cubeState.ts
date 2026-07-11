@@ -141,13 +141,18 @@ export function applyRawQuarterTurn(cubies: Cubie[], axis: Axis, layer: number, 
   }
 }
 
-function applyQuarterTurnOnce(cubies: Cubie[], face: Face): void {
-  const { axis, layer, sign } = FACE_TURNS[face];
-  applyRawQuarterTurn(cubies, axis, layer, sign);
+function applyQuarterTurnOnce(cubies: Cubie[], face: Face, gridSize: number): void {
+  const { axis, sign } = FACE_TURNS[face];
+  applyRawQuarterTurn(cubies, axis, outerLayerCoordinate(face, gridSize), sign);
 }
 
-/** Applies a single move token like "R", "R'", "R2", "M", "M'", "M2" to a 3x3x3's cube state in place. */
-export function applyMoveToken(cubies: Cubie[], token: string): void {
+/**
+ * Applies a single move token like "R", "R'", "R2", "M", "M'", "M2" to a
+ * cube's state in place. M/E/S only exist on the 3x3x3 (see
+ * MIDDLE_SLICE_TURNS above); plain face letters work at any gridSize with
+ * a full letter scheme (3x3x3 and 2x2x2 -- see outerLayerCoordinate).
+ */
+export function applyMoveToken(cubies: Cubie[], token: string, gridSize: number): void {
   const face = token[0] as Face | "M" | "E" | "S";
   const suffix = token.slice(1);
   const times = suffix === "2" ? 2 : suffix === "'" ? 3 : 1;
@@ -156,7 +161,7 @@ export function applyMoveToken(cubies: Cubie[], token: string): void {
     for (let i = 0; i < times; i++) applyRawQuarterTurn(cubies, axis, 0, sign);
     return;
   }
-  for (let i = 0; i < times; i++) applyQuarterTurnOnce(cubies, face);
+  for (let i = 0; i < times; i++) applyQuarterTurnOnce(cubies, face, gridSize);
 }
 
 const IDENTITY_QUAT = new THREE.Quaternion();
@@ -223,4 +228,15 @@ export function faceLetterForAxisSign(axis: Axis, sign: 1 | -1): Face {
     if (def.axis === axis && Math.sign(def.layer) === sign) return face;
   }
   throw new Error("unreachable");
+}
+
+/**
+ * A face letter's *side* (R/U/F are the positive-axis side, L/D/B the
+ * negative one) doesn't depend on gridSize, but the actual grid coordinate
+ * of that outermost layer does -- e.g. R sits at x=1 on a 3x3x3 but x=0.5
+ * on a 2x2x2 (see buildSolvedCube's centered-coordinate scheme). Used to
+ * animate a solver-hinted move at whatever size is actually on screen.
+ */
+export function outerLayerCoordinate(face: Face, gridSize: number): number {
+  return Math.sign(FACE_TURNS[face].layer) * ((gridSize - 1) / 2);
 }

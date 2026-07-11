@@ -192,7 +192,12 @@ function App() {
         <button type="button" onClick={handleReset} disabled={isSolving}>
           리셋
         </button>
-        <button type="button" onClick={handleSolve} disabled={isSolving || gridSize !== 3} title={gridSize !== 3 ? "3×3에서만 지원돼요" : undefined}>
+        <button
+          type="button"
+          onClick={handleSolve}
+          disabled={isSolving || gridSize === 4}
+          title={gridSize === 4 ? "4×4는 아직 지원하지 않아요" : undefined}
+        >
           솔버
         </button>
       </div>
