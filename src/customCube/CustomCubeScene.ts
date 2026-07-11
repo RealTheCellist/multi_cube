@@ -7,12 +7,14 @@ import {
   type Face,
   FACE_COLORS,
   FACE_TURNS,
+  MIDDLE_SLICE_TURNS,
   applyMoveToken,
   applyRawQuarterTurn,
   buildSolvedCube,
   cubiesInLayer,
   faceLetterForAxisSign,
   isSolved,
+  middleSliceLetterForAxis,
   randomScramble,
 } from "./cubeState";
 
@@ -48,7 +50,7 @@ function stickerMaterial(face: Face): THREE.MeshLambertMaterial {
 
 export interface ActiveTurn {
   axis: Axis;
-  layer: 1 | -1;
+  layer: -1 | 0 | 1;
   group: THREE.Group;
   cubieIds: Set<number>;
 }
@@ -165,7 +167,7 @@ export class CustomCubeScene {
   }
 
   /** Starts a live-scrubbable turn: reparents the layer's meshes under a pivot group. */
-  beginTurn(axis: Axis, layer: 1 | -1): void {
+  beginTurn(axis: Axis, layer: -1 | 0 | 1): void {
     if (this.activeTurn) return;
     const layerCubies = cubiesInLayer(this.cubies, axis, layer);
     const group = new THREE.Group();
@@ -198,8 +200,13 @@ export class CustomCubeScene {
     try {
       if (commitSign !== null) {
         applyRawQuarterTurn(this.cubies, turn.axis, turn.layer, commitSign);
-        const face = faceLetterForAxisSign(turn.axis, turn.layer);
-        this.moveHistory.push(commitSign === FACE_TURNS[face].sign ? face : `${face}'`);
+        if (turn.layer === 0) {
+          const letter = middleSliceLetterForAxis(turn.axis);
+          this.moveHistory.push(commitSign === MIDDLE_SLICE_TURNS[letter].sign ? letter : `${letter}'`);
+        } else {
+          const face = faceLetterForAxisSign(turn.axis, turn.layer);
+          this.moveHistory.push(commitSign === FACE_TURNS[face].sign ? face : `${face}'`);
+        }
       }
     } finally {
       for (const cubie of this.cubies) {

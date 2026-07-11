@@ -25,6 +25,22 @@ export const FACE_TURNS: Record<Face, FaceTurnDef> = {
   B: { axis: "z", layer: -1, sign: 1 },
 };
 
+export type MiddleSliceFace = "M" | "E" | "S";
+
+// A slice move's direction always follows one particular adjacent outer
+// face's direction (M follows L, E follows D, S follows F) rather than
+// having an independent convention of its own.
+export const MIDDLE_SLICE_TURNS: Record<MiddleSliceFace, { axis: Axis; sign: 1 | -1 }> = {
+  M: { axis: "x", sign: FACE_TURNS.L.sign },
+  E: { axis: "y", sign: FACE_TURNS.D.sign },
+  S: { axis: "z", sign: FACE_TURNS.F.sign },
+};
+
+const AXIS_TO_MIDDLE_SLICE_FACE: Record<Axis, MiddleSliceFace> = { x: "M", y: "E", z: "S" };
+export function middleSliceLetterForAxis(axis: Axis): MiddleSliceFace {
+  return AXIS_TO_MIDDLE_SLICE_FACE[axis];
+}
+
 export const FACE_COLORS: Record<Face, string> = {
   U: "#ffffff",
   D: "#ffd500",
@@ -90,7 +106,7 @@ export function cubiesInLayer(cubies: Cubie[], axis: Axis, layer: number): Cubie
  * drives directly; applyMoveToken (below) is a thin face-letter-token
  * convenience wrapper around it for scrambles/algs.
  */
-export function applyRawQuarterTurn(cubies: Cubie[], axis: Axis, layer: 1 | -1, sign: 1 | -1): void {
+export function applyRawQuarterTurn(cubies: Cubie[], axis: Axis, layer: -1 | 0 | 1, sign: 1 | -1): void {
   const quat = quarterTurnQuaternion(axis, sign);
   for (const cubie of cubiesInLayer(cubies, axis, layer)) {
     cubie.position = rotateGridVector90(cubie.position, axis, sign);
@@ -109,9 +125,8 @@ export function applyMoveToken(cubies: Cubie[], token: string): void {
   const suffix = token.slice(1);
   const times = suffix === "2" ? 2 : suffix === "'" ? 3 : 1;
   if (face === "M" || face === "E" || face === "S") {
-    // Middle-slice moves aren't part of this prototype yet; ignore rather
-    // than throw, since the shared solve-preview/scramble code paths in the
-    // old cube can still emit them.
+    const { axis, sign } = MIDDLE_SLICE_TURNS[face];
+    for (let i = 0; i < times; i++) applyRawQuarterTurn(cubies, axis, 0, sign);
     return;
   }
   for (let i = 0; i < times; i++) applyQuarterTurnOnce(cubies, face);

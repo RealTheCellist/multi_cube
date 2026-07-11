@@ -19,6 +19,7 @@ const CustomCubeView = forwardRef<CubeViewHandle, CustomCubeViewProps>(function 
   const sceneRef = useRef<CustomCubeScene | null>(null);
   const controllerRef = useRef<CustomSwipeController | null>(null);
   const hasMovedRef = useRef(false);
+  const moveCountRef = useRef(0);
   const orbitModeRef = useRef(orbitMode);
   orbitModeRef.current = orbitMode;
 
@@ -32,7 +33,6 @@ const CustomCubeView = forwardRef<CubeViewHandle, CustomCubeViewProps>(function 
     sceneRef.current = scene;
     scene.setOrbitEnabled(orbitModeRef.current);
 
-    const moveCountRef = { current: 0 };
     const controller = attachCustomSwipeTurning(scene, moveCountRef);
     controller.setEnabled(!orbitModeRef.current);
     controller.onCommit = (count) => {
@@ -61,11 +61,13 @@ const CustomCubeView = forwardRef<CubeViewHandle, CustomCubeViewProps>(function 
   useImperativeHandle(ref, () => ({
     scramble: async () => {
       hasMovedRef.current = false;
+      moveCountRef.current = 0;
       sceneRef.current?.scramble();
       callbacksRef.current.onMoveCountChange(0);
     },
     resetToSolved: () => {
       hasMovedRef.current = false;
+      moveCountRef.current = 0;
       sceneRef.current?.resetToSolved();
       callbacksRef.current.onMoveCountChange(0);
     },

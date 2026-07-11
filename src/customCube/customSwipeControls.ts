@@ -18,13 +18,13 @@ export interface CustomSwipeController {
 
 interface Candidate {
   axis: Axis;
-  layer: 1 | -1;
+  layer: -1 | 0 | 1;
   screenDir: THREE.Vector2;
 }
 
 interface LockedTurn {
   axis: Axis;
-  layer: 1 | -1;
+  layer: -1 | 0 | 1;
   screenDir: THREE.Vector2;
   fullTurnPx: number;
   progress: number;
@@ -146,15 +146,11 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
     const faceAxis: Axis = ax >= ay && ax >= az ? "x" : ay >= az ? "y" : "z";
     const otherAxes: Axis[] = (["x", "y", "z"] as Axis[]).filter((a) => a !== faceAxis);
     const candidates = otherAxes.map((axis) => {
-      const rounded = Math.round(cubie.position[axis]);
-      // This engine doesn't support M/E/S middle-slice moves, so a touched
-      // edge or center piece (whose position is 0 along one or both of the
-      // candidate axes) must still resolve to a real outer layer rather
-      // than 0 -- otherwise that candidate has no matching face token and
-      // committing it throws, which used to permanently wedge the turn
-      // state (scene.activeTurn never got cleared), making every swipe
-      // after the first silently do nothing.
-      const layer = (rounded === 0 ? 1 : rounded) as 1 | -1;
+      // 0 here means a middle-slice (M/E/S) turn -- a touched edge or
+      // center piece has one or both of its non-face-axis coordinates at 0.
+      // CustomCubeScene.endTurn knows how to commit and name that turn, so
+      // this is passed through as-is rather than forced to an outer layer.
+      const layer = Math.round(cubie.position[axis]) as -1 | 0 | 1;
       return { axis, layer, screenDir: screenTangent(scene, hit.point, axis, rect) };
     }) as [Candidate, Candidate];
 
