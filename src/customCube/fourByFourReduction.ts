@@ -3,7 +3,7 @@ import { KPattern, type KPatternData } from "cubing/kpuzzle";
 import { cube3x3x3 } from "cubing/puzzles";
 import { experimentalSolve3x3x3IgnoringCenters } from "cubing/search";
 import type { Axis } from "./cubeMath";
-import { type Cubie, type Face, applyMoveToken, roundedComponent } from "./cubeState";
+import { type Cubie, type Face, applyMoveToken, applyRawQuarterTurn, roundedComponent } from "./cubeState";
 import { pieceType } from "./fourByFourCenters";
 
 // --- Slot layout, matching cubing/kpuzzle's own internal 3x3x3 corner/edge
@@ -205,4 +205,27 @@ export async function solveReduced(cubies: Cubie[], gridSize: number): Promise<R
   const moves = [...solutionAlg.childAlgNodes()].map((node) => node.toString());
   for (const move of moves) applyMoveToken(cubies, move, gridSize);
   return { solved: true, movesApplied: moves.length };
+}
+
+// --- Parity recovery ---------------------------------------------------
+// About half of scrambles reduce to a pattern that isn't solvable as a real
+// 3x3x3 (OLL/PLL parity) -- it's only reachable via a genuine 4x4x4 move
+// that has no 3x3x3 equivalent. A bare 180-degree turn of an inner slice is
+// exactly such a move: it cleanly swaps 2 pairs of wing pieces between 2
+// *different* edges (touching only centers besides), which is the specific
+// odd, cross-edge kind of change no combination of paired-dedge-preserving
+// outer turns can ever produce (see fourByFourEdges.ts for the derivation)
+// -- which is exactly the shape of change parity recovery needs. Applying
+// one, then re-running the already-working edge-pairing and centers
+// solvers to clean up what it disturbs, gives a fresh (and often
+// successfully reducible) starting point, without needing to hand-derive
+// or verify a dedicated named parity algorithm.
+export const PARITY_NUDGE_COUNT = 6;
+
+export function applyParityNudge(cubies: Cubie[], variant: number): void {
+  const axes: Axis[] = ["x", "y", "z"];
+  const axis = axes[variant % 3];
+  const layer = variant < 3 ? 0.5 : -0.5;
+  applyRawQuarterTurn(cubies, axis, layer, 1);
+  applyRawQuarterTurn(cubies, axis, layer, 1);
 }
