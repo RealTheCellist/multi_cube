@@ -391,14 +391,19 @@ function prepareAndApply(
   return null;
 }
 
-// Returns every valid (setup+algorithm) fix for wrong wing W, regardless of
-// whether it immediately improves the pairing count -- used for multi-ply
-// lookahead (some real fixes need a non-improving first step).
-function candidateFixesForWing(cubies: Cubie[], w: Cubie, lib: EdgeLibrary, maxSetupDepth: number): Move[][] {
-  const wPos = posKey(w);
-  const candidates = lib.posLookup.get(wPos) ?? [];
-  const fixes: Move[][] = [];
-  for (const { entry, legIndex } of candidates) {
+// Lazily yields every valid (setup+algorithm) fix for wrong wing W, in the
+// given candidate order, computing each candidate's setup search only when
+// actually requested -- callers that only need the first hit (tryFixWing)
+// or a capped number of hits (bestFixOverall's BRANCH_CAP) never pay for
+// setup searches on candidates they'd have discarded anyway.
+function* iterFixesForWing(
+  cubies: Cubie[],
+  w: Cubie,
+  lib: EdgeLibrary,
+  maxSetupDepth: number,
+  order: readonly { entry: LibraryEntry; legIndex: number }[],
+): Generator<Move[]> {
+  for (const { entry, legIndex } of order) {
     const leg = entry.legs[legIndex];
     const [tx, ty, tz] = leg.to.split(",").map(Number);
     const tv: Record<Axis, number> = { x: tx, y: ty, z: tz };
@@ -409,14 +414,17 @@ function candidateFixesForWing(cubies: Cubie[], w: Cubie, lib: EdgeLibrary, maxS
 
     const setup = prepareAndApply(cubies, w, entry, targetForPKey, lib.partnerById, maxSetupDepth);
     if (setup === null) continue;
-    fixes.push([...setup, ...entry.seq]);
+    yield [...setup, ...entry.seq];
   }
-  return fixes;
+}
+
+function candidatesForWing(lib: EdgeLibrary, w: Cubie): readonly { entry: LibraryEntry; legIndex: number }[] {
+  return lib.posLookup.get(posKey(w)) ?? [];
 }
 
 function tryFixWing(cubies: Cubie[], w: Cubie, lib: EdgeLibrary, maxSetupDepth: number): Move[] | null {
   const before = unpairedWingCount(cubies);
-  for (const fix of candidateFixesForWing(cubies, w, lib, maxSetupDepth)) {
+  for (const fix of iterFixesForWing(cubies, w, lib, maxSetupDepth, candidatesForWing(lib, w))) {
     const clone = cloneCubies(cubies);
     applySeq(clone, fix);
     if (unpairedWingCount(clone) < before) return fix;
@@ -454,7 +462,14 @@ function bestFixOverall(cubies: Cubie[], lib: EdgeLibrary, plies: number, deadli
   if (plies <= 1) return null;
   for (const w of shuffle(wrongWings(cubies, lib.partnerById))) {
     if (Date.now() > deadline) return null;
-    for (const fix of shuffle(candidateFixesForWing(cubies, w, lib, 6)).slice(0, BRANCH_CAP)) {
+    // Shuffle the (cheap) candidate entries first, then only pay for a
+    // setup search on however many are needed to fill BRANCH_CAP -- the
+    // old code computed every candidate's setup search up front and threw
+    // away all but 6 of the results.
+    let branchCount = 0;
+    for (const fix of iterFixesForWing(cubies, w, lib, 6, shuffle(candidatesForWing(lib, w)))) {
+      if (branchCount >= BRANCH_CAP) break;
+      branchCount++;
       const clone = cloneCubies(cubies);
       applySeq(clone, fix);
       const rest = bestFixOverall(clone, lib, plies - 1, deadline);
