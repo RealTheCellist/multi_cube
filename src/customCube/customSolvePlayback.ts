@@ -124,7 +124,7 @@ export async function autoSolveFourByFour(scene: CustomCubeScene): Promise<FourB
   // centers first would just get undone. Centers only once, after, since
   // nothing downstream of it (the reduction solve's single-outer-layer
   // turns) ever touches centers again.
-  const edgeResult = await solveEdgePairing(cubies, 100000);
+  const edgeResult = await solveEdgePairing(cubies, 150000);
   scene.syncAllMeshes();
   if (!edgeResult.solved) return { solved: false };
 
