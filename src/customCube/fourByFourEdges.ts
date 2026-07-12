@@ -315,15 +315,17 @@ export async function solveEdgePairing(cubies: Cubie[], tailTimeBudgetMs = 10000
     return { solved: true, movesApplied };
   }
 
-  // A single call up to depth 6: tailPhase already expands and checks one
-  // full ply at a time and returns the instant it finds a solution, so a
-  // depth-4 fix is found just as fast this way as it would be from a
-  // depth-4-only call -- but a *separate* call per depth would re-walk
-  // depths 1..N-1 from scratch every time (most residuals need depth 5-6,
-  // see session notes), wasting most of the time budget on repeat work
-  // instead of the deeper search that actually needs it.
+  // A single call, one continuous search rather than a fresh call per
+  // depth (see git history for why that mattered): tailPhase already
+  // expands and checks one full ply at a time and returns the instant it
+  // finds a solution, so a depth-4 fix is found just as fast this way as
+  // from a depth-4-only call. Capped at depth 5 -- depth 5 is where the
+  // hard "last two dedges" residual actually resolves (see session notes),
+  // and in practice the search never gets far enough into depth 6 to matter
+  // anyway; the extra bookkeeping (bigger visited set, longer paths) for a
+  // depth it won't reach just eats into the depth-5 search's own budget.
   const tailDeadline = Date.now() + tailTimeBudgetMs;
-  const fix = await tailPhase(liteEdges, 6, tailDeadline);
+  const fix = await tailPhase(liteEdges, 5, tailDeadline);
   if (fix && fix.length > 0) {
     applyAndCount(fix);
     liteEdges = liteApplySeq(liteEdges, fix);
