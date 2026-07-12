@@ -290,8 +290,7 @@ export interface SolveEdgePairingResult {
  * solveCenters is safe to run again afterward since its own moves never
  * touch edges.
  */
-export async function solveEdgePairing(cubies: Cubie[], timeBudgetMs = 90000): Promise<SolveEdgePairingResult> {
-  const deadline = Date.now() + timeBudgetMs;
+export async function solveEdgePairing(cubies: Cubie[], tailTimeBudgetMs = 100000): Promise<SolveEdgePairingResult> {
   let liteEdges = toLiteEdges(cubies);
   let movesApplied = 0;
 
@@ -302,9 +301,12 @@ export async function solveEdgePairing(cubies: Cubie[], timeBudgetMs = 90000): P
 
   // The beam phase naturally stops itself well before this via its own
   // convergence checks (score===0 or no new states); this cap just bounds
-  // the pathological case so the tail phase -- which is where a stuck
-  // residual actually gets resolved -- keeps most of the time budget.
-  const beamDeadline = Math.min(deadline, Date.now() + 20000);
+  // the pathological case. It's a separate, smaller budget from the tail
+  // phase's below rather than a shared one -- the residual the beam phase
+  // leaves behind is usually what the tail phase actually has to work to
+  // resolve (see its own comment), so it needs the lion's share of time,
+  // not whatever the beam phase happens to leave over.
+  const beamDeadline = Date.now() + 20000;
   const beamResult = await beamPhase(liteEdges, 300, 25, beamDeadline);
   if (beamResult.path.length > 0) applyAndCount(beamResult.path);
   liteEdges = beamResult.edges;
@@ -320,7 +322,8 @@ export async function solveEdgePairing(cubies: Cubie[], timeBudgetMs = 90000): P
   // depths 1..N-1 from scratch every time (most residuals need depth 5-6,
   // see session notes), wasting most of the time budget on repeat work
   // instead of the deeper search that actually needs it.
-  const fix = await tailPhase(liteEdges, 6, deadline);
+  const tailDeadline = Date.now() + tailTimeBudgetMs;
+  const fix = await tailPhase(liteEdges, 6, tailDeadline);
   if (fix && fix.length > 0) {
     applyAndCount(fix);
     liteEdges = liteApplySeq(liteEdges, fix);
