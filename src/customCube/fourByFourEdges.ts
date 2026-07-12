@@ -292,7 +292,11 @@ export async function solveEdgePairing(cubies: Cubie[], timeBudgetMs = 90000): P
     movesApplied += seq.length;
   };
 
-  const beamDeadline = Math.min(deadline, Date.now() + Math.max(5000, timeBudgetMs * 0.3));
+  // The beam phase naturally stops itself well before this via its own
+  // convergence checks (score===0 or no new states); this cap just bounds
+  // the pathological case so the tail phase -- which is where a stuck
+  // residual actually gets resolved -- keeps most of the time budget.
+  const beamDeadline = Math.min(deadline, Date.now() + 20000);
   const beamResult = await beamPhase(liteEdges, 300, 25, beamDeadline);
   if (beamResult.path.length > 0) applyAndCount(beamResult.path);
   liteEdges = beamResult.edges;
@@ -301,21 +305,17 @@ export async function solveEdgePairing(cubies: Cubie[], timeBudgetMs = 90000): P
     return { solved: true, movesApplied };
   }
 
-  // Depth 4 is fast (a few seconds) and covers a lot of residuals; depth 5
-  // is where the genuinely hard "last two dedges" case lives (empirically
-  // needs 5-6 atomic moves -- see session notes) and can take up to a
-  // minute. Trying depth 4 first, then only reaching for 5-6 if there's
-  // budget left, avoids paying the higher cost for cases that don't need it.
-  for (const maxDepth of [4, 5, 6]) {
-    if (Date.now() > deadline) break;
-    const fix = await tailPhase(liteEdges, maxDepth, deadline);
-    if (fix) {
-      if (fix.length > 0) {
-        applyAndCount(fix);
-        liteEdges = liteApplySeq(liteEdges, fix);
-      }
-      break;
-    }
+  // A single call up to depth 6: tailPhase already expands and checks one
+  // full ply at a time and returns the instant it finds a solution, so a
+  // depth-4 fix is found just as fast this way as it would be from a
+  // depth-4-only call -- but a *separate* call per depth would re-walk
+  // depths 1..N-1 from scratch every time (most residuals need depth 5-6,
+  // see session notes), wasting most of the time budget on repeat work
+  // instead of the deeper search that actually needs it.
+  const fix = await tailPhase(liteEdges, 6, deadline);
+  if (fix && fix.length > 0) {
+    applyAndCount(fix);
+    liteEdges = liteApplySeq(liteEdges, fix);
   }
 
   return { solved: unpairedWingCount(cubies) === 0, movesApplied };
