@@ -179,11 +179,33 @@ export function applyMoveToken(cubies: Cubie[], token: string, gridSize: number)
   for (let i = 0; i < times; i++) applyQuarterTurnOnce(cubies, face, gridSize);
 }
 
-const IDENTITY_QUAT = new THREE.Quaternion();
+const DIRECTION_TO_FACE: Record<string, Face> = {
+  "1,0,0": "R",
+  "-1,0,0": "L",
+  "0,1,0": "U",
+  "0,-1,0": "D",
+  "0,0,1": "F",
+  "0,0,-1": "B",
+};
 
+/**
+ * A cube is solved when every sticker shows its own color on the face it's
+ * currently facing -- checked by color, not by whether each individual
+ * cubie sits at its own historical starting position/orientation. Those
+ * coincide for the 2x2x2/3x3x3 (every piece has a unique color combination,
+ * so there's only one way to be "color-correct"), but not for the 4x4x4:
+ * its 4 same-colored center pieces per face, and the 2 wings of a paired
+ * dedge, are visually interchangeable -- a real solve routinely ends up
+ * with a *different* specific piece in a slot than the one that started
+ * there, while still looking perfectly solved. Checking exact per-cubie
+ * position/orientation there would report "not solved" on cubes that are.
+ */
 export function isSolved(cubies: Cubie[]): boolean {
-  return cubies.every(
-    (c) => c.position.distanceToSquared(c.originalPosition) < 1e-6 && c.orientation.angleTo(IDENTITY_QUAT) < 1e-3,
+  return cubies.every((c) =>
+    c.stickers.every((s) => {
+      const d = s.direction.clone().applyQuaternion(c.orientation).round();
+      return DIRECTION_TO_FACE[`${d.x},${d.y},${d.z}`] === s.color;
+    }),
   );
 }
 
