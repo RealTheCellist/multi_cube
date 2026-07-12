@@ -110,15 +110,11 @@ export interface FourByFourSolveResult {
  * afterward. Can legitimately take up to a couple of minutes for the edge
  * pairing's tail search on a hard scramble.
  *
- * About half of scrambles reduce to a pattern only reachable via a genuine
- * 4x4x4 move (OLL/PLL parity), which the 3x3x3 solver can't resolve --
- * that's reported honestly via `solved: false` rather than pretending to
- * have finished. (A parity-recovery attempt -- nudge with a bare
- * inner-slice double turn, then re-run edge pairing/centers to clean up --
- * was tried and measured to not actually work: the corner/edge permutation
- * parity relationship came back unchanged or with both flipping together
- * across every variant tested, so it was removed rather than kept as dead
- * weight that just adds minutes of wasted retry time per parity case.)
+ * A minority of scrambles reduce to a pattern only reachable via a genuine
+ * 4x4x4 move (OLL and/or PLL parity), which the 3x3x3 solver can't resolve
+ * on its own -- solveReduced itself handles retrying with verified parity-
+ * fix algorithms (see fourByFourReduction.ts) before giving up, so this
+ * only needs to check its final result.
  */
 export async function autoSolveFourByFour(scene: CustomCubeScene): Promise<FourByFourSolveResult> {
   const cubies = scene.getCubies();

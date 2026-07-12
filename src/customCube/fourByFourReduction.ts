@@ -3,8 +3,17 @@ import { KPattern, type KPatternData } from "cubing/kpuzzle";
 import { cube3x3x3 } from "cubing/puzzles";
 import { experimentalSolve3x3x3IgnoringCenters } from "cubing/search";
 import type { Axis } from "./cubeMath";
-import { type Cubie, type Face, applyMoveToken, roundedComponent } from "./cubeState";
-import { pieceType } from "./fourByFourCenters";
+import {
+  applyMoveToken,
+  applyRawQuarterTurn,
+  cloneCubies,
+  type Cubie,
+  type Face,
+  FACE_TURNS,
+  outerLayerCoordinate,
+  roundedComponent,
+} from "./cubeState";
+import { pieceType, solveCenters } from "./fourByFourCenters";
 
 // --- Slot layout, matching cubing/kpuzzle's own internal 3x3x3 corner/edge
 // orbit ordering exactly (piece index i's home is slot i). This was derived
@@ -179,22 +188,97 @@ export async function buildReducedPattern(cubies: Cubie[]): Promise<KPattern> {
   return new KPattern(kpuzzle, patternData);
 }
 
+type Move = readonly [Axis, number, 1 | -1];
+
+function faceTurn(face: Face, times: number): Move[] {
+  const def = FACE_TURNS[face];
+  const layer = outerLayerCoordinate(face, 4);
+  const sign = (times < 0 ? -def.sign : def.sign) as 1 | -1;
+  const out: Move[] = [];
+  for (let i = 0; i < Math.abs(times); i++) out.push([def.axis, layer, sign]);
+  return out;
+}
+function wideTurn(face: Face, times: number): Move[] {
+  const def = FACE_TURNS[face];
+  const outerLayer = outerLayerCoordinate(face, 4);
+  const innerLayer = outerLayer > 0 ? 0.5 : -0.5;
+  const sign = (times < 0 ? -def.sign : def.sign) as 1 | -1;
+  const out: Move[] = [];
+  for (let i = 0; i < Math.abs(times); i++) {
+    out.push([def.axis, outerLayer, sign]);
+    out.push([def.axis, innerLayer, sign]);
+  }
+  return out;
+}
+function bareInnerTurn(face: Face, times: number): Move[] {
+  const def = FACE_TURNS[face];
+  const outerLayer = outerLayerCoordinate(face, 4);
+  const innerLayer = outerLayer > 0 ? 0.5 : -0.5;
+  const sign = (times < 0 ? -def.sign : def.sign) as 1 | -1;
+  const out: Move[] = [];
+  for (let i = 0; i < Math.abs(times); i++) out.push([def.axis, innerLayer, sign]);
+  return out;
+}
+
+// Two verified, independent 4x4-only parity-fix algorithms. This purely-
+// even-permutation edge-pairing scheduler (fourByFourEdges.ts) can never
+// produce an odd wing permutation or a flipped dedge orientation on its own
+// (every library entry is a 3-cycle, which never changes either), so a real
+// 4x4-only move is required whenever the "reduced" 3x3x3-equivalent pattern
+// isn't actually reachable on a real 3x3x3 -- which happens in two distinct,
+// independent ways (a scramble can hit either, both, or neither):
+//
+//  - PLL parity: the reduced pattern's corner and edge permutation parities
+//    don't match (always equal on a real 3x3x3).
+//  - OLL parity: the reduced pattern's edge orientations sum to odd (always
+//    even on a real 3x3x3).
+//
+// Both algorithms below were confirmed by direct simulation against a
+// solved cube (see git history for the derivation/verification scripts),
+// not typed from memory: PLL_PARITY_FIX_ALG (r2 U2 r2 Uw2 r2 u2, standard
+// WCA notation) swaps exactly 2 dedges -- flipping edge permutation parity
+// by exactly one without breaking any pairing -- and leaves corners
+// completely untouched (its two U2-equivalent components exactly cancel).
+// OLL_PARITY_FIX_ALG (r2 B2 U2 l U2 r' U2 r U2 F2 r F2 l' B2 r2) flips
+// exactly one dedge's orientation and leaves every position (corners,
+// edges, pairing) completely unchanged. Both disturb centers, which is
+// harmless since solveCenters always runs again afterward.
+const PLL_PARITY_FIX_ALG: Move[] = [
+  ...bareInnerTurn("R", 2),
+  ...faceTurn("U", 2),
+  ...bareInnerTurn("R", 2),
+  ...wideTurn("U", 2),
+  ...bareInnerTurn("R", 2),
+  ...bareInnerTurn("U", 2),
+];
+const OLL_PARITY_FIX_ALG: Move[] = [
+  ...bareInnerTurn("R", 2),
+  ...faceTurn("B", 2),
+  ...faceTurn("U", 2),
+  ...bareInnerTurn("L", 1),
+  ...faceTurn("U", 2),
+  ...bareInnerTurn("R", -1),
+  ...faceTurn("U", 2),
+  ...bareInnerTurn("R", 1),
+  ...faceTurn("U", 2),
+  ...faceTurn("F", 2),
+  ...bareInnerTurn("R", 1),
+  ...faceTurn("F", 2),
+  ...bareInnerTurn("L", -1),
+  ...faceTurn("B", 2),
+  ...bareInnerTurn("R", 2),
+];
+
+function applyMoves(cubies: Cubie[], moves: readonly Move[]): void {
+  for (const [axis, layer, sign] of moves) applyRawQuarterTurn(cubies, axis, layer, sign);
+}
+
 export interface ReductionSolveResult {
   solved: boolean;
   movesApplied: number;
 }
 
-/**
- * Solves the "reduced" 4x4x4 (centers already solved, edges already paired)
- * like a 3x3x3, applying only single-outer-layer turns -- which is exactly
- * what keeps paired dedges paired and centers solved throughout (see
- * cubeState.ts: any outer-layer-only turn always moves a whole dedge as a
- * rigid unit). Does not attempt OLL/PLL parity: if the solver can't find a
- * solution (the "reduced" pattern turns out to be one only reachable via a
- * genuine 4x4-only move, impossible on a real 3x3x3), this reports that
- * honestly via `solved: false` rather than pretending to have fixed it.
- */
-export async function solveReduced(cubies: Cubie[], gridSize: number): Promise<ReductionSolveResult> {
+async function tryReduce(cubies: Cubie[], gridSize: number): Promise<ReductionSolveResult> {
   const pattern = await buildReducedPattern(cubies);
   let solutionAlg: Alg;
   try {
@@ -205,4 +289,43 @@ export async function solveReduced(cubies: Cubie[], gridSize: number): Promise<R
   const moves = [...solutionAlg.childAlgNodes()].map((node) => node.toString());
   for (const move of moves) applyMoveToken(cubies, move, gridSize);
   return { solved: true, movesApplied: moves.length };
+}
+
+/**
+ * Solves the "reduced" 4x4x4 (centers already solved, edges already paired)
+ * like a 3x3x3, applying only single-outer-layer turns -- which is exactly
+ * what keeps paired dedges paired and centers solved throughout (see
+ * cubeState.ts: any outer-layer-only turn always moves a whole dedge as a
+ * rigid unit). If a first attempt fails, retries on clones with each
+ * combination of the two parity-fix algorithms above (PLL alone, OLL alone,
+ * both together) plus a center re-solve, since which combination (if any)
+ * is needed depends on the specific scramble and isn't worth hand-decoding
+ * from the KPattern's permutation/orientation arrays when just trying all
+ * 3 small, cheap combinations directly is simpler and equally fast. Commits
+ * the winning attempt's state back into `cubies` in place; on total
+ * failure, `cubies` is left untouched and this reports `solved: false`
+ * honestly rather than pretending to have fixed it (this can happen if
+ * solveCenters itself fails to re-converge after a fix, though that
+ * hasn't been observed in testing).
+ */
+export async function solveReduced(cubies: Cubie[], gridSize: number): Promise<ReductionSolveResult> {
+  const first = await tryReduce(cubies, gridSize);
+  if (first.solved || gridSize !== 4) return first;
+
+  const fixCombos: (readonly Move[])[][] = [[PLL_PARITY_FIX_ALG], [OLL_PARITY_FIX_ALG], [PLL_PARITY_FIX_ALG, OLL_PARITY_FIX_ALG]];
+  for (const combo of fixCombos) {
+    const attempt = cloneCubies(cubies);
+    for (const alg of combo) applyMoves(attempt, alg);
+    const centerResult = solveCenters(attempt, 15000);
+    if (!centerResult.solved) continue;
+    const result = await tryReduce(attempt, gridSize);
+    if (result.solved) {
+      for (let i = 0; i < cubies.length; i++) {
+        cubies[i].position.copy(attempt[i].position);
+        cubies[i].orientation.copy(attempt[i].orientation);
+      }
+      return result;
+    }
+  }
+  return { solved: false, movesApplied: 0 };
 }
