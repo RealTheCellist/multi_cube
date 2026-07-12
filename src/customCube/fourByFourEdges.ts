@@ -118,6 +118,32 @@ const BASE_ALG: Move[] = [
 ];
 const BASE_FACES: ReadonlySet<Face> = new Set(["R", "U", "F"]);
 
+// A second, structurally different primitive: the standard reduction-
+// method "flip trick" (Uw' R U R' F R' F' R Uw, sourced via web search and
+// verified here, not typed from memory -- see git history for the
+// verification script). Unlike BASE_ALG's 3-cycle, this is a genuine
+// isolated 2-wing transposition: of the 10 wings it moves, 8 always move
+// as intact original pairs through a 4-cycle of U-layer slots (confirmed
+// across 30 randomized states -- this can never break an existing pairing,
+// whatever it was, since both wings of any pair relocate together), and
+// the remaining 2 wings (from 2 different, non-U-layer slots) swap
+// directly with each other. Solving needs only 1 setup target (get the
+// wrong wing's partner to the swap's "other" sub-position) instead of the
+// 3-cycle's 2, and shares the exact same setup-search/risk-zone machinery
+// below (computeSoloLegs treats both algorithms uniformly).
+const BASE_ALG2: Move[] = [
+  ...wideTurn("U", -1),
+  ...faceTurn("R", 1),
+  ...faceTurn("U", 1),
+  ...faceTurn("R", -1),
+  ...faceTurn("F", 1),
+  ...faceTurn("R", -1),
+  ...faceTurn("F", -1),
+  ...faceTurn("R", 1),
+  ...wideTurn("U", 1),
+];
+const BASE_FACES2: ReadonlySet<Face> = new Set(["R", "U", "F"]);
+
 function wholeCubeRotation(axis: Axis, sign: 1 | -1): Move[] {
   return ([-1.5, -0.5, 0.5, 1.5] as const).map((layer) => [axis, layer, sign] as Move);
 }
@@ -185,36 +211,67 @@ interface EdgeLibrary {
 
 let cachedLibrary: EdgeLibrary | null = null;
 
-// Building the library requires simulating all 24 rotation variants against
-// a solved cube -- cheap (24 short applies) but only needs doing once, so
-// it's memoized rather than rebuilt per solve call.
+// Extracts the "meaningful" legs from a before/after diff: wings that moved
+// SOLO out of their origin slot (no other wing left that same slot in this
+// move). Wings that moved together with their original slotmate (an intact
+// pair relocating as a rigid unit) are excluded -- that relocation can
+// never break pairing regardless of where it lands, so it needs no target/
+// risk tracking at all, unlike a solo mover which displaces whatever singly
+// occupies its destination. For BASE_ALG's 3-cycle every mover is already
+// solo (3 different dedge slots, one wing each), so this is a no-op filter
+// for it; for BASE_ALG2's flip trick it's what isolates the real 2-wing
+// swap from its 8 pairing-safe collateral movers.
+function computeSoloLegs(before: readonly Cubie[], after: readonly Cubie[]): { from: string; to: string }[] {
+  const moved: { from: string; to: string; fromSlot: string }[] = [];
+  for (let i = 0; i < before.length; i++) {
+    if (pieceType(before[i]) !== "edge") continue;
+    if (before[i].position.distanceToSquared(after[i].position) > 1e-9) {
+      moved.push({ from: posKey(before[i]), to: posKey(after[i]), fromSlot: slotKey(before[i]) });
+    }
+  }
+  const bySlot = new Map<string, typeof moved>();
+  for (const m of moved) {
+    const list = bySlot.get(m.fromSlot) ?? [];
+    list.push(m);
+    bySlot.set(m.fromSlot, list);
+  }
+  const legs: { from: string; to: string }[] = [];
+  for (const group of bySlot.values()) {
+    if (group.length === 1) legs.push({ from: group[0].from, to: group[0].to });
+  }
+  return legs;
+}
+
+// Building the library requires simulating all 24 rotation variants of each
+// base algorithm against a solved cube -- cheap (48 short applies) but only
+// needs doing once, so it's memoized rather than rebuilt per solve call.
 function buildEdgeLibrary(): EdgeLibrary {
   if (cachedLibrary) return cachedLibrary;
 
   const solvedRef = buildSolvedCube(4);
   const library: LibraryEntry[] = [];
   const seen = new Set<string>();
-  for (const rot of ROTATIONS) {
-    const variant = [...rot, ...BASE_ALG, ...invertSeq(rot)];
-    const before = cloneCubies(solvedRef);
-    const after = cloneCubies(before);
-    applySeq(after, variant);
-    const legs: { from: string; to: string }[] = [];
-    for (let i = 0; i < before.length; i++) {
-      if (pieceType(before[i]) !== "edge") continue;
-      if (before[i].position.distanceToSquared(after[i].position) > 1e-9) {
-        legs.push({ from: posKey(before[i]), to: posKey(after[i]) });
-      }
+  const bases: [Move[], ReadonlySet<Face>, number][] = [
+    [BASE_ALG, BASE_FACES, 3],
+    [BASE_ALG2, BASE_FACES2, 2],
+  ];
+  for (const [baseAlg, baseFaces, expectedLegs] of bases) {
+    for (const rot of ROTATIONS) {
+      const variant = [...rot, ...baseAlg, ...invertSeq(rot)];
+      const before = cloneCubies(solvedRef);
+      const after = cloneCubies(before);
+      applySeq(after, variant);
+      const legs = computeSoloLegs(before, after);
+      if (legs.length !== expectedLegs) continue;
+      const key = legs
+        .map((l) => `${l.from}>${l.to}`)
+        .sort()
+        .join("|");
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const faces = new Set([...baseFaces].map((f) => rotateFaceLabel(rot, f)));
+      library.push({ seq: variant, faces, legs });
     }
-    if (legs.length !== 3) continue;
-    const key = legs
-      .map((l) => `${l.from}>${l.to}`)
-      .sort()
-      .join("|");
-    if (seen.has(key)) continue;
-    seen.add(key);
-    const faces = new Set([...BASE_FACES].map((f) => rotateFaceLabel(rot, f)));
-    library.push({ seq: variant, faces, legs });
   }
 
   const posLookup = new Map<string, { entry: LibraryEntry; legIndex: number }[]>();
