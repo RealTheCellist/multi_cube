@@ -237,6 +237,13 @@ async function beamPhase(
 // discarded for scoring worse than another -- only depth and the time
 // budget bound the search -- which is what makes it able to find fixes that
 // must pass through a temporarily worse-scoring state (see beamPhase notes).
+// Hard cap on how many nodes carry over into the next ply. A full,
+// uncapped layer at depth 5 can reach several million states -- fine on a
+// beefy Node process, but well past what a browser tab's heap can hold.
+// Keeping only the best-scoring nodes (see the per-layer sort below) trades
+// a small amount of completeness for a bounded memory footprint.
+const TAIL_FRONTIER_CAP = 150000;
+
 async function tailPhase(startEdges: LiteEdge[], maxDepth: number, deadline: number): Promise<Move[] | null> {
   if (liteUnpairedCount(startEdges) === 0) return [];
   type Node = { edges: LiteEdge[]; path: Move[]; score: number };
@@ -245,6 +252,7 @@ async function tailPhase(startEdges: LiteEdge[], maxDepth: number, deadline: num
   let lastYield = Date.now();
   for (let depth = 1; depth <= maxDepth; depth++) {
     frontier.sort((a, b) => a.score - b.score);
+    if (frontier.length > TAIL_FRONTIER_CAP) frontier = frontier.slice(0, TAIL_FRONTIER_CAP);
     const next: Node[] = [];
     for (const node of frontier) {
       if (Date.now() > deadline) return null;
