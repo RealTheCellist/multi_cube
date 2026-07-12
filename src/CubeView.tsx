@@ -1,13 +1,15 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { CustomCubeScene } from "./customCube/CustomCubeScene";
 import { attachCustomSwipeTurning, type CustomSwipeController } from "./customCube/customSwipeControls";
-import { previewNextSolveMove } from "./customCube/customSolvePlayback";
+import { autoSolveFourByFour, previewNextSolveMove, type FourByFourSolveResult } from "./customCube/customSolvePlayback";
 import type { SolveHint } from "./solvePlayback";
 
 export interface CubeViewHandle {
   scramble: () => Promise<void>;
   resetToSolved: () => void;
   solveNextMove: () => Promise<SolveHint>;
+  autoSolve4x4: () => Promise<FourByFourSolveResult>;
+  isSolved: () => boolean;
 }
 
 interface CubeViewProps {
@@ -94,6 +96,19 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
         controllerRef.current?.setEnabled(!orbitModeRef.current);
       }
     },
+    autoSolve4x4: async () => {
+      const scene = sceneRef.current;
+      if (!scene) return { solved: false };
+      controllerRef.current?.setEnabled(false);
+      try {
+        const result = await autoSolveFourByFour(scene);
+        callbacksRef.current.onSolvedChange(scene.isSolved());
+        return result;
+      } finally {
+        controllerRef.current?.setEnabled(!orbitModeRef.current);
+      }
+    },
+    isSolved: () => sceneRef.current?.isSolved() ?? false,
   }));
 
   return <div className="cube-view" ref={containerRef} />;

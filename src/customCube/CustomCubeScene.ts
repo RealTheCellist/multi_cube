@@ -166,6 +166,17 @@ export class CustomCubeScene {
     return this.cubies;
   }
 
+  /**
+   * Re-syncs every mesh's position/rotation from its cubie's current state.
+   * Needed after code mutates `getCubies()`'s array directly (e.g. the 4x4
+   * solver phases, which apply raw quarter turns straight to the array
+   * rather than going through applyInstantMove) rather than through any of
+   * this class's own turn methods, none of which run the mesh sync for you.
+   */
+  syncAllMeshes(): void {
+    for (const cubie of this.cubies) this.syncMeshTransform(cubie);
+  }
+
   isSolved(): boolean {
     return isSolved(this.cubies);
   }

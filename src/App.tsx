@@ -21,6 +21,7 @@ function App() {
   const [isSolving, setIsSolving] = useState(false);
   const [lastHint, setLastHint] = useState<SolveHintDisplay | null>(null);
   const [solveError, setSolveError] = useState(false);
+  const [fourByFourUnsolved, setFourByFourUnsolved] = useState(false);
 
   const handleMoveCountChange = useCallback((count: number) => {
     setMoveCount(count);
@@ -55,6 +56,7 @@ function App() {
     setMoveCount(0);
     setLastHint(null);
     setSolveError(false);
+    setFourByFourUnsolved(false);
     timer.reset();
     await cubeRef.current?.scramble();
     setHasScrambled(true);
@@ -67,6 +69,7 @@ function App() {
     setMoveCount(0);
     setLastHint(null);
     setSolveError(false);
+    setFourByFourUnsolved(false);
     setHasScrambled(false);
     timer.reset();
   }, [timer]);
@@ -83,6 +86,7 @@ function App() {
       setMoveCount(0);
       setLastHint(null);
       setSolveError(false);
+      setFourByFourUnsolved(false);
       setHasScrambled(false);
       timer.reset();
     },
@@ -97,10 +101,22 @@ function App() {
     const wasTimerRunning = timer.running;
     if (wasTimerRunning) timer.pause();
     setIsSolving(true);
+    setFourByFourUnsolved(false);
     try {
-      const hint = await cubeRef.current?.solveNextMove();
-      setSolveError(false);
-      setLastHint(hint?.move ? { move: hint.move, movesRemaining: hint.movesRemaining } : null);
+      if (gridSize === 4) {
+        // Unlike the 2x2x2/3x3x3 (preview one move, let the user do it
+        // themselves), the 4x4x4 has no letter-notation move history to
+        // hint against (see cubeState.ts) -- this solves the whole cube
+        // directly instead.
+        const result = await cubeRef.current?.autoSolve4x4();
+        setSolveError(false);
+        setLastHint(null);
+        setFourByFourUnsolved(result ? !result.solved : true);
+      } else {
+        const hint = await cubeRef.current?.solveNextMove();
+        setSolveError(false);
+        setLastHint(hint?.move ? { move: hint.move, movesRemaining: hint.movesRemaining } : null);
+      }
     } catch {
       // The solver is a third-party library reached through an experimental
       // API — keep the button from getting stuck disabled forever if it
@@ -111,7 +127,7 @@ function App() {
       setIsSolving(false);
       if (wasTimerRunning) timer.resume();
     }
-  }, [timer]);
+  }, [timer, gridSize]);
 
   return (
     <div className="app">
@@ -147,14 +163,18 @@ function App() {
 
       <p className="mode-hint">
         {isSolving
-          ? "다음 수 미리보기 재생 중..."
+          ? gridSize === 4
+            ? "4×4 자동 풀이 중... (최대 몇 분 정도 걸릴 수 있어요)"
+            : "다음 수 미리보기 재생 중..."
           : solveError
             ? "솔버 실행 중 오류가 발생했습니다. 다시 시도해보세요"
-            : lastHint
-              ? `다음 수: ${lastHint.move} (총 ${lastHint.movesRemaining + 1}수 필요) — 직접 돌려보세요`
-              : mode === "look"
-                ? "드래그해서 큐브를 둘러보세요"
-                : "스와이프로 면을 돌려보세요"}
+            : fourByFourUnsolved
+              ? "이 스크램블은 아직 끝까지 풀지 못했어요 (패리티 케이스일 수 있어요) — 다시 시도해보세요"
+              : lastHint
+                ? `다음 수: ${lastHint.move} (총 ${lastHint.movesRemaining + 1}수 필요) — 직접 돌려보세요`
+                : mode === "look"
+                  ? "드래그해서 큐브를 둘러보세요"
+                  : "스와이프로 면을 돌려보세요"}
       </p>
 
       <div className="cube-stage">
@@ -195,8 +215,8 @@ function App() {
         <button
           type="button"
           onClick={handleSolve}
-          disabled={isSolving || gridSize === 4}
-          title={gridSize === 4 ? "4×4는 아직 지원하지 않아요" : undefined}
+          disabled={isSolving}
+          title={gridSize === 4 ? "4×4는 전체를 한 번에 풀어요 (일부 스크램블은 아직 못 풀 수 있어요)" : undefined}
         >
           솔버
         </button>

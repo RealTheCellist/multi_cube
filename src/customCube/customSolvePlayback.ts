@@ -5,6 +5,9 @@ import { experimentalSolve2x2x2 } from "cubing/search";
 import { computeSolveHint, type SolveHint } from "../solvePlayback";
 import type { CustomCubeScene } from "./CustomCubeScene";
 import { FACE_TURNS, outerLayerCoordinate, type Face } from "./cubeState";
+import { solveCenters } from "./fourByFourCenters";
+import { solveEdgePairing } from "./fourByFourEdges";
+import { solveReduced } from "./fourByFourReduction";
 
 const MOVE_ANIMATION_MS = 350;
 const HOLD_MS = 500;
@@ -91,4 +94,45 @@ export async function previewNextSolveMove(scene: CustomCubeScene): Promise<Solv
   scene.endTurn(null);
 
   return hint;
+}
+
+export interface FourByFourSolveResult {
+  solved: boolean;
+}
+
+/**
+ * Fully solves a 4x4x4 in place (unlike previewNextSolveMove for the
+ * 2x2x2/3x3x3, which only previews one move and reverts -- there's no
+ * letter-notation move history to hint against for a 4x4x4, see
+ * cubeState.ts, so this commits the whole solve directly instead). Runs
+ * centers, then edge pairing, then reduces to a 3x3x3 solve, each phase
+ * mutating the scene's cubies array directly and re-syncing meshes
+ * afterward. Can legitimately take up to a couple of minutes for the edge
+ * pairing's tail search on a hard scramble.
+ *
+ * Not all scrambles are solvable this way yet: roughly half of the time
+ * the "reduced" 3x3x3-equivalent pattern is one only reachable via a
+ * genuine 4x4x4 move (OLL/PLL parity), which the 3x3x3 solver can't
+ * resolve -- see fourByFourReduction.ts. That's reported honestly via
+ * `solved: false` rather than pretending to have finished.
+ */
+export async function autoSolveFourByFour(scene: CustomCubeScene): Promise<FourByFourSolveResult> {
+  const cubies = scene.getCubies();
+
+  // Edges first: pairing doesn't care about center state, but its tail
+  // phase can disturb centers (see fourByFourEdges.ts) -- so solving
+  // centers first would just get undone. Centers only once, after, since
+  // nothing downstream of it (the reduction solve's single-outer-layer
+  // turns) ever touches centers again.
+  const edgeResult = await solveEdgePairing(cubies, 100000);
+  scene.syncAllMeshes();
+  if (!edgeResult.solved) return { solved: false };
+
+  const centerResult = solveCenters(cubies, 15000);
+  scene.syncAllMeshes();
+  if (!centerResult.solved) return { solved: false };
+
+  const reductionResult = await solveReduced(cubies, scene.gridSize);
+  scene.syncAllMeshes();
+  return { solved: reductionResult.solved };
 }
