@@ -51,20 +51,6 @@ export function unpairedWingCount(cubies: Cubie[]): number {
   }
   return wrong;
 }
-function goodSlots(cubies: Cubie[]): Set<string> {
-  const edges = cubies.filter((c) => pieceType(c) === "edge");
-  const bySlot = new Map<string, Cubie[]>();
-  for (const e of edges) {
-    const key = slotKey(e);
-    const list = bySlot.get(key) ?? [];
-    list.push(e);
-    bySlot.set(key, list);
-  }
-  const good = new Set<string>();
-  for (const [key, pair] of bySlot) if (pair.length === 2 && colorKey(pair[0]) === colorKey(pair[1])) good.add(key);
-  return good;
-}
-
 function faceTurn(face: Face, times: number): Move[] {
   const def = FACE_TURNS[face];
   const layer = outerLayerCoordinate(face, 4);
@@ -335,6 +321,67 @@ function riskSlotsFor(entry: LibraryEntry): Set<string> {
   );
 }
 
+// Lightweight edge-only state for the setup search below: this BFS explores
+// thousands of candidate states per call and only ever needs each wing's
+// (id, color, x, y, z) -- position and pairing-correctness never depend on
+// orientation or on corners/centers at all. Cloning full Cubie objects
+// (THREE.Vector3 position + THREE.Quaternion orientation) per node was by
+// far the dominant cost here; plain numbers/objects are far cheaper to
+// clone and compare. axisSign (already used above for face-label rotation)
+// is reused for rotating a wing's coordinates, since it's the same
+// rotation convention cubeMath.ts's applyRawQuarterTurn implements.
+interface LiteEdge {
+  id: number;
+  color: string;
+  x: number;
+  y: number;
+  z: number;
+}
+function toLiteEdges(cubies: readonly Cubie[]): LiteEdge[] {
+  return cubies
+    .filter((c) => pieceType(c) === "edge")
+    .map((c) => ({
+      id: c.id,
+      color: colorKey(c),
+      x: roundedComponent(c.position, "x"),
+      y: roundedComponent(c.position, "y"),
+      z: roundedComponent(c.position, "z"),
+    }));
+}
+function liteSlotKey(e: LiteEdge): string {
+  return AXES.filter((a) => Math.abs(e[a]) === 1.5)
+    .map((a) => `${a}${e[a]}`)
+    .join(",");
+}
+function litePosKey(e: LiteEdge): string {
+  return `${e.x},${e.y},${e.z}`;
+}
+function liteGoodSlots(edges: readonly LiteEdge[]): Set<string> {
+  const bySlot = new Map<string, LiteEdge[]>();
+  for (const e of edges) {
+    const key = liteSlotKey(e);
+    const list = bySlot.get(key) ?? [];
+    list.push(e);
+    bySlot.set(key, list);
+  }
+  const good = new Set<string>();
+  for (const [key, pair] of bySlot) if (pair.length === 2 && pair[0].color === pair[1].color) good.add(key);
+  return good;
+}
+function liteApplyMove(edges: readonly LiteEdge[], move: Move): LiteEdge[] {
+  const [axis, layer, sign] = move;
+  return edges.map((e) => {
+    if (e[axis] !== layer) return e;
+    const [x, y, z] = axisSign(axis, sign, [e.x, e.y, e.z]);
+    return { id: e.id, color: e.color, x, y, z };
+  });
+}
+function liteApplySeq(edges: readonly LiteEdge[], seq: readonly Move[]): LiteEdge[] {
+  let cur = edges;
+  for (const m of seq) cur = liteApplyMove(cur, m);
+  return cur;
+}
+
 // Joint search over (P's position, W's position, risk-zone conflict count)
 // using only moves that exclude the algorithm's own faces (safe for
 // already-paired dedges). W's own faces are deliberately NOT excluded from
@@ -355,34 +402,34 @@ function prepareAndApply(
   const risk = riskSlotsFor(entry);
   const partnerId = partnerById.get(w.id);
   const wStartPos = posKey(w);
+  const startEdges = toLiteEdges(cubies);
 
-  function state(cubies2: Cubie[]) {
-    const p = cubies2.find((c) => c.id === partnerId)!;
-    const wNow = cubies2.find((c) => c.id === w.id)!;
+  function state(edges: readonly LiteEdge[]) {
+    const p = edges.find((e) => e.id === partnerId)!;
+    const wNow = edges.find((e) => e.id === w.id)!;
     return {
-      pPos: posKey(p),
-      wPos: posKey(wNow),
-      conflicts: [...goodSlots(cubies2)].filter((s) => risk.has(s)).length,
+      pPos: litePosKey(p),
+      wPos: litePosKey(wNow),
+      conflicts: [...liteGoodSlots(edges)].filter((s) => risk.has(s)).length,
     };
   }
-  const start = state(cubies);
+  const start = state(startEdges);
   if (start.pPos === targetForP && start.wPos === wStartPos && start.conflicts === 0) return [];
 
-  let frontier: { cubies: Cubie[]; path: Move[] }[] = [{ cubies, path: [] }];
+  let frontier: { edges: LiteEdge[]; path: Move[] }[] = [{ edges: startEdges, path: [] }];
   const seen = new Set<string>([JSON.stringify(start)]);
   for (let depth = 0; depth < maxDepth; depth++) {
-    const next: { cubies: Cubie[]; path: Move[] }[] = [];
+    const next: { edges: LiteEdge[]; path: Move[] }[] = [];
     for (const node of frontier) {
       for (const move of safe) {
-        const clone = cloneCubies(node.cubies);
-        applySeq(clone, move);
-        const st = state(clone);
+        const nextEdges = liteApplySeq(node.edges, move);
+        const st = state(nextEdges);
         const key = JSON.stringify(st);
         if (seen.has(key)) continue;
         seen.add(key);
         const path = [...node.path, ...move];
         if (st.pPos === targetForP && st.wPos === wStartPos && st.conflicts === 0) return path;
-        next.push({ cubies: clone, path });
+        next.push({ edges: nextEdges, path });
       }
     }
     frontier = next;
