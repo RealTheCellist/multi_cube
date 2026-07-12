@@ -7,7 +7,7 @@ import type { CustomCubeScene } from "./CustomCubeScene";
 import { FACE_TURNS, outerLayerCoordinate, type Face } from "./cubeState";
 import { solveCenters } from "./fourByFourCenters";
 import { solveEdgePairing } from "./fourByFourEdges";
-import { PARITY_NUDGE_COUNT, applyParityNudge, solveReduced } from "./fourByFourReduction";
+import { solveReduced } from "./fourByFourReduction";
 
 const MOVE_ANIMATION_MS = 350;
 const HOLD_MS = 500;
@@ -111,13 +111,14 @@ export interface FourByFourSolveResult {
  * pairing's tail search on a hard scramble.
  *
  * About half of scrambles reduce to a pattern only reachable via a genuine
- * 4x4x4 move (OLL/PLL parity), which the 3x3x3 solver alone can't resolve
- * -- when that happens, this nudges the parity with a small 4x4-only move
- * and re-runs edge pairing + centers to clean up what it disturbs, then
- * retries, cycling through a few nudge variants (see
- * fourByFourReduction.ts). If every variant still fails -- or edge pairing
- * itself never converges in the first place -- that's reported honestly
- * via `solved: false` rather than pretending to have finished.
+ * 4x4x4 move (OLL/PLL parity), which the 3x3x3 solver can't resolve --
+ * that's reported honestly via `solved: false` rather than pretending to
+ * have finished. (A parity-recovery attempt -- nudge with a bare
+ * inner-slice double turn, then re-run edge pairing/centers to clean up --
+ * was tried and measured to not actually work: the corner/edge permutation
+ * parity relationship came back unchanged or with both flipping together
+ * across every variant tested, so it was removed rather than kept as dead
+ * weight that just adds minutes of wasted retry time per parity case.)
  */
 export async function autoSolveFourByFour(scene: CustomCubeScene): Promise<FourByFourSolveResult> {
   const cubies = scene.getCubies();
@@ -135,20 +136,7 @@ export async function autoSolveFourByFour(scene: CustomCubeScene): Promise<FourB
   scene.syncAllMeshes();
   if (!centerResult.solved) return { solved: false };
 
-  for (let attempt = 0; attempt <= PARITY_NUDGE_COUNT; attempt++) {
-    const reductionResult = await solveReduced(cubies, scene.gridSize);
-    scene.syncAllMeshes();
-    if (reductionResult.solved) return { solved: true };
-    if (attempt === PARITY_NUDGE_COUNT) break;
-
-    applyParityNudge(cubies, attempt);
-    scene.syncAllMeshes();
-    const repairEdges = await solveEdgePairing(cubies, 60000);
-    scene.syncAllMeshes();
-    if (!repairEdges.solved) continue;
-    const repairCenters = solveCenters(cubies, 15000);
-    scene.syncAllMeshes();
-    if (!repairCenters.solved) continue;
-  }
-  return { solved: false };
+  const reductionResult = await solveReduced(cubies, scene.gridSize);
+  scene.syncAllMeshes();
+  return { solved: reductionResult.solved };
 }
