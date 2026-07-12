@@ -8,11 +8,16 @@ export interface FaceTurnDef {
   axis: Axis;
   layer: 1 | -1;
   // Sign of a single clockwise (viewed from outside that face) quarter turn,
-  // in the same right-hand-rule convention as cubeMath.ts. Chosen to match
-  // cubing.js's own move directions -- verified empirically against the
-  // existing PG3D-based cube (see verify_directions.mjs) rather than derived
-  // by hand, since camera "which way is clockwise" reasoning is very easy to
-  // get backwards.
+  // in the same right-hand-rule convention as cubeMath.ts. Cross-checked
+  // directly against cubing/kpuzzle (build a solved 3x3x3 KPuzzle pattern,
+  // apply a single face move on each side, and diff patternData against the
+  // same move applied here) rather than derived by hand, since camera
+  // "which way is clockwise" reasoning is very easy to get backwards. U/D
+  // were previously the opposite of kpuzzle's convention here (R/L/F/B were
+  // already correct) -- this only affects the letter-notation path (move
+  // history recording, scrambling, and the solver's pattern replay), not
+  // live drag/turn rendering, which always applies a sign read directly off
+  // the gesture rather than through this table.
   sign: 1 | -1;
 }
 
@@ -26,8 +31,8 @@ export interface FaceTurnDef {
 export const FACE_TURNS: Record<Face, FaceTurnDef> = {
   R: { axis: "x", layer: 1, sign: -1 },
   L: { axis: "x", layer: -1, sign: 1 },
-  U: { axis: "y", layer: 1, sign: 1 },
-  D: { axis: "y", layer: -1, sign: -1 },
+  U: { axis: "y", layer: 1, sign: -1 },
+  D: { axis: "y", layer: -1, sign: 1 },
   F: { axis: "z", layer: 1, sign: -1 },
   B: { axis: "z", layer: -1, sign: 1 },
 };
