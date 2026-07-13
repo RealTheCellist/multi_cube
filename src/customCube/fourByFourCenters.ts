@@ -282,6 +282,19 @@ export interface SolveCentersResult {
  * identical failure rates either way (0.67% vs 0.6%) -- the fallback
  * wasn't actually rescuing the cases it was meant to, so it was removed
  * rather than kept as dead weight (see git history).
+ *
+ * Also tried, and deliberately NOT kept: (1) a second, web-sourced
+ * commutator family (a blindfolded-solving isolated 3-cycle) added for
+ * candidate diversity -- measured no real improvement (0.80% vs 0.67% at
+ * N=500, within noise); (2) shuffled restarts mirroring
+ * fourByFourEdges.ts's scheduler -- did reach 0% failure, but pushed the
+ * worst case from ~2s to ~10.7s, a bad trade for a rate this low. A
+ * parity check on stuck states also found both even- and odd-parity
+ * residuals, ruling out a structural parity barrier (unlike edges' real
+ * OLL/PLL parity) -- these are just occasional local minima, not
+ * something a fundamentally different algorithm or a parity-specific fix
+ * would resolve. Kept as the fast, simple, already-99.3%-reliable version
+ * (see git history for the removed experiments).
  */
 export function solveCenters(cubies: Cubie[], timeBudgetMs = 15000): SolveCentersResult {
   const deadline = Date.now() + timeBudgetMs;
