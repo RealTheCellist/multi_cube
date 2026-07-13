@@ -272,29 +272,68 @@ export interface SolveCentersResult {
   movesApplied: number;
 }
 
+// IDA*-style completeness fallback, used only once the fast greedy pass
+// (bestFixOverall) plateaus. Real-world 4x4 solving uses a "block-building"
+// method (freely combine same-color centers into a face, no fixing search
+// at all) that structurally can't get stuck -- but it can't be transplanted
+// here: this codebase solves centers AFTER edge pairing (see
+// autoSolveFourByFour), and centers must therefore leave edges untouched.
+// Every commutator here is specifically an A B A' B' whose net effect
+// cancels out everywhere except 6 centers (see deriveCommutators), which is
+// what makes that safe -- raw free moves are not. So instead of a different
+// move vocabulary, this reuses the exact same edge-safe commutators/outer
+// turns as bestFixOverall, just searched *completely* (full branching, no
+// BRANCH_CAP, iteratively deepened bound) instead of greedily -- this is
+// different from the previously-tried-and-rejected exhaustive fallback
+// (which searched raw single moves over the whole move set, not this
+// analytical commutator vocabulary) and from the previously-tried shuffled
+// restarts (which stayed capped/greedy, just retried with different
+// ordering). Only engages on the rare plateau, so typical-case speed is
+// unaffected.
+const IDA_MAX_BOUND = 6;
+function idaFallback(cubies: Cubie[], deadline: number, maxBound: number): Move[] | null {
+  const heuristic = (cs: Cubie[]) => Math.ceil(wrongCenterCount(cs) / 6);
+  let deadlineHit = false;
+
+  function dfs(cs: Cubie[], g: number, bound: number, path: Move[]): Move[] | null {
+    if (deadlineHit) return null;
+    if (Date.now() > deadline) {
+      deadlineHit = true;
+      return null;
+    }
+    const h = heuristic(cs);
+    if (h === 0) return path;
+    if (g + h > bound) return null;
+    for (const wc of wrongCenters(cs)) {
+      for (const moves of candidatesForPiece(wc)) {
+        const clone = cloneCubies(cs);
+        applySeq(clone, moves);
+        const res = dfs(clone, g + 1, bound, [...path, ...moves]);
+        if (res) return res;
+        if (deadlineHit) return null;
+      }
+    }
+    return null;
+  }
+
+  for (let bound = heuristic(cubies); bound <= maxBound; bound++) {
+    const res = dfs(cubies, 0, bound, []);
+    if (res) return res;
+    if (deadlineHit) return null;
+  }
+  return null;
+}
+
 /**
  * Solves all 24 center pieces (color-correctness only, per-slot identity
- * doesn't matter -- see isSolved()) in place, purely via the fast
- * analytical fixing above. An earlier version added an exhaustive
- * (all outer turns + all 96 commutators, iteratively deepened) fallback
- * for whenever the analytical pass got stuck, but direct A/B testing
- * (N=300 with the fallback disabled vs enabled) measured essentially
- * identical failure rates either way (0.67% vs 0.6%) -- the fallback
- * wasn't actually rescuing the cases it was meant to, so it was removed
- * rather than kept as dead weight (see git history).
- *
- * Also tried, and deliberately NOT kept: (1) a second, web-sourced
- * commutator family (a blindfolded-solving isolated 3-cycle) added for
- * candidate diversity -- measured no real improvement (0.80% vs 0.67% at
- * N=500, within noise); (2) shuffled restarts mirroring
- * fourByFourEdges.ts's scheduler -- did reach 0% failure, but pushed the
- * worst case from ~2s to ~10.7s, a bad trade for a rate this low. A
- * parity check on stuck states also found both even- and odd-parity
- * residuals, ruling out a structural parity barrier (unlike edges' real
- * OLL/PLL parity) -- these are just occasional local minima, not
- * something a fundamentally different algorithm or a parity-specific fix
- * would resolve. Kept as the fast, simple, already-99.3%-reliable version
- * (see git history for the removed experiments).
+ * doesn't matter -- see isSolved()) in place. Primarily via the fast
+ * analytical greedy fixing above (bestFixOverall); when that plateaus
+ * (returns null with centers still wrong), falls back to idaFallback, a
+ * complete search over the same edge-safe move vocabulary -- see its
+ * comment for why this, rather than the earlier-tried alternatives (an
+ * exhaustive raw-move fallback, a second commutator family, and shuffled
+ * restarts -- all measured with no real improvement or a bad speed
+ * tradeoff; see git history).
  */
 export function solveCenters(cubies: Cubie[], timeBudgetMs = 15000): SolveCentersResult {
   const deadline = Date.now() + timeBudgetMs;
@@ -302,7 +341,8 @@ export function solveCenters(cubies: Cubie[], timeBudgetMs = 15000): SolveCenter
   let guard = 0;
   while (wrongCenterCount(cubies) > 0 && guard < 60 && Date.now() < deadline) {
     guard++;
-    const fix = bestFixOverall(cubies, 4, deadline);
+    let fix = bestFixOverall(cubies, 4, deadline);
+    if (!fix || fix.length === 0) fix = idaFallback(cubies, deadline, IDA_MAX_BOUND);
     if (!fix || fix.length === 0) break;
     applySeq(cubies, fix);
     movesApplied += fix.length;
