@@ -9,7 +9,7 @@ interface SolveHintDisplay {
   movesRemaining: number;
 }
 
-interface FourByFourStepDisplay {
+interface FourByFourHintDisplay {
   movesRemaining: number;
 }
 
@@ -24,7 +24,7 @@ function App() {
   const [justSolved, setJustSolved] = useState(false);
   const [isSolving, setIsSolving] = useState(false);
   const [lastHint, setLastHint] = useState<SolveHintDisplay | null>(null);
-  const [fourByFourStep, setFourByFourStep] = useState<FourByFourStepDisplay | null>(null);
+  const [fourByFourHint, setFourByFourHint] = useState<FourByFourHintDisplay | null>(null);
   const [solveError, setSolveError] = useState(false);
   const [fourByFourUnsolved, setFourByFourUnsolved] = useState(false);
 
@@ -60,7 +60,7 @@ function App() {
     setJustSolved(false);
     setMoveCount(0);
     setLastHint(null);
-    setFourByFourStep(null);
+    setFourByFourHint(null);
     setSolveError(false);
     setFourByFourUnsolved(false);
     timer.reset();
@@ -74,7 +74,7 @@ function App() {
     setJustSolved(false);
     setMoveCount(0);
     setLastHint(null);
-    setFourByFourStep(null);
+    setFourByFourHint(null);
     setSolveError(false);
     setFourByFourUnsolved(false);
     setHasScrambled(false);
@@ -92,6 +92,7 @@ function App() {
       setJustSolved(false);
       setMoveCount(0);
       setLastHint(null);
+      setFourByFourHint(null);
       setSolveError(false);
       setFourByFourUnsolved(false);
       setHasScrambled(false);
@@ -111,17 +112,21 @@ function App() {
     setFourByFourUnsolved(false);
     try {
       if (gridSize === 4) {
-        // Unlike the 2x2x2/3x3x3 (preview one move, let the user do it
-        // themselves), a 4x4x4 move has no letter-notation move history to
-        // hint against (see cubeState.ts) -- each click here actually
-        // commits one move from a precomputed solve plan instead, so
-        // clicking repeatedly steps through the solve rather than jumping
-        // straight to solved.
-        const step = await cubeRef.current?.solveStepFourByFour();
+        // Same preview-and-revert idea as the 2x2x2/3x3x3 hint below: re-solve
+        // from whatever the cube's actual current state is (not a cached
+        // plan) and only preview the first move, since there's no letter-
+        // notation move history to hint against for a 4x4x4 (see
+        // cubeState.ts) -- a cached plan would go stale the moment the
+        // user's own swipes diverge from it.
+        const hint = await cubeRef.current?.previewNextFourByFour();
         setSolveError(false);
-        const finished = !step || step.done || step.movesRemaining === 0;
-        setFourByFourStep(!finished && step ? { movesRemaining: step.movesRemaining } : null);
-        if (finished) setFourByFourUnsolved(step ? !step.solved : true);
+        if (hint?.hasMove) {
+          setFourByFourHint({ movesRemaining: hint.movesRemaining });
+          setFourByFourUnsolved(false);
+        } else {
+          setFourByFourHint(null);
+          setFourByFourUnsolved(hint ? !hint.solved : true);
+        }
       } else {
         const hint = await cubeRef.current?.solveNextMove();
         setSolveError(false);
@@ -174,16 +179,14 @@ function App() {
       <p className="mode-hint">
         {isSolving
           ? gridSize === 4
-            ? fourByFourStep
-              ? "한 수 적용 중..."
-              : "풀이 계산 중... (처음 누르면 몇 분 걸릴 수 있어요)"
+            ? "다음 수 미리보기 계산 중... (처음 누르면 몇 분 걸릴 수 있어요)"
             : "다음 수 미리보기 재생 중..."
           : solveError
             ? "솔버 실행 중 오류가 발생했습니다. 다시 시도해보세요"
             : fourByFourUnsolved
               ? "이 스크램블은 아직 끝까지 풀지 못했어요 (패리티 케이스일 수 있어요) — 다시 시도해보세요"
-              : fourByFourStep
-                ? `한 수 적용됨 (${fourByFourStep.movesRemaining}수 남음) — 솔버를 계속 눌러서 진행하세요`
+              : fourByFourHint
+                ? `다음 수를 미리보기했어요 (총 ${fourByFourHint.movesRemaining + 1}수 필요) — 애니메이션을 보고 직접 돌려보세요`
                 : lastHint
                   ? `다음 수: ${lastHint.move} (총 ${lastHint.movesRemaining + 1}수 필요) — 직접 돌려보세요`
                   : mode === "look"
@@ -230,7 +233,7 @@ function App() {
           type="button"
           onClick={handleSolve}
           disabled={isSolving}
-          title={gridSize === 4 ? "누를 때마다 한 수씩 풀어요 (일부 스크램블은 아직 못 풀 수 있어요)" : undefined}
+          title={gridSize === 4 ? "3×3처럼 다음 수를 미리보기만 해요 (일부 스크램블은 아직 못 풀 수 있어요)" : undefined}
         >
           솔버
         </button>

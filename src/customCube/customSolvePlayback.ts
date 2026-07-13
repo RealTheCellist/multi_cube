@@ -106,11 +106,11 @@ export interface FourByFourSolvePlan {
 
 /**
  * Computes the full 4x4x4 solve plan -- edges, then centers, then reduction
- * (same order as before, see the comment inside), same as a real solve --
- * but entirely on a clone of the scene's cubies, so the live scene isn't
- * touched at all. Lets the UI reveal the plan's moves one at a time via
- * playFourByFourMove instead of jumping straight to the solved state.
- * Can legitimately take up to a couple of minutes to compute, for the edge
+ * (same order as a real solve, see the comment inside) -- entirely on a
+ * clone of the scene's cubies, so the live scene isn't touched at all.
+ * Always run fresh from the scene's actual current state (see
+ * previewNextFourByFourMove below), never cached across calls. Can
+ * legitimately take up to a couple of minutes to compute, for the edge
  * pairing's tail search on a hard scramble.
  *
  * A minority of scrambles reduce to a pattern only reachable via a genuine
@@ -141,18 +141,38 @@ export async function computeFourByFourSolveMoves(scene: CustomCubeScene): Promi
   return { solved: reductionResult.solved, moves };
 }
 
+export interface FourByFourHint {
+  hasMove: boolean;
+  movesRemaining: number;
+  solved: boolean;
+}
+
 /**
- * Animates and commits exactly one raw quarter turn onto the live scene --
- * the step-by-step counterpart to computeFourByFourSolveMoves, called once
- * per solver-button click so a 4x4 solve reveals move by move instead of
- * jumping straight to solved, mirroring the 2x2x2/3x3x3 hint button's
- * click-to-advance feel (though this commits for real -- there's no letter-
- * notation move history to hint against and let the user perform it
- * themselves, see cubeState.ts).
+ * Solves for the scene's current actual state and previews just the first
+ * move: turns the layer forward, holds briefly, then turns it back and
+ * reverts -- a pure preview that leaves the real cube state untouched,
+ * mirroring previewNextSolveMove for the 2x2x2/3x3x3 exactly. Recomputes
+ * the whole plan from scratch every call rather than caching/stepping
+ * through one precomputed sequence -- an earlier version did cache and
+ * auto-commit each move, but that goes stale the moment the user's own
+ * swipes diverge from the plan (there's no letter-notation move history to
+ * replay against and re-solve from, unlike the 2x2x2/3x3x3, so a cached
+ * plan can't be validated against what actually happened). Recomputing
+ * fresh is what the 2x2x2/3x3x3 hint already does (see
+ * currentPatternFor/computeSolveHint), so this just extends the same
+ * approach to the 4x4x4's own solve pipeline instead of cubing/search
+ * (which doesn't ship a 4x4x4 solver at all).
  */
-export async function playFourByFourMove(scene: CustomCubeScene, move: Move): Promise<void> {
-  const [axis, layer, sign] = move;
+export async function previewNextFourByFourMove(scene: CustomCubeScene): Promise<FourByFourHint> {
+  const plan = await computeFourByFourSolveMoves(scene);
+  if (plan.moves.length === 0) return { hasMove: false, movesRemaining: 0, solved: plan.solved };
+
+  const [axis, layer, sign] = plan.moves[0];
   scene.beginTurn(axis, layer);
   await animateProgress(scene, 0, sign, MOVE_ANIMATION_MS);
-  scene.endTurn(sign);
+  await sleep(HOLD_MS);
+  await animateProgress(scene, sign, 0, MOVE_ANIMATION_MS);
+  scene.endTurn(null);
+
+  return { hasMove: true, movesRemaining: plan.moves.length - 1, solved: plan.solved };
 }
