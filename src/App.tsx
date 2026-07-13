@@ -9,10 +9,6 @@ interface SolveHintDisplay {
   movesRemaining: number;
 }
 
-interface FourByFourHintDisplay {
-  movesRemaining: number;
-}
-
 function App() {
   const cubeRef = useRef<CubeViewHandle>(null);
   const timer = useTimer();
@@ -24,7 +20,7 @@ function App() {
   const [justSolved, setJustSolved] = useState(false);
   const [isSolving, setIsSolving] = useState(false);
   const [lastHint, setLastHint] = useState<SolveHintDisplay | null>(null);
-  const [fourByFourHint, setFourByFourHint] = useState<FourByFourHintDisplay | null>(null);
+  const [fourByFourHint, setFourByFourHint] = useState(false);
   const [solveError, setSolveError] = useState(false);
   const [fourByFourUnsolved, setFourByFourUnsolved] = useState(false);
 
@@ -60,7 +56,7 @@ function App() {
     setJustSolved(false);
     setMoveCount(0);
     setLastHint(null);
-    setFourByFourHint(null);
+    setFourByFourHint(false);
     setSolveError(false);
     setFourByFourUnsolved(false);
     timer.reset();
@@ -74,7 +70,7 @@ function App() {
     setJustSolved(false);
     setMoveCount(0);
     setLastHint(null);
-    setFourByFourHint(null);
+    setFourByFourHint(false);
     setSolveError(false);
     setFourByFourUnsolved(false);
     setHasScrambled(false);
@@ -92,7 +88,7 @@ function App() {
       setJustSolved(false);
       setMoveCount(0);
       setLastHint(null);
-      setFourByFourHint(null);
+      setFourByFourHint(false);
       setSolveError(false);
       setFourByFourUnsolved(false);
       setHasScrambled(false);
@@ -120,13 +116,9 @@ function App() {
         // user's own swipes diverge from it.
         const hint = await cubeRef.current?.previewNextFourByFour();
         setSolveError(false);
-        if (hint?.hasMove) {
-          setFourByFourHint({ movesRemaining: hint.movesRemaining });
-          setFourByFourUnsolved(false);
-        } else {
-          setFourByFourHint(null);
-          setFourByFourUnsolved(hint ? !hint.solved : true);
-        }
+        setFourByFourHint(!!hint?.hasMove);
+        if (hint?.hasMove) setFourByFourUnsolved(false);
+        else setFourByFourUnsolved(hint ? !hint.solved : true);
       } else {
         const hint = await cubeRef.current?.solveNextMove();
         setSolveError(false);
@@ -186,7 +178,7 @@ function App() {
             : fourByFourUnsolved
               ? "이 스크램블은 아직 끝까지 풀지 못했어요 (패리티 케이스일 수 있어요) — 다시 시도해보세요"
               : fourByFourHint
-                ? `다음 수를 미리보기했어요 (총 ${fourByFourHint.movesRemaining + 1}수 필요) — 애니메이션을 보고 직접 돌려보세요`
+                ? "다음 수를 미리보기했어요 — 애니메이션을 보고 직접 돌려보세요"
                 : lastHint
                   ? `다음 수: ${lastHint.move} (총 ${lastHint.movesRemaining + 1}수 필요) — 직접 돌려보세요`
                   : mode === "look"
