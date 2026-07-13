@@ -366,7 +366,7 @@ function liteApplyMove(edges: readonly LiteEdge[], move: Move): LiteEdge[] {
   });
 }
 function liteApplySeq(edges: readonly LiteEdge[], seq: readonly Move[]): LiteEdge[] {
-  let cur = edges;
+  let cur: LiteEdge[] = [...edges];
   for (const m of seq) cur = liteApplyMove(cur, m);
   return cur;
 }
