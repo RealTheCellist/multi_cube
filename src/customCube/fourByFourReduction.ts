@@ -273,9 +273,28 @@ function applyMoves(cubies: Cubie[], moves: readonly Move[]): void {
   for (const [axis, layer, sign] of moves) applyRawQuarterTurn(cubies, axis, layer, sign);
 }
 
+// Converts a single-outer-layer-turn letter token (as returned by
+// experimentalSolve3x3x3IgnoringCenters -- this phase never emits anything
+// else, see solveReduced's docstring) into its raw quarter-turn(s), for
+// step-by-step replay (see customSolvePlayback.ts). A "2" suffix becomes two
+// same-direction quarter turns rather than one 180-degree one, since nothing
+// else in this codebase commits a turn as anything but a single quarter turn
+// (see CustomCubeScene.endTurn) -- direction doesn't matter for a 2, since
+// either one reaches the same 180-degree result.
+function tokenToMoves(token: string): Move[] {
+  const face = token[0] as Face;
+  const suffix = token.slice(1);
+  const { axis, sign: canonicalSign } = FACE_TURNS[face];
+  const layer = outerLayerCoordinate(face, 4);
+  if (suffix === "2") return [[axis, layer, canonicalSign] as Move, [axis, layer, canonicalSign] as Move];
+  const sign = (suffix === "'" ? -canonicalSign : canonicalSign) as 1 | -1;
+  return [[axis, layer, sign]];
+}
+
 export interface ReductionSolveResult {
   solved: boolean;
   movesApplied: number;
+  moves: Move[];
 }
 
 async function tryReduce(cubies: Cubie[], gridSize: number): Promise<ReductionSolveResult> {
@@ -284,11 +303,15 @@ async function tryReduce(cubies: Cubie[], gridSize: number): Promise<ReductionSo
   try {
     solutionAlg = await experimentalSolve3x3x3IgnoringCenters(pattern);
   } catch {
-    return { solved: false, movesApplied: 0 };
+    return { solved: false, movesApplied: 0, moves: [] };
   }
-  const moves = [...solutionAlg.childAlgNodes()].map((node) => node.toString());
-  for (const move of moves) applyMoveToken(cubies, move, gridSize);
-  return { solved: true, movesApplied: moves.length };
+  const tokens = [...solutionAlg.childAlgNodes()].map((node) => node.toString());
+  const moves: Move[] = [];
+  for (const token of tokens) {
+    applyMoveToken(cubies, token, gridSize);
+    moves.push(...tokenToMoves(token));
+  }
+  return { solved: true, movesApplied: moves.length, moves };
 }
 
 /**
@@ -315,7 +338,11 @@ export async function solveReduced(cubies: Cubie[], gridSize: number): Promise<R
   const fixCombos: (readonly Move[])[][] = [[PLL_PARITY_FIX_ALG], [OLL_PARITY_FIX_ALG], [PLL_PARITY_FIX_ALG, OLL_PARITY_FIX_ALG]];
   for (const combo of fixCombos) {
     const attempt = cloneCubies(cubies);
-    for (const alg of combo) applyMoves(attempt, alg);
+    const comboMoves: Move[] = [];
+    for (const alg of combo) {
+      applyMoves(attempt, alg);
+      comboMoves.push(...alg);
+    }
     const centerResult = solveCenters(attempt, 15000);
     if (!centerResult.solved) continue;
     const result = await tryReduce(attempt, gridSize);
@@ -324,8 +351,12 @@ export async function solveReduced(cubies: Cubie[], gridSize: number): Promise<R
         cubies[i].position.copy(attempt[i].position);
         cubies[i].orientation.copy(attempt[i].orientation);
       }
-      return result;
+      return {
+        solved: true,
+        movesApplied: comboMoves.length + centerResult.moves.length + result.moves.length,
+        moves: [...comboMoves, ...centerResult.moves, ...result.moves],
+      };
     }
   }
-  return { solved: false, movesApplied: 0 };
+  return { solved: false, movesApplied: 0, moves: [] };
 }

@@ -1,14 +1,20 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { CustomCubeScene } from "./customCube/CustomCubeScene";
 import { attachCustomSwipeTurning, type CustomSwipeController } from "./customCube/customSwipeControls";
-import { autoSolveFourByFour, previewNextSolveMove, type FourByFourSolveResult } from "./customCube/customSolvePlayback";
+import { computeFourByFourSolveMoves, type Move, playFourByFourMove, previewNextSolveMove } from "./customCube/customSolvePlayback";
 import type { SolveHint } from "./solvePlayback";
+
+export interface FourByFourStepResult {
+  done: boolean;
+  solved: boolean;
+  movesRemaining: number;
+}
 
 export interface CubeViewHandle {
   scramble: () => Promise<void>;
   resetToSolved: () => void;
   solveNextMove: () => Promise<SolveHint>;
-  autoSolve4x4: () => Promise<FourByFourSolveResult>;
+  solveStepFourByFour: () => Promise<FourByFourStepResult>;
   isSolved: () => boolean;
 }
 
@@ -31,6 +37,7 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
   const moveCountRef = useRef(0);
   const orbitModeRef = useRef(orbitMode);
   orbitModeRef.current = orbitMode;
+  const fourByFourPlanRef = useRef<{ moves: Move[]; index: number; solved: boolean } | null>(null);
 
   const callbacksRef = useRef({ onMoveCountChange, onFirstMove, onSolvedChange });
   callbacksRef.current = { onMoveCountChange, onFirstMove, onSolvedChange };
@@ -40,6 +47,7 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
     if (!container) return;
     hasMovedRef.current = false;
     moveCountRef.current = 0;
+    fourByFourPlanRef.current = null;
     const scene = new CustomCubeScene(container, gridSize);
     sceneRef.current = scene;
     scene.setOrbitEnabled(orbitModeRef.current);
@@ -77,12 +85,14 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
     scramble: async () => {
       hasMovedRef.current = false;
       moveCountRef.current = 0;
+      fourByFourPlanRef.current = null;
       sceneRef.current?.scramble();
       callbacksRef.current.onMoveCountChange(0);
     },
     resetToSolved: () => {
       hasMovedRef.current = false;
       moveCountRef.current = 0;
+      fourByFourPlanRef.current = null;
       sceneRef.current?.resetToSolved();
       callbacksRef.current.onMoveCountChange(0);
     },
@@ -96,14 +106,26 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
         controllerRef.current?.setEnabled(!orbitModeRef.current);
       }
     },
-    autoSolve4x4: async () => {
+    solveStepFourByFour: async () => {
       const scene = sceneRef.current;
-      if (!scene) return { solved: false };
+      if (!scene) return { done: true, solved: false, movesRemaining: 0 };
       controllerRef.current?.setEnabled(false);
       try {
-        const result = await autoSolveFourByFour(scene);
-        callbacksRef.current.onSolvedChange(scene.isSolved());
-        return result;
+        let plan = fourByFourPlanRef.current;
+        if (!plan) {
+          const computed = await computeFourByFourSolveMoves(scene);
+          plan = { moves: computed.moves, index: 0, solved: computed.solved };
+          fourByFourPlanRef.current = plan;
+        }
+        if (plan.index >= plan.moves.length) {
+          fourByFourPlanRef.current = null;
+          return { done: true, solved: plan.solved, movesRemaining: 0 };
+        }
+        await playFourByFourMove(scene, plan.moves[plan.index]);
+        plan.index++;
+        const movesRemaining = plan.moves.length - plan.index;
+        if (movesRemaining === 0) callbacksRef.current.onSolvedChange(scene.isSolved());
+        return { done: false, solved: plan.solved, movesRemaining };
       } finally {
         controllerRef.current?.setEnabled(!orbitModeRef.current);
       }

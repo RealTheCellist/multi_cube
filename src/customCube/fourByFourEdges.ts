@@ -519,22 +519,23 @@ function bestFixOverall(cubies: Cubie[], lib: EdgeLibrary, plies: number, deadli
   return null;
 }
 
-function solveEdgesOneAttempt(cubies: Cubie[], lib: EdgeLibrary, deadline: number): { solved: boolean; movesApplied: number } {
+function solveEdgesOneAttempt(cubies: Cubie[], lib: EdgeLibrary, deadline: number): { solved: boolean; moves: Move[] } {
   let guard = 0;
-  let movesApplied = 0;
+  const moves: Move[] = [];
   while (unpairedWingCount(cubies) > 0 && guard < 40 && Date.now() < deadline) {
     guard++;
     const fix = bestFixOverall(cubies, lib, PLIES, deadline);
     if (!fix || fix.length === 0) break;
     applySeq(cubies, fix);
-    movesApplied += fix.length;
+    moves.push(...fix);
   }
-  return { solved: unpairedWingCount(cubies) === 0, movesApplied };
+  return { solved: unpairedWingCount(cubies) === 0, moves };
 }
 
 export interface SolveEdgePairingResult {
   solved: boolean;
   movesApplied: number;
+  moves: Move[];
 }
 
 // Cooperative yielding: each restart attempt is fast (typically well under
@@ -589,7 +590,7 @@ export async function solveEdgePairing(
         cubies[i].position.copy(attemptCubies[i].position);
         cubies[i].orientation.copy(attemptCubies[i].orientation);
       }
-      return { solved: true, movesApplied: result.movesApplied };
+      return { solved: true, movesApplied: result.moves.length, moves: result.moves };
     }
     if (Date.now() - lastYield > FRAME_BUDGET_MS) {
       await yieldToEventLoop();
@@ -597,5 +598,5 @@ export async function solveEdgePairing(
     }
   }
 
-  return { solved: false, movesApplied: 0 };
+  return { solved: false, movesApplied: 0, moves: [] };
 }

@@ -3,11 +3,14 @@ import type { KPattern, KPuzzle } from "cubing/kpuzzle";
 import { cube2x2x2, cube3x3x3 } from "cubing/puzzles";
 import { experimentalSolve2x2x2 } from "cubing/search";
 import { computeSolveHint, type SolveHint } from "../solvePlayback";
+import type { Axis } from "./cubeMath";
 import type { CustomCubeScene } from "./CustomCubeScene";
-import { FACE_TURNS, outerLayerCoordinate, type Face } from "./cubeState";
+import { cloneCubies, FACE_TURNS, outerLayerCoordinate, type Face } from "./cubeState";
 import { solveCenters } from "./fourByFourCenters";
 import { solveEdgePairing } from "./fourByFourEdges";
 import { solveReduced } from "./fourByFourReduction";
+
+export type Move = readonly [Axis, number, 1 | -1];
 
 const MOVE_ANIMATION_MS = 350;
 const HOLD_MS = 500;
@@ -96,18 +99,18 @@ export async function previewNextSolveMove(scene: CustomCubeScene): Promise<Solv
   return hint;
 }
 
-export interface FourByFourSolveResult {
+export interface FourByFourSolvePlan {
   solved: boolean;
+  moves: Move[];
 }
 
 /**
- * Fully solves a 4x4x4 in place (unlike previewNextSolveMove for the
- * 2x2x2/3x3x3, which only previews one move and reverts -- there's no
- * letter-notation move history to hint against for a 4x4x4, see
- * cubeState.ts, so this commits the whole solve directly instead). Runs
- * centers, then edge pairing, then reduces to a 3x3x3 solve, each phase
- * mutating the scene's cubies array directly and re-syncing meshes
- * afterward. Can legitimately take up to a couple of minutes for the edge
+ * Computes the full 4x4x4 solve plan -- edges, then centers, then reduction
+ * (same order as before, see the comment inside), same as a real solve --
+ * but entirely on a clone of the scene's cubies, so the live scene isn't
+ * touched at all. Lets the UI reveal the plan's moves one at a time via
+ * playFourByFourMove instead of jumping straight to the solved state.
+ * Can legitimately take up to a couple of minutes to compute, for the edge
  * pairing's tail search on a hard scramble.
  *
  * A minority of scrambles reduce to a pattern only reachable via a genuine
@@ -116,8 +119,9 @@ export interface FourByFourSolveResult {
  * fix algorithms (see fourByFourReduction.ts) before giving up, so this
  * only needs to check its final result.
  */
-export async function autoSolveFourByFour(scene: CustomCubeScene): Promise<FourByFourSolveResult> {
-  const cubies = scene.getCubies();
+export async function computeFourByFourSolveMoves(scene: CustomCubeScene): Promise<FourByFourSolvePlan> {
+  const cubies = cloneCubies(scene.getCubies());
+  const moves: Move[] = [];
 
   // Edges first: pairing doesn't care about center state, but its tail
   // phase can disturb centers (see fourByFourEdges.ts) -- so solving
@@ -125,14 +129,30 @@ export async function autoSolveFourByFour(scene: CustomCubeScene): Promise<FourB
   // nothing downstream of it (the reduction solve's single-outer-layer
   // turns) ever touches centers again.
   const edgeResult = await solveEdgePairing(cubies, 150000);
-  scene.syncAllMeshes();
-  if (!edgeResult.solved) return { solved: false };
+  moves.push(...edgeResult.moves);
+  if (!edgeResult.solved) return { solved: false, moves };
 
   const centerResult = solveCenters(cubies, 15000);
-  scene.syncAllMeshes();
-  if (!centerResult.solved) return { solved: false };
+  moves.push(...centerResult.moves);
+  if (!centerResult.solved) return { solved: false, moves };
 
   const reductionResult = await solveReduced(cubies, scene.gridSize);
-  scene.syncAllMeshes();
-  return { solved: reductionResult.solved };
+  moves.push(...reductionResult.moves);
+  return { solved: reductionResult.solved, moves };
+}
+
+/**
+ * Animates and commits exactly one raw quarter turn onto the live scene --
+ * the step-by-step counterpart to computeFourByFourSolveMoves, called once
+ * per solver-button click so a 4x4 solve reveals move by move instead of
+ * jumping straight to solved, mirroring the 2x2x2/3x3x3 hint button's
+ * click-to-advance feel (though this commits for real -- there's no letter-
+ * notation move history to hint against and let the user perform it
+ * themselves, see cubeState.ts).
+ */
+export async function playFourByFourMove(scene: CustomCubeScene, move: Move): Promise<void> {
+  const [axis, layer, sign] = move;
+  scene.beginTurn(axis, layer);
+  await animateProgress(scene, 0, sign, MOVE_ANIMATION_MS);
+  scene.endTurn(sign);
 }

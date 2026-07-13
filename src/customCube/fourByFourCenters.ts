@@ -270,6 +270,7 @@ function bestFixOverall(cubies: Cubie[], plies: number, deadline: number): Move[
 export interface SolveCentersResult {
   solved: boolean;
   movesApplied: number;
+  moves: Move[];
 }
 
 // IDA*-style completeness fallback, used only once the fast greedy pass
@@ -337,7 +338,7 @@ function idaFallback(cubies: Cubie[], deadline: number, maxBound: number): Move[
  */
 export function solveCenters(cubies: Cubie[], timeBudgetMs = 15000): SolveCentersResult {
   const deadline = Date.now() + timeBudgetMs;
-  let movesApplied = 0;
+  const moves: Move[] = [];
   let guard = 0;
   while (wrongCenterCount(cubies) > 0 && guard < 60 && Date.now() < deadline) {
     guard++;
@@ -345,7 +346,7 @@ export function solveCenters(cubies: Cubie[], timeBudgetMs = 15000): SolveCenter
     if (!fix || fix.length === 0) fix = idaFallback(cubies, deadline, IDA_MAX_BOUND);
     if (!fix || fix.length === 0) break;
     applySeq(cubies, fix);
-    movesApplied += fix.length;
+    moves.push(...fix);
   }
-  return { solved: wrongCenterCount(cubies) === 0, movesApplied };
+  return { solved: wrongCenterCount(cubies) === 0, movesApplied: moves.length, moves };
 }
