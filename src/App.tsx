@@ -145,7 +145,7 @@ function App() {
       </header>
 
       <div className="controls" style={{ marginBottom: "0.5rem" }}>
-        {[2, 3, 4].map((size) => (
+        {[2, 3, 4, 5].map((size) => (
           <button
             key={size}
             type="button"
