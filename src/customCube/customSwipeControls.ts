@@ -17,7 +17,6 @@ export interface CustomSwipeController {
 interface Candidate {
   axis: Axis;
   layer: number;
-  screenDir: THREE.Vector2;
 }
 
 interface LockedTurn {
@@ -32,6 +31,7 @@ interface DragState {
   pointerId: number;
   startX: number;
   startY: number;
+  hitPoint: THREE.Vector3;
   candidates: [Candidate, Candidate] | null;
   locked: LockedTurn | null;
 }
@@ -50,6 +50,47 @@ function screenTangent(scene: CustomCubeScene, hitPoint: THREE.Vector3, axis: Ax
   const a = worldToScreen(scene, hitPoint, rect);
   const b = worldToScreen(scene, hitPoint.clone().addScaledVector(tangentWorld, 0.05), rect);
   return b.sub(a).normalize();
+}
+
+// The same rotation setTurnProgress() applies visually to the live layer
+// group (axisVector(axis), angle = progress * 90 degrees) -- reusing that
+// exact convention here means a predicted screen position for a given
+// progress always matches what the user would actually see mid-scrub.
+function rotatedPoint(point: THREE.Vector3, axis: Axis, progress: number): THREE.Vector3 {
+  const q = new THREE.Quaternion().setFromAxisAngle(axisVector(axis), progress * (Math.PI / 2));
+  return point.clone().applyQuaternion(q);
+}
+
+// Finds the turn progress (in units of quarter-turns, unclamped) whose
+// predicted screen position for `hitPoint` best matches `targetScreen` --
+// a coarse-then-refined 1D search over the actual nonlinear rotation
+// trajectory, not a linear approximation. Used ONLY to decide which of the
+// two candidate axes a drag means (see below) -- NOT for the ongoing
+// progress value, since "closest point on this axis's finite trajectory
+// curve to the pointer's absolute screen position" doesn't grow without
+// bound as the user keeps dragging in a straight line (verified directly:
+// a sustained straight drag can asymptote at a residual well under the
+// commit threshold if the line's bearing doesn't closely match the curve's
+// overall bearing, i.e. dragging further would never commit the turn no
+// matter how far you go). Ongoing progress instead reuses the original
+// fixed-tangent linear projection once an axis is chosen, which is
+// monotonic and unbounded by construction.
+function bestFitProgress(scene: CustomCubeScene, hitPoint: THREE.Vector3, axis: Axis, rect: DOMRect, targetScreen: THREE.Vector2): { progress: number; error: number } {
+  function errorAt(progress: number): number {
+    const predicted = worldToScreen(scene, rotatedPoint(hitPoint, axis, progress), rect);
+    return predicted.distanceToSquared(targetScreen);
+  }
+  let best = { progress: 0, error: errorAt(0) };
+  for (let p = -1.6; p <= 1.6 + 1e-9; p += 0.05) {
+    const error = errorAt(p);
+    if (error < best.error) best = { progress: p, error };
+  }
+  const center = best.progress;
+  for (let p = center - 0.05; p <= center + 0.05 + 1e-9; p += 0.002) {
+    const error = errorAt(p);
+    if (error < best.error) best = { progress: p, error };
+  }
+  return best;
 }
 
 export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: { current: number }): CustomSwipeController {
@@ -153,11 +194,11 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
       // CustomCubeScene.endTurn knows how to commit and name that turn, so
       // this is passed through as-is rather than forced to an outer layer.
       const layer = Math.round(cubie.position[axis] * 2) / 2;
-      return { axis, layer, screenDir: screenTangent(scene, hit.point, axis, rect) };
+      return { axis, layer };
     }) as [Candidate, Candidate];
 
     dom.setPointerCapture(e.pointerId);
-    drag = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, candidates, locked: null };
+    drag = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, hitPoint: hit.point.clone(), candidates, locked: null };
   }
 
   function onPointerMove(e: PointerEvent) {
@@ -167,18 +208,19 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
 
     if (!drag.locked) {
       if (Math.hypot(dx, dy) < DRAG_THRESHOLD_PX) return;
-      const dragVec = new THREE.Vector2(dx, dy);
-      const [c0, c1] = drag.candidates!;
-      const d0 = Math.abs(dragVec.dot(c0.screenDir));
-      const d1 = Math.abs(dragVec.dot(c1.screenDir));
-      const chosen = d0 >= d1 ? c0 : c1;
       const rect = dom.getBoundingClientRect();
+      const targetScreen = new THREE.Vector2(e.clientX - rect.left, e.clientY - rect.top);
+      const [c0, c1] = drag.candidates!;
+      const fit0 = bestFitProgress(scene, drag.hitPoint, c0.axis, rect, targetScreen);
+      const fit1 = bestFitProgress(scene, drag.hitPoint, c1.axis, rect, targetScreen);
+      const chosen = fit0.error <= fit1.error ? c0 : c1;
+      const screenDir = screenTangent(scene, drag.hitPoint, chosen.axis, rect);
       const fullTurnPx = rect.width * FULL_TURN_FRACTION_OF_WIDTH;
       scene.beginTurn(chosen.axis, chosen.layer);
-      const projected = dx * chosen.screenDir.x + dy * chosen.screenDir.y;
+      const projected = dx * screenDir.x + dy * screenDir.y;
       const progress = Math.max(-1, Math.min(1, projected / fullTurnPx));
       scene.setTurnProgress(progress);
-      drag.locked = { axis: chosen.axis, layer: chosen.layer, screenDir: chosen.screenDir, fullTurnPx, progress };
+      drag.locked = { axis: chosen.axis, layer: chosen.layer, screenDir, fullTurnPx, progress };
       return;
     }
 
