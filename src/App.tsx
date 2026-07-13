@@ -4,9 +4,15 @@ import CubeView, { type CubeViewHandle } from "./CubeView";
 import { formatTime, useTimer } from "./useTimer";
 import "./App.css";
 
-interface SolveHintDisplay {
-  move: string;
-  movesRemaining: number;
+// Shown after a solver-button click: moveLabel is the letter notation for
+// puzzles that have one (2x2x2/3x3x3), or null for puzzles that only
+// preview via animation (4x4x4, and whatever's added next -- see
+// handleSolve). Deliberately carries no move count: the total moves needed
+// can be recomputed differently between clicks (the 4x4x4 solver restarts
+// itself with randomized ordering), so displaying it as a stable number
+// would be misleading.
+interface HintDisplay {
+  moveLabel: string | null;
 }
 
 function App() {
@@ -19,8 +25,7 @@ function App() {
   const [, setHasScrambled] = useState(false);
   const [justSolved, setJustSolved] = useState(false);
   const [isSolving, setIsSolving] = useState(false);
-  const [lastHint, setLastHint] = useState<SolveHintDisplay | null>(null);
-  const [fourByFourHint, setFourByFourHint] = useState(false);
+  const [hint, setHint] = useState<HintDisplay | null>(null);
   const [solveError, setSolveError] = useState(false);
   const [fourByFourUnsolved, setFourByFourUnsolved] = useState(false);
 
@@ -55,8 +60,7 @@ function App() {
     setMode("look");
     setJustSolved(false);
     setMoveCount(0);
-    setLastHint(null);
-    setFourByFourHint(false);
+    setHint(null);
     setSolveError(false);
     setFourByFourUnsolved(false);
     timer.reset();
@@ -69,8 +73,7 @@ function App() {
     setMode("look");
     setJustSolved(false);
     setMoveCount(0);
-    setLastHint(null);
-    setFourByFourHint(false);
+    setHint(null);
     setSolveError(false);
     setFourByFourUnsolved(false);
     setHasScrambled(false);
@@ -87,8 +90,7 @@ function App() {
       setMode("look");
       setJustSolved(false);
       setMoveCount(0);
-      setLastHint(null);
-      setFourByFourHint(false);
+      setHint(null);
       setSolveError(false);
       setFourByFourUnsolved(false);
       setHasScrambled(false);
@@ -114,22 +116,21 @@ function App() {
         // notation move history to hint against for a 4x4x4 (see
         // cubeState.ts) -- a cached plan would go stale the moment the
         // user's own swipes diverge from it.
-        const hint = await cubeRef.current?.previewNextFourByFour();
+        const result = await cubeRef.current?.previewNextFourByFour();
         setSolveError(false);
-        setFourByFourHint(!!hint?.hasMove);
-        if (hint?.hasMove) setFourByFourUnsolved(false);
-        else setFourByFourUnsolved(hint ? !hint.solved : true);
+        setHint(result?.hasMove ? { moveLabel: null } : null);
+        setFourByFourUnsolved(result?.hasMove ? false : result ? !result.solved : true);
       } else {
-        const hint = await cubeRef.current?.solveNextMove();
+        const result = await cubeRef.current?.solveNextMove();
         setSolveError(false);
-        setLastHint(hint?.move ? { move: hint.move, movesRemaining: hint.movesRemaining } : null);
+        setHint(result?.move ? { moveLabel: result.move } : null);
       }
     } catch {
       // The solver is a third-party library reached through an experimental
       // API — keep the button from getting stuck disabled forever if it
       // ever throws for a reason we haven't seen yet.
       setSolveError(true);
-      setLastHint(null);
+      setHint(null);
     } finally {
       setIsSolving(false);
       if (wasTimerRunning) timer.resume();
@@ -177,13 +178,13 @@ function App() {
             ? "솔버 실행 중 오류가 발생했습니다. 다시 시도해보세요"
             : fourByFourUnsolved
               ? "이 스크램블은 아직 끝까지 풀지 못했어요 (패리티 케이스일 수 있어요) — 다시 시도해보세요"
-              : fourByFourHint
-                ? "다음 수를 미리보기했어요 — 애니메이션을 보고 직접 돌려보세요"
-                : lastHint
-                  ? `다음 수: ${lastHint.move} (총 ${lastHint.movesRemaining + 1}수 필요) — 직접 돌려보세요`
-                  : mode === "look"
-                    ? "드래그해서 큐브를 둘러보세요"
-                    : "스와이프로 면을 돌려보세요"}
+              : hint
+                ? hint.moveLabel
+                  ? `다음 수: ${hint.moveLabel} — 직접 돌려보세요`
+                  : "다음 수를 미리보기했어요 — 애니메이션을 보고 직접 돌려보세요"
+                : mode === "look"
+                  ? "드래그해서 큐브를 둘러보세요"
+                  : "스와이프로 면을 돌려보세요"}
       </p>
 
       <div className="cube-stage">
