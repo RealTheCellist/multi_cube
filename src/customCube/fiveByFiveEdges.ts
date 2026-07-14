@@ -430,7 +430,23 @@ function litePosKeyOf(e: LiteEdge5): string {
 // wrongness improving after the fact, never aim for a specific known-good
 // outcome.
 const MAX_TRACK_NODES = 8000;
-function bfsMoveWingToPosition(edges: readonly LiteEdge5[], pieceId: number, targetPosKey: string, maxDepth: number): Move[] | null {
+// `pin` keeps a second, specific piece nailed to a specific position for the
+// whole search -- without it, a setup path is free to relocate whatever
+// wrong wing the caller is trying to fix as an incidental side effect of the
+// very moves used to bring the match piece into place (single-outer-layer
+// turns move a wide net of pieces at once). By the time the caller's fixed
+// swap-algorithm runs, the wrong wing may no longer be where the caller
+// computed its target from, so the "swap" ends up trading two unrelated
+// pieces and the net wrongness count never improves -- confirmed directly
+// via instrumentation (every candidate reported setupFails=0 but
+// noImprove=50, i.e. a setup was always found but never actually helped).
+function bfsMoveWingToPosition(
+  edges: readonly LiteEdge5[],
+  pieceId: number,
+  targetPosKey: string,
+  maxDepth: number,
+  pin?: { id: number; posKey: string }
+): Move[] | null {
   const startPiece = edges.find((e) => e.id === pieceId);
   if (!startPiece) return null;
   if (litePosKeyOf(startPiece) === targetPosKey) return [];
@@ -445,6 +461,10 @@ function bfsMoveWingToPosition(edges: readonly LiteEdge5[], pieceId: number, tar
       for (const move of safe) {
         if (nodesExplored++ > MAX_TRACK_NODES) return null;
         const nextEdges = liteApplyMove(node.edges, move);
+        if (pin) {
+          const pinnedPiece = nextEdges.find((e) => e.id === pin.id)!;
+          if (litePosKeyOf(pinnedPiece) !== pin.posKey) continue;
+        }
         const path = [...node.path, move];
         const piece = nextEdges.find((e) => e.id === pieceId)!;
         if (litePosKeyOf(piece) === targetPosKey) return path;
@@ -468,6 +488,16 @@ function tryFixWing(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline: numbe
   if (!trueEdge) return null;
   const neededColorKey = colorKeyOf(trueEdge);
   const edges = toLiteEdges(cubies);
+  // Only ever pull a match from wings that are ALREADY wrong: they're the
+  // only pieces genuinely "free" to relocate. A wing that's currently
+  // correctly paired at its own slot has nothing to gain from being yanked
+  // out to help w -- doing so fixes w's slot but breaks the one it came
+  // from, which is a wash (or worse) for the overall wrongWingCount, not a
+  // real improvement. This was the actual cause of a long-standing plateau
+  // (confirmed via instrumentation: setup always succeeded, but applying it
+  // never helped -- p1 would become correct while some other,
+  // previously-correct slot broke elsewhere, net flat or negative).
+  const wrongIds = new Set(wrongWings5(cubies).map((c) => c.id));
 
   for (const entry of candidatesForWing(lib, w)) {
     if (Date.now() > deadline) return null;
@@ -476,9 +506,19 @@ function tryFixWing(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline: numbe
     const p2Key = `${eff.pos[0]},${eff.pos[1]},${eff.pos[2]}`;
     if (p2Key === p1) continue;
 
-    const matches = edges.filter((e) => e.type === "wingEdge" && e.id !== w.id && liteColorKeyOf(e) === neededColorKey);
+    const matches = edges.filter(
+      (e) => e.type === "wingEdge" && e.id !== w.id && wrongIds.has(e.id) && liteColorKeyOf(e) === neededColorKey
+    );
     for (const match of matches) {
-      const setup = litePosKeyOf(match) === p2Key ? [] : bfsMoveWingToPosition(edges, match.id, p2Key, 6);
+      // Pin w at p1 for the whole setup search -- without this, the setup
+      // moves (which relocate a wide net of pieces per turn) are free to
+      // carry w itself away from p1 as a side effect, so by the time
+      // entry.seq runs, the "swap" trades two positions that no longer hold
+      // the pieces this whole operation was computed for (also confirmed
+      // via instrumentation: setup always found a path, but the fixed swap
+      // then acted on the wrong pieces).
+      const setup =
+        litePosKeyOf(match) === p2Key ? [] : bfsMoveWingToPosition(edges, match.id, p2Key, 6, { id: w.id, posKey: p1 });
       if (setup === null) continue;
       const fullSeq = [...setup, ...entry.seq];
       const clone = cloneCubies(cubies);
