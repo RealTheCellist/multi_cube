@@ -125,6 +125,27 @@ interface EntryEffect {
 interface LibraryEntry {
   seq: Move[];
   effect: Map<string, EntryEffect>;
+  // Every solo-mover leg this entry's sequence performs (see
+  // computeSoloWingLegs) -- a compound entry can carry MORE than the one
+  // (p1,p2) pair a given tryFixWing call is targeting (it's a chain of 2
+  // base swaps, so it always performs a 2nd, independent swap too).
+  legs: { from: string; to: string }[];
+  // The COMPLETE set of wing positions that come out "wrong" when this
+  // entry is applied to an already-solved reference cube -- not just the
+  // tracked (p1,p2) swap. Even a single BASE_ALG rotation, applied to a
+  // solved cube, breaks 3 positions, not 2: besides the intended isolated
+  // swap, one more wing near the trigger faces' shared edge goes wrong
+  // WITHOUT ever changing position -- its own true edge (sitting exactly on
+  // the R/F trigger's rotation axis) gets twisted in place, still correctly
+  // positioned but now facing the wrong way, silently breaking whichever
+  // wing was correctly paired against its old orientation (confirmed via
+  // direct simulation: a true edge's position was provably unchanged yet
+  // its sticker-facing direction had rotated). This is a fixed, predictable
+  // side effect of the sequence's own geometry -- computing it once here
+  // (by seeing exactly which positions come out wrong on a solved
+  // reference) is what lets tryFixWing check ALL of an entry's collateral,
+  // not just its cleanly-tracked legs, before committing to it.
+  disruptedPositions: string[];
 }
 
 function computeEntryEffect(seq: readonly Move[]): Map<string, EntryEffect> {
@@ -221,14 +242,15 @@ function buildWingLibrary(): WingLibrary {
   const posLookup = new Map<string, LibraryEntry[]>();
   const seen = new Set<string>();
 
-  function addEntry(variant: Move[], legs: { from: string; to: string }[]): void {
+  function addEntry(variant: Move[], legs: { from: string; to: string }[], after: Cubie[]): void {
     const key = legs
       .map((l) => `${l.from}>${l.to}`)
       .sort()
       .join("|");
     if (seen.has(key)) return;
     seen.add(key);
-    const entry: LibraryEntry = { seq: variant, effect: computeEntryEffect(variant) };
+    const disruptedPositions = wrongWings5(after).map((c) => posKey(c));
+    const entry: LibraryEntry = { seq: variant, effect: computeEntryEffect(variant), legs, disruptedPositions };
     entries.push(entry);
     for (const leg of legs) {
       const list = posLookup.get(leg.from) ?? [];
@@ -246,7 +268,7 @@ function buildWingLibrary(): WingLibrary {
     const legs = computeSoloWingLegs(before, after);
     if (legs.length !== 2) continue;
     baseVariants.push(variant);
-    addEntry(variant, legs);
+    addEntry(variant, legs, after);
   }
 
   // Multi-tool step: compose PAIRS of the verified 2-wing-swap variants.
@@ -274,7 +296,7 @@ function buildWingLibrary(): WingLibrary {
       const legs = computeSoloWingLegs(before, after);
       if (legs.length < 2) continue;
       if (!doesNotMoveTrueCenters(combined)) continue;
-      addEntry(combined, legs);
+      addEntry(combined, legs, after);
     }
   }
 
@@ -308,7 +330,7 @@ export function wrongWingCount5(cubies: Cubie[]): number {
   return wrongWings5(cubies).length;
 }
 
-function wrongWings5(cubies: Cubie[]): Cubie[] {
+export function wrongWings5(cubies: Cubie[]): Cubie[] {
   const bySlot = new Map<string, { wings: Cubie[]; trueEdge: Cubie | null }>();
   for (const c of cubies) {
     const t = pieceType5(c);
@@ -480,8 +502,15 @@ function bfsMoveWingToPosition(
   return null;
 }
 
+function isWrongAtPosition(cubies: readonly Cubie[], pos: string): boolean {
+  const piece = cubies.find((c) => posKey(c) === pos && pieceType5(c) === "wingEdge");
+  if (!piece) return true;
+  const trueEdge = cubies.find((c) => pieceType5(c) === "trueEdge" && slotKey(c) === slotKey(piece));
+  if (!trueEdge) return true;
+  return !matchesTrueEdge(piece, trueEdge);
+}
+
 function tryFixWing(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline: number): Move[] | null {
-  const before = wrongWingCount5(cubies);
   const p1 = posKey(w);
   const wSlot = slotKey(w);
   const trueEdge = cubies.find((c) => pieceType5(c) === "trueEdge" && slotKey(c) === wSlot);
@@ -497,6 +526,7 @@ function tryFixWing(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline: numbe
   // (confirmed via instrumentation: setup always succeeded, but applying it
   // never helped -- p1 would become correct while some other,
   // previously-correct slot broke elsewhere, net flat or negative).
+  const before = wrongWingCount5(cubies);
   const wrongIds = new Set(wrongWings5(cubies).map((c) => c.id));
 
   for (const entry of candidatesForWing(lib, w)) {
@@ -505,6 +535,20 @@ function tryFixWing(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline: numbe
     if (!eff) continue;
     const p2Key = `${eff.pos[0]},${eff.pos[1]},${eff.pos[2]}`;
     if (p2Key === p1) continue;
+
+    // Skip this entry entirely if any of its disrupted positions OTHER than
+    // the (p1,p2) pair we're targeting currently holds an already-correct
+    // wing -- applying it would silently break that pairing for no gain.
+    // disruptedPositions (see LibraryEntry) covers the entry's FULL
+    // collateral, not just its cleanly-tracked legs, since even a single
+    // base variant twists a 3rd position's true edge in place without
+    // relocating anything (confirmed via direct simulation).
+    let otherDisruptionsSafe = true;
+    for (const pos of entry.disruptedPositions) {
+      if (pos === p1 || pos === p2Key) continue;
+      if (!isWrongAtPosition(cubies, pos)) { otherDisruptionsSafe = false; break; }
+    }
+    if (!otherDisruptionsSafe) continue;
 
     const matches = edges.filter(
       (e) => e.type === "wingEdge" && e.id !== w.id && wrongIds.has(e.id) && liteColorKeyOf(e) === neededColorKey
