@@ -318,12 +318,15 @@ export interface SolveCenters5Result {
 }
 
 /**
- * Solves all 48 X-center/T-center pieces (color-correctness only -- true
- * centers are reference points, like 3x3x3, and never need solving) in
- * place. Primary greedy pass identical in structure to
- * fourByFourCenters.ts's solveCenters; falls back to idaFallback when it
- * plateaus. See that file's history for why the fallback matters and why
- * it reuses the same commutator vocabulary rather than a different one.
+ * Solves all 48 X-center/T-center pieces (color-correctness only) in
+ * place. Each piece is brought to its OWN declared color's fixed world
+ * position regardless of where that face's true center currently sits --
+ * so this never needs to reference true centers at all, and works
+ * correctly whether or not solveTrueCenterPositions5 has run yet. Primary
+ * greedy pass identical in structure to fourByFourCenters.ts's
+ * solveCenters; falls back to idaFallback when it plateaus. See that
+ * file's history for why the fallback matters and why it reuses the same
+ * commutator vocabulary rather than a different one.
  */
 export function solveCenters5(cubies: Cubie[], timeBudgetMs = 15000): SolveCenters5Result {
   const deadline = Date.now() + timeBudgetMs;
@@ -338,4 +341,79 @@ export function solveCenters5(cubies: Cubie[], timeBudgetMs = 15000): SolveCente
     moves.push(...fix);
   }
   return { solved: wrongCenterCount(cubies) === 0, movesApplied: moves.length, moves };
+}
+
+// --- True-center position solving -------------------------------------------
+// X/T-center solving above never references true centers (each piece just
+// targets its OWN declared color's fixed world position) and wing pairing
+// only cares about true EDGES, not true centers -- so nothing else in this
+// pipeline ever repositions a true center. A real scramble's own middle-
+// slice (layer=0) turns DO relocate them across faces, though, and left
+// unfixed a face's 8 X/T-centers can all correctly show one color while
+// the true center sitting among them still shows another -- a single wrong
+// sticker that also throws off fiveByFiveReduction.ts's corner/edge color
+// reading (which assumes a world position's shown color matches the
+// original solved convention). This MUST run before wing pairing: the only
+// moves that can reposition a true center are middle-slice turns on the
+// other two axes (the same math that makes 3x3x3's M/E/S turns move
+// edges), which would break wing pairing if applied afterward.
+function trueCenterPieces(cubies: Cubie[]): Cubie[] {
+  return cubies.filter((c) => pieceType5(c) === "trueCenter");
+}
+function wrongTrueCenterCount(cubies: Cubie[]): number {
+  let wrong = 0;
+  for (const c of trueCenterPieces(cubies)) {
+    if (currentFacingColor(c, c.stickers[0].direction) !== c.stickers[0].color) wrong++;
+  }
+  return wrong;
+}
+
+const MIDDLE_SLICE_MOVES: Move[] = (["x", "y", "z"] as Axis[]).flatMap((axis) => ([1, -1] as const).map((sign) => [axis, 0, sign] as Move));
+
+export interface SolveTrueCenters5Result {
+  solved: boolean;
+  movesApplied: number;
+  moves: Move[];
+}
+
+/**
+ * Brings each of the 6 true centers to its own correct world position,
+ * using only middle-slice (layer=0) turns. The state space (which of 6
+ * positions each of the 6 true centers occupies) is tiny, so a plain BFS
+ * is fast and complete within the depth tried -- no analytical derivation
+ * needed, unlike the X/T-center commutators.
+ */
+export function solveTrueCenterPositions5(cubies: Cubie[], maxDepth = 8): SolveTrueCenters5Result {
+  if (wrongTrueCenterCount(cubies) === 0) return { solved: true, movesApplied: 0, moves: [] };
+
+  function stateKey(cs: Cubie[]): string {
+    return trueCenterPieces(cs)
+      .map((c) => `${c.id}:${Math.round(c.position.x)},${Math.round(c.position.y)},${Math.round(c.position.z)}`)
+      .sort()
+      .join("|");
+  }
+
+  let frontier: { cubies: Cubie[]; path: Move[] }[] = [{ cubies, path: [] }];
+  const seen = new Set<string>([stateKey(cubies)]);
+  for (let depth = 0; depth < maxDepth; depth++) {
+    const next: typeof frontier = [];
+    for (const node of frontier) {
+      for (const move of MIDDLE_SLICE_MOVES) {
+        const clone = cloneCubies(node.cubies);
+        applySeq(clone, [move]);
+        const path = [...node.path, move];
+        if (wrongTrueCenterCount(clone) === 0) {
+          applySeq(cubies, path);
+          return { solved: true, movesApplied: path.length, moves: path };
+        }
+        const key = stateKey(clone);
+        if (seen.has(key)) continue;
+        seen.add(key);
+        next.push({ cubies: clone, path });
+      }
+    }
+    frontier = next;
+    if (frontier.length === 0) break;
+  }
+  return { solved: false, movesApplied: 0, moves: [] };
 }
