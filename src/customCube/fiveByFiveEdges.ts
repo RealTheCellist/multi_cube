@@ -300,6 +300,35 @@ function buildWingLibrary(): WingLibrary {
     }
   }
 
+  // Commutator step: [A,B] = A B A' B'. A plain concatenation (the compound
+  // step above) stacks BOTH variants' collateral on top of each other (each
+  // base variant twists an extra position in place -- see
+  // LibraryEntry.disruptedPositions -- so a plain A+B compound typically
+  // disrupts 4+ positions total). A commutator instead has A' and B' cancel
+  // out everything the two variants don't share, leaving a clean 3-cycle:
+  // confirmed via direct simulation that [A,B] for well-chosen pairs
+  // disrupts exactly 3 positions total (not 4-6), and -- critically --
+  // those 3 positions often span TWO of the three mutually-unreachable
+  // "parallel edge" classes that a lone BASE_ALG rotation (and its plain
+  // compounds) can never cross (see git history: those 12 edge slots split
+  // into 3 groups of 4 that no amount of composing same-shape swaps can
+  // bridge). A genuinely different generator shape was needed to escape
+  // that structural limit, not just more of the same swap composed further.
+  for (const a of baseVariants) {
+    for (const b of baseVariants) {
+      if (a === b) continue;
+      const commutator = [...a, ...b, ...invertSeq(a), ...invertSeq(b)];
+      const before = cloneCubies(solvedRef);
+      const after = cloneCubies(before);
+      applySeq(after, commutator);
+      const legs = computeSoloWingLegs(before, after);
+      if (legs.length < 2) continue;
+      if (wrongWings5(after).length > 4) continue;
+      if (!doesNotMoveTrueCenters(commutator)) continue;
+      addEntry(commutator, legs, after);
+    }
+  }
+
   cachedLibrary = { entries, posLookup };
   return cachedLibrary;
 }
@@ -467,7 +496,7 @@ function bfsMoveWingToPosition(
   pieceId: number,
   targetPosKey: string,
   maxDepth: number,
-  pin?: { id: number; posKey: string }
+  pins?: readonly { id: number; posKey: string }[]
 ): Move[] | null {
   const startPiece = edges.find((e) => e.id === pieceId);
   if (!startPiece) return null;
@@ -483,10 +512,7 @@ function bfsMoveWingToPosition(
       for (const move of safe) {
         if (nodesExplored++ > MAX_TRACK_NODES) return null;
         const nextEdges = liteApplyMove(node.edges, move);
-        if (pin) {
-          const pinnedPiece = nextEdges.find((e) => e.id === pin.id)!;
-          if (litePosKeyOf(pinnedPiece) !== pin.posKey) continue;
-        }
+        if (pins && pins.some((pin) => litePosKeyOf(nextEdges.find((e) => e.id === pin.id)!) !== pin.posKey)) continue;
         const path = [...node.path, move];
         const piece = nextEdges.find((e) => e.id === pieceId)!;
         if (litePosKeyOf(piece) === targetPosKey) return path;
@@ -553,6 +579,52 @@ function tryFixWing(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline: numbe
     const matches = edges.filter(
       (e) => e.type === "wingEdge" && e.id !== w.id && wrongIds.has(e.id) && liteColorKeyOf(e) === neededColorKey
     );
+
+    // For a genuine 3-cycle entry (p1->p2->p3->p1), the position that
+    // actually determines whether p1 comes out correct is p3 (whatever sits
+    // at p3 BEFORE the move is what lands at p1 AFTER) -- p2 only receives
+    // w itself (p1's occupant), so bringing a match to p2 alone can never
+    // fix p1 for a true 3-cycle, only for a self-inverse 2-swap where
+    // p2->p1 too (which is why the single-piece attempt below still works
+    // for those). When a 3rd leg exists, try the fuller fix first: bring a
+    // match for p1's need to p3, AND a match for p3's OWN need to p2 --
+    // fixing both p1 and p3 in one application instead of just one.
+    const p3Eff = entry.effect.get(p2Key);
+    const p3Key = p3Eff ? `${p3Eff.pos[0]},${p3Eff.pos[1]},${p3Eff.pos[2]}` : null;
+    const backToP1Eff = p3Key ? entry.effect.get(p3Key) : undefined;
+    const closesCycle = backToP1Eff && `${backToP1Eff.pos[0]},${backToP1Eff.pos[1]},${backToP1Eff.pos[2]}` === p1;
+    if (p3Key && p3Key !== p1 && p3Key !== p2Key && closesCycle) {
+      const p3TrueEdge = cubies.find((c) => pieceType5(c) === "trueEdge" && slotKey(c) === slotKey(cubies.find((c2) => posKey(c2) === p3Key)!));
+      if (p3TrueEdge) {
+        const p3NeededColorKey = colorKeyOf(p3TrueEdge);
+        const matchesForP3 = edges.filter(
+          (e) => e.type === "wingEdge" && e.id !== w.id && wrongIds.has(e.id) && liteColorKeyOf(e) === p3NeededColorKey
+        );
+        for (const match1 of matches) {
+          if (Date.now() > deadline) break;
+          const setup1 =
+            litePosKeyOf(match1) === p3Key ? [] : bfsMoveWingToPosition(edges, match1.id, p3Key, 6, [{ id: w.id, posKey: p1 }]);
+          if (setup1 === null) continue;
+          const edgesAfterSetup1 = setup1.reduce((acc, m) => liteApplyMove(acc, m), edges);
+          for (const match2 of matchesForP3) {
+            if (match2.id === match1.id) continue;
+            const setup2 =
+              litePosKeyOf(match2) === p2Key
+                ? []
+                : bfsMoveWingToPosition(edgesAfterSetup1, match2.id, p2Key, 6, [
+                    { id: w.id, posKey: p1 },
+                    { id: match1.id, posKey: p3Key },
+                  ]);
+            if (setup2 === null) continue;
+            const fullSeq = [...setup1, ...setup2, ...entry.seq];
+            const clone = cloneCubies(cubies);
+            applySeq(clone, fullSeq);
+            if (wrongWingCount5(clone) < before) return fullSeq;
+          }
+        }
+      }
+    }
+
     for (const match of matches) {
       // Pin w at p1 for the whole setup search -- without this, the setup
       // moves (which relocate a wide net of pieces per turn) are free to
@@ -562,7 +634,7 @@ function tryFixWing(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline: numbe
       // via instrumentation: setup always found a path, but the fixed swap
       // then acted on the wrong pieces).
       const setup =
-        litePosKeyOf(match) === p2Key ? [] : bfsMoveWingToPosition(edges, match.id, p2Key, 6, { id: w.id, posKey: p1 });
+        litePosKeyOf(match) === p2Key ? [] : bfsMoveWingToPosition(edges, match.id, p2Key, 6, [{ id: w.id, posKey: p1 }]);
       if (setup === null) continue;
       const fullSeq = [...setup, ...entry.seq];
       const clone = cloneCubies(cubies);
