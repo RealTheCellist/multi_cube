@@ -314,6 +314,7 @@ function buildWingLibrary(): WingLibrary {
   // into 3 groups of 4 that no amount of composing same-shape swaps can
   // bridge). A genuinely different generator shape was needed to escape
   // that structural limit, not just more of the same swap composed further.
+  const cleanCommutators: Move[][] = [];
   for (const a of baseVariants) {
     for (const b of baseVariants) {
       if (a === b) continue;
@@ -326,6 +327,34 @@ function buildWingLibrary(): WingLibrary {
       if (wrongWings5(after).length > 4) continue;
       if (!doesNotMoveTrueCenters(commutator)) continue;
       addEntry(commutator, legs, after);
+      cleanCommutators.push(commutator);
+    }
+  }
+
+  // Widen coverage: conjugate each clean commutator by a single outer face
+  // turn (W C W'). Re-conjugating by a whole-cube ROTATION wouldn't add
+  // anything new here -- ROTATIONS is exactly the set the base variants (and
+  // therefore the commutators built from pairs of them) were already
+  // generated across, so rotating a found commutator just lands on another
+  // pair this same exhaustive search already tried. A single FACE turn is
+  // different: it's not a whole-cube symmetry, so W C W' relocates the
+  // commutator's 3 disrupted positions to a genuinely new triple that the
+  // pairwise search over whole-cube-symmetric variants could never reach
+  // directly, while conjugation guarantees the SHAPE (a clean 3-cycle) is
+  // preserved exactly -- W' undoes whatever W did to the pieces C doesn't
+  // touch, same principle as BASE_ALG's own Uw'...Uw sandwich.
+  const wedgeMoves = allOuterMoves().flat();
+  for (const commutator of cleanCommutators) {
+    for (const wedge of wedgeMoves) {
+      const conjugated = [wedge, ...commutator, [wedge[0], wedge[1], -wedge[2] as 1 | -1] as Move];
+      const before = cloneCubies(solvedRef);
+      const after = cloneCubies(before);
+      applySeq(after, conjugated);
+      const legs = computeSoloWingLegs(before, after);
+      if (legs.length < 2) continue;
+      if (wrongWings5(after).length > 4) continue;
+      if (!doesNotMoveTrueCenters(conjugated)) continue;
+      addEntry(conjugated, legs, after);
     }
   }
 
