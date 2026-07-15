@@ -846,12 +846,19 @@ function enumerateWingCandidatesRelaxed(
 // ordinary safe search -- measured directly (5 captured stuck states, 3
 // resolved) that this closes a real fraction of the residuals the
 // safe-only searches (bestFixOverall/tryEndgameMultiPly) can't reach.
-export function tryEndgameThroughDisruption(cubies: Cubie[], lib: WingLibrary, flipLib: Map<string, Move[]>, deadline: number): Move[] | null {
+export function tryEndgameThroughDisruption(
+  cubies: Cubie[],
+  lib: WingLibrary,
+  flipLib: Map<string, Move[]>,
+  deadline: number,
+  maxDisruptions = 2,
+  recurseDepth = 1,
+): Move[] | null {
   const baseline = wrongWingCount5(cubies);
   if (baseline === 0) return [];
   for (const w of shuffle(wrongWings5(cubies))) {
     if (Date.now() > deadline) return null;
-    const candidates = enumerateWingCandidatesRelaxed(cubies, w, lib, deadline, 20, 1);
+    const candidates = enumerateWingCandidatesRelaxed(cubies, w, lib, deadline, 30, maxDisruptions);
     for (const candidate of candidates) {
       if (Date.now() > deadline) return null;
       const clone = cloneCubies(cubies);
@@ -859,14 +866,29 @@ export function tryEndgameThroughDisruption(cubies: Cubie[], lib: WingLibrary, f
       // Repeatedly apply the safe repair pass -- a single disrupting fix
       // might require more than one follow-up step to fully resolve.
       const repairMoves: Move[] = [];
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 8; i++) {
         const fix = bestFixOverall(clone, lib, flipLib, deadline);
         if (!fix || fix.length === 0) break;
         applySeq(clone, fix);
         repairMoves.push(...fix);
         if (wrongWingCount5(clone) === 0) break;
       }
-      if (wrongWingCount5(clone) < baseline) return [...candidate, ...repairMoves];
+      if (wrongWingCount5(clone) === 0) return [...candidate, ...repairMoves];
+      // If the safe repair pass alone couldn't finish it, and we still have
+      // recursion budget, try going through disruption AGAIN from this
+      // intermediate state -- some residuals may need more than one
+      // deliberate disruption+repair round to fully resolve.
+      if (recurseDepth > 0 && wrongWingCount5(clone) < baseline + maxDisruptions) {
+        const nested = tryEndgameThroughDisruption(clone, lib, flipLib, deadline, maxDisruptions, recurseDepth - 1);
+        if (nested) {
+          const combined = [...candidate, ...repairMoves, ...nested];
+          const finalClone = cloneCubies(cubies);
+          applySeq(finalClone, combined);
+          if (wrongWingCount5(finalClone) < baseline) return combined;
+        }
+      } else if (wrongWingCount5(clone) < baseline) {
+        return [...candidate, ...repairMoves];
+      }
     }
   }
   return null;
