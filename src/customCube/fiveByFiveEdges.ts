@@ -2,19 +2,19 @@ import type { Axis } from "./cubeMath";
 import { applyRawQuarterTurn, type Cubie, type Face, buildSolvedCube, cloneCubies, FACE_TURNS, outerLayerCoordinate } from "./cubeState";
 import { pieceType5 } from "./fiveByFivePieces";
 
-type Move = readonly [Axis, number, 1 | -1];
+export type Move = readonly [Axis, number, 1 | -1];
 
 const AXES: Axis[] = ["x", "y", "z"];
 const ALL_FACES: Face[] = ["U", "D", "L", "R", "F", "B"];
 const BOUNDARY = 2; // (gridSize-1)/2 for gridSize=5
 
-function applySeq(cubies: Cubie[], seq: readonly Move[]): void {
+export function applySeq(cubies: Cubie[], seq: readonly Move[]): void {
   for (const [axis, layer, sign] of seq) applyRawQuarterTurn(cubies, axis, layer, sign);
 }
 function round(c: Cubie, axis: Axis): number {
   return Math.round(c.position[axis] * 2) / 2;
 }
-function slotKey(c: Cubie): string {
+export function slotKey(c: Cubie): string {
   return AXES.filter((a) => Math.abs(round(c, a)) === BOUNDARY)
     .map((a) => `${a}${round(c, a)}`)
     .join(",");
@@ -188,7 +188,7 @@ function computeEntryEffect(seq: readonly Move[]): Map<string, EntryEffect> {
   return effect;
 }
 
-interface WingLibrary {
+export interface WingLibrary {
   entries: LibraryEntry[];
   // Indexes entries by each leg's origin position, so a specific wrong
   // wing only has to try the handful of entries that actually move a wing
@@ -253,7 +253,7 @@ function doesNotMoveTrueCenters(seq: readonly Move[]): boolean {
 }
 
 let cachedLibrary: WingLibrary | null = null;
-function buildWingLibrary(): WingLibrary {
+export function buildWingLibrary(): WingLibrary {
   if (cachedLibrary) return cachedLibrary;
   const solvedRef = buildSolvedCube(5);
   const entries: LibraryEntry[] = [];
@@ -387,7 +387,7 @@ function buildWingLibrary(): WingLibrary {
 // to a solved reference, disrupt EXACTLY 2 wing positions sharing the SAME
 // slot (confirming it's a pure in-place flip, not some other pattern).
 let cachedFlipLibrary: Map<string, Move[]> | null = null;
-function buildFlipLibrary(): Map<string, Move[]> {
+export function buildFlipLibrary(): Map<string, Move[]> {
   if (cachedFlipLibrary) return cachedFlipLibrary;
   const solvedRef = buildSolvedCube(5);
   const lib = new Map<string, Move[]>();
@@ -452,7 +452,7 @@ export function wrongWings5(cubies: Cubie[]): Cubie[] {
   return wrong;
 }
 
-function allOuterMoves(): Move[][] {
+export function allOuterMoves(): Move[][] {
   const moves: Move[][] = [];
   for (const f of ALL_FACES) for (const t of [1, -1]) moves.push(faceTurn(f, t));
   return moves;
@@ -519,7 +519,7 @@ function candidatesForWing(lib: WingLibrary, w: Cubie): readonly LibraryEntry[] 
   return lib.posLookup.get(posKey(w)) ?? [];
 }
 
-function colorKeyOf(c: Cubie): string {
+export function colorKeyOf(c: Cubie): string {
   return c.stickers
     .map((s) => s.color)
     .slice()
@@ -616,7 +616,7 @@ function isWrongAtPosition(cubies: readonly Cubie[], pos: string): boolean {
 // colored-but-flipped in place, not misplaced to a different edge entirely.
 // No setup/BFS needed at all: FLIP_ALG's rotated variant for this exact
 // slot fixes it directly, with zero collateral (see buildFlipLibrary).
-function tryFlipWingsInPlace(cubies: Cubie[], w: Cubie, flipLib: Map<string, Move[]>, before: number): Move[] | null {
+export function tryFlipWingsInPlace(cubies: Cubie[], w: Cubie, flipLib: Map<string, Move[]>, before: number): Move[] | null {
   const wSlot = slotKey(w);
   const trueEdge = cubies.find((c) => pieceType5(c) === "trueEdge" && slotKey(c) === wSlot);
   if (!trueEdge) return null;
@@ -629,7 +629,7 @@ function tryFlipWingsInPlace(cubies: Cubie[], w: Cubie, flipLib: Map<string, Mov
   return null;
 }
 
-function tryFixWing(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline: number): Move[] | null {
+export function tryFixWing(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline: number): Move[] | null {
   const p1 = posKey(w);
   const wSlot = slotKey(w);
   const trueEdge = cubies.find((c) => pieceType5(c) === "trueEdge" && slotKey(c) === wSlot);
@@ -747,7 +747,7 @@ function tryFixWing(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline: numbe
 // entries whose other disrupted positions would hit an already-correct
 // wing) since those invariants aren't specific to the "immediate
 // improvement" framing -- they're what keeps ANY candidate meaningful.
-function enumerateWingCandidates(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline: number, maxResults: number): Move[][] {
+export function enumerateWingCandidates(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline: number, maxResults: number): Move[][] {
   const results: Move[][] = [];
   const p1 = posKey(w);
   const wSlot = slotKey(w);
@@ -796,7 +796,7 @@ function enumerateWingCandidates(cubies: Cubie[], w: Cubie, lib: WingLibrary, de
 // it making things slightly worse, then checks whether the ordinary
 // single-ply pass can finish the job from that intermediate state.
 const ENDGAME_PLY1_SLACK = 2;
-function tryEndgameMultiPly(cubies: Cubie[], lib: WingLibrary, flipLib: Map<string, Move[]>, deadline: number): Move[] | null {
+export function tryEndgameMultiPly(cubies: Cubie[], lib: WingLibrary, flipLib: Map<string, Move[]>, deadline: number): Move[] | null {
   const baseline = wrongWingCount5(cubies);
   if (baseline === 0) return [];
   for (const w of shuffle(wrongWings5(cubies))) {
@@ -831,7 +831,7 @@ function shuffle<T>(arr: readonly T[]): T[] {
 // recursive fallback -- get this basic pass working reliably first (relying
 // on the outer restart-based scheduler in solveWingPairing5 for coverage
 // across attempts) before layering any deeper/branchier search back in.
-function bestFixOverall(cubies: Cubie[], lib: WingLibrary, flipLib: Map<string, Move[]>, deadline: number): Move[] | null {
+export function bestFixOverall(cubies: Cubie[], lib: WingLibrary, flipLib: Map<string, Move[]>, deadline: number): Move[] | null {
   if (Date.now() > deadline) return null;
   const baseline = wrongWingCount5(cubies);
   if (baseline === 0) return [];
@@ -853,8 +853,8 @@ function bestFixOverall(cubies: Cubie[], lib: WingLibrary, flipLib: Map<string, 
   return null;
 }
 
-const FRAME_BUDGET_MS = 14;
-function yieldToEventLoop(): Promise<void> {
+export const FRAME_BUDGET_MS = 14;
+export function yieldToEventLoop(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, 0));
 }
 
@@ -869,11 +869,11 @@ export interface SolveWingPairing5Result {
 // a full bestFixOverall pass per candidate) is too large to search within a
 // reasonable slice of the time budget, and the single-ply pass plus kicks
 // still make good progress at that scale anyway.
-const ENDGAME_MULTIPLY_THRESHOLD = 8;
+export const ENDGAME_MULTIPLY_THRESHOLD = 8;
 
 // Applies fixes until stuck (single-ply AND, once the residual is small
 // enough, the endgame multi-ply search both find nothing more) or solved.
-function drainFixes(cubies: Cubie[], lib: WingLibrary, flipLib: Map<string, Move[]>, moves: Move[], deadline: number): void {
+export function drainFixes(cubies: Cubie[], lib: WingLibrary, flipLib: Map<string, Move[]>, moves: Move[], deadline: number): void {
   while (wrongWingCount5(cubies) > 0 && Date.now() < deadline) {
     const fix = bestFixOverall(cubies, lib, flipLib, deadline);
     if (fix && fix.length > 0) {
@@ -893,7 +893,7 @@ function drainFixes(cubies: Cubie[], lib: WingLibrary, flipLib: Map<string, Move
   }
 }
 
-function faceForAxisValue(axis: Axis, value: number): Face {
+export function faceForAxisValue(axis: Axis, value: number): Face {
   if (axis === "x") return value > 0 ? "R" : "L";
   if (axis === "y") return value > 0 ? "U" : "D";
   return value > 0 ? "F" : "B";
@@ -903,7 +903,7 @@ function faceForAxisValue(axis: Axis, value: number): Face {
 // drawn from these is far more likely to actually shuffle the stuck
 // residual than a uniformly random face turn, which mostly lands on
 // already-correct wings elsewhere and wastes the kick.
-function facesTouchingWrongWings(cubies: Cubie[]): Set<Face> {
+export function facesTouchingWrongWings(cubies: Cubie[]): Set<Face> {
   const faces = new Set<Face>();
   for (const w of wrongWings5(cubies)) {
     for (const { axis, sign } of boundaryAxes(w)) faces.add(faceForAxisValue(axis, sign));
