@@ -975,3 +975,59 @@ export async function solveWingPairing5(cubies: Cubie[], timeBudgetMs = 100000, 
   }
   return { solved: wrongWingCount5(working) === 0, movesApplied: moves.length, moves };
 }
+
+/**
+ * Retries solveWingPairing5 from the SAME pre-wing-pairing starting state
+ * multiple times when a single attempt doesn't fully solve.
+ *
+ * MEASURED RESULT: this does NOT reliably help. Tested directly across 4
+ * scrambles at 10 attempts each (each attempt already exploring its own
+ * independent random kick sequence): every one of the 40 attempts plateaued
+ * at essentially the same residual (2-3 wrong wings) as a single attempt
+ * does, for the same scramble. That's strong evidence the stuck residual is
+ * a genuine invariant of the SCRAMBLE itself (its wing permutation's parity
+ * relative to what this codebase's tools -- all even-permutation
+ * commutators, plus the same-class BASE_ALG transposition and the
+ * same-slot flip fix -- can reach), not a matter of an unlucky random kick
+ * path. Retrying with fresh randomness can't change an invariant of the
+ * starting state. Kept as an honest, harmless fallback (it can't make
+ * things worse, and costs nothing when the very first attempt already
+ * solves), but it should NOT be relied on as a fix for the underlying gap --
+ * see git history for the still-missing piece: a genuine odd-permutation
+ * (cross-edge swap) tool.
+ */
+export async function solveWingPairing5WithRetries(
+  cubies: Cubie[],
+  maxAttempts = 10,
+  perAttemptTimeBudgetMs = 12000,
+  perAttemptMaxKicks = 150
+): Promise<SolveWingPairing5Result> {
+  const original = cloneCubies(cubies);
+  let best: { result: SolveWingPairing5Result; attemptCubies: Cubie[] } | null = null;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    const attemptCubies = cloneCubies(original);
+    const result = await solveWingPairing5(attemptCubies, perAttemptTimeBudgetMs, perAttemptMaxKicks);
+    if (result.solved) {
+      for (let i = 0; i < cubies.length; i++) {
+        cubies[i].position.copy(attemptCubies[i].position);
+        cubies[i].orientation.copy(attemptCubies[i].orientation);
+      }
+      return result;
+    }
+    if (!best || wrongWingCount5(attemptCubies) < wrongWingCount5(best.attemptCubies)) {
+      best = { result, attemptCubies };
+    }
+  }
+
+  // No attempt fully solved -- reflect the best (lowest-residual) attempt
+  // found, same "always show real progress" principle as a single attempt.
+  if (best) {
+    for (let i = 0; i < cubies.length; i++) {
+      cubies[i].position.copy(best.attemptCubies[i].position);
+      cubies[i].orientation.copy(best.attemptCubies[i].orientation);
+    }
+    return best.result;
+  }
+  return { solved: false, movesApplied: 0, moves: [] };
+}
