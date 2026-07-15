@@ -71,6 +71,24 @@ const BASE_ALG: Move[] = [
   ...wideTurn("U", 1),
 ];
 
+// R U' R' -- found by direct simulation search (not trusted from any real-
+// technique transcription, per this session's own hard-earned lesson that
+// blindly translating documented algorithms fails silently): among the 3
+// short "Freeslice" algorithms real 5x5 guides describe for the MAIN
+// pairing phase, brute-forcing every (buffer, read) position pair against
+// all 3 showed none of them actually pair 2 wings from DIFFERENT edges (at
+// least not in a single self-contained step) -- but this one, applied with
+// no setup rotation at all, exactly undoes "this slot's 2 wings swapped
+// with each other" with ZERO collateral anywhere else on the cube (verified
+// directly: applying it to a solved reference with one slot's 2 wings
+// pre-swapped brings wrongWingCount5 back to 0 cube-wide, not just for
+// those 2 pieces). This is precisely the "both wings of one slot correctly
+// colored but individually flipped" residual shape diagnosed earlier
+// (colorKeyOf matches the slot's own true edge, but matchesTrueEdge still
+// fails on exact per-axis facing) -- a case the position-swap-only entry
+// library can't even recognize, let alone fix.
+const FLIP_ALG: Move[] = [...faceTurn("R", 1), ...faceTurn("U", -1), ...faceTurn("R", -1)];
+
 function wholeCubeRotation(axis: Axis, sign: 1 | -1): Move[] {
   return ([-2, -1, 0, 1, 2] as const).map((layer) => [axis, layer, sign] as Move);
 }
@@ -362,6 +380,33 @@ function buildWingLibrary(): WingLibrary {
   return cachedLibrary;
 }
 
+// Maps each of the 12 edge slots to a verified, zero-collateral move
+// sequence that fixes "this slot's 2 wings both flipped in place" -- built
+// the same way BASE_ALG's own rotations were: try FLIP_ALG conjugated by
+// each of the 24 whole-cube rotations, and keep only the ones that, applied
+// to a solved reference, disrupt EXACTLY 2 wing positions sharing the SAME
+// slot (confirming it's a pure in-place flip, not some other pattern).
+let cachedFlipLibrary: Map<string, Move[]> | null = null;
+function buildFlipLibrary(): Map<string, Move[]> {
+  if (cachedFlipLibrary) return cachedFlipLibrary;
+  const solvedRef = buildSolvedCube(5);
+  const lib = new Map<string, Move[]>();
+  for (const rot of ROTATIONS) {
+    const variant = [...rot, ...FLIP_ALG, ...invertSeq(rot)];
+    const after = cloneCubies(solvedRef);
+    applySeq(after, variant);
+    const disrupted = wrongWings5(after);
+    if (disrupted.length !== 2) continue;
+    const slots = new Set(disrupted.map((c) => slotKey(c)));
+    if (slots.size !== 1) continue;
+    const slot = [...slots][0];
+    if (lib.has(slot)) continue;
+    lib.set(slot, variant);
+  }
+  cachedFlipLibrary = lib;
+  return cachedFlipLibrary;
+}
+
 // A wing "matching" its slot's true edge means more than sharing the same
 // unordered pair of colors (colorKey) -- it must show the SAME color
 // facing each of the slot's 2 boundary directions individually. A wing
@@ -565,6 +610,25 @@ function isWrongAtPosition(cubies: readonly Cubie[], pos: string): boolean {
   return !matchesTrueEdge(piece, trueEdge);
 }
 
+// Fixes the specific case where a wrong wing's colors already match its OWN
+// slot's true edge (colorKeyOf equal) but the exact per-axis facing doesn't
+// (matchesTrueEdge false) -- i.e. this slot's 2 wings are both correctly-
+// colored-but-flipped in place, not misplaced to a different edge entirely.
+// No setup/BFS needed at all: FLIP_ALG's rotated variant for this exact
+// slot fixes it directly, with zero collateral (see buildFlipLibrary).
+function tryFlipWingsInPlace(cubies: Cubie[], w: Cubie, flipLib: Map<string, Move[]>, before: number): Move[] | null {
+  const wSlot = slotKey(w);
+  const trueEdge = cubies.find((c) => pieceType5(c) === "trueEdge" && slotKey(c) === wSlot);
+  if (!trueEdge) return null;
+  if (colorKeyOf(w) !== colorKeyOf(trueEdge)) return null;
+  const fix = flipLib.get(wSlot);
+  if (!fix) return null;
+  const clone = cloneCubies(cubies);
+  applySeq(clone, fix);
+  if (wrongWingCount5(clone) < before) return fix;
+  return null;
+}
+
 function tryFixWing(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline: number): Move[] | null {
   const p1 = posKey(w);
   const wSlot = slotKey(w);
@@ -732,7 +796,7 @@ function enumerateWingCandidates(cubies: Cubie[], w: Cubie, lib: WingLibrary, de
 // it making things slightly worse, then checks whether the ordinary
 // single-ply pass can finish the job from that intermediate state.
 const ENDGAME_PLY1_SLACK = 2;
-function tryEndgameMultiPly(cubies: Cubie[], lib: WingLibrary, deadline: number): Move[] | null {
+function tryEndgameMultiPly(cubies: Cubie[], lib: WingLibrary, flipLib: Map<string, Move[]>, deadline: number): Move[] | null {
   const baseline = wrongWingCount5(cubies);
   if (baseline === 0) return [];
   for (const w of shuffle(wrongWings5(cubies))) {
@@ -744,7 +808,7 @@ function tryEndgameMultiPly(cubies: Cubie[], lib: WingLibrary, deadline: number)
       applySeq(clone, candidate);
       const afterPly1 = wrongWingCount5(clone);
       if (afterPly1 > baseline + ENDGAME_PLY1_SLACK) continue;
-      const second = bestFixOverall(clone, lib, deadline);
+      const second = bestFixOverall(clone, lib, flipLib, deadline);
       if (!second || second.length === 0) continue;
       applySeq(clone, second);
       if (wrongWingCount5(clone) < baseline) return [...candidate, ...second];
@@ -767,11 +831,21 @@ function shuffle<T>(arr: readonly T[]): T[] {
 // recursive fallback -- get this basic pass working reliably first (relying
 // on the outer restart-based scheduler in solveWingPairing5 for coverage
 // across attempts) before layering any deeper/branchier search back in.
-function bestFixOverall(cubies: Cubie[], lib: WingLibrary, deadline: number): Move[] | null {
+function bestFixOverall(cubies: Cubie[], lib: WingLibrary, flipLib: Map<string, Move[]>, deadline: number): Move[] | null {
   if (Date.now() > deadline) return null;
   const baseline = wrongWingCount5(cubies);
   if (baseline === 0) return [];
-  for (const w of shuffle(wrongWings5(cubies))) {
+  const wrong = shuffle(wrongWings5(cubies));
+  // Try the cheap, zero-setup flip fix first (a same-slot orientation-only
+  // issue, see tryFlipWingsInPlace) -- it's a plain O(1) lookup and direct
+  // apply, versus tryFixWing's BFS-backed setup search, so there's no
+  // reason to pay for the expensive path when this quick one applies.
+  for (const w of wrong) {
+    if (Date.now() > deadline) return null;
+    const flipFix = tryFlipWingsInPlace(cubies, w, flipLib, baseline);
+    if (flipFix) return flipFix;
+  }
+  for (const w of wrong) {
     if (Date.now() > deadline) return null;
     const fix = tryFixWing(cubies, w, lib, deadline);
     if (fix) return fix;
@@ -799,16 +873,16 @@ const ENDGAME_MULTIPLY_THRESHOLD = 8;
 
 // Applies fixes until stuck (single-ply AND, once the residual is small
 // enough, the endgame multi-ply search both find nothing more) or solved.
-function drainFixes(cubies: Cubie[], lib: WingLibrary, moves: Move[], deadline: number): void {
+function drainFixes(cubies: Cubie[], lib: WingLibrary, flipLib: Map<string, Move[]>, moves: Move[], deadline: number): void {
   while (wrongWingCount5(cubies) > 0 && Date.now() < deadline) {
-    const fix = bestFixOverall(cubies, lib, deadline);
+    const fix = bestFixOverall(cubies, lib, flipLib, deadline);
     if (fix && fix.length > 0) {
       applySeq(cubies, fix);
       moves.push(...fix);
       continue;
     }
     if (wrongWingCount5(cubies) <= ENDGAME_MULTIPLY_THRESHOLD) {
-      const endgameFix = tryEndgameMultiPly(cubies, lib, deadline);
+      const endgameFix = tryEndgameMultiPly(cubies, lib, flipLib, deadline);
       if (endgameFix && endgameFix.length > 0) {
         applySeq(cubies, endgameFix);
         moves.push(...endgameFix);
@@ -861,6 +935,7 @@ function facesTouchingWrongWings(cubies: Cubie[]): Set<Face> {
  */
 export async function solveWingPairing5(cubies: Cubie[], timeBudgetMs = 100000, maxKicks = 200): Promise<SolveWingPairing5Result> {
   const lib = buildWingLibrary();
+  const flipLib = buildFlipLibrary();
   const overallDeadline = Date.now() + timeBudgetMs;
   const working = cloneCubies(cubies);
   const moves: Move[] = [];
@@ -874,7 +949,7 @@ export async function solveWingPairing5(cubies: Cubie[], timeBudgetMs = 100000, 
   const allKickMoves = allOuterMoves().flat();
   let lastYield = Date.now();
 
-  drainFixes(working, lib, moves, overallDeadline);
+  drainFixes(working, lib, flipLib, moves, overallDeadline);
 
   for (let kick = 0; kick < maxKicks && wrongWingCount5(working) > 0 && Date.now() < overallDeadline; kick++) {
     const relevantFaces = facesTouchingWrongWings(working);
@@ -883,7 +958,7 @@ export async function solveWingPairing5(cubies: Cubie[], timeBudgetMs = 100000, 
     const move = pool[Math.floor(Math.random() * pool.length)];
     applySeq(working, [move]);
     moves.push(move);
-    drainFixes(working, lib, moves, overallDeadline);
+    drainFixes(working, lib, flipLib, moves, overallDeadline);
 
     if (Date.now() - lastYield > FRAME_BUDGET_MS) {
       await yieldToEventLoop();
