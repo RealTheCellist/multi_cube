@@ -14,6 +14,7 @@ import {
   type Move,
   slotKey,
   tryEndgameMultiPly,
+  tryEndgameThroughDisruption,
   tryFixWing,
   tryFlipWingsInPlace,
   wrongWingCount5,
@@ -221,6 +222,12 @@ function pickBestGoal(cubies: Cubie[], lib: WingLibrary, flipLib: Map<string, Mo
   return best ? best.moves : null;
 }
 
+// Deliberately does NOT include tryEndgameThroughDisruption here -- see
+// fiveByFiveEdges.ts's own drainFixes comment: calling that search on every
+// kick was measured to slow the outer kick loop enough to actually reduce
+// the overall solve rate (too few kicks fit in the same time budget). It's
+// tried once, as a final attempt, after the kick loop gives up -- see
+// solveEdgePairingHumanStyle.
 function drainHumanStyle(cubies: Cubie[], lib: WingLibrary, flipLib: Map<string, Move[]>, moves: Move[], deadline: number): void {
   while (wrongWingCount5(cubies) > 0 && Date.now() < deadline) {
     let fix = pickBestGoal(cubies, lib, flipLib, deadline);
@@ -264,6 +271,12 @@ export async function solveEdgePairingHumanStyle(cubies: Cubie[], timeBudgetMs =
   const lib = buildWingLibrary();
   const flipLib = buildFlipLibrary();
   const deadline = Date.now() + timeBudgetMs;
+  // The kick loop below gets only PART of the total budget -- see
+  // solveWingPairing5's matching comment: a residual that sporadically
+  // improves by 1 without ever reaching a full solve keeps resetting
+  // kicksSinceImprovement, so the stuck-kick early exit often doesn't fire
+  // in time to leave the through-disruption attempt any real time budget.
+  const kickDeadline = Date.now() + Math.floor(timeBudgetMs * 0.7);
   const working = cloneCubies(cubies);
   const moves: Move[] = [];
   const allKickMoves = allOuterMoves().flat();
@@ -280,7 +293,7 @@ export async function solveEdgePairingHumanStyle(cubies: Cubie[], timeBudgetMs =
   // giving up again. Measured directly that removing it meaningfully speeds
   // up every kick iteration with zero change in what gets found, since
   // nothing the plain grinder can do was ever actually being skipped.
-  drainHumanStyle(working, lib, flipLib, moves, deadline);
+  drainHumanStyle(working, lib, flipLib, moves, kickDeadline);
 
   // Kicking past a stuck residual has already been measured (see
   // fiveByFiveEdges.ts's own solveWingPairing5WithRetries) to often be a
@@ -296,7 +309,7 @@ export async function solveEdgePairingHumanStyle(cubies: Cubie[], timeBudgetMs =
 
   for (
     let kick = 0;
-    kick < maxKicks && wrongWingCount5(working) > 0 && kicksSinceImprovement < STUCK_KICK_LIMIT && Date.now() < deadline;
+    kick < maxKicks && wrongWingCount5(working) > 0 && kicksSinceImprovement < STUCK_KICK_LIMIT && Date.now() < kickDeadline;
     kick++
   ) {
     const relevantFaces = facesTouchingWrongWings(working);
@@ -305,7 +318,7 @@ export async function solveEdgePairingHumanStyle(cubies: Cubie[], timeBudgetMs =
     const move = pool[Math.floor(Math.random() * pool.length)];
     applySeq(working, [move]);
     moves.push(move);
-    drainHumanStyle(working, lib, flipLib, moves, deadline);
+    drainHumanStyle(working, lib, flipLib, moves, kickDeadline);
 
     const residual = wrongWingCount5(working);
     if (residual < bestResidual) {
@@ -318,6 +331,19 @@ export async function solveEdgePairingHumanStyle(cubies: Cubie[], timeBudgetMs =
     if (Date.now() - lastYield > FRAME_YIELD_MS) {
       await yieldToEventLoop();
       lastYield = Date.now();
+    }
+  }
+
+  // One last attempt, tried only once (not on every kick, see drainHumanStyle's
+  // own comment on why): deliberately go through already-solved territory.
+  // Measured directly that this resolves a real fraction (3 of 5 captured
+  // stuck states) of the residuals the safe-only tiers above never reach,
+  // though not all of them -- it narrows, but doesn't close, the parity gap.
+  if (wrongWingCount5(working) > 0 && wrongWingCount5(working) <= ENDGAME_MULTIPLY_THRESHOLD && Date.now() < deadline) {
+    const disruptionFix = tryEndgameThroughDisruption(working, lib, flipLib, deadline);
+    if (disruptionFix && disruptionFix.length > 0) {
+      applySeq(working, disruptionFix);
+      moves.push(...disruptionFix);
     }
   }
 

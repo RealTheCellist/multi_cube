@@ -119,7 +119,15 @@ function App() {
         const result = gridSize === 4 ? await cubeRef.current?.previewNextFourByFour() : await cubeRef.current?.previewNextFiveByFive();
         setSolveError(false);
         setHint(result?.hasMove ? { moveLabel: null } : null);
-        setFourByFourUnsolved(result?.hasMove ? false : result ? !result.solved : true);
+        // Reflects the PLAN's own solved flag directly, not gated on
+        // whether there happened to be a move to preview -- a scramble the
+        // solver can't fully resolve (e.g. a 5x5x5 wing-pairing residual
+        // that's a genuine invariant of the scramble, see
+        // fiveByFiveHumanEdges.ts) still produces plenty of legitimate
+        // moves every single recompute, so hasMove stays true forever and
+        // the earlier version of this check never surfaced the warning at
+        // all for exactly the case it was meant to catch.
+        setFourByFourUnsolved(result ? !result.solved : true);
       } else {
         const result = await cubeRef.current?.solveNextMove();
         setSolveError(false);
@@ -176,12 +184,11 @@ function App() {
             : "다음 수 미리보기 재생 중..."
           : solveError
             ? "솔버 실행 중 오류가 발생했습니다. 다시 시도해보세요"
-            : fourByFourUnsolved
-              ? "이 스크램블은 아직 끝까지 풀지 못했어요 (패리티 케이스일 수 있어요) — 다시 시도해보세요"
-              : hint
-                ? hint.moveLabel
-                  ? `다음 수: ${hint.moveLabel} — 직접 돌려보세요`
-                  : "다음 수를 미리보기했어요 — 애니메이션을 보고 직접 돌려보세요"
+            : hint
+              ? (hint.moveLabel ? `다음 수: ${hint.moveLabel} — 직접 돌려보세요` : "다음 수를 미리보기했어요 — 애니메이션을 보고 직접 돌려보세요") +
+                (fourByFourUnsolved ? " (이 스크램블은 끝까지 못 풀 수도 있어요)" : "")
+              : fourByFourUnsolved
+                ? "이 스크램블은 아직 끝까지 풀지 못했어요 (패리티 케이스일 수 있어요) — 다시 시도해보세요"
                 : mode === "look"
                   ? "드래그해서 큐브를 둘러보세요"
                   : "스와이프로 면을 돌려보세요"}
