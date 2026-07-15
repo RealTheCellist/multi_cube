@@ -9,6 +9,10 @@ import { cloneCubies, FACE_TURNS, outerLayerCoordinate, type Face } from "./cube
 import { solveCenters } from "./fourByFourCenters";
 import { solveEdgePairing } from "./fourByFourEdges";
 import { solveReduced } from "./fourByFourReduction";
+import { solveTrueCenterPositions5 } from "./fiveByFiveCenters";
+import { solveCentersHumanStyle } from "./fiveByFiveHumanCenters";
+import { solveEdgePairingHumanStyle } from "./fiveByFiveHumanEdges";
+import { solveReduced5 } from "./fiveByFiveReduction";
 
 export type Move = readonly [Axis, number, 1 | -1];
 
@@ -165,6 +169,76 @@ export interface FourByFourHint {
  */
 export async function previewNextFourByFourMove(scene: CustomCubeScene): Promise<FourByFourHint> {
   const plan = await computeFourByFourSolveMoves(scene);
+  if (plan.moves.length === 0) return { hasMove: false, movesRemaining: 0, solved: plan.solved };
+
+  const [axis, layer, sign] = plan.moves[0];
+  scene.beginTurn(axis, layer);
+  await animateProgress(scene, 0, sign, MOVE_ANIMATION_MS);
+  await sleep(HOLD_MS);
+  await animateProgress(scene, sign, 0, MOVE_ANIMATION_MS);
+  scene.endTurn(null);
+
+  return { hasMove: true, movesRemaining: plan.moves.length - 1, solved: plan.solved };
+}
+
+export interface FiveByFiveSolvePlan {
+  solved: boolean;
+  moves: Move[];
+}
+
+/**
+ * Computes the full 5x5x5 solve plan: true-center positions, then X/T-center
+ * colors, then wing pairing, then 3x3x3-style reduction -- same phase order
+ * as the solver files themselves require (see fiveByFiveCenters.ts's own
+ * comment on why true-center positions must be fixed before X/T-centers, and
+ * fiveByFiveReduction.ts on why reduction only makes sense once centers are
+ * solved and wings are paired). Uses the Human-Style Solver
+ * (fiveByFiveHumanCenters.ts/fiveByFiveHumanEdges.ts) for the decision-making
+ * layer, not the older greedy/IDA* fiveByFiveCenters.ts/fiveByFiveEdges.ts
+ * pass, though both files' underlying Move Engines are shared.
+ *
+ * Reduction always runs even if wing pairing didn't fully finish: unlike
+ * corners/centers, buildReducedPattern only ever reads colors off each
+ * slot's TRUE edge (never the wings), so a few still-mismatched wings don't
+ * block reduction from finishing the rest of the cube -- the caller's
+ * `solved` flag is what tells the UI whether the result is genuinely
+ * complete or just the closest state this pass could reach (mirroring how
+ * this whole codebase always reflects real partial progress rather than an
+ * all-or-nothing result, see fiveByFiveEdges.ts's own solveWingPairing5).
+ */
+export async function computeFiveByFiveSolveMoves(scene: CustomCubeScene): Promise<FiveByFiveSolvePlan> {
+  const cubies = cloneCubies(scene.getCubies());
+  const moves: Move[] = [];
+
+  const trueCenterResult = solveTrueCenterPositions5(cubies);
+  moves.push(...trueCenterResult.moves);
+
+  const centerResult = solveCentersHumanStyle(cubies, 15000);
+  moves.push(...centerResult.moves);
+
+  const edgeResult = await solveEdgePairingHumanStyle(cubies, 100000, 200);
+  moves.push(...edgeResult.moves);
+
+  const reductionResult = await solveReduced5(cubies, scene.gridSize);
+  moves.push(...reductionResult.moves);
+
+  return { solved: centerResult.solved && edgeResult.solved && reductionResult.solved, moves };
+}
+
+export interface FiveByFiveHint {
+  hasMove: boolean;
+  movesRemaining: number;
+  solved: boolean;
+}
+
+/**
+ * Solves for the scene's current actual state and previews just the first
+ * move -- identical preview-and-revert contract as
+ * previewNextFourByFourMove (see its own comment for why this recomputes
+ * fresh every call rather than caching a plan).
+ */
+export async function previewNextFiveByFiveMove(scene: CustomCubeScene): Promise<FiveByFiveHint> {
+  const plan = await computeFiveByFiveSolveMoves(scene);
   if (plan.moves.length === 0) return { hasMove: false, movesRemaining: 0, solved: plan.solved };
 
   const [axis, layer, sign] = plan.moves[0];

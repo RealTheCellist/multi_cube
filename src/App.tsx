@@ -109,14 +109,14 @@ function App() {
     setIsSolving(true);
     setFourByFourUnsolved(false);
     try {
-      if (gridSize === 4) {
+      if (gridSize === 4 || gridSize === 5) {
         // Same preview-and-revert idea as the 2x2x2/3x3x3 hint below: re-solve
         // from whatever the cube's actual current state is (not a cached
         // plan) and only preview the first move, since there's no letter-
-        // notation move history to hint against for a 4x4x4 (see
+        // notation move history to hint against for a 4x4x4/5x5x5 (see
         // cubeState.ts) -- a cached plan would go stale the moment the
         // user's own swipes diverge from it.
-        const result = await cubeRef.current?.previewNextFourByFour();
+        const result = gridSize === 4 ? await cubeRef.current?.previewNextFourByFour() : await cubeRef.current?.previewNextFiveByFive();
         setSolveError(false);
         setHint(result?.hasMove ? { moveLabel: null } : null);
         setFourByFourUnsolved(result?.hasMove ? false : result ? !result.solved : true);
@@ -171,7 +171,7 @@ function App() {
 
       <p className="mode-hint">
         {isSolving
-          ? gridSize === 4
+          ? gridSize === 4 || gridSize === 5
             ? "다음 수 미리보기 계산 중... (처음 누르면 몇 분 걸릴 수 있어요)"
             : "다음 수 미리보기 재생 중..."
           : solveError
@@ -226,7 +226,7 @@ function App() {
           type="button"
           onClick={handleSolve}
           disabled={isSolving}
-          title={gridSize === 4 ? "3×3처럼 다음 수를 미리보기만 해요 (일부 스크램블은 아직 못 풀 수 있어요)" : undefined}
+          title={gridSize === 4 || gridSize === 5 ? "3×3처럼 다음 수를 미리보기만 해요 (일부 스크램블은 아직 못 풀 수 있어요)" : undefined}
         >
           솔버
         </button>

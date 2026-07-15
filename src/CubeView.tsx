@@ -1,7 +1,13 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { CustomCubeScene } from "./customCube/CustomCubeScene";
 import { attachCustomSwipeTurning, type CustomSwipeController } from "./customCube/customSwipeControls";
-import { type FourByFourHint, previewNextFourByFourMove, previewNextSolveMove } from "./customCube/customSolvePlayback";
+import {
+  type FiveByFiveHint,
+  type FourByFourHint,
+  previewNextFiveByFiveMove,
+  previewNextFourByFourMove,
+  previewNextSolveMove,
+} from "./customCube/customSolvePlayback";
 import type { SolveHint } from "./solvePlayback";
 
 export interface CubeViewHandle {
@@ -9,6 +15,7 @@ export interface CubeViewHandle {
   resetToSolved: () => void;
   solveNextMove: () => Promise<SolveHint>;
   previewNextFourByFour: () => Promise<FourByFourHint>;
+  previewNextFiveByFive: () => Promise<FiveByFiveHint>;
   isSolved: () => boolean;
 }
 
@@ -102,6 +109,16 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
       controllerRef.current?.setEnabled(false);
       try {
         return await previewNextFourByFourMove(scene);
+      } finally {
+        controllerRef.current?.setEnabled(!orbitModeRef.current);
+      }
+    },
+    previewNextFiveByFive: async () => {
+      const scene = sceneRef.current;
+      if (!scene) return { hasMove: false, movesRemaining: 0, solved: false };
+      controllerRef.current?.setEnabled(false);
+      try {
+        return await previewNextFiveByFiveMove(scene);
       } finally {
         controllerRef.current?.setEnabled(!orbitModeRef.current);
       }
