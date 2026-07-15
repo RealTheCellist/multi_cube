@@ -216,7 +216,11 @@ export async function computeFiveByFiveSolveMoves(scene: CustomCubeScene): Promi
   const centerResult = solveCentersHumanStyle(cubies, 15000);
   moves.push(...centerResult.moves);
 
-  const edgeResult = await solveEdgePairingHumanStyle(cubies, 100000, 200);
+  // 45s rather than a much larger budget: solveEdgePairingHumanStyle's own
+  // stuck-kick early exit (see fiveByFiveHumanEdges.ts) already bails out of
+  // a scramble that isn't improving well before this, so a bigger cap here
+  // would mostly just extend the wait on cases nothing further would fix.
+  const edgeResult = await solveEdgePairingHumanStyle(cubies, 45000, 200);
   moves.push(...edgeResult.moves);
 
   const reductionResult = await solveReduced5(cubies, scene.gridSize);

@@ -873,7 +873,7 @@ export const ENDGAME_MULTIPLY_THRESHOLD = 8;
 
 // Applies fixes until stuck (single-ply AND, once the residual is small
 // enough, the endgame multi-ply search both find nothing more) or solved.
-export function drainFixes(cubies: Cubie[], lib: WingLibrary, flipLib: Map<string, Move[]>, moves: Move[], deadline: number): void {
+function drainFixes(cubies: Cubie[], lib: WingLibrary, flipLib: Map<string, Move[]>, moves: Move[], deadline: number): void {
   while (wrongWingCount5(cubies) > 0 && Date.now() < deadline) {
     const fix = bestFixOverall(cubies, lib, flipLib, deadline);
     if (fix && fix.length > 0) {

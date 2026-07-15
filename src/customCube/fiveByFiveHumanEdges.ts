@@ -7,7 +7,6 @@ import {
   buildFlipLibrary,
   buildWingLibrary,
   colorKeyOf,
-  drainFixes,
   ENDGAME_MULTIPLY_THRESHOLD,
   faceForAxisValue,
   facesTouchingWrongWings,
@@ -28,8 +27,8 @@ import { cloneCubies } from "./cubeState";
 // 5x5x5 "Human-Style" edge (wing-pairing) solver -- Stage 3 of the pasted
 // design doc, following the same split as fiveByFiveHumanCenters.ts: the
 // Move Engine (the wing/flip libraries, tryFixWing's setup-search, the
-// proven bestFixOverall/drainFixes/kick-loop grinder) is entirely reused
-// from fiveByFiveEdges.ts, which stays untouched as the reference/fallback.
+// proven bestFixOverall/tryEndgameMultiPly grinder) is entirely reused from
+// fiveByFiveEdges.ts, which stays untouched as the reference/fallback.
 // What's new here is the decision-making layer above it: a State Analyzer
 // that reads each of the 12 true-edge slots' pairing progress, a Pattern
 // Detector that names the shape of that progress, and a Goal Evaluator that
@@ -270,13 +269,36 @@ export async function solveEdgePairingHumanStyle(cubies: Cubie[], timeBudgetMs =
   const allKickMoves = allOuterMoves().flat();
   let lastYield = Date.now();
 
+  // NOTE: drainHumanStyle already falls all the way through to
+  // fiveByFiveEdges.ts's own bestFixOverall/tryEndgameMultiPly internally
+  // (see its own comment) -- an earlier version of this function ALSO called
+  // drainFixes right after, meaning to "double-check" with the proven
+  // grinder, but drainFixes calls those exact same two functions itself.
+  // Since drainHumanStyle only ever stops once both have already failed on
+  // the current state, that second call was pure repeated work: it re-runs
+  // the identical failed searches (including tryFixWing's own BFS) before
+  // giving up again. Measured directly that removing it meaningfully speeds
+  // up every kick iteration with zero change in what gets found, since
+  // nothing the plain grinder can do was ever actually being skipped.
   drainHumanStyle(working, lib, flipLib, moves, deadline);
-  // Reuse the proven grinder too, in case the human-style drain's own
-  // ordering left something on the table that plain bestFixOverall/
-  // drainFixes would still catch.
-  drainFixes(working, lib, flipLib, moves, deadline);
 
-  for (let kick = 0; kick < maxKicks && wrongWingCount5(working) > 0 && Date.now() < deadline; kick++) {
+  // Kicking past a stuck residual has already been measured (see
+  // fiveByFiveEdges.ts's own solveWingPairing5WithRetries) to often be a
+  // genuine invariant of the scramble, not a matter of luck -- so once a
+  // string of kicks in a row fails to beat the best residual seen so far,
+  // further kicks are very unlikely to help and just burn the time budget.
+  // Bailing out early here is what actually shortens the common "this
+  // scramble can't fully pair" case; the maxKicks cap alone doesn't help
+  // when the whole budget gets spent on kicks that were never going to work.
+  const STUCK_KICK_LIMIT = 10;
+  let bestResidual = wrongWingCount5(working);
+  let kicksSinceImprovement = 0;
+
+  for (
+    let kick = 0;
+    kick < maxKicks && wrongWingCount5(working) > 0 && kicksSinceImprovement < STUCK_KICK_LIMIT && Date.now() < deadline;
+    kick++
+  ) {
     const relevantFaces = facesTouchingWrongWings(working);
     const kickMoves = allKickMoves.filter(([axis, layer]) => relevantFaces.has(faceForAxisValue(axis, layer)));
     const pool = kickMoves.length > 0 ? kickMoves : allKickMoves;
@@ -284,7 +306,14 @@ export async function solveEdgePairingHumanStyle(cubies: Cubie[], timeBudgetMs =
     applySeq(working, [move]);
     moves.push(move);
     drainHumanStyle(working, lib, flipLib, moves, deadline);
-    drainFixes(working, lib, flipLib, moves, deadline);
+
+    const residual = wrongWingCount5(working);
+    if (residual < bestResidual) {
+      bestResidual = residual;
+      kicksSinceImprovement = 0;
+    } else {
+      kicksSinceImprovement++;
+    }
 
     if (Date.now() - lastYield > FRAME_YIELD_MS) {
       await yieldToEventLoop();
