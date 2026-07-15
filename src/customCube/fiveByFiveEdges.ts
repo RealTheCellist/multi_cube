@@ -674,6 +674,85 @@ function tryFixWing(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline: numbe
   return null;
 }
 
+// Enumerates candidate fixes for wing w WITHOUT requiring immediate net
+// improvement (unlike tryFixWing, which only ever returns a fix that helps
+// right now) -- used by the endgame multi-ply search below, which needs to
+// speculatively try a move that doesn't help by itself but sets up a
+// SECOND move that finishes the job. Mirrors tryFixWing's own safety
+// checks (pin w at p1, only pull matches from already-wrong wings, skip
+// entries whose other disrupted positions would hit an already-correct
+// wing) since those invariants aren't specific to the "immediate
+// improvement" framing -- they're what keeps ANY candidate meaningful.
+function enumerateWingCandidates(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline: number, maxResults: number): Move[][] {
+  const results: Move[][] = [];
+  const p1 = posKey(w);
+  const wSlot = slotKey(w);
+  const trueEdge = cubies.find((c) => pieceType5(c) === "trueEdge" && slotKey(c) === wSlot);
+  if (!trueEdge) return results;
+  const neededColorKey = colorKeyOf(trueEdge);
+  const edges = toLiteEdges(cubies);
+  const wrongIds = new Set(wrongWings5(cubies).map((c) => c.id));
+
+  for (const entry of candidatesForWing(lib, w)) {
+    if (Date.now() > deadline || results.length >= maxResults) break;
+    const eff = entry.effect.get(p1);
+    if (!eff) continue;
+    const p2Key = `${eff.pos[0]},${eff.pos[1]},${eff.pos[2]}`;
+    if (p2Key === p1) continue;
+
+    let otherDisruptionsSafe = true;
+    for (const pos of entry.disruptedPositions) {
+      if (pos === p1 || pos === p2Key) continue;
+      if (!isWrongAtPosition(cubies, pos)) { otherDisruptionsSafe = false; break; }
+    }
+    if (!otherDisruptionsSafe) continue;
+
+    const matches = edges.filter(
+      (e) => e.type === "wingEdge" && e.id !== w.id && wrongIds.has(e.id) && liteColorKeyOf(e) === neededColorKey
+    );
+    for (const match of matches) {
+      if (results.length >= maxResults) break;
+      const setup =
+        litePosKeyOf(match) === p2Key ? [] : bfsMoveWingToPosition(edges, match.id, p2Key, 6, [{ id: w.id, posKey: p1 }]);
+      if (setup === null) continue;
+      results.push([...setup, ...entry.seq]);
+    }
+  }
+  return results;
+}
+
+// Endgame-only multi-ply search: only worth trying once the residual is
+// small (see ENDGAME_MULTIPLY_THRESHOLD in solveWingPairing5) and the
+// ordinary single-ply pass (bestFixOverall) can't find any immediately-
+// improving move -- the same reason real "Last N Edges" endgame techniques
+// exist: a single isolated move often can't cleanly resolve the last few
+// pieces, but a short COMBINATION can, and searching combinations only
+// becomes tractable once the residual (and therefore the branching factor)
+// is small. Tries a candidate fix that doesn't help by itself, tolerating
+// it making things slightly worse, then checks whether the ordinary
+// single-ply pass can finish the job from that intermediate state.
+const ENDGAME_PLY1_SLACK = 2;
+function tryEndgameMultiPly(cubies: Cubie[], lib: WingLibrary, deadline: number): Move[] | null {
+  const baseline = wrongWingCount5(cubies);
+  if (baseline === 0) return [];
+  for (const w of shuffle(wrongWings5(cubies))) {
+    if (Date.now() > deadline) return null;
+    const candidates = enumerateWingCandidates(cubies, w, lib, deadline, 12);
+    for (const candidate of candidates) {
+      if (Date.now() > deadline) return null;
+      const clone = cloneCubies(cubies);
+      applySeq(clone, candidate);
+      const afterPly1 = wrongWingCount5(clone);
+      if (afterPly1 > baseline + ENDGAME_PLY1_SLACK) continue;
+      const second = bestFixOverall(clone, lib, deadline);
+      if (!second || second.length === 0) continue;
+      applySeq(clone, second);
+      if (wrongWingCount5(clone) < baseline) return [...candidate, ...second];
+    }
+  }
+  return null;
+}
+
 function shuffle<T>(arr: readonly T[]): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -711,13 +790,32 @@ export interface SolveWingPairing5Result {
   moves: Move[];
 }
 
-// Applies fixes until stuck (bestFixOverall finds nothing more) or solved.
+// Endgame multi-ply search only kicks in below this residual -- above it,
+// the branching factor (candidates per wrong wing, times wrong wings, times
+// a full bestFixOverall pass per candidate) is too large to search within a
+// reasonable slice of the time budget, and the single-ply pass plus kicks
+// still make good progress at that scale anyway.
+const ENDGAME_MULTIPLY_THRESHOLD = 8;
+
+// Applies fixes until stuck (single-ply AND, once the residual is small
+// enough, the endgame multi-ply search both find nothing more) or solved.
 function drainFixes(cubies: Cubie[], lib: WingLibrary, moves: Move[], deadline: number): void {
   while (wrongWingCount5(cubies) > 0 && Date.now() < deadline) {
     const fix = bestFixOverall(cubies, lib, deadline);
-    if (!fix || fix.length === 0) return;
-    applySeq(cubies, fix);
-    moves.push(...fix);
+    if (fix && fix.length > 0) {
+      applySeq(cubies, fix);
+      moves.push(...fix);
+      continue;
+    }
+    if (wrongWingCount5(cubies) <= ENDGAME_MULTIPLY_THRESHOLD) {
+      const endgameFix = tryEndgameMultiPly(cubies, lib, deadline);
+      if (endgameFix && endgameFix.length > 0) {
+        applySeq(cubies, endgameFix);
+        moves.push(...endgameFix);
+        continue;
+      }
+    }
+    return;
   }
 }
 
