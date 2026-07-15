@@ -39,7 +39,7 @@ const OPPOSITE_FACE: Record<Face, Face> = { U: "D", D: "U", L: "R", R: "L", F: "
 // Since NEITHER useful family ever touches wing edges, true edges, or
 // corners, both families can share one derivation pass and one lookup,
 // exactly like the 4x4x4 commutators share a single family.
-type Move = readonly [Axis, number, 1 | -1];
+export type Move = readonly [Axis, number, 1 | -1];
 
 interface CommutatorInfo {
   seq: Move[];
@@ -47,7 +47,7 @@ interface CommutatorInfo {
   edges: { fromFace: Face; fromPos: THREE.Vector3; toFace: Face; toPos: THREE.Vector3 }[];
 }
 
-function applySeq(cubies: Cubie[], seq: readonly Move[]): void {
+export function applySeq(cubies: Cubie[], seq: readonly Move[]): void {
   for (const [axis, layer, sign] of seq) applyRawQuarterTurn(cubies, axis, layer, sign);
 }
 
@@ -180,7 +180,7 @@ function candidateMovesFor(fromPos: THREE.Vector3, sourceFace: Face, targetFace:
 // (wrong) face to its correct-color face, either directly (adjacent faces)
 // or via one adjacent intermediate (opposite faces, which have no direct
 // commutator connecting them -- same reasoning as fourByFourCenters.ts).
-function candidatesForPiece(wrongCubie: Cubie): Move[][] {
+export function candidatesForPiece(wrongCubie: Cubie): Move[][] {
   const sourceFace = faceOfPosition(wrongCubie);
   const targetFace = wrongCubie.stickers[0].color;
   if (sourceFace === targetFace) return [];
@@ -206,7 +206,7 @@ export function wrongCenterCount(cubies: Cubie[]): number {
   return wrong;
 }
 
-function wrongCenters(cubies: Cubie[]): Cubie[] {
+export function wrongCenters(cubies: Cubie[]): Cubie[] {
   return cubies.filter((c) => {
     const t = pieceType5(c);
     return (t === "xCenter" || t === "tCenter") && currentFacingColor(c, c.stickers[0].direction) !== c.stickers[0].color;
@@ -232,7 +232,7 @@ function bestFixForPiece(cubies: Cubie[], wrongCubie: Cubie): Move[] | null {
 // bestFixOverall: try every wrong piece's direct/2-hop fix; if none
 // improves, recursively chain a bounded number of non-improving first
 // steps to escape local minima a single ply can't see past.
-function bestFixOverall(cubies: Cubie[], plies: number, deadline: number): Move[] | null {
+export function bestFixOverall(cubies: Cubie[], plies: number, deadline: number): Move[] | null {
   if (Date.now() > deadline) return null;
   const baseline = wrongCenterCount(cubies);
   if (baseline === 0) return [];
@@ -277,8 +277,8 @@ function bestFixOverall(cubies: Cubie[], plies: number, deadline: number): Move[
 // iteratively-deepened search over the same edge/wing-safe commutator
 // vocabulary (not a different, riskier move set) closes that gap with no
 // speed cost in the common case. Applying that lesson upfront here.
-const IDA_MAX_BOUND = 6;
-function idaFallback(cubies: Cubie[], deadline: number, maxBound: number): Move[] | null {
+export const IDA_MAX_BOUND = 6;
+export function idaFallback(cubies: Cubie[], deadline: number, maxBound: number): Move[] | null {
   const heuristic = (cs: Cubie[]) => Math.ceil(wrongCenterCount(cs) / 6);
   let deadlineHit = false;
 
