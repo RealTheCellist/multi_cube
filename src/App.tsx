@@ -109,21 +109,19 @@ function App() {
     setIsSolving(true);
     setFourByFourUnsolved(false);
     try {
-      if (gridSize === 4 || gridSize === 5) {
+      if (gridSize === 4) {
         // Same preview-and-revert idea as the 2x2x2/3x3x3 hint below: re-solve
         // from whatever the cube's actual current state is (not a cached
         // plan) and only preview the first move, since there's no letter-
-        // notation move history to hint against for a 4x4x4/5x5x5 (see
+        // notation move history to hint against for a 4x4x4 (see
         // cubeState.ts) -- a cached plan would go stale the moment the
         // user's own swipes diverge from it.
-        const result = gridSize === 4 ? await cubeRef.current?.previewNextFourByFour() : await cubeRef.current?.previewNextFiveByFive();
+        const result = await cubeRef.current?.previewNextFourByFour();
         setSolveError(false);
         setHint(result?.hasMove ? { moveLabel: null } : null);
         // Reflects the PLAN's own solved flag directly, not gated on
         // whether there happened to be a move to preview -- a scramble the
-        // solver can't fully resolve (e.g. a 5x5x5 wing-pairing residual
-        // that's a genuine invariant of the scramble, see
-        // fiveByFiveHumanEdges.ts) still produces plenty of legitimate
+        // solver can't fully resolve still produces plenty of legitimate
         // moves every single recompute, so hasMove stays true forever and
         // the earlier version of this check never surfaced the warning at
         // all for exactly the case it was meant to catch.
@@ -179,7 +177,7 @@ function App() {
 
       <p className="mode-hint">
         {isSolving
-          ? gridSize === 4 || gridSize === 5
+          ? gridSize === 4
             ? "다음 수 미리보기 계산 중... (처음 누르면 몇 분 걸릴 수 있어요)"
             : "다음 수 미리보기 재생 중..."
           : solveError
@@ -232,8 +230,14 @@ function App() {
         <button
           type="button"
           onClick={handleSolve}
-          disabled={isSolving}
-          title={gridSize === 4 || gridSize === 5 ? "3×3처럼 다음 수를 미리보기만 해요 (일부 스크램블은 아직 못 풀 수 있어요)" : undefined}
+          disabled={isSolving || gridSize === 5}
+          title={
+            gridSize === 5
+              ? "5×5×5는 일부 스크램블을 끝까지 풀지 못해 솔버를 지원하지 않아요"
+              : gridSize === 4
+                ? "3×3처럼 다음 수를 미리보기만 해요"
+                : undefined
+          }
         >
           솔버
         </button>
