@@ -10,8 +10,9 @@ import { solveCenters } from "./fourByFourCenters";
 import { solveEdgePairing } from "./fourByFourEdges";
 import { solveReduced } from "./fourByFourReduction";
 import { solveTrueCenterPositions5 } from "./fiveByFiveCenters";
+import { wrongWingCount5 } from "./fiveByFiveEdges";
+import { FiveByFiveEdgeSolverEngine, warmupFiveByFiveEdgeLibraries } from "./fiveByFiveEdgeSolverEngine";
 import { solveCentersHumanStyle } from "./fiveByFiveHumanCenters";
-import { solveEdgePairingHumanStyle } from "./fiveByFiveHumanEdges";
 import { solveReduced5 } from "./fiveByFiveReduction";
 
 export type Move = readonly [Axis, number, 1 | -1];
@@ -181,76 +182,90 @@ export async function previewNextFourByFourMove(scene: CustomCubeScene): Promise
   return { hasMove: true, movesRemaining: plan.moves.length - 1, solved: plan.solved };
 }
 
-export interface FiveByFiveSolvePlan {
-  solved: boolean;
-  moves: Move[];
-}
-
-/**
- * Computes the full 5x5x5 solve plan: true-center positions, then X/T-center
- * colors, then wing pairing, then 3x3x3-style reduction -- same phase order
- * as the solver files themselves require (see fiveByFiveCenters.ts's own
- * comment on why true-center positions must be fixed before X/T-centers, and
- * fiveByFiveReduction.ts on why reduction only makes sense once centers are
- * solved and wings are paired). Uses the Human-Style Solver
- * (fiveByFiveHumanCenters.ts/fiveByFiveHumanEdges.ts) for the decision-making
- * layer, not the older greedy/IDA* fiveByFiveCenters.ts/fiveByFiveEdges.ts
- * pass, though both files' underlying Move Engines are shared.
- *
- * Reduction always runs even if wing pairing didn't fully finish: unlike
- * corners/centers, buildReducedPattern only ever reads colors off each
- * slot's TRUE edge (never the wings), so a few still-mismatched wings don't
- * block reduction from finishing the rest of the cube -- the caller's
- * `solved` flag is what tells the UI whether the result is genuinely
- * complete or just the closest state this pass could reach (mirroring how
- * this whole codebase always reflects real partial progress rather than an
- * all-or-nothing result, see fiveByFiveEdges.ts's own solveWingPairing5).
- */
-export async function computeFiveByFiveSolveMoves(scene: CustomCubeScene): Promise<FiveByFiveSolvePlan> {
-  const cubies = cloneCubies(scene.getCubies());
-  const moves: Move[] = [];
-
-  const trueCenterResult = solveTrueCenterPositions5(cubies);
-  moves.push(...trueCenterResult.moves);
-
-  const centerResult = solveCentersHumanStyle(cubies, 15000);
-  moves.push(...centerResult.moves);
-
-  // 45s rather than a much larger budget: solveEdgePairingHumanStyle's own
-  // stuck-kick early exit (see fiveByFiveHumanEdges.ts) already bails out of
-  // a scramble that isn't improving well before this, so a bigger cap here
-  // would mostly just extend the wait on cases nothing further would fix.
-  const edgeResult = await solveEdgePairingHumanStyle(cubies, 45000, 200);
-  moves.push(...edgeResult.moves);
-
-  const reductionResult = await solveReduced5(cubies, scene.gridSize);
-  moves.push(...reductionResult.moves);
-
-  return { solved: centerResult.solved && edgeResult.solved && reductionResult.solved, moves };
-}
-
 export interface FiveByFiveHint {
   hasMove: boolean;
   movesRemaining: number;
   solved: boolean;
 }
 
-/**
- * Solves for the scene's current actual state and previews just the first
- * move -- identical preview-and-revert contract as
- * previewNextFourByFourMove (see its own comment for why this recomputes
- * fresh every call rather than caching a plan).
- */
-export async function previewNextFiveByFiveMove(scene: CustomCubeScene): Promise<FiveByFiveHint> {
-  const plan = await computeFiveByFiveSolveMoves(scene);
-  if (plan.moves.length === 0) return { hasMove: false, movesRemaining: 0, solved: plan.solved };
+// Centers (true-center positions + X/T-center colors) and reduction are
+// unchanged from the older single-shot design -- neither is part of the
+// Edge Solver Architecture Spec v2.0 redesign (that spec is scoped to
+// wing-pairing specifically, see fiveByFiveEdgeSolverTypes.ts), and both are
+// already fast (a handful of seconds at most), so recomputing them fresh on
+// every press is fine, same as before.
+//
+// Wing pairing itself now goes through fiveByFiveEdgeSolverEngine's
+// plan-once/consume-many model instead: one FiveByFiveEdgeSolverEngine
+// instance persists across presses (module-level, since only one 5x5x5
+// CubeView is ever mounted at a time), building a fresh SolvePlan only when
+// none exists yet or the live cube no longer matches where the cached one
+// expects it to be (scramble, reset, undo, or an off-plan move -- see
+// syncAndPeekNextMove's own comment). A single press's plan is capped at
+// ~1 second (see PLAN_TIME_BUDGET_MS) by explicit user choice, tighter than
+// solveEdgePairingHumanStyle's old 45s budget -- this session's own
+// measurements established some scrambles need that much search just to
+// make partial progress, so a hard scramble will now often need SEVERAL
+// presses (each producing a plan that continues from wherever the last one
+// left off) rather than fully pairing in one shot the way the old,
+// much-slower solver sometimes could.
+const edgeSolverEngine = new FiveByFiveEdgeSolverEngine();
+let edgeLibrariesWarmed = false;
 
-  const [axis, layer, sign] = plan.moves[0];
+async function previewMoves(scene: CustomCubeScene, moves: readonly Move[]): Promise<void> {
+  const [axis, layer, sign] = moves[0];
   scene.beginTurn(axis, layer);
   await animateProgress(scene, 0, sign, MOVE_ANIMATION_MS);
   await sleep(HOLD_MS);
   await animateProgress(scene, sign, 0, MOVE_ANIMATION_MS);
   scene.endTurn(null);
+}
 
-  return { hasMove: true, movesRemaining: plan.moves.length - 1, solved: plan.solved };
+/**
+ * Solves for the scene's current actual state and previews just the next
+ * move (turn-then-revert, same contract as previewNextFourByFourMove -- the
+ * user performs the actual swipe themselves). Phase order: true-center
+ * positions -> X/T-center colors -> wing pairing (new engine) -> 3x3x3-style
+ * reduction, matching the dependency order the solver files themselves
+ * require (see fiveByFiveCenters.ts/fiveByFiveReduction.ts's own comments).
+ */
+export async function previewNextFiveByFiveMove(scene: CustomCubeScene): Promise<FiveByFiveHint> {
+  if (!edgeLibrariesWarmed) {
+    warmupFiveByFiveEdgeLibraries();
+    edgeLibrariesWarmed = true;
+  }
+  const cubies = cloneCubies(scene.getCubies());
+
+  const trueCenterResult = solveTrueCenterPositions5(cubies);
+  const centerResult = solveCentersHumanStyle(cubies, 15000);
+  const centerMoves = [...trueCenterResult.moves, ...centerResult.moves];
+  if (centerMoves.length > 0) {
+    await previewMoves(scene, centerMoves);
+    return { hasMove: true, movesRemaining: centerMoves.length - 1, solved: false };
+  }
+
+  if (wrongWingCount5(cubies) > 0) {
+    let move = edgeSolverEngine.syncAndPeekNextMove(cubies);
+    if (!move && !edgeSolverEngine.hasValidPlan(cubies)) {
+      edgeSolverEngine.solve(cubies);
+      move = edgeSolverEngine.syncAndPeekNextMove(cubies);
+    }
+    if (move) {
+      await previewMoves(scene, [move]);
+      const plan = edgeSolverEngine.currentPlan();
+      const remaining = plan ? plan.moveQueue.length - plan.currentMove : 0;
+      return { hasMove: true, movesRemaining: remaining, solved: false };
+    }
+    // This plan's queue is exhausted (or the budget ran out before it found
+    // anything) but pairing still isn't done -- invalidate so the NEXT
+    // press builds a fresh plan continuing from here, instead of silently
+    // returning nothing forever.
+    edgeSolverEngine.invalidatePlan();
+    return { hasMove: false, movesRemaining: 0, solved: false };
+  }
+
+  const reductionResult = await solveReduced5(cubies, scene.gridSize);
+  if (reductionResult.moves.length === 0) return { hasMove: false, movesRemaining: 0, solved: reductionResult.solved };
+  await previewMoves(scene, reductionResult.moves);
+  return { hasMove: true, movesRemaining: reductionResult.moves.length - 1, solved: reductionResult.solved };
 }
