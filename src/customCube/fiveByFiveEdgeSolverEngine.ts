@@ -97,8 +97,16 @@ export class FiveByFiveEdgeSolverEngine {
     const deadline = Date.now() + PLAN_TIME_BUDGET_MS;
     this.log("analyze", `초기 wrongWingCount=${wrongWingCount5(cubies)}`);
 
+    // Budget split per the Planner v2 Upgrade spec: Planner (strategy
+    // generation) + Simulation (previewing candidates) share a combined
+    // 200ms slice up front, leaving the rest of PLAN_TIME_BUDGET_MS for the
+    // REAL task-execution loop below (spec: Planner<=100ms, Simulation<=100ms,
+    // Executor<=700ms, Trace<=50ms, slack 50ms -- summing to the same
+    // 1000ms this file already budgeted as one lump before the upgrade).
     const working = cloneCubies(cubies);
-    const tasks = planEdgeTasks(working, weights);
+    const planDeadline = Math.min(deadline, Date.now() + 200);
+    const { tasks, trace: plannerTrace } = planEdgeTasks(working, libs, weights, planDeadline, deadline);
+    this.trace.push(...plannerTrace);
     this.log("plan-tasks", `${tasks.length}개 태스크: ${tasks.map((t) => `${t.type}(${t.targetEdge})`).join(", ")}`);
 
     const moveQueue: Move[] = [];

@@ -50,3 +50,32 @@ export interface TraceEntry {
   label: string;
   detail?: string;
 }
+
+// --- Planner v2: Strategy-based planning (Architecture Spec v2.0 "Planner
+// v2 Upgrade") -----------------------------------------------------------
+// Adds a layer ABOVE SolveTask: the Planner no longer sorts edge slots by
+// their own immediate score and calls that a plan (a plain priority queue),
+// it generates several whole-cube STRATEGIES (each an ORDERED sequence of
+// MacroGoals), previews each one a few goals deep against a cloned cube,
+// and only THEN commits to the highest-scoring one's full goal sequence --
+// see fiveByFiveEdgePlanner.ts's generateCandidateStrategies/simulateStrategy.
+// SolveTask (above) is unchanged and still what the Executor actually
+// consumes; MacroGoal sits one level above it (a Strategy is built from
+// MacroGoals, and each chosen MacroGoal expands to exactly one SolveTask --
+// see fiveByFiveEdgePlanner.ts's macroGoalToTask).
+
+export type MacroGoalType = "PAIR_EDGE" | "FIX_FLIP" | "LAST_TWO" | "PARITY" | "ENDGAME";
+
+export interface MacroGoal {
+  type: MacroGoalType;
+  targetEdge: number;
+  priority: number;
+}
+
+export interface SolveStrategy {
+  id: number;
+  description: string;
+  expectedScore: number;
+  estimatedRemainingWork: number;
+  goals: MacroGoal[];
+}

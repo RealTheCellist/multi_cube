@@ -92,3 +92,16 @@ export function scoreAllSlots(
     return { stats, metrics, score: scoreMetrics(metrics, weights) };
   });
 }
+
+/**
+ * Scores a WHOLE cube state as a single number (Planner v2 Upgrade spec --
+ * "Evaluator는 전략 전체를 평가한다. Edge 하나를 평가하지 않는다"). Used to
+ * score the RESULT of simulating a candidate Strategy a few MacroGoals deep
+ * (see fiveByFiveEdgePlanner.ts's simulateStrategy), not to pick a single
+ * task -- that's still scoreAllSlots/scoreMetrics per-slot, reused here by
+ * simply summing over every slot rather than duplicating the metric
+ * definitions in a second place.
+ */
+export function scoreWholeState(cubies: Cubie[], weights: EvaluatorWeights = DEFAULT_EVALUATOR_WEIGHTS): number {
+  return scoreAllSlots(cubies, weights).reduce((sum, s) => sum + s.score, 0);
+}
