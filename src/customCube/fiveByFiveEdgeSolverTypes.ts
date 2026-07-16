@@ -79,3 +79,23 @@ export interface SolveStrategy {
   estimatedRemainingWork: number;
   goals: MacroGoal[];
 }
+
+// --- Adaptive Executor v2: Recovery Strategy (Planner is not involved --
+// this is purely an Executor-level fallback for when the ordinary
+// BASE/FLIP/CASE/PARITY/ENDGAME pipeline finds no progress at all) --------
+// A Recovery deliberately disrupts an already-solved slot (DISRUPT) or
+// applies a move that doesn't help by itself but sets up an easier
+// follow-on case (SETUP), always evaluated against a scratch clone before
+// ever touching the real cube -- see fiveByFiveEdgeRecovery.ts.
+
+export type RecoveryType = "DISRUPT" | "SETUP" | "REPAIR";
+
+export interface RecoveryStrategy {
+  id: number;
+  type: RecoveryType;
+  description: string;
+  moves: Move[];
+  expectedWrongWingDelta: number;
+  expectedFuturePotential: number;
+  score: number;
+}

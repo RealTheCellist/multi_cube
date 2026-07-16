@@ -121,8 +121,13 @@ export class FiveByFiveEdgeSolverEngine {
         this.log("already-solved", "더 남은 태스크 없음");
         break;
       }
+      // allowRecovery=true only here (Adaptive Executor v2) -- this is the
+      // one real, top-level execution loop, as opposed to Planner's own
+      // simulateStrategy preview calls, which must stay recovery-free to
+      // preserve the Planner v2 determinism guarantee (see executeTask's
+      // own comment in fiveByFiveEdgeExecutor.ts for why).
       const before = wrongWingCount5(working);
-      const moves = executeTask(working, task, libs, deadline);
+      const moves = executeTask(working, task, libs, deadline, this.trace, true);
       const after = wrongWingCount5(working);
       if (moves.length > 0) {
         moveQueue.push(...moves);
