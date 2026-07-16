@@ -42,6 +42,22 @@ function wideTurn(face: Face, times: number): Move[] {
   }
   return out;
 }
+// 3-layer-wide turn (e.g. "3Lw"): the face's own outer layer plus the next
+// layer in, plus the exact middle layer -- only PARITY_ALG below needs this
+// (its real WCA-notation source explicitly uses a 3-layer-wide block turn).
+function wideTurn3(face: Face, times: number): Move[] {
+  const def = FACE_TURNS[face];
+  const outerLayer = outerLayerCoordinate(face, 5);
+  const midLayer = outerLayer > 0 ? 1 : -1;
+  const sign = (times < 0 ? -def.sign : def.sign) as 1 | -1;
+  const out: Move[] = [];
+  for (let i = 0; i < Math.abs(times); i++) {
+    out.push([def.axis, outerLayer, sign]);
+    out.push([def.axis, midLayer, sign]);
+    out.push([def.axis, 0, sign]);
+  }
+  return out;
+}
 
 // --- Wing-swap algorithm -----------------------------------------------
 // Uw' R U R' F R' F' R Uw -- the exact same move shape as fourByFourEdges.ts's
@@ -88,6 +104,56 @@ const BASE_ALG: Move[] = [
 // fails on exact per-axis facing) -- a case the position-swap-only entry
 // library can't even recognize, let alone fix.
 const FLIP_ALG: Move[] = [...faceTurn("R", 1), ...faceTurn("U", -1), ...faceTurn("R", -1)];
+
+// Rw' U2 Rw U2' 3Lw' U2 Rw U2 Rw U2' Rw' U2 Rw U2' Rw2 -- a real, documented
+// 5x5x5 "Last 2 Edges / Parity" case algorithm (CubeSkills' last-2-edges-
+// algorithms-5x5 PDF). Pulled in specifically because BASE_ALG's own 24-
+// rotation-conjugate orbit is structurally confined to the 4 "adjacent"
+// pairs within each of the 3 mutually-unreachable edge classes (see
+// buildWingLibrary's commutator-widening comment) -- verified via direct
+// simulation that this algorithm, applied to a solved reference, disrupts
+// exactly the 2 "diagonal" (non-adjacent) slots within one class (UB/DF),
+// a pair no rotation/commutator of BASE_ALG can ever produce.
+//
+// Its "3Lw" component turns the exact middle layer along with it, which
+// (confirmed via direct simulation, tracking true-center POSITIONS
+// specifically) relocates all 4 of the U/D/F/B true centers -- but exactly
+// as a rigid 90-degree whole-cube rotation about x, not a scramble: every
+// one of the 4 centers' post-alg positions matches precisely what a plain
+// x-axis rotation of that piece alone would give. The trailing whole-cube
+// "x" below exactly cancels this out (re-verified: all 6 true centers land
+// back at their exact original position), leaving only the intended wing
+// defect -- the same fold a real solver does for free by just continuing
+// to hold the cube in its rotated grip instead of physically correcting it.
+//
+// Unlike BASE_ALG, this is NOT folded into the generic swap library
+// (buildWingLibrary): its own effect isn't a clean isolated 2-position
+// swap -- applied to solved, it leaves 2 whole slots (4 wing positions)
+// mutually wrong at once, a shape tryFixWing's "clean (p1,p2) transposition
+// plus safe-collateral" search can't exploit (confirmed: even applying this
+// exact algorithm's own inverse to the exact state it itself produces, that
+// search only closed 2 of the 4 wrong wings, not all 4). Instead it's used
+// directly and exactly, mirroring how real speedcubers use a Last-2-Edges
+// case algorithm: recognize the specific defect shape, apply the one
+// algorithm built for it, done in one shot -- see tryExactCaseMatch below.
+const PARITY_ALG: Move[] = [
+  ...wideTurn("R", -1),
+  ...faceTurn("U", 2),
+  ...wideTurn("R", 1),
+  ...faceTurn("U", -2),
+  ...wideTurn3("L", -1),
+  ...faceTurn("U", 2),
+  ...wideTurn("R", 1),
+  ...faceTurn("U", 2),
+  ...wideTurn("R", 1),
+  ...faceTurn("U", -2),
+  ...wideTurn("R", -1),
+  ...faceTurn("U", 2),
+  ...wideTurn("R", 1),
+  ...faceTurn("U", -2),
+  ...wideTurn("R", 2),
+  ...wholeCubeRotation("x", 1),
+];
 
 function wholeCubeRotation(axis: Axis, sign: 1 | -1): Move[] {
   return ([-2, -1, 0, 1, 2] as const).map((layer) => [axis, layer, sign] as Move);
@@ -405,6 +471,75 @@ export function buildFlipLibrary(): Map<string, Move[]> {
   }
   cachedFlipLibrary = lib;
   return cachedFlipLibrary;
+}
+
+// --- Last-2-Edges "case" library -----------------------------------------
+// Real 5x5x5 speedcubing doesn't fix a stuck wing-pairing residual through
+// the generic swap-library search above at all: once exactly a couple of
+// edge slots are left wrong, a human recognizes which of a small set of
+// named "Last 2 Edges" cases it is (up to which way the cube happens to be
+// held) and applies the one algorithm built for that exact case -- done in
+// a single shot, no setup search, because the algorithm's own author
+// already worked out that setup. PARITY_ALG is the first (and so far only)
+// verified case of this kind pulled into this codebase; kept in its own
+// library rather than folded into buildWingLibrary's entries because it
+// isn't a clean 2-position swap (see PARITY_ALG's own comment) and would
+// only get partially exploited by tryFixWing's setup search built around
+// that assumption -- tryExactCaseMatch below uses it the way a human does
+// instead: try each of the 24 orientations directly, keep the one whose own
+// stored defect exactly matches (a strict subset of) the wrong wings
+// actually present right now, and undo just that.
+export interface CaseEntry {
+  seq: Move[];
+  disruptedPositions: string[];
+}
+let cachedCaseLibrary: CaseEntry[] | null = null;
+export function buildCaseLibrary(): CaseEntry[] {
+  if (cachedCaseLibrary) return cachedCaseLibrary;
+  const solvedRef = buildSolvedCube(5);
+  const seen = new Set<string>();
+  const entries: CaseEntry[] = [];
+  for (const rot of ROTATIONS) {
+    const variant = [...rot, ...PARITY_ALG, ...invertSeq(rot)];
+    if (!doesNotMoveTrueCenters(variant)) continue;
+    const after = cloneCubies(solvedRef);
+    applySeq(after, variant);
+    const disruptedPositions = wrongWings5(after)
+      .map((c) => posKey(c))
+      .sort();
+    const key = disruptedPositions.join("|");
+    if (seen.has(key)) continue;
+    seen.add(key);
+    entries.push({ seq: variant, disruptedPositions });
+  }
+  cachedCaseLibrary = entries;
+  return cachedCaseLibrary;
+}
+
+// Tries to resolve the CURRENT scramble's wrong wings in one shot by
+// recognizing an exact match against a case library entry's own stored
+// defect (see buildCaseLibrary): if entry.disruptedPositions is a subset of
+// the wrong positions right now, AND the specific wing occupying each of
+// those positions is EXACTLY the piece that entry's own forward algorithm
+// would have put there (checked by literally applying invertSeq(entry.seq)
+// and confirming wrongWingCount5 drops by exactly entry.disruptedPositions.length,
+// not less), then invertSeq(entry.seq) undoes precisely that defect and
+// nothing else -- no partial credit accepted, since a partial match would
+// mean this entry doesn't actually describe the current defect and
+// applying it would just scramble something that was fine.
+export function tryExactCaseMatch(cubies: Cubie[], caseLib: readonly CaseEntry[], deadline: number): Move[] | null {
+  const before = wrongWingCount5(cubies);
+  if (before === 0) return null;
+  const wrongPositions = new Set(wrongWings5(cubies).map((c) => posKey(c)));
+  for (const entry of caseLib) {
+    if (Date.now() > deadline) return null;
+    if (!entry.disruptedPositions.every((p) => wrongPositions.has(p))) continue;
+    const fix = invertSeq(entry.seq);
+    const clone = cloneCubies(cubies);
+    applySeq(clone, fix);
+    if (wrongWingCount5(clone) === before - entry.disruptedPositions.length) return fix;
+  }
+  return null;
 }
 
 // A wing "matching" its slot's true edge means more than sharing the same
@@ -853,9 +988,17 @@ export function tryEndgameThroughDisruption(
   deadline: number,
   maxDisruptions = 2,
   recurseDepth = 1,
+  caseLib: readonly CaseEntry[] = buildCaseLibrary(),
 ): Move[] | null {
   const baseline = wrongWingCount5(cubies);
   if (baseline === 0) return [];
+  // Checked first, ahead of the disruption search: if the residual is
+  // exactly a recognized Last-2-Edges case, its own dedicated algorithm
+  // resolves it in one clean shot with no collateral at all -- strictly
+  // better than the disruption search below, which only gets tried once
+  // this fails to match anything.
+  const caseFix = tryExactCaseMatch(cubies, caseLib, deadline);
+  if (caseFix && caseFix.length > 0) return caseFix;
   for (const w of shuffle(wrongWings5(cubies))) {
     if (Date.now() > deadline) return null;
     const candidates = enumerateWingCandidatesRelaxed(cubies, w, lib, deadline, 30, maxDisruptions);
@@ -990,8 +1133,25 @@ export const ENDGAME_MULTIPLY_THRESHOLD = 8;
 // budget and, in testing, actually REDUCING the overall solve rate rather
 // than improving it. It's tried once, as a final attempt, after the kick
 // loop gives up -- see solveWingPairing5.
-function drainFixes(cubies: Cubie[], lib: WingLibrary, flipLib: Map<string, Move[]>, moves: Move[], deadline: number): void {
+function drainFixes(
+  cubies: Cubie[],
+  lib: WingLibrary,
+  flipLib: Map<string, Move[]>,
+  caseLib: readonly CaseEntry[],
+  moves: Move[],
+  deadline: number
+): void {
   while (wrongWingCount5(cubies) > 0 && Date.now() < deadline) {
+    // Tried first, ahead of the generic search: cheap (a handful of direct
+    // simulate-and-check attempts, no BFS setup) and, when it hits, resolves
+    // its whole defect in one shot rather than bestFixOverall's one-wing-at-
+    // a-time progress -- see tryExactCaseMatch's own comment.
+    const caseFix = tryExactCaseMatch(cubies, caseLib, deadline);
+    if (caseFix && caseFix.length > 0) {
+      applySeq(cubies, caseFix);
+      moves.push(...caseFix);
+      continue;
+    }
     const fix = bestFixOverall(cubies, lib, flipLib, deadline);
     if (fix && fix.length > 0) {
       applySeq(cubies, fix);
@@ -1053,6 +1213,7 @@ export function facesTouchingWrongWings(cubies: Cubie[]): Set<Face> {
 export async function solveWingPairing5(cubies: Cubie[], timeBudgetMs = 100000, maxKicks = 200): Promise<SolveWingPairing5Result> {
   const lib = buildWingLibrary();
   const flipLib = buildFlipLibrary();
+  const caseLib = buildCaseLibrary();
   const overallDeadline = Date.now() + timeBudgetMs;
   // The kick loop gets only PART of the total budget, reserving the rest for
   // the through-disruption attempt below. Measured directly that without
@@ -1074,7 +1235,7 @@ export async function solveWingPairing5(cubies: Cubie[], timeBudgetMs = 100000, 
   const allKickMoves = allOuterMoves().flat();
   let lastYield = Date.now();
 
-  drainFixes(working, lib, flipLib, moves, kickDeadline);
+  drainFixes(working, lib, flipLib, caseLib, moves, kickDeadline);
 
   for (let kick = 0; kick < maxKicks && wrongWingCount5(working) > 0 && Date.now() < kickDeadline; kick++) {
     const relevantFaces = facesTouchingWrongWings(working);
@@ -1083,7 +1244,7 @@ export async function solveWingPairing5(cubies: Cubie[], timeBudgetMs = 100000, 
     const move = pool[Math.floor(Math.random() * pool.length)];
     applySeq(working, [move]);
     moves.push(move);
-    drainFixes(working, lib, flipLib, moves, kickDeadline);
+    drainFixes(working, lib, flipLib, caseLib, moves, kickDeadline);
 
     if (Date.now() - lastYield > FRAME_BUDGET_MS) {
       await yieldToEventLoop();
@@ -1101,7 +1262,7 @@ export async function solveWingPairing5(cubies: Cubie[], timeBudgetMs = 100000, 
   // stayed stuck even with this, so it narrows, but doesn't close, the
   // parity gap.
   if (wrongWingCount5(working) > 0 && wrongWingCount5(working) <= ENDGAME_MULTIPLY_THRESHOLD && Date.now() < overallDeadline) {
-    const disruptionFix = tryEndgameThroughDisruption(working, lib, flipLib, overallDeadline);
+    const disruptionFix = tryEndgameThroughDisruption(working, lib, flipLib, overallDeadline, undefined, undefined, caseLib);
     if (disruptionFix && disruptionFix.length > 0) {
       applySeq(working, disruptionFix);
       moves.push(...disruptionFix);

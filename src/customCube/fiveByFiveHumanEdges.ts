@@ -4,8 +4,10 @@ import {
   allOuterMoves,
   applySeq,
   bestFixOverall,
+  buildCaseLibrary,
   buildFlipLibrary,
   buildWingLibrary,
+  type CaseEntry,
   colorKeyOf,
   ENDGAME_MULTIPLY_THRESHOLD,
   faceForAxisValue,
@@ -15,6 +17,7 @@ import {
   slotKey,
   tryEndgameMultiPly,
   tryEndgameThroughDisruption,
+  tryExactCaseMatch,
   tryFixWing,
   tryFlipWingsInPlace,
   wrongWingCount5,
@@ -228,9 +231,23 @@ function pickBestGoal(cubies: Cubie[], lib: WingLibrary, flipLib: Map<string, Mo
 // the overall solve rate (too few kicks fit in the same time budget). It's
 // tried once, as a final attempt, after the kick loop gives up -- see
 // solveEdgePairingHumanStyle.
-function drainHumanStyle(cubies: Cubie[], lib: WingLibrary, flipLib: Map<string, Move[]>, moves: Move[], deadline: number): void {
+function drainHumanStyle(
+  cubies: Cubie[],
+  lib: WingLibrary,
+  flipLib: Map<string, Move[]>,
+  caseLib: readonly CaseEntry[],
+  moves: Move[],
+  deadline: number
+): void {
   while (wrongWingCount5(cubies) > 0 && Date.now() < deadline) {
-    let fix = pickBestGoal(cubies, lib, flipLib, deadline);
+    // Checked first, ahead of the goal-scoring pass: if the residual is
+    // exactly a recognized Last-2-Edges case (see tryExactCaseMatch in
+    // fiveByFiveEdges.ts), its own dedicated algorithm resolves it in one
+    // clean shot -- cheaper and more complete than the generic goal/grinder
+    // fallbacks below, which can't reach a cross-class ("diagonal") wing
+    // swap at all.
+    let fix: Move[] | null = tryExactCaseMatch(cubies, caseLib, deadline);
+    if (!fix) fix = pickBestGoal(cubies, lib, flipLib, deadline);
     if (!fix) fix = bestFixOverall(cubies, lib, flipLib, deadline);
     if (fix && fix.length > 0) {
       applySeq(cubies, fix);
@@ -270,6 +287,7 @@ export interface HumanEdgeSolveResult {
 export async function solveEdgePairingHumanStyle(cubies: Cubie[], timeBudgetMs = 100000, maxKicks = 200): Promise<HumanEdgeSolveResult> {
   const lib = buildWingLibrary();
   const flipLib = buildFlipLibrary();
+  const caseLib = buildCaseLibrary();
   const deadline = Date.now() + timeBudgetMs;
   // The kick loop below gets only PART of the total budget -- see
   // solveWingPairing5's matching comment: a residual that sporadically
@@ -293,7 +311,7 @@ export async function solveEdgePairingHumanStyle(cubies: Cubie[], timeBudgetMs =
   // giving up again. Measured directly that removing it meaningfully speeds
   // up every kick iteration with zero change in what gets found, since
   // nothing the plain grinder can do was ever actually being skipped.
-  drainHumanStyle(working, lib, flipLib, moves, kickDeadline);
+  drainHumanStyle(working, lib, flipLib, caseLib, moves, kickDeadline);
 
   // Kicking past a stuck residual has already been measured (see
   // fiveByFiveEdges.ts's own solveWingPairing5WithRetries) to often be a
@@ -318,7 +336,7 @@ export async function solveEdgePairingHumanStyle(cubies: Cubie[], timeBudgetMs =
     const move = pool[Math.floor(Math.random() * pool.length)];
     applySeq(working, [move]);
     moves.push(move);
-    drainHumanStyle(working, lib, flipLib, moves, kickDeadline);
+    drainHumanStyle(working, lib, flipLib, caseLib, moves, kickDeadline);
 
     const residual = wrongWingCount5(working);
     if (residual < bestResidual) {
@@ -340,7 +358,7 @@ export async function solveEdgePairingHumanStyle(cubies: Cubie[], timeBudgetMs =
   // stuck states) of the residuals the safe-only tiers above never reach,
   // though not all of them -- it narrows, but doesn't close, the parity gap.
   if (wrongWingCount5(working) > 0 && wrongWingCount5(working) <= ENDGAME_MULTIPLY_THRESHOLD && Date.now() < deadline) {
-    const disruptionFix = tryEndgameThroughDisruption(working, lib, flipLib, deadline);
+    const disruptionFix = tryEndgameThroughDisruption(working, lib, flipLib, deadline, undefined, undefined, caseLib);
     if (disruptionFix && disruptionFix.length > 0) {
       applySeq(working, disruptionFix);
       moves.push(...disruptionFix);
