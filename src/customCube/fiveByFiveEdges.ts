@@ -737,6 +737,409 @@ function bfsMoveWingToPosition(
   return null;
 }
 
+// ============================================================================
+// Multi-Objective BFS v1 (bfsMoveWingToPositionMO / tryFixWingMO)
+// ----------------------------------------------------------------------------
+// bfsMoveWingToPosition above answers ONE question -- "how do I move THIS
+// piece to THIS position, in as few moves as possible" -- and is completely
+// blind to what happens to every OTHER piece along the way. That's exactly
+// why the existing solver plateaus: a shortest path to fix wing W is happy
+// to plow straight through 2 already-paired slots if that happens to be the
+// fewest moves, even when a 1-move-longer path would have left them intact.
+// This file's own tryFixWing already tries to avoid the WORST case of this
+// (skipping library entries whose collateral would hit an already-correct
+// wing, see its own comment), but bfsMoveWingToPosition's SETUP search itself
+// has no such awareness -- it can still drag pieces through paired slots on
+// the way to the target.
+//
+// bfsMoveWingToPositionMO is a parallel, independent implementation (per
+// spec: "기존 BFS는 삭제하지 않는다. 새로운 탐색기는 별도 함수로 만든다")
+// that scores every candidate MOVE, not just the final destination check --
+// rewarding wrongWing reduction and new pairs created, penalizing destroyed
+// pairs and dead-end collapses, with a small bonus for states that are
+// structurally close to producing a new pair soon ("Future Mobility"). It
+// keeps a bounded BEAM of the top-scoring candidates per depth instead of
+// every single deduped node, and — since more than one candidate can reach
+// the target at the same shortest depth — evaluates the WHOLE depth before
+// returning the highest-scoring one, rather than the first one found.
+//
+// tryFixWingMO is a full parallel copy of tryFixWing (not a refactor of it)
+// with its two internal bfsMoveWingToPosition call sites swapped for
+// bfsMoveWingToPositionMO -- kept deliberately separate, per spec's own
+// "기존 구현은 그대로 유지한다", so the two remain independently callable
+// and directly A/B-benchmarkable (see runBfsMoBenchmark.ts).
+// ============================================================================
+
+export interface BFSScoreConfig {
+  wrongWingDecrease: number; // A
+  pairPreservation: number; // B
+  newPairCreation: number; // C
+  targetDistanceDecrease: number; // D
+  pairDestruction: number; // E (penalty)
+  deadStatePenalty: number; // F (penalty)
+}
+
+// Weights kept as one named, exported constant (spec: "가중치는 상수로
+// 분리한다. BFS_SCORE_CONFIG를 만든다.") rather than inline magic numbers,
+// so they can be retuned without touching the scoring logic itself.
+// wrongWingDecrease is dominant (matches the original BFS's own sole
+// objective) -- everything else is a tie-breaker/guard-rail on top of it,
+// not a replacement for it.
+export const BFS_SCORE_CONFIG: BFSScoreConfig = {
+  wrongWingDecrease: 100,
+  pairPreservation: 40,
+  newPairCreation: 70,
+  targetDistanceDecrease: 15,
+  pairDestruction: 180,
+  deadStatePenalty: 400,
+};
+
+export interface BFSMOConfig {
+  beamWidth: number;
+}
+
+// "Depth 4 -> Top 8 Candidate" per spec's own worked example -- an explicit,
+// separate config value (spec: "Beam Width는 설정값으로 분리한다"), not a
+// magic number buried in the search loop.
+// Measured directly (5-scramble smoke test, 3 beam widths tried: 8/50/400)
+// that WIDER beams make results WORSE, not better -- the per-candidate
+// scoring cost (liteWrongWingCount/litePairedSlotSet/liteFutureMobility,
+// each an O(12-slot) pass) is itself the bottleneck, not beam-limited
+// coverage: a wider beam means MORE candidates get scored per depth within
+// the same wall-clock deadline, which is strictly slower per node than the
+// original's cheap liteStateKey-only dedup check, so a bigger beam buys
+// LESS total node coverage per unit time, not more. Kept at the spec's own
+// suggested value (8) since it was the least-bad of the 3 tried, not
+// because it was found to be optimal -- see runBfsMoBenchmark.ts's 100-
+// scramble results and this session's own assessment for the full,
+// honest picture (this approach did not clear the spec's own success
+// criteria at any beam width tested).
+export const BFS_MO_CONFIG: BFSMOConfig = {
+  beamWidth: 8,
+};
+
+export interface BFSMOTraceEntry {
+  depth: number;
+  score: number;
+  wrongWing: number;
+  pairCount: number;
+  destroyedPair: number;
+  futureMobility: number;
+}
+
+function stickerFacingLite(s: LiteSticker5, axis: Axis): number {
+  return axis === "x" ? s.dx : axis === "y" ? s.dy : s.dz;
+}
+function liteBoundaryAxes(e: LiteEdge5): { axis: Axis; sign: 1 | -1 }[] {
+  const coords: [Axis, number][] = [
+    ["x", e.x],
+    ["y", e.y],
+    ["z", e.z],
+  ];
+  return coords.filter(([, v]) => Math.abs(v) === BOUNDARY).map(([axis, v]) => ({ axis, sign: Math.sign(v) as 1 | -1 }));
+}
+function liteColorFacing(e: LiteEdge5, axis: Axis, sign: 1 | -1): Face | undefined {
+  return e.stickers.find((s) => stickerFacingLite(s, axis) === sign)?.color;
+}
+function liteSlotKeyOf(e: LiteEdge5): string {
+  return liteBoundaryAxes(e)
+    .map(({ axis, sign }) => `${axis}${sign * BOUNDARY}`)
+    .join(",");
+}
+function liteMatchesTrueEdge(wing: LiteEdge5, trueEdge: LiteEdge5): boolean {
+  return liteBoundaryAxes(wing).every(({ axis, sign }) => liteColorFacing(wing, axis, sign) === liteColorFacing(trueEdge, axis, sign));
+}
+
+interface LiteSlotStats {
+  slot: string;
+  trueEdge: LiteEdge5 | null;
+  wings: LiteEdge5[];
+}
+function liteAnalyzeSlots(edges: readonly LiteEdge5[]): LiteSlotStats[] {
+  const bySlot = new Map<string, LiteSlotStats>();
+  for (const e of edges) {
+    const slot = liteSlotKeyOf(e);
+    if (!slot) continue;
+    const entry = bySlot.get(slot) ?? { slot, trueEdge: null, wings: [] };
+    if (e.type === "trueEdge") entry.trueEdge = e;
+    else entry.wings.push(e);
+    bySlot.set(slot, entry);
+  }
+  return [...bySlot.values()];
+}
+
+function litePairedSlotSet(edges: readonly LiteEdge5[]): Set<string> {
+  const paired = new Set<string>();
+  for (const stats of liteAnalyzeSlots(edges)) {
+    if (!stats.trueEdge || stats.wings.length !== 2) continue;
+    if (stats.wings.every((w) => liteMatchesTrueEdge(w, stats.trueEdge!))) paired.add(stats.slot);
+  }
+  return paired;
+}
+
+function liteWrongWingCount(edges: readonly LiteEdge5[]): number {
+  let count = 0;
+  for (const stats of liteAnalyzeSlots(edges)) {
+    if (!stats.trueEdge) continue;
+    for (const w of stats.wings) if (!liteMatchesTrueEdge(w, stats.trueEdge)) count++;
+  }
+  return count;
+}
+
+// Future Mobility: counts slots that are exactly "one flip away" from being
+// paired (both wings already share the true edge's COLOR identity, just
+// mis-oriented in place -- the same "flipped-pair" pattern
+// fiveByFiveHumanEdges.ts's own detectEdgeSlotPattern names) -- a cheap, real
+// structural signal for "closer to becoming a pair soon" that costs O(slots)
+// per candidate rather than an actual extra lookahead ply (which would
+// square the branching factor and blow the 20% time-regression budget).
+function liteFutureMobility(edges: readonly LiteEdge5[]): number {
+  let count = 0;
+  for (const stats of liteAnalyzeSlots(edges)) {
+    if (!stats.trueEdge || stats.wings.length !== 2) continue;
+    if (stats.wings.every((w) => liteMatchesTrueEdge(w, stats.trueEdge!))) continue; // already paired, not a mobility candidate
+    const trueKey = liteColorKeyOf(stats.trueEdge);
+    if (stats.wings.every((w) => liteColorKeyOf(w) === trueKey)) count++;
+  }
+  return count;
+}
+
+function parsePosKey(key: string): readonly [number, number, number] {
+  const [x, y, z] = key.split(",").map(Number);
+  return [x, y, z];
+}
+function positionDistance(a: readonly [number, number, number], b: readonly [number, number, number]): number {
+  return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]) + Math.abs(a[2] - b[2]);
+}
+
+interface MOTransitionEval {
+  score: number;
+  wrongWing: number;
+  pairCount: number;
+  destroyedPair: number;
+  futureMobility: number;
+}
+
+// One transition's score -- summed along the whole path (not just the final
+// state) so a path that spends 2 moves quietly destroying pairs before
+// "recovering" the wrongWingCount still scores worse than one that never
+// touched them, matching the spec's own framing of scoring "각 탐색 노드마다"
+// along the way, not only the destination.
+function scoreTransition(
+  beforeEdges: readonly LiteEdge5[],
+  afterEdges: readonly LiteEdge5[],
+  pieceId: number,
+  targetPos: readonly [number, number, number]
+): MOTransitionEval {
+  const wrongBefore = liteWrongWingCount(beforeEdges);
+  const wrongAfter = liteWrongWingCount(afterEdges);
+  const pairedBefore = litePairedSlotSet(beforeEdges);
+  const pairedAfter = litePairedSlotSet(afterEdges);
+
+  let preserved = 0;
+  for (const slot of pairedBefore) if (pairedAfter.has(slot)) preserved++;
+  const destroyedPair = pairedBefore.size - preserved;
+  const newPair = pairedAfter.size - preserved;
+
+  const wrongWingDecrease = Math.max(0, wrongBefore - wrongAfter);
+  const futureMobility = liteFutureMobility(afterEdges);
+
+  const beforePiece = beforeEdges.find((e) => e.id === pieceId)!;
+  const afterPiece = afterEdges.find((e) => e.id === pieceId)!;
+  const distBefore = positionDistance([beforePiece.x, beforePiece.y, beforePiece.z], targetPos);
+  const distAfter = positionDistance([afterPiece.x, afterPiece.y, afterPiece.z], targetPos);
+  const distDecrease = Math.max(0, distBefore - distAfter);
+
+  // Dead-State Penalty (spec section "Dead-State Penalty"): pair destroyed
+  // en masse, wrongWing went UP, or every previously-paired slot got wiped
+  // out in one move. Deliberately does NOT reference Failure Analysis data
+  // (spec's own 4th example condition is explicitly optional -- "참고만
+  // 해도 된다. 의존성은 만들지 않는다") -- this core solver file must not
+  // depend on generated research-tool JSON output.
+  const isDeadState = destroyedPair >= 2 || wrongAfter > wrongBefore || (pairedBefore.size > 0 && pairedAfter.size === 0);
+
+  const score =
+    BFS_SCORE_CONFIG.wrongWingDecrease * wrongWingDecrease +
+    BFS_SCORE_CONFIG.pairPreservation * preserved +
+    BFS_SCORE_CONFIG.newPairCreation * newPair +
+    BFS_SCORE_CONFIG.targetDistanceDecrease * distDecrease -
+    BFS_SCORE_CONFIG.pairDestruction * destroyedPair -
+    (isDeadState ? BFS_SCORE_CONFIG.deadStatePenalty : 0);
+
+  return { score, wrongWing: wrongAfter, pairCount: pairedAfter.size, destroyedPair, futureMobility };
+}
+
+interface MOFrontierNode {
+  edges: readonly LiteEdge5[];
+  path: Move[];
+  score: number;
+}
+
+function bfsMoveWingToPositionMO(
+  edges: readonly LiteEdge5[],
+  pieceId: number,
+  targetPosKey: string,
+  maxDepth: number,
+  pins?: readonly { id: number; posKey: string }[],
+  trace?: BFSMOTraceEntry[]
+): Move[] | null {
+  const startPiece = edges.find((e) => e.id === pieceId);
+  if (!startPiece) return null;
+  if (litePosKeyOf(startPiece) === targetPosKey) return [];
+
+  const targetPos = parsePosKey(targetPosKey);
+  const safe = allOuterMoves().flat();
+  let frontier: MOFrontierNode[] = [{ edges, path: [], score: 0 }];
+  const seen = new Set<string>([liteStateKey(edges)]);
+  let nodesExplored = 0;
+
+  for (let depth = 0; depth < maxDepth; depth++) {
+    const candidates: MOFrontierNode[] = [];
+    // Every candidate that reaches the target at THIS depth is collected
+    // (not returned immediately) so the highest-scoring one among them can
+    // be chosen once the whole depth has been evaluated -- spec: "같은
+    // 정답이라면 가장 Score가 높은 Move Sequence를 반환한다."
+    let bestAtThisDepth: { path: Move[]; score: number } | null = null;
+
+    for (const node of frontier) {
+      for (const move of safe) {
+        if (nodesExplored++ > MAX_TRACK_NODES) {
+          return bestAtThisDepth?.path ?? null;
+        }
+        const nextEdges = liteApplyMove(node.edges, move);
+        if (pins && pins.some((pin) => litePosKeyOf(nextEdges.find((e) => e.id === pin.id)!) !== pin.posKey)) continue;
+        const key = liteStateKey(nextEdges);
+        if (seen.has(key)) continue;
+        seen.add(key);
+
+        const path = [...node.path, move];
+        const evaluation = scoreTransition(node.edges, nextEdges, pieceId, targetPos);
+        const cumulativeScore = node.score + evaluation.score;
+        candidates.push({ edges: nextEdges, path, score: cumulativeScore });
+        trace?.push({
+          depth: depth + 1,
+          score: cumulativeScore,
+          wrongWing: evaluation.wrongWing,
+          pairCount: evaluation.pairCount,
+          destroyedPair: evaluation.destroyedPair,
+          futureMobility: evaluation.futureMobility,
+        });
+
+        const piece = nextEdges.find((e) => e.id === pieceId)!;
+        if (litePosKeyOf(piece) === targetPosKey) {
+          if (!bestAtThisDepth || cumulativeScore > bestAtThisDepth.score) bestAtThisDepth = { path, score: cumulativeScore };
+        }
+      }
+    }
+
+    if (bestAtThisDepth) return bestAtThisDepth.path;
+
+    // Beam: keep only the top BEAM_WIDTH highest-scoring candidates for the
+    // next depth (spec: "무제한 유지 금지") instead of the original's
+    // unbounded "every deduped node survives" frontier.
+    candidates.sort((a, b) => b.score - a.score);
+    frontier = candidates.slice(0, BFS_MO_CONFIG.beamWidth);
+    if (frontier.length === 0) break;
+  }
+  return null;
+}
+
+/**
+ * Full parallel copy of tryFixWing (see that function's own comments for
+ * the shared candidate-filtering/disruption-safety logic, unchanged here)
+ * with its two bfsMoveWingToPosition call sites swapped for
+ * bfsMoveWingToPositionMO, plus an optional trace sink threaded through
+ * both. Kept as a complete duplicate rather than a shared refactor, per
+ * spec's own "기존 구현은 그대로 유지한다" -- tryFixWing itself is never
+ * touched.
+ */
+export function tryFixWingMO(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline: number, trace?: BFSMOTraceEntry[]): Move[] | null {
+  const p1 = posKey(w);
+  const wSlot = slotKey(w);
+  const trueEdge = cubies.find((c) => pieceType5(c) === "trueEdge" && slotKey(c) === wSlot);
+  if (!trueEdge) return null;
+  const neededColorKey = colorKeyOf(trueEdge);
+  const edges = toLiteEdges(cubies);
+  const before = wrongWingCount5(cubies);
+  const wrongIds = new Set(wrongWings5(cubies).map((c) => c.id));
+
+  for (const entry of candidatesForWing(lib, w)) {
+    if (Date.now() > deadline) return null;
+    const eff = entry.effect.get(p1);
+    if (!eff) continue;
+    const p2Key = `${eff.pos[0]},${eff.pos[1]},${eff.pos[2]}`;
+    if (p2Key === p1) continue;
+
+    let otherDisruptionsSafe = true;
+    for (const pos of entry.disruptedPositions) {
+      if (pos === p1 || pos === p2Key) continue;
+      if (!isWrongAtPosition(cubies, pos)) {
+        otherDisruptionsSafe = false;
+        break;
+      }
+    }
+    if (!otherDisruptionsSafe) continue;
+
+    const matches = edges.filter(
+      (e) => e.type === "wingEdge" && e.id !== w.id && wrongIds.has(e.id) && liteColorKeyOf(e) === neededColorKey
+    );
+
+    const p3Eff = entry.effect.get(p2Key);
+    const p3Key = p3Eff ? `${p3Eff.pos[0]},${p3Eff.pos[1]},${p3Eff.pos[2]}` : null;
+    const backToP1Eff = p3Key ? entry.effect.get(p3Key) : undefined;
+    const closesCycle = backToP1Eff && `${backToP1Eff.pos[0]},${backToP1Eff.pos[1]},${backToP1Eff.pos[2]}` === p1;
+    if (p3Key && p3Key !== p1 && p3Key !== p2Key && closesCycle) {
+      const p3TrueEdge = cubies.find((c) => pieceType5(c) === "trueEdge" && slotKey(c) === slotKey(cubies.find((c2) => posKey(c2) === p3Key)!));
+      if (p3TrueEdge) {
+        const p3NeededColorKey = colorKeyOf(p3TrueEdge);
+        const matchesForP3 = edges.filter(
+          (e) => e.type === "wingEdge" && e.id !== w.id && wrongIds.has(e.id) && liteColorKeyOf(e) === p3NeededColorKey
+        );
+        for (const match1 of matches) {
+          if (Date.now() > deadline) break;
+          const setup1 =
+            litePosKeyOf(match1) === p3Key ? [] : bfsMoveWingToPositionMO(edges, match1.id, p3Key, 6, [{ id: w.id, posKey: p1 }], trace);
+          if (setup1 === null) continue;
+          const edgesAfterSetup1 = setup1.reduce((acc, m) => liteApplyMove(acc, m), edges);
+          for (const match2 of matchesForP3) {
+            if (match2.id === match1.id) continue;
+            const setup2 =
+              litePosKeyOf(match2) === p2Key
+                ? []
+                : bfsMoveWingToPositionMO(
+                    edgesAfterSetup1,
+                    match2.id,
+                    p2Key,
+                    6,
+                    [
+                      { id: w.id, posKey: p1 },
+                      { id: match1.id, posKey: p3Key },
+                    ],
+                    trace
+                  );
+            if (setup2 === null) continue;
+            const fullSeq = [...setup1, ...setup2, ...entry.seq];
+            const clone = cloneCubies(cubies);
+            applySeq(clone, fullSeq);
+            if (wrongWingCount5(clone) < before) return fullSeq;
+          }
+        }
+      }
+    }
+
+    for (const match of matches) {
+      const setup =
+        litePosKeyOf(match) === p2Key ? [] : bfsMoveWingToPositionMO(edges, match.id, p2Key, 6, [{ id: w.id, posKey: p1 }], trace);
+      if (setup === null) continue;
+      const fullSeq = [...setup, ...entry.seq];
+      const clone = cloneCubies(cubies);
+      applySeq(clone, fullSeq);
+      if (wrongWingCount5(clone) < before) return fullSeq;
+    }
+  }
+  return null;
+}
+
 function isWrongAtPosition(cubies: readonly Cubie[], pos: string): boolean {
   const piece = cubies.find((c) => posKey(c) === pos && pieceType5(c) === "wingEdge");
   if (!piece) return true;
