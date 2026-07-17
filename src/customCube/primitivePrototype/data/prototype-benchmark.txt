@@ -1,0 +1,42 @@
+========================================
+Prototype Benchmark -- Primitive Invention Sprint v1 (CycleChase)
+========================================
+
+--- 대상 Cluster 선정 ---
+전체 실패 75건, Policy 보유로 제외: w13|p1, w10|p1
+  w9|p1: size=7 (9.3%), recoveryFailureRate=100.0%
+  w14|p1: size=6 (8.0%), recoveryFailureRate=100.0%
+  w11|p1: size=6 (8.0%), recoveryFailureRate=100.0%
+
+--- 공통 구조 (buildStateGraph 재사용) ---
+  w9|p1: 4단계+ Cycle 보유 비율 71.4%, 평균 최장 Cycle 길이 4.29
+  w14|p1: 4단계+ Cycle 보유 비율 100.0%, 평균 최장 Cycle 길이 5.50
+  w11|p1: 4단계+ Cycle 보유 비율 100.0%, 평균 최장 Cycle 길이 4.17
+
+--- Replay Benchmark (전체 75건) ---
+Coverage (활성화율, Level 3 지표): 22.7% (17/75)
+WrongWing 개선 Replay 수 (Level 1 지표): 17
+Regression율, 활성화된 것 중 (Level 2 지표): 0.0% (0/17)
+평균 WrongWing 변화 (활성화된 것 중): -2.24
+평균 Pair 변화 (활성화된 것 중): 0.76
+평균 Move 수 (활성화된 것 중): 82.8
+평균 실행 시간 (전체 75건): 231ms
+
+--- 기존 Primitive와의 비교 ---
+BASE/FLIP/CASE/PARITY: 이 3개 대상 Cluster(w9|p1, w14|p1, w11|p1)는 애초에 이 4개 Primitive
+전부 시도된 뒤에도 여전히 실패로 남은 잔여 상태에서 뽑았다 (Failure Analysis Engine의 정의상).
+CycleChase는 그 4개 위에 얹는 5번째 Primitive로, 길이 4+ Cycle이 감지될 때만 활성화되며,
+활성화 자체가 Coverage 22.7%로 제한적이다.
+
+--- 성공 기준 판정 ---
+Level 1 (WrongWing 감소 10개 이상): PASS (실제 17개)
+Level 2 (Regression 10% 이하): PASS (실제 0.0%)
+Level 3 (Coverage 30% 이상): FAIL (실제 22.7%)
+
+--- 실패 조건 판정 (하나라도 해당하면 Prototype 폐기) ---
+Regression > 10%: 해당없음
+Coverage < 15%: 해당없음 (22.7%)
+WrongWing 평균 개선 없음 (활성화된 것 중 평균 변화 >= 0): 해당없음
+
+통합 후보 여부: 아니오
+제품 코드 통합 여부: 미통합 (spec section 12 -- 이번 Sprint는 항상 통합하지 않는다)
