@@ -65,3 +65,26 @@ export interface GoalReplayBenchmarkResult {
   wrongWingAfterGoal: number;
   improved: boolean; // wrongWingAfterGoal < wrongWingWithoutGoal
 }
+
+/**
+ * The browser-safe, PORTABLE form of a Goal Candidate used at runtime
+ * (Solver Integration Sprint v1). Only `primitiveSequence` -- WHICH
+ * Primitives to try, in WHICH order -- generalizes across different real
+ * cube states; the ORIGINAL candidate's literal `moveSequence` was tailored
+ * to the exact scramble it was discovered on and is never replayed at
+ * runtime (see GoalAnalyzer.ts's runPrimitiveChain). `originalMoveCount` is
+ * kept only as a disclosed, approximate tie-breaker for spec section 5's
+ * "Move 수" priority -- the ACTUAL move count at runtime will differ per
+ * real application, since the same Primitive can take a different number of
+ * moves depending on the live state it's applied to.
+ */
+export interface PortableGoal {
+  id: string; // `${replayHash}::${goalHash}` of the source GoalCandidate
+  primitiveSequence: GoalPrimitiveName[];
+  wrongWingDecrease: number; // wrongWingBefore - wrongWingAfter, from the candidate's OWN discovery (must be > 0 to pass the gate)
+  pairIncrease: number; // pairAfter - pairBefore, from the candidate's OWN discovery
+  originalMoveCount: number; // moveSequence.length from the candidate's OWN discovery (approximate proxy, disclosed above)
+  replaySuccessRate: number; // computed via the offline 75-Replay reliability benchmark
+  replayRegressionRate: number;
+  replayInvalidRate: number;
+}

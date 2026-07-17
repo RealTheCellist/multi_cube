@@ -1,0 +1,105 @@
+========================================
+Sprint 결론 -- Solver Integration Sprint v1
+(Goal-oriented Planning을 실제 Solver Loop에 통합할 수 있는가)
+========================================
+
+1. Git Diff
+----------------------------------------------
+최종 상태: 5개 보호 대상 파일(fiveByFiveEdges.ts, fiveByFiveEdgePlanner.ts,
+fiveByFiveEdgeExecutor.ts, fiveByFiveEdgeRecovery.ts,
+fiveByFiveEdgeSolverEngine.ts) 전부 git diff 0줄.
+
+실제로는 fiveByFiveEdgeSolverEngine.ts에 Goal Planner 분기(섹션 4의 새
+흐름: Executor -> Goal Planner 확인 -> 적용 시 Planner 재실행 -> Executor)
+를 `enableGoalIntegration` 플래그(기본값 false)로 구현하고, 75-Replay
+A/B Benchmark로 실제 비교까지 완료했다. 그러나 벤치마크 결과가 섹션 10의
+성공 기준을 하나도 충족하지 못했고 섹션 11의 실패 조건("Regression 증가")
+이 실제로 발생해, 섹션 12("성공 기준 미달이면 제품 코드 통합 금지 / 실험
+코드는 goalPlanner/ 내에서만 유지한다")에 따라 fiveByFiveEdgeSolverEngine.ts
+의 변경을 전부 되돌렸다(git checkout). 최종 diff는 goalPlanner/ 내부
+파일(GoalIntegration.ts 신규, GoalAnalyzer.ts/GoalDescriptor.ts에 재사용
+가능한 export 3개 추가)과 Node 전용 오프라인 도구
+(runGoalIntegrationBenchmark.ts) 뿐이다.
+
+2. Replay Benchmark 결과 (75건, 동일 조건)
+----------------------------------------------
+지표             기존 Solver        Goal Integration Solver
+평균 WrongWing   9.16               9.49   (0.33 악화)
+평균 Pair        4.17               3.96   (악화)
+평균 Move        90.9               65.3   (28% 감소)
+평균 Time(ms)    1051               800    (24% 감소)
+Solve %          0.0                0.0    (동일)
+
+3. Goal 사용 통계
+----------------------------------------------
+Goal 사용률: 0.0% (0/75) -- Architecture Evolution Sprint v1이 만든 32개
+  Goal Candidate 전부를 실제 75개 Replay 전체에 대해 "전략"(primitiveSequence
+  재실행, 문자 그대로의 move 재생 아님)으로 재검증했으나, 섹션 6의 게이트
+  (Expected WrongWing 감소 > 0 AND Replay 성공률 >= 60% AND Regression
+  율 <= 20%)를 통과한 후보가 0개였다 (최고 성공률은 37.3%, 60%에 크게
+  못 미침). 그 결과 실제 Solver 실행 중 단 한 번도 Goal이 적용되지 않았다.
+Goal 성공률/실패률: 0.0%/0.0% (사용 건수 자체가 0이므로 정의되지 않음)
+Goal 무효율: 98.7% (74/75, 나머지 1건은 예산 소진으로 Goal Planner 단계
+  자체에 도달하지 못함)
+
+4. Solver 성능 비교표
+----------------------------------------------
+위 2번 표 참고. 평균 WrongWing이 오히려 0.33 악화됐다 -- 원인은 Goal이
+단 한 번도 적용되지 않았음에도 불구하고, `GOAL_INTEGRATION_RESERVE_MS`
+(250ms)를 매 solve() 호출마다 1차 Executor 패스에서 미리 떼어놓았기
+때문이다. 이 예산 격리 자체가 평균 Move 수를 90.9->65.3으로 28% 줄여
+ENDGAME 그라인더가 평소보다 적게 반복되게 만들었고, 그 결과로 평균
+WrongWing이 악화됐다. 즉 "Goal Planner가 나빠서"가 아니라 "쓰이지도
+않는 예약 때문에 기존 파이프라인이 손해를 봤다"는 것이 원인이며, 이는
+Adaptive Executor v2가 이미 겪었던 것과 동일한 종류의 예산 격리 부작용이
+다시 나타난 것이다.
+
+5. 성공 기준 충족 여부 (섹션 10, 1개 이상 필요)
+----------------------------------------------
+Level 1 (평균 WrongWing 2 이상 감소): FAIL (오히려 +0.33 악화)
+Level 2 (Solve Success 기존 대비 증가): FAIL (0.0% -> 0.0%, 동일)
+Level 3 (Goal 적용 Replay의 70% 이상에서 WrongWing 감소): FAIL (사용 건수
+  0건이므로 분모 자체가 없음)
+=> 3개 전부 미충족.
+
+실패 조건 (섹션 11, 하나라도 해당하면 통합 중단):
+Regression 증가: 해당 (평균 WrongWing 9.16 -> 9.49)
+Solve 감소: 해당없음 (0.0% -> 0.0%, 동일)
+시간 20% 이상 증가: 해당없음 (오히려 -23.9% 감소)
+=> "Regression 증가" 조건이 실제로 발생, 통합 중단 사유 충족.
+
+6. 제품 코드 통합 여부
+----------------------------------------------
+통합하지 않음. 섹션 12의 규칙대로 fiveByFiveEdgeSolverEngine.ts의 모든
+변경을 되돌렸고, 실험 코드(GoalIntegration.ts, EligibleGoals.generated.ts,
+runGoalIntegrationBenchmark.ts)는 goalPlanner/ 안에만 남아 있다.
+EligibleGoals.generated.ts는 정직하게 빈 배열([])이다 -- 32개의
+Architecture Evolution Sprint v1 Goal Candidate 중 실제 75개 Replay
+전체에서 "전략"으로 재검증했을 때 60% 이상의 성공률을 보인 것이 단 하나도
+없었기 때문이다.
+
+7. Sprint 결론
+----------------------------------------------
+Architecture Evolution Sprint v1에서 관찰된 "83% 개선, 평균 WrongWing
+-2.13" 신호는 각 Goal Candidate가 "자신이 발견된 바로 그 Replay"에서
+보인 결과였다. 이번 Sprint가 실제로 검증한 것은 그 신호가 "다른 임의의
+실패 상태에도 일반화되는가"였고, 답은 명확히 아니오였다 -- 같은
+primitiveSequence를 별개의 75개 Replay에 "전략"으로 재적용했을 때 최고
+성공률은 37.3%에 그쳤다(60% 게이트에 미달). 즉 GOSP가 발견한 Goal은 특정
+Replay에 고도로 특화된 것이었지, 일반적으로 재사용 가능한 "웨이포인트"가
+아니었다.
+
+이는 실패이지만 유용한 실패다: Architecture Evolution Sprint v1의 결과가
+"연구 단계에서는 흥미롭지만 특정 상태에 과적합된 신호"였다는 것을 이번
+Sprint가 객관적인 Replay Benchmark로 입증했다. 부수적으로, 실제로 사용되지
+않는 예산 예약(GOAL_INTEGRATION_RESERVE_MS)만으로도 기존 파이프라인이
+측정 가능한 손해를 본다는 것 역시 확인됐다 -- 향후 어떤 형태로든 Solver
+Loop에 새 단계를 끼워 넣으려면, 그 단계가 실제로 아무것도 하지 않을 때도
+예산 격리 자체가 공짜가 아니라는 점을 반드시 검증해야 한다.
+
+GOSP는 이번 Sprint로 제품 통합 경로가 막혔다. 다음 단계가 있다면
+"Goal을 일반화하는 방법"(예: Cluster별로 여러 Replay에서 공통되는
+Primitive 순서만 추출, 또는 primitiveSequence 자체가 아니라 "이 WrongWing/
+Parity 구간에서는 이 순서를 먼저 시도해보라"는 더 coarse-grained한 힌트로
+재정의) 자체가 새로운 연구 주제가 되어야 하며, 이는 이번 Sprint의 범위
+밖이다.

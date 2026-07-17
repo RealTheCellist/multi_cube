@@ -1,0 +1,29 @@
+========================================
+Solver Integration Benchmark -- Solver Integration Sprint v1
+========================================
+
+Replay 수: 75
+
+--- Solver 성능 비교표 ---
+지표             기존 Solver        Goal Integration Solver
+평균 WrongWing   9.16               9.49
+평균 Pair        4.17               3.96
+평균 Move        90.9               65.3
+평균 Time(ms)    1051               800
+Solve %          0.0                0.0
+
+--- Goal 사용 통계 (Goal Integration Solver 기준) ---
+Goal 사용률: 0.0% (0/75)
+Goal 성공률 (사용된 것 중 기존보다 개선): 0.0% (0/0)
+Goal 실패률 (사용된 것 중 기존보다 악화): 0.0% (0/0)
+Goal 무효율 (적용 가능한 Goal 없음): 98.7% (74/75)
+
+--- 성공/실패 기준 판정 ---
+Level 1 (평균 WrongWing 2 이상 감소): FAIL (변화량 0.33)
+Level 2 (Solve Success 기존 대비 증가): FAIL (0.0% -> 0.0%)
+Level 3 (Goal 적용 Replay의 70%+ 에서 WrongWing 감소): FAIL (0.0%, 사용 건수=0)
+
+--- 실패 조건 판정 (하나라도 해당하면 통합 중단) ---
+Regression 증가 (WrongWing 평균 악화): 해당
+Solve 감소: 해당없음
+시간 20% 이상 증가: 해당없음 (-23.9%)

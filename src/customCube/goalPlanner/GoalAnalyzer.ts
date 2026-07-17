@@ -37,11 +37,11 @@ import {
 } from "./GoalState";
 import type { GoalCandidate, GoalConditionFlag } from "./GoalDescriptor";
 
-function pairCountOf(cubies: Cubie[]): number {
+export function pairCountOf(cubies: Cubie[]): number {
   return analyzeEdgeSlots(cubies).filter((s) => s.pairedCount === 2).length;
 }
 
-function hasParity(cubies: Cubie[]): boolean {
+export function hasParity(cubies: Cubie[]): boolean {
   return analyzeEdgeSlots(cubies).some((s) => s.pairedCount < 2 && detectEdgeSlotPattern(s) === "unpaired");
 }
 
@@ -54,7 +54,7 @@ function hashOf(cubies: Cubie[]): string {
  * null if it made no progress within `deadline`. Mirrors
  * primitiveCapabilityTester.ts's own BASE/FLIP/CASE/PARITY branches exactly,
  * just parameterized by deadline instead of a hardcoded constant. */
-function tryApplyPrimitive(cubies: Cubie[], primitive: GoalPrimitiveName, libs: ExecutorLibraries, deadline: number): Move[] | null {
+export function tryApplyPrimitive(cubies: Cubie[], primitive: GoalPrimitiveName, libs: ExecutorLibraries, deadline: number): Move[] | null {
   if (primitive === "BASE") {
     for (const w of wrongWings5(cubies)) {
       if (Date.now() > deadline) break;
@@ -94,6 +94,53 @@ function tryApplyPrimitive(cubies: Cubie[], primitive: GoalPrimitiveName, libs: 
     return fix;
   }
   return null;
+}
+
+export interface PrimitiveChainResult {
+  completed: boolean; // every step in the sequence found a fix, in order
+  stepsCompleted: number;
+  wrongWingBefore: number;
+  wrongWingAfter: number;
+  pairBefore: number;
+  pairAfter: number;
+}
+
+/**
+ * Replays a Goal Candidate's `primitiveSequence` as a portable STRATEGY
+ * (Solver Integration Sprint v1, section 4/5) -- re-executes each named
+ * Primitive IN ORDER against `cubies` (mutated in place), stopping the
+ * instant one step fails to find a fix. This is deliberately NOT the
+ * candidate's literal recorded `moveSequence` (those real moves were
+ * tailored to the EXACT scramble they were discovered on and would corrupt
+ * an unrelated cube state) -- the only thing that generalizes across
+ * different real cube states is WHICH Primitives to try, in WHICH order.
+ * Shared by both the offline reliability benchmark (Node) and the runtime
+ * GoalIntegration.ts (browser-safe) so the two never compute this
+ * differently.
+ */
+export function runPrimitiveChain(
+  cubies: Cubie[],
+  sequence: readonly GoalPrimitiveName[],
+  libs: ExecutorLibraries,
+  perStepDeadlineMs: number
+): PrimitiveChainResult {
+  const wrongWingBefore = wrongWingCount5(cubies);
+  const pairBefore = pairCountOf(cubies);
+  let stepsCompleted = 0;
+  for (const primitive of sequence) {
+    const deadline = Date.now() + perStepDeadlineMs;
+    const applied = tryApplyPrimitive(cubies, primitive, libs, deadline);
+    if (!applied || applied.length === 0) break;
+    stepsCompleted++;
+  }
+  return {
+    completed: stepsCompleted === sequence.length,
+    stepsCompleted,
+    wrongWingBefore,
+    wrongWingAfter: wrongWingCount5(cubies),
+    pairBefore,
+    pairAfter: pairCountOf(cubies),
+  };
 }
 
 interface QueueItem {
