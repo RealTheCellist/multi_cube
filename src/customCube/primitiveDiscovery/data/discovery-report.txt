@@ -1,0 +1,25 @@
+========================================
+Primitive Discovery Report -- Capability Expansion Sprint v2
+========================================
+
+탐색한 Replay 수 (대표 Cluster): 8
+탐색한 Sequence 수 (총 평가): 2832
+발견한 Primitive 수 (고유 Transition Hash): 261
+Replay Benchmark 검증 대상: 30개 (전체 중 상위)
+
+--- Capability Score 순위 (상위 15) ---
+f7574da2  score=5.0  moveLength=8  benchmark(success=0/50, avgWrongWingDelta=0.00, avgPairDelta=0.00)
+ae17ff6e  score=5.0  moveLength=8  benchmark(success=0/50, avgWrongWingDelta=0.00, avgPairDelta=0.00)
+4e5cfcb2  score=5.0  moveLength=8  benchmark(success=0/50, avgWrongWingDelta=0.00, avgPairDelta=0.00)
+46dd698  score=5.0  moveLength=8  benchmark(success=0/50, avgWrongWingDelta=0.00, avgPairDelta=0.00)
+e2649e88  score=5.0  moveLength=8  benchmark(success=0/50, avgWrongWingDelta=0.00, avgPairDelta=0.00)
+7a0047a2  score=5.0  moveLength=8  benchmark(success=0/50, avgWrongWingDelta=0.00, avgPairDelta=0.00)
+7bf0e41a  score=5.0  moveLength=8  benchmark(success=0/50, avgWrongWingDelta=0.00, avgPairDelta=0.00)
+c60321b0  score=5.0  moveLength=8  benchmark(success=0/50, avgWrongWingDelta=0.00, avgPairDelta=0.00)
+2b955888  score=5.0  moveLength=8  benchmark(success=0/50, avgWrongWingDelta=0.00, avgPairDelta=0.00)
+db34f5cc  score=5.0  moveLength=8  benchmark(success=0/50, avgWrongWingDelta=0.00, avgPairDelta=0.00)
+7f1b544c  score=5.0  moveLength=8  benchmark(success=0/50, avgWrongWingDelta=0.00, avgPairDelta=0.00)
+755427f0  score=5.0  moveLength=8  benchmark(success=0/50, avgWrongWingDelta=0.00, avgPairDelta=0.00)
+5c4e39da  score=5.0  moveLength=8  benchmark(success=0/50, avgWrongWingDelta=0.00, avgPairDelta=0.00)
+755d6de0  score=5.0  moveLength=8  benchmark(success=0/50, avgWrongWingDelta=0.00, avgPairDelta=0.00)
+2f852de4  score=5.0  moveLength=8  benchmark(success=0/50, avgWrongWingDelta=0.00, avgPairDelta=0.00)

@@ -75,7 +75,7 @@ function wideTurn3(face: Face, times: number): Move[] {
 // wing's target is well-defined (whatever color its OWN slot's true edge
 // already shows), and swapping in a same-colored wing from elsewhere fixes
 // it outright without disturbing that true edge.
-const BASE_ALG: Move[] = [
+export const BASE_ALG: Move[] = [
   ...wideTurn("U", -1),
   ...faceTurn("R", 1),
   ...faceTurn("U", 1),
@@ -103,7 +103,7 @@ const BASE_ALG: Move[] = [
 // (colorKeyOf matches the slot's own true edge, but matchesTrueEdge still
 // fails on exact per-axis facing) -- a case the position-swap-only entry
 // library can't even recognize, let alone fix.
-const FLIP_ALG: Move[] = [...faceTurn("R", 1), ...faceTurn("U", -1), ...faceTurn("R", -1)];
+export const FLIP_ALG: Move[] = [...faceTurn("R", 1), ...faceTurn("U", -1), ...faceTurn("R", -1)];
 
 // Rw' U2 Rw U2' 3Lw' U2 Rw U2 Rw U2' Rw' U2 Rw U2' Rw2 -- a real, documented
 // 5x5x5 "Last 2 Edges / Parity" case algorithm (CubeSkills' last-2-edges-
@@ -136,7 +136,7 @@ const FLIP_ALG: Move[] = [...faceTurn("R", 1), ...faceTurn("U", -1), ...faceTurn
 // directly and exactly, mirroring how real speedcubers use a Last-2-Edges
 // case algorithm: recognize the specific defect shape, apply the one
 // algorithm built for it, done in one shot -- see tryExactCaseMatch below.
-const PARITY_ALG: Move[] = [
+export const PARITY_ALG: Move[] = [
   ...wideTurn("R", -1),
   ...faceTurn("U", 2),
   ...wideTurn("R", 1),

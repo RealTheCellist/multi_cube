@@ -1,0 +1,93 @@
+========================================
+Primitive Catalog -- Capability Expansion Sprint v2
+========================================
+
+Transition Hash: f7574da2
+  Move Sequence (8수): x-2+ x-2+ x-2+ x-1+ x-2- x-2- x-1- x-2-
+  Replay Success: 0/50
+  대표 적용 사례: Cluster w13|p1
+  Transition 특징: Affected Slots=0, Changed Layers=2, ParityDelta=0
+
+Transition Hash: ae17ff6e
+  Move Sequence (8수): x-2+ x-2+ y-2+ y-2+ x-2- x-2- y-2- y-2-
+  Replay Success: 0/50
+  대표 적용 사례: Cluster w13|p1
+  Transition 특징: Affected Slots=0, Changed Layers=2, ParityDelta=0
+
+Transition Hash: 4e5cfcb2
+  Move Sequence (8수): x-2+ x-2+ y2+ y2+ x-2- x-2- y2- y2-
+  Replay Success: 0/50
+  대표 적용 사례: Cluster w13|p1
+  Transition 특징: Affected Slots=0, Changed Layers=2, ParityDelta=0
+
+Transition Hash: 46dd698
+  Move Sequence (8수): x-2+ x-2+ z-2+ z-2+ x-2- x-2- z-2- z-2-
+  Replay Success: 0/50
+  대표 적용 사례: Cluster w13|p1
+  Transition 특징: Affected Slots=0, Changed Layers=2, ParityDelta=0
+
+Transition Hash: e2649e88
+  Move Sequence (8수): x-2+ x-2+ z2+ z2+ x-2- x-2- z2- z2-
+  Replay Success: 0/50
+  대표 적용 사례: Cluster w13|p1
+  Transition 특징: Affected Slots=0, Changed Layers=2, ParityDelta=0
+
+Transition Hash: 7a0047a2
+  Move Sequence (8수): x2+ x2+ y-2+ y-2+ x2- x2- y-2- y-2-
+  Replay Success: 0/50
+  대표 적용 사례: Cluster w13|p1
+  Transition 특징: Affected Slots=0, Changed Layers=2, ParityDelta=0
+
+Transition Hash: 7bf0e41a
+  Move Sequence (8수): x2+ x2+ y2+ y2+ x2- x2- y2- y2-
+  Replay Success: 0/50
+  대표 적용 사례: Cluster w13|p1
+  Transition 특징: Affected Slots=0, Changed Layers=2, ParityDelta=0
+
+Transition Hash: c60321b0
+  Move Sequence (8수): x2+ x2+ z-2+ z-2+ x2- x2- z-2- z-2-
+  Replay Success: 0/50
+  대표 적용 사례: Cluster w13|p1
+  Transition 특징: Affected Slots=0, Changed Layers=2, ParityDelta=0
+
+Transition Hash: 2b955888
+  Move Sequence (8수): x2+ x2+ z2+ z2+ x2- x2- z2- z2-
+  Replay Success: 0/50
+  대표 적용 사례: Cluster w13|p1
+  Transition 특징: Affected Slots=0, Changed Layers=2, ParityDelta=0
+
+Transition Hash: db34f5cc
+  Move Sequence (8수): y-2+ y-2+ x-2+ x-2+ y-2- y-2- x-2- x-2-
+  Replay Success: 0/50
+  대표 적용 사례: Cluster w13|p1
+  Transition 특징: Affected Slots=0, Changed Layers=2, ParityDelta=0
+
+Transition Hash: 7f1b544c
+  Move Sequence (8수): y-2+ y-2+ x2+ x2+ y-2- y-2- x2- x2-
+  Replay Success: 0/50
+  대표 적용 사례: Cluster w13|p1
+  Transition 특징: Affected Slots=0, Changed Layers=2, ParityDelta=0
+
+Transition Hash: 755427f0
+  Move Sequence (8수): y-2+ y-2+ z-2+ z-2+ y-2- y-2- z-2- z-2-
+  Replay Success: 0/50
+  대표 적용 사례: Cluster w13|p1
+  Transition 특징: Affected Slots=0, Changed Layers=2, ParityDelta=0
+
+Transition Hash: 5c4e39da
+  Move Sequence (8수): y-2+ y-2+ z2+ z2+ y-2- y-2- z2- z2-
+  Replay Success: 0/50
+  대표 적용 사례: Cluster w13|p1
+  Transition 특징: Affected Slots=0, Changed Layers=2, ParityDelta=0
+
+Transition Hash: 755d6de0
+  Move Sequence (8수): y2+ y2+ x-2+ x-2+ y2- y2- x-2- x-2-
+  Replay Success: 0/50
+  대표 적용 사례: Cluster w13|p1
+  Transition 특징: Affected Slots=0, Changed Layers=2, ParityDelta=0
+
+Transition Hash: 2f852de4
+  Move Sequence (8수): y2+ y2+ x2+ x2+ y2- y2- x2- x2-
+  Replay Success: 0/50
+  대표 적용 사례: Cluster w13|p1
+  Transition 특징: Affected Slots=0, Changed Layers=2, ParityDelta=0

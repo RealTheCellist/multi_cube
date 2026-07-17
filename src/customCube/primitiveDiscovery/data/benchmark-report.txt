@@ -1,0 +1,8 @@
+========================================
+Benchmark Report -- Capability Expansion Sprint v2
+========================================
+Success (합계): 3
+Regression (합계): 179
+No Effect (합계): 1318
+평균 WrongWing 변화 (후보 평균): 0.30
+평균 Pair 변화 (후보 평균): -0.10
