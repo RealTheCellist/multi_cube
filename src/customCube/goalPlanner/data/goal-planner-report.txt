@@ -1,0 +1,32 @@
+========================================
+Goal Planner Report -- Architecture Evolution Sprint v1 (GOSP)
+========================================
+
+분석한 Replay 수: 20
+탐색 옵션: maxDepth=4, maxNodesPerReplay=50, primitiveDeadlineMs=120ms
+State Graph 총 노드 수: 52
+State Graph 총 Edge 수: 33
+발견한 Goal Candidate 수: 32
+Cluster Goal로 승격된 수 (동일 Cluster 내 2회+ 반복): 6
+
+--- Goal Score 분포 ---
+  평균: -3.97, 최소: -36.00, 최대: 34.00
+  [-36.0, -24.3] : ####### (7)
+
+--- Cluster Goal (동일 Cluster 내 반복 발견된 Goal, 상위 15) ---
+  Cluster w13|p1  Goal w12|p1  발생 Replay 5개  대표 score=14.0  경로=[BASE]
+  Cluster w13|p1  Goal w11|p1  발생 Replay 4개  대표 score=22.0  경로=[PARITY>BASE]
+  Cluster w13|p1  Goal w9|p1  발생 Replay 3개  대표 score=23.0  경로=[PARITY>BASE>PARITY]
+  Cluster w13|p1  Goal w10|p1  발생 Replay 2개  대표 score=15.0  경로=[BASE>BASE>BASE]
+  Cluster w9|p1  Goal w8|p1  발생 Replay 2개  대표 score=26.0  경로=[BASE]
+  Cluster w10|p1  Goal w9|p1  발생 Replay 2개  대표 score=-22.0  경로=[BASE]
+
+--- Level 1 (전역, Cluster 무관, 동일 Goal Signature 5개+ Replay) ---
+  Goal w12|p1  Replay 5개
+  Goal w9|p1  Replay 5개
+  Goal w11|p1  Replay 4개
+  Goal w8|p1  Replay 4개
+  Goal w10|p1  Replay 2개
+  Goal w6|p0  Replay 2개
+  Goal w7|p0  Replay 1개
+  Goal w7|p1  Replay 1개

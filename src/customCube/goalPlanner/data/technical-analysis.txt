@@ -1,0 +1,92 @@
+========================================
+Technical Analysis -- Architecture Evolution Sprint v1 (GOSP Prototype)
+========================================
+
+1. Goal State가 실제로 존재하는가
+----------------------------------------------
+존재한다. 20개 Replay(대표 Cluster 상위, w13|p1/w9|p1/w10|p1 등)에 대해
+BASE/FLIP/CASE/PARITY 4개 기존 Primitive를 depth 4까지 반복 재실행하는
+State Graph 탐색을 실행한 결과, 52개의 실제 상태 노드와 33개의 실제
+Primitive 실행 Edge가 나왔고, 그중 32개 노드가 section 10의 4개 조건 중
+하나 이상을 만족하는 Goal Candidate로 선정됐다.
+
+가장 인상적인 패턴은 spec section 6의 worked example과 문자 그대로 일치한다:
+Raw Failure State(WrongWing 13)에서는 BASE/FLIP/CASE가 전부 즉시 실패하지만,
+PARITY(bestFixOverall/tryEndgameMultiPly)는 종종 성공해 WrongWing을
+13→11로 낮추고, 그 순간부터 BASE가 다시 작동하기 시작해 11→9까지 이어지는
+사례가 실제로 관측됐다(Replay 45959141: PARITY → BASE, WrongWing 13→11→9).
+이는 "PARITY가 만들어내는 중간 상태가 BASE를 재활성화하는 Goal State"라는
+가설이 최소한 일부 Replay에서는 문자 그대로 참임을 실제 데이터로 확인한
+것이다.
+
+2. Cluster마다 Goal이 반복되는가
+----------------------------------------------
+그렇다. 동일 FailureCluster(예: w13|p1) 내 서로 다른 Replay 8개 중, 같은
+Goal Signature(w{wrongWing}|p{parity})가 반복 등장하는 사례가 6건
+Cluster Goal로 승격됐다:
+  - w13|p1 Cluster: Goal w12|p1 (5개 Replay), w11|p1 (4개), w9|p1 (3개),
+    w10|p1 (2개)
+  - w9|p1 Cluster: Goal w8|p1 (2개)
+  - w10|p1 Cluster: Goal w9|p1 (2개)
+Cluster 무관 전역 집계(Level 1)로도 Goal w12|p1이 20개 Replay 중 5개에서,
+Goal w9|p1이 5개에서 공통 발견되어 Level 1 성공 기준(5개 이상)을 충족했다.
+즉 "같은 종류의 실패는 같은 종류의 중간 목표를 공유한다"는 가설은 Level 1
+수준에서는 데이터로 지지된다.
+
+3. Goal이 Solver를 다시 활성화하는가
+----------------------------------------------
+부분적으로 그렇다 -- 그러나 "완전히 다시 풀리기 시작한다"는 수준까지는
+아니다. Goal Score 상위 30개 후보에 대해 Goal Replay Benchmark(section 14)를
+실행한 결과:
+  - Goal 도달 성공: 30/30 (설계상 항상 성공해야 하며, 실제로도 100% 일치)
+  - WrongWing 개선(Goal 경유가 더 나음): 25/30 (83%), 평균 WrongWing 변화
+    -2.13 (Goal을 거치지 않고 직접 재실행한 경우보다 평균 2.13개 더
+    적은 WrongWing으로 끝남)
+  - 그러나 "완전 해결(WrongWing=0)" 기준의 Solver 성공률은 Goal 없이도
+    0%, Goal을 거쳐도 0%로 동일하다.
+이 두 수치가 상충하는 것처럼 보이지만 원인은 명확하다: 이 Replay들의
+WrongWing은 애초에 7~13개로, 기존 Solver의 실제 예산(PLAN_TIME_BUDGET_MS
+= 1000ms, 단 한 번의 solve() 호출)은 이 정도 잔여량을 단번에 "완전히"
+0으로 만들도록 설계되어 있지 않다(SolverEngine 자체의 주석: "1초 예산은
+어려운 스크램블에서 완전한 계획보다 불완전한 계획을 더 자주 낳는다는 것을
+받아들인 트레이드오프"). 즉 Goal Planner가 "제 몫"(WrongWing을 유의미하게
+더 낮추는 것)은 하고 있지만, 그 성과가 "완전 해결"이라는 엄격한 기준선을
+넘기에는 애초에 남은 잔여량 자체가 너무 크다.
+
+참고로 이 결과는 이전 Adaptive Executor v2의 Recovery 실험(같은 정체
+Replay에서 0/20 성공, 30배 예산을 줘도 동일)과 겉보기엔 모순돼 보이지만
+실제로는 다른 메커니즘을 테스트한 것이다: Recovery는 "의도적 교란 setup +
+1회 재시도"라는 특정 전략만 시도했고, GOSP는 기존 PARITY/BASE를 반복
+재호출하는 것만으로도 (해당 함수들 내부의 Math.random() 기반 셔플로 인해
+매번 다른 탐색 경로를 시도하게 되는, Capability Analysis Engine이 이미
+공개했던 바로 그 특성 덕분에) 이전에 실패했던 지점에서 새로운 성공을
+발견할 수 있음을 보여준다.
+
+4. Goal Planner를 제품에 통합할 가치가 있는가
+----------------------------------------------
+이번 라운드에서는 아직 아니다. Level 1(공통 Goal 존재)은 명확히 PASS,
+Level 2/3(해결률 증가)은 엄격한 "완전 해결" 기준으로는 FAIL이다(0%→0%).
+Sprint 종료 조건 section 18의 실패 조건 중 "Goal State에 도달해도 기존
+Solver의 해결률이 증가하지 않음"이 문자 그대로는 충족되므로, 이번 Sprint의
+공식 결론은 실패다.
+
+다만 이 실패는 이 세션에서 시도된 다른 모든 실패(Recovery 0/20, MO BFS
+전부 악화, PP BFS 전부 악화, Sprint v2의 1/50 성공+44회 이상 악화)와 질적으로
+다르다: 이번에는 처음으로 "같은 방향으로 일관되게 작동하는" 신호(83%
+개선, 평균 -2.13)가 나왔다. 이는 다음 Sprint가 있다면 검토할 가치가 있는
+두 가지 방향을 시사한다 -- (a) "완전 해결"이 아니라 "WrongWing 유의미한
+감소"를 성공 기준으로 재정의하거나, (b) Goal 경유 후 단일 1초 예산이
+아니라 여러 번의 solve() 호출을 이어붙이는 방식을 검토하는 것. 다만 이
+Sprint 자체의 범위(발견과 검증까지만, 통합 금지)에서는 이 방향을 실제로
+구현하지 않았다.
+
+종합
+----------------------------------------------
+Sprint 종료 조건 ①(성공: 공통 Goal 발견 + 해결률 유의미한 증가 입증)은
+"공통 Goal 발견" 부분만 충족되고 "해결률 증가"는 엄격한 기준으로 충족되지
+않아 전체적으로는 충족되지 않는다. 실질적으로는 종료 조건 ②(실패: Goal
+State에 도달해도 기존 Solver의 해결률이 증가하지 않음을 데이터로 입증)에
+해당하며, 이번 Sprint에서는 tryFixWing()/BASE_ALG/FLIP_ALG/PARITY_ALG/Case
+Library/Planner/Executor/Recovery/BFS 어디에도 통합하지 않았다 -- 이번
+라운드는 spec 19번의 원칙대로 "상태 공간의 구조를 분석"하는 연구까지만
+수행했다.

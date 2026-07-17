@@ -1,0 +1,107 @@
+========================================
+Goal Graph -- Architecture Evolution Sprint v1 (GOSP)
+========================================
+(텍스트 기반 시각화: Replay별 State Graph를 depth 순 Edge 목록으로 표현. [GOAL] 표시는 해당 노드가 Goal Candidate로 선정됨을 뜻한다.)
+
+--- Replay 45959141 (Cluster w13|p1) ---
+  ROOT 45959141  wrongWing=13 pair=2 parity=1
+    (Edge 없음 -- 4개 Primitive 전부 이 상태에서 즉시 실패)
+
+--- Replay beb967ad (Cluster w13|p1) ---
+  ROOT beb967ad  wrongWing=13 pair=2 parity=1
+    beb967ad --[PARITY, 42수]--> 84ea4daf (depth=1, wrongWing=12, pair=2, parity=1) [GOAL]
+
+--- Replay d37ca819 (Cluster w13|p1) ---
+  ROOT d37ca819  wrongWing=13 pair=3 parity=1
+    d37ca819 --[BASE, 35수]--> 215e6c7f (depth=1, wrongWing=12, pair=3, parity=1) [GOAL]
+    215e6c7f --[BASE, 34수]--> beca48a1 (depth=2, wrongWing=11, pair=4, parity=1) [GOAL]
+    215e6c7f --[PARITY, 23수]--> 36044ccb (depth=2, wrongWing=11, pair=4, parity=1) [GOAL]
+    beca48a1 --[BASE, 32수]--> 339c936b (depth=3, wrongWing=10, pair=4, parity=1) [GOAL]
+    36044ccb --[BASE, 130수]--> 9a20daf3 (depth=3, wrongWing=10, pair=4, parity=1) [GOAL]
+    339c936b --[BASE, 35수]--> 3652f259 (depth=4, wrongWing=9, pair=5, parity=1) [GOAL]
+
+--- Replay 120fc3af (Cluster w13|p1) ---
+  ROOT 120fc3af  wrongWing=13 pair=3 parity=1
+    120fc3af --[PARITY, 126수]--> abf8ca3b (depth=1, wrongWing=12, pair=3, parity=1) [GOAL]
+    abf8ca3b --[BASE, 35수]--> f1cbfc01 (depth=2, wrongWing=11, pair=4, parity=1) [GOAL]
+    f1cbfc01 --[BASE, 14수]--> 63977069 (depth=3, wrongWing=9, pair=5, parity=1) [GOAL]
+    f1cbfc01 --[PARITY, 24수]--> d3511a41 (depth=3, wrongWing=9, pair=5, parity=1) [GOAL]
+    63977069 --[PARITY, 34수]--> 42dd22d (depth=4, wrongWing=8, pair=6, parity=1) [GOAL]
+    d3511a41 --[BASE, 86수]--> 5ebc8dc9 (depth=4, wrongWing=8, pair=6, parity=1) [GOAL]
+
+--- Replay c76c662f (Cluster w13|p1) ---
+  ROOT c76c662f  wrongWing=13 pair=1 parity=1
+    (Edge 없음 -- 4개 Primitive 전부 이 상태에서 즉시 실패)
+
+--- Replay 24facef9 (Cluster w13|p1) ---
+  ROOT 24facef9  wrongWing=13 pair=3 parity=1
+    24facef9 --[BASE, 42수]--> f292b5d5 (depth=1, wrongWing=12, pair=3, parity=1) [GOAL]
+    24facef9 --[PARITY, 33수]--> 3a961edd (depth=1, wrongWing=12, pair=3, parity=1) [GOAL]
+    f292b5d5 --[BASE, 45수]--> 28d76da9 (depth=2, wrongWing=11, pair=3, parity=1) [GOAL]
+    f292b5d5 --[PARITY, 88수]--> f6f76619 (depth=2, wrongWing=11, pair=3, parity=1) [GOAL]
+    28d76da9 --[BASE, 43수]--> 7e9a37cf (depth=3, wrongWing=10, pair=4, parity=1) [GOAL]
+    f6f76619 --[BASE, 45수]--> 4fc1f50d (depth=3, wrongWing=10, pair=3, parity=1) [GOAL]
+    7e9a37cf --[BASE, 43수]--> 3ec100bd (depth=4, wrongWing=9, pair=4, parity=1) [GOAL]
+
+--- Replay 74e01ec9 (Cluster w13|p1) ---
+  ROOT 74e01ec9  wrongWing=13 pair=2 parity=1
+    74e01ec9 --[PARITY, 26수]--> e1f08b5f (depth=1, wrongWing=12, pair=2, parity=1) [GOAL]
+    e1f08b5f --[PARITY, 45수]--> ebd3d23d (depth=2, wrongWing=11, pair=2, parity=1) [GOAL]
+
+--- Replay b140b3d7 (Cluster w13|p1) ---
+  ROOT b140b3d7  wrongWing=13 pair=3 parity=1
+    (Edge 없음 -- 4개 Primitive 전부 이 상태에서 즉시 실패)
+
+--- Replay 1e928fb1 (Cluster w9|p1) ---
+  ROOT 1e928fb1  wrongWing=9 pair=5 parity=1
+    (Edge 없음 -- 4개 Primitive 전부 이 상태에서 즉시 실패)
+
+--- Replay e5101f85 (Cluster w9|p1) ---
+  ROOT e5101f85  wrongWing=9 pair=4 parity=1
+    (Edge 없음 -- 4개 Primitive 전부 이 상태에서 즉시 실패)
+
+--- Replay 2b7aa5f1 (Cluster w9|p1) ---
+  ROOT 2b7aa5f1  wrongWing=9 pair=5 parity=1
+    2b7aa5f1 --[PARITY, 15수]--> 33888c31 (depth=1, wrongWing=8, pair=5, parity=1) [GOAL]
+
+--- Replay f49f3b81 (Cluster w9|p1) ---
+  ROOT f49f3b81  wrongWing=9 pair=5 parity=1
+    f49f3b81 --[BASE, 166수]--> ae6da701 (depth=1, wrongWing=8, pair=5, parity=1) [GOAL]
+    ae6da701 --[BASE, 22수]--> ed36ab1 (depth=2, wrongWing=6, pair=6, parity=0) [GOAL]
+    ae6da701 --[PARITY, 22수]--> ed36ab1 (depth=2, wrongWing=6, pair=6, parity=0) [GOAL]
+
+--- Replay c3a1ce7b (Cluster w9|p1) ---
+  ROOT c3a1ce7b  wrongWing=9 pair=5 parity=1
+    (Edge 없음 -- 4개 Primitive 전부 이 상태에서 즉시 실패)
+
+--- Replay 71e6edc9 (Cluster w9|p1) ---
+  ROOT 71e6edc9  wrongWing=9 pair=4 parity=1
+    (Edge 없음 -- 4개 Primitive 전부 이 상태에서 즉시 실패)
+
+--- Replay c7ddf36b (Cluster w9|p1) ---
+  ROOT c7ddf36b  wrongWing=9 pair=4 parity=1
+    (Edge 없음 -- 4개 Primitive 전부 이 상태에서 즉시 실패)
+
+--- Replay 84976575 (Cluster w10|p1) ---
+  ROOT 84976575  wrongWing=10 pair=5 parity=1
+    84976575 --[BASE, 13수]--> 1e928fb1 (depth=1, wrongWing=9, pair=5, parity=1) [GOAL]
+
+--- Replay ad12c377 (Cluster w10|p1) ---
+  ROOT ad12c377  wrongWing=10 pair=3 parity=1
+    (Edge 없음 -- 4개 Primitive 전부 이 상태에서 즉시 실패)
+
+--- Replay 555b1ba5 (Cluster w10|p1) ---
+  ROOT 555b1ba5  wrongWing=10 pair=4 parity=1
+    (Edge 없음 -- 4개 Primitive 전부 이 상태에서 즉시 실패)
+
+--- Replay cee673eb (Cluster w10|p1) ---
+  ROOT cee673eb  wrongWing=10 pair=3 parity=1
+    cee673eb --[BASE, 168수]--> 6bdd5ac3 (depth=1, wrongWing=9, pair=4, parity=1) [GOAL]
+
+--- Replay 7f1e11c5 (Cluster w10|p1) ---
+  ROOT 7f1e11c5  wrongWing=10 pair=4 parity=1
+    7f1e11c5 --[PARITY, 34수]--> 291bd935 (depth=1, wrongWing=8, pair=5, parity=1) [GOAL]
+    291bd935 --[BASE, 34수]--> d039d6db (depth=2, wrongWing=7, pair=5, parity=0) [GOAL]
+    291bd935 --[PARITY, 35수]--> 20f27ba7 (depth=2, wrongWing=7, pair=6, parity=1) [GOAL]
+    d039d6db --[BASE, 127수]--> e15e8de9 (depth=3, wrongWing=6, pair=6, parity=0) [GOAL]
+    d039d6db --[PARITY, 165수]--> d72ad8a5 (depth=3, wrongWing=6, pair=6, parity=0) [GOAL]

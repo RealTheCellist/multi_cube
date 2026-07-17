@@ -1,0 +1,26 @@
+========================================
+Goal Benchmark -- Architecture Evolution Sprint v1 (GOSP)
+========================================
+검증 대상 (Goal Score 상위): 30개
+Goal 도달 성공: 30/30
+Solver 성공률 (Goal 없이, 원본 Failure State 직접 재실행): 0.0%
+Solver 성공률 (Goal 경유 후 재실행): 0.0%
+평균 WrongWing 변화 (Goal 경유 - Goal 없이): -2.13
+개선된 Replay 수 (Goal 경유가 더 나음): 25/30
+
+--- 개별 결과 (상위 15) ---
+  Replay 7f1e11c5  Goal d039d6db  도달=true  WrongWing(없이=9, 경유=6)  개선=true
+  Replay 7f1e11c5  Goal 291bd935  도달=true  WrongWing(없이=9, 경유=6)  개선=true
+  Replay f49f3b81  Goal ae6da701  도달=true  WrongWing(없이=7, 경유=6)  개선=true
+  Replay 120fc3af  Goal d3511a41  도달=true  WrongWing(없이=11, 경유=7)  개선=true
+  Replay 120fc3af  Goal f1cbfc01  도달=true  WrongWing(없이=11, 경유=10)  개선=true
+  Replay d37ca819  Goal 339c936b  도달=true  WrongWing(없이=9, 경유=6)  개선=true
+  Replay 24facef9  Goal 7e9a37cf  도달=true  WrongWing(없이=12, 경유=9)  개선=true
+  Replay d37ca819  Goal 215e6c7f  도달=true  WrongWing(없이=9, 경유=10)  개선=false
+  Replay 24facef9  Goal f292b5d5  도달=true  WrongWing(없이=12, 경유=12)  개선=false
+  Replay d37ca819  Goal beca48a1  도달=true  WrongWing(없이=9, 경유=6)  개선=true
+  Replay d37ca819  Goal 36044ccb  도달=true  WrongWing(없이=9, 경유=7)  개선=true
+  Replay 24facef9  Goal 28d76da9  도달=true  WrongWing(없이=12, 경유=10)  개선=true
+  Replay 24facef9  Goal f6f76619  도달=true  WrongWing(없이=12, 경유=9)  개선=true
+  Replay 120fc3af  Goal abf8ca3b  도달=true  WrongWing(없이=9, 경유=9)  개선=false
+  Replay 120fc3af  Goal 63977069  도달=true  WrongWing(없이=8, 경유=7)  개선=true
