@@ -1,0 +1,57 @@
+========================================
+Algorithm Experiment Report -- 5x5x5 Edge Solver
+========================================
+
+Replay Dataset 크기: 75
+
+Experiment
+  ExistingSolver
+Solved
+  0 / 75
+Average WrongWing
+  9.3
+Average Pair
+  4.13
+Average Moves
+  84.7
+Average Time
+  1073.6ms
+
+Experiment
+  Empty
+Solved
+  0 / 75
+Average WrongWing
+  10.8
+Average Pair
+  3.40
+Average Moves
+  0.0
+Average Time
+  0.0ms
+
+Experiment
+  RawBaseline
+Solved
+  0 / 75
+Average WrongWing
+  9.3
+Average Pair
+  4.00
+Average Moves
+  76.5
+Average Time
+  1064.6ms
+
+Experiment
+  PairPreserving
+Solved
+  0 / 75
+Average WrongWing
+  9.6
+Average Pair
+  3.84
+Average Moves
+  57.5
+Average Time
+  1100.9ms

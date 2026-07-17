@@ -1140,6 +1140,211 @@ export function tryFixWingMO(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadli
   return null;
 }
 
+// ============================================================================
+// Pair-Preserving BFS v1 (bfsMoveWingToPositionPP / tryFixWingPP)
+// ----------------------------------------------------------------------------
+// Multi-Objective BFS v1 (above) tried a rich multi-signal score per node and
+// was measured, via a 100-scramble benchmark, to make things WORSE overall --
+// not because "smarter scoring" is a bad idea, but because each candidate's
+// score cost real CPU (three O(12-slot) passes per node: liteWrongWingCount,
+// litePairedSlotSet, liteFutureMobility), so within the same wall-clock
+// budget it explored far fewer raw states than the original's near-free
+// state-string dedup check. Widening the beam only made this WORSE (more
+// candidates needing that same expensive per-node scoring), which is what
+// localized the regression to scoring overhead rather than beam width.
+//
+// This is a deliberately much cheaper alternative built on that lesson:
+// instead of recomputing wrongWingCount/pairedSlotSet/futureMobility from
+// scratch at EVERY node, it precomputes ONCE -- before the search starts,
+// not per node -- which (axis,layer) outer-layer turns would disturb an
+// ALREADY fully-paired slot. Every candidate move during the search is then
+// just an O(1) Set lookup against that precomputed set, essentially free
+// next to the liteApplyMove/liteStateKey work the original BFS already does
+// per node. No beam limiting at all (same lesson: MO v1 showed narrowing
+// the frontier costs more than it buys) -- this explores exactly as many
+// states as the original, in the same order, with one added per-node int:
+// a running count of how many "dangerous" (pair-disturbing) turns the path
+// has used so far. The only behavioral difference from the original: when
+// multiple paths reach the target at the same shortest depth, this picks
+// whichever one crossed the fewest already-paired layers, instead of
+// whichever the original happened to enumerate first.
+// ============================================================================
+
+interface ProtectedLayers {
+  dangerousLayers: Set<string>;
+}
+
+// Computed ONCE per bfsMoveWingToPositionPP call (not per node) -- the whole
+// point of this version versus MO v1 is moving the expensive slot analysis
+// out of the search's inner loop entirely.
+function computeProtectedLayers(edges: readonly LiteEdge5[]): ProtectedLayers {
+  const dangerousLayers = new Set<string>();
+  for (const stats of liteAnalyzeSlots(edges)) {
+    if (!stats.trueEdge || stats.wings.length !== 2) continue;
+    if (!stats.wings.every((w) => liteMatchesTrueEdge(w, stats.trueEdge!))) continue; // only fully-paired slots are "protected"
+    for (const w of stats.wings) {
+      dangerousLayers.add(`x,${w.x}`);
+      dangerousLayers.add(`y,${w.y}`);
+      dangerousLayers.add(`z,${w.z}`);
+    }
+  }
+  return { dangerousLayers };
+}
+
+function isDangerousMove(move: Move, protectedLayers: ProtectedLayers): boolean {
+  const [axis, layer] = move;
+  return protectedLayers.dangerousLayers.has(`${axis},${layer}`);
+}
+
+interface PPFrontierNode {
+  edges: readonly LiteEdge5[];
+  path: Move[];
+  dangerCount: number;
+}
+
+function bfsMoveWingToPositionPP(
+  edges: readonly LiteEdge5[],
+  pieceId: number,
+  targetPosKey: string,
+  maxDepth: number,
+  pins?: readonly { id: number; posKey: string }[]
+): Move[] | null {
+  const startPiece = edges.find((e) => e.id === pieceId);
+  if (!startPiece) return null;
+  if (litePosKeyOf(startPiece) === targetPosKey) return [];
+
+  const protectedLayers = computeProtectedLayers(edges);
+  const safe = allOuterMoves().flat();
+  let frontier: PPFrontierNode[] = [{ edges, path: [], dangerCount: 0 }];
+  const seen = new Set<string>([liteStateKey(edges)]);
+  let nodesExplored = 0;
+
+  for (let depth = 0; depth < maxDepth; depth++) {
+    const next: PPFrontierNode[] = [];
+    // Every candidate that reaches the target at THIS depth is considered
+    // (not returned immediately) so the LEAST pair-disturbing one among
+    // them wins, matching the same "evaluate the whole depth first"
+    // approach MO v1 used, but the comparison itself is a plain integer,
+    // not a weighted multi-term score.
+    let bestAtThisDepth: { path: Move[]; dangerCount: number } | null = null;
+
+    for (const node of frontier) {
+      for (const move of safe) {
+        if (nodesExplored++ > MAX_TRACK_NODES) {
+          return bestAtThisDepth?.path ?? null;
+        }
+        const nextEdges = liteApplyMove(node.edges, move);
+        if (pins && pins.some((pin) => litePosKeyOf(nextEdges.find((e) => e.id === pin.id)!) !== pin.posKey)) continue;
+        const key = liteStateKey(nextEdges);
+        if (seen.has(key)) continue;
+        seen.add(key);
+
+        const path = [...node.path, move];
+        const dangerCount = node.dangerCount + (isDangerousMove(move, protectedLayers) ? 1 : 0);
+        const piece = nextEdges.find((e) => e.id === pieceId)!;
+
+        if (litePosKeyOf(piece) === targetPosKey) {
+          if (!bestAtThisDepth || dangerCount < bestAtThisDepth.dangerCount) bestAtThisDepth = { path, dangerCount };
+          continue;
+        }
+        next.push({ edges: nextEdges, path, dangerCount });
+      }
+    }
+
+    if (bestAtThisDepth) return bestAtThisDepth.path;
+    frontier = next;
+    if (frontier.length === 0) break;
+  }
+  return null;
+}
+
+/**
+ * Full parallel copy of tryFixWing (see that function's own comments for the
+ * shared candidate-filtering/disruption-safety logic, unchanged here) with
+ * its two bfsMoveWingToPosition call sites swapped for
+ * bfsMoveWingToPositionPP. A complete duplicate rather than a shared
+ * refactor, for the same reason tryFixWingMO is: tryFixWing itself is never
+ * touched, so the three variants stay independently benchmarkable.
+ */
+export function tryFixWingPP(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline: number): Move[] | null {
+  const p1 = posKey(w);
+  const wSlot = slotKey(w);
+  const trueEdge = cubies.find((c) => pieceType5(c) === "trueEdge" && slotKey(c) === wSlot);
+  if (!trueEdge) return null;
+  const neededColorKey = colorKeyOf(trueEdge);
+  const edges = toLiteEdges(cubies);
+  const before = wrongWingCount5(cubies);
+  const wrongIds = new Set(wrongWings5(cubies).map((c) => c.id));
+
+  for (const entry of candidatesForWing(lib, w)) {
+    if (Date.now() > deadline) return null;
+    const eff = entry.effect.get(p1);
+    if (!eff) continue;
+    const p2Key = `${eff.pos[0]},${eff.pos[1]},${eff.pos[2]}`;
+    if (p2Key === p1) continue;
+
+    let otherDisruptionsSafe = true;
+    for (const pos of entry.disruptedPositions) {
+      if (pos === p1 || pos === p2Key) continue;
+      if (!isWrongAtPosition(cubies, pos)) {
+        otherDisruptionsSafe = false;
+        break;
+      }
+    }
+    if (!otherDisruptionsSafe) continue;
+
+    const matches = edges.filter(
+      (e) => e.type === "wingEdge" && e.id !== w.id && wrongIds.has(e.id) && liteColorKeyOf(e) === neededColorKey
+    );
+
+    const p3Eff = entry.effect.get(p2Key);
+    const p3Key = p3Eff ? `${p3Eff.pos[0]},${p3Eff.pos[1]},${p3Eff.pos[2]}` : null;
+    const backToP1Eff = p3Key ? entry.effect.get(p3Key) : undefined;
+    const closesCycle = backToP1Eff && `${backToP1Eff.pos[0]},${backToP1Eff.pos[1]},${backToP1Eff.pos[2]}` === p1;
+    if (p3Key && p3Key !== p1 && p3Key !== p2Key && closesCycle) {
+      const p3TrueEdge = cubies.find((c) => pieceType5(c) === "trueEdge" && slotKey(c) === slotKey(cubies.find((c2) => posKey(c2) === p3Key)!));
+      if (p3TrueEdge) {
+        const p3NeededColorKey = colorKeyOf(p3TrueEdge);
+        const matchesForP3 = edges.filter(
+          (e) => e.type === "wingEdge" && e.id !== w.id && wrongIds.has(e.id) && liteColorKeyOf(e) === p3NeededColorKey
+        );
+        for (const match1 of matches) {
+          if (Date.now() > deadline) break;
+          const setup1 =
+            litePosKeyOf(match1) === p3Key ? [] : bfsMoveWingToPositionPP(edges, match1.id, p3Key, 6, [{ id: w.id, posKey: p1 }]);
+          if (setup1 === null) continue;
+          const edgesAfterSetup1 = setup1.reduce((acc, m) => liteApplyMove(acc, m), edges);
+          for (const match2 of matchesForP3) {
+            if (match2.id === match1.id) continue;
+            const setup2 =
+              litePosKeyOf(match2) === p2Key
+                ? []
+                : bfsMoveWingToPositionPP(edgesAfterSetup1, match2.id, p2Key, 6, [
+                    { id: w.id, posKey: p1 },
+                    { id: match1.id, posKey: p3Key },
+                  ]);
+            if (setup2 === null) continue;
+            const fullSeq = [...setup1, ...setup2, ...entry.seq];
+            const clone = cloneCubies(cubies);
+            applySeq(clone, fullSeq);
+            if (wrongWingCount5(clone) < before) return fullSeq;
+          }
+        }
+      }
+    }
+
+    for (const match of matches) {
+      const setup = litePosKeyOf(match) === p2Key ? [] : bfsMoveWingToPositionPP(edges, match.id, p2Key, 6, [{ id: w.id, posKey: p1 }]);
+      if (setup === null) continue;
+      const fullSeq = [...setup, ...entry.seq];
+      const clone = cloneCubies(cubies);
+      applySeq(clone, fullSeq);
+      if (wrongWingCount5(clone) < before) return fullSeq;
+    }
+  }
+  return null;
+}
+
 function isWrongAtPosition(cubies: readonly Cubie[], pos: string): boolean {
   const piece = cubies.find((c) => posKey(c) === pos && pieceType5(c) === "wingEdge");
   if (!piece) return true;
