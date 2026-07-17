@@ -1,0 +1,136 @@
+========================================
+Primitive Discovery Research Report -- 5x5x5 Edge Solver
+========================================
+
+실패 상태: 75
+Canonical (고유 구조): 52
+Cluster (WrongWing+Parity 기준): 22
+Unknown Primitive Cluster: 1
+
+--- 가장 빈번한 실패 ---
+  WrongWing: 13
+  Parity: 있음
+  건수: 8 (Canonical 8종)
+  Recovery: 불가
+  추천 Primitive: 기존 Primitive 중 하나가 이 구조의 다른 사례에서 성공한 적 있음 -- 새 Primitive보다는 기존 케이스 라이브러리 확장으로 충분할 가능성이 높음.
+
+--- Cluster별 상세 (상위 10개, 건수순) ---
+Cluster 2 -- WrongWing=13, Parity=있음 (8건, Canonical 8종)
+  공통 특징: WrongWing = 13, Parity = true, Pair Layout: Unpaired 3 / Flipped-pair 0 / Half-paired 7 (대표 Canonical 기준), Cross-slot Swap 쌍: 2개, 이 클러스터 내 서로 다른 Canonical 형태: 8종
+  대표 샘플 hash: 45959141
+  Primitive 적용 가능 여부:
+    BASE       ○ (OK)
+    FLIP       ? (UNTESTED)
+    PARITY     × (FAIL)
+    ENDGAME    × (FAIL)
+    RECOVERY   × (FAIL)
+  -> 기존 Primitive로 일부 커버됨
+  추천: 기존 Primitive 중 하나가 이 구조의 다른 사례에서 성공한 적 있음 -- 새 Primitive보다는 기존 케이스 라이브러리 확장으로 충분할 가능성이 높음.
+
+Cluster 13 -- WrongWing=9, Parity=있음 (7건, Canonical 4종)
+  공통 특징: WrongWing = 9, Parity = true, Pair Layout: Unpaired 2 / Flipped-pair 0 / Half-paired 5 (대표 Canonical 기준), Cross-slot Swap 쌍: 1개, 이 클러스터 내 서로 다른 Canonical 형태: 4종
+  대표 샘플 hash: 1e928fb1
+  Primitive 적용 가능 여부:
+    BASE       ○ (OK)
+    FLIP       ? (UNTESTED)
+    PARITY     × (FAIL)
+    ENDGAME    × (FAIL)
+    RECOVERY   × (FAIL)
+  -> 기존 Primitive로 일부 커버됨
+  추천: 기존 Primitive 중 하나가 이 구조의 다른 사례에서 성공한 적 있음 -- 새 Primitive보다는 기존 케이스 라이브러리 확장으로 충분할 가능성이 높음.
+
+Cluster 4 -- WrongWing=10, Parity=있음 (6건, Canonical 5종)
+  공통 특징: WrongWing = 10, Parity = true, Pair Layout: Unpaired 2 / Flipped-pair 0 / Half-paired 6 (대표 Canonical 기준), Cross-slot Swap 쌍: 0개, 이 클러스터 내 서로 다른 Canonical 형태: 5종
+  대표 샘플 hash: 84976575
+  Primitive 적용 가능 여부:
+    BASE       ○ (OK)
+    FLIP       ? (UNTESTED)
+    PARITY     × (FAIL)
+    ENDGAME    × (FAIL)
+    RECOVERY   × (FAIL)
+  -> 기존 Primitive로 일부 커버됨
+  추천: 기존 Primitive 중 하나가 이 구조의 다른 사례에서 성공한 적 있음 -- 새 Primitive보다는 기존 케이스 라이브러리 확장으로 충분할 가능성이 높음.
+
+Cluster 10 -- WrongWing=14, Parity=있음 (6건, Canonical 3종)
+  공통 특징: WrongWing = 14, Parity = true, Pair Layout: Unpaired 3 / Flipped-pair 0 / Half-paired 8 (대표 Canonical 기준), Cross-slot Swap 쌍: 1개, 이 클러스터 내 서로 다른 Canonical 형태: 3종
+  대표 샘플 hash: 70a5020b
+  Primitive 적용 가능 여부:
+    BASE       ○ (OK)
+    FLIP       ? (UNTESTED)
+    PARITY     × (FAIL)
+    ENDGAME    × (FAIL)
+    RECOVERY   × (FAIL)
+  -> 기존 Primitive로 일부 커버됨
+  추천: 기존 Primitive 중 하나가 이 구조의 다른 사례에서 성공한 적 있음 -- 새 Primitive보다는 기존 케이스 라이브러리 확장으로 충분할 가능성이 높음.
+
+Cluster 17 -- WrongWing=11, Parity=있음 (6건, Canonical 6종)
+  공통 특징: WrongWing = 11, Parity = true, Pair Layout: Unpaired 2 / Flipped-pair 0 / Half-paired 7 (대표 Canonical 기준), Cross-slot Swap 쌍: 3개, 이 클러스터 내 서로 다른 Canonical 형태: 6종
+  대표 샘플 hash: 36336c1
+  Primitive 적용 가능 여부:
+    BASE       ○ (OK)
+    FLIP       ? (UNTESTED)
+    PARITY     × (FAIL)
+    ENDGAME    × (FAIL)
+    RECOVERY   × (FAIL)
+  -> 기존 Primitive로 일부 커버됨
+  추천: 기존 Primitive 중 하나가 이 구조의 다른 사례에서 성공한 적 있음 -- 새 Primitive보다는 기존 케이스 라이브러리 확장으로 충분할 가능성이 높음.
+
+Cluster 8 -- WrongWing=7, Parity=없음 (5건, Canonical 2종)
+  공통 특징: WrongWing = 7, Parity = false, Pair Layout: Unpaired 0 / Flipped-pair 0 / Half-paired 7 (대표 Canonical 기준), Cross-slot Swap 쌍: 0개, 이 클러스터 내 서로 다른 Canonical 형태: 2종
+  대표 샘플 hash: e7a801fb
+  Primitive 적용 가능 여부:
+    BASE       ○ (OK)
+    FLIP       ? (UNTESTED)
+    PARITY     × (FAIL)
+    ENDGAME    × (FAIL)
+    RECOVERY   × (FAIL)
+  -> 기존 Primitive로 일부 커버됨
+  추천: 기존 Primitive 중 하나가 이 구조의 다른 사례에서 성공한 적 있음 -- 새 Primitive보다는 기존 케이스 라이브러리 확장으로 충분할 가능성이 높음.
+
+Cluster 12 -- WrongWing=15, Parity=있음 (5건, Canonical 2종)
+  공통 특징: WrongWing = 15, Parity = true, Pair Layout: Unpaired 4 / Flipped-pair 0 / Half-paired 7 (대표 Canonical 기준), Cross-slot Swap 쌍: 0개, 이 클러스터 내 서로 다른 Canonical 형태: 2종
+  대표 샘플 hash: 7541612b
+  Primitive 적용 가능 여부:
+    BASE       ○ (OK)
+    FLIP       ? (UNTESTED)
+    PARITY     × (FAIL)
+    ENDGAME    × (FAIL)
+    RECOVERY   × (FAIL)
+  -> 기존 Primitive로 일부 커버됨
+  추천: 기존 Primitive 중 하나가 이 구조의 다른 사례에서 성공한 적 있음 -- 새 Primitive보다는 기존 케이스 라이브러리 확장으로 충분할 가능성이 높음.
+
+Cluster 18 -- WrongWing=12, Parity=있음 (5건, Canonical 4종)
+  공통 특징: WrongWing = 12, Parity = true, Pair Layout: Unpaired 2 / Flipped-pair 0 / Half-paired 8 (대표 Canonical 기준), Cross-slot Swap 쌍: 0개, 이 클러스터 내 서로 다른 Canonical 형태: 4종
+  대표 샘플 hash: dc517e57
+  Primitive 적용 가능 여부:
+    BASE       ○ (OK)
+    FLIP       ? (UNTESTED)
+    PARITY     × (FAIL)
+    ENDGAME    × (FAIL)
+    RECOVERY   × (FAIL)
+  -> 기존 Primitive로 일부 커버됨
+  추천: 기존 Primitive 중 하나가 이 구조의 다른 사례에서 성공한 적 있음 -- 새 Primitive보다는 기존 케이스 라이브러리 확장으로 충분할 가능성이 높음.
+
+Cluster 3 -- WrongWing=8, Parity=있음 (4건, Canonical 2종)
+  공통 특징: WrongWing = 8, Parity = true, Pair Layout: Unpaired 1 / Flipped-pair 0 / Half-paired 6 (대표 Canonical 기준), Cross-slot Swap 쌍: 0개, 이 클러스터 내 서로 다른 Canonical 형태: 2종
+  대표 샘플 hash: 68977335
+  Primitive 적용 가능 여부:
+    BASE       ○ (OK)
+    FLIP       ? (UNTESTED)
+    PARITY     × (FAIL)
+    ENDGAME    × (FAIL)
+    RECOVERY   × (FAIL)
+  -> 기존 Primitive로 일부 커버됨
+  추천: 기존 Primitive 중 하나가 이 구조의 다른 사례에서 성공한 적 있음 -- 새 Primitive보다는 기존 케이스 라이브러리 확장으로 충분할 가능성이 높음.
+
+Cluster 14 -- WrongWing=7, Parity=있음 (4건, Canonical 2종)
+  공통 특징: WrongWing = 7, Parity = true, Pair Layout: Unpaired 1 / Flipped-pair 0 / Half-paired 5 (대표 Canonical 기준), Cross-slot Swap 쌍: 0개, 이 클러스터 내 서로 다른 Canonical 형태: 2종
+  대표 샘플 hash: 1513fcff
+  Primitive 적용 가능 여부:
+    BASE       ○ (OK)
+    FLIP       ? (UNTESTED)
+    PARITY     × (FAIL)
+    ENDGAME    × (FAIL)
+    RECOVERY   × (FAIL)
+  -> 기존 Primitive로 일부 커버됨
+  추천: 기존 Primitive 중 하나가 이 구조의 다른 사례에서 성공한 적 있음 -- 새 Primitive보다는 기존 케이스 라이브러리 확장으로 충분할 가능성이 높음.
