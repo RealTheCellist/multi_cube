@@ -1,0 +1,39 @@
+========================================
+Algorithm Experiment Report -- 5x5x5 Edge Solver
+========================================
+
+Replay Dataset 크기: 75
+
+Experiment
+  ExistingSolver
+Solved
+  0 / 75
+Average WrongWing
+  9.4
+Average Pair
+  4.04
+Average Moves
+  73.4
+Average Time
+  1067.0ms
+
+Experiment
+  Empty
+Solved
+  0 / 75
+Average WrongWing
+  10.8
+Average Pair
+  3.40
+Average Moves
+  0.0
+Average Time
+  0.0ms
+
+--- 결정성 검증 ---
+ExistingSolver: PASS (3회 동일)
+Empty: PASS (3회 동일)
+ExistingSolver: PASS (3회 동일)
+Empty: PASS (3회 동일)
+ExistingSolver: PASS (3회 동일)
+Empty: PASS (3회 동일)
