@@ -1,0 +1,100 @@
+========================================
+Failure Analysis Report -- 5x5x5 Edge Solver
+========================================
+
+총 실패 수: 75
+Cluster: 22개
+가장 큰 Cluster: 8개 (#2, wrongWing=13, parity=있음, 정체 슬롯 10개)
+
+--- WrongWing 분포 ---
+  wrongWing=4: 2건
+  wrongWing=6: 3건
+  wrongWing=7: 9건
+  wrongWing=8: 8건
+  wrongWing=9: 10건
+  wrongWing=10: 7건
+  wrongWing=11: 7건
+  wrongWing=12: 5건
+  wrongWing=13: 8건
+  wrongWing=14: 6건
+  wrongWing=15: 5건
+  wrongWing=16: 1건
+  wrongWing=17: 1건
+  wrongWing=19: 1건
+  wrongWing=20: 1건
+  wrongWing=22: 1건
+
+--- 통계 ---
+  Parity 발생률: 76%
+  Recovery 시도 후 실패율: 100%
+  평균 Trace 길이: 21.6
+  평균 Recovery 시도 횟수: 0.39
+  Primitive 사용 빈도:
+    BASE: 636
+    FLIP: 0
+    PARITY: 29
+    ENDGAME: 29
+    RECOVERY: 29
+
+--- Primitive Coverage ---
+  BASE       100% (75건)
+  FLIP       0% (0건)
+  PARITY     0% (0건)
+  ENDGAME    0% (0건)
+  RECOVERY   0% (0건)
+  Unknown     0% (0건) <- 새 Primitive가 필요한 영역
+
+--- Heat Map (잔여 Wrong Wing이 몰리는 슬롯) ---
+x2,y-2     ████████████████████ (60)
+x2,z-2     ███████████████████ (57)
+y2,z-2     ██████████████████ (55)
+x-2,z2     ██████████████████ (55)
+x-2,y2     ██████████████████ (54)
+y-2,z-2    ██████████████████ (54)
+x2,y2      ██████████████████ (54)
+y2,z2      ██████████████████ (53)
+x2,z2      █████████████████ (52)
+x-2,z-2    █████████████████ (52)
+x-2,y-2    █████████████████ (51)
+y-2,z2     ████████████████ (48)
+
+--- Cluster별 추천 (상위 10개) ---
+Cluster 2 (총 8건)
+  공통 특징: wrongWing=13, parity=있음, 정체 슬롯 10개
+  추천: 공통 특징이 뚜렷하지 않음 -- 개별 샘플을 Failure Replay로 직접 확인 필요.
+
+Cluster 13 (총 7건)
+  공통 특징: wrongWing=9, parity=있음, 정체 슬롯 7개
+  추천: 공통 특징이 뚜렷하지 않음 -- 개별 샘플을 Failure Replay로 직접 확인 필요.
+
+Cluster 4 (총 6건)
+  공통 특징: wrongWing=10, parity=있음, 정체 슬롯 7개
+  추천: 공통 특징이 뚜렷하지 않음 -- 개별 샘플을 Failure Replay로 직접 확인 필요.
+
+Cluster 10 (총 6건)
+  공통 특징: wrongWing=14, parity=있음, 정체 슬롯 10개
+  추천: Recovery(Disruption/Setup)까지 시도했지만 실패 -- 현재 라이브러리가 알고 있는 교란 패턴 밖의 상태일 가능성. 이 클러스터의 remainingEdges 조합을 직접 살펴보고 전용 알고리즘을 유도해볼 것.
+
+Cluster 17 (총 6건)
+  공통 특징: wrongWing=11, parity=있음, 정체 슬롯 9개
+  추천: 공통 특징이 뚜렷하지 않음 -- 개별 샘플을 Failure Replay로 직접 확인 필요.
+
+Cluster 8 (총 5건)
+  공통 특징: wrongWing=7, parity=없음, 정체 슬롯 7개
+  추천: Recovery(Disruption/Setup)까지 시도했지만 실패 -- 현재 라이브러리가 알고 있는 교란 패턴 밖의 상태일 가능성. 이 클러스터의 remainingEdges 조합을 직접 살펴보고 전용 알고리즘을 유도해볼 것.
+
+Cluster 12 (총 5건)
+  공통 특징: wrongWing=15, parity=있음, 정체 슬롯 11개
+  추천: Recovery(Disruption/Setup)까지 시도했지만 실패 -- 현재 라이브러리가 알고 있는 교란 패턴 밖의 상태일 가능성. 이 클러스터의 remainingEdges 조합을 직접 살펴보고 전용 알고리즘을 유도해볼 것.
+
+Cluster 18 (총 5건)
+  공통 특징: wrongWing=12, parity=있음, 정체 슬롯 10개
+  추천: 공통 특징이 뚜렷하지 않음 -- 개별 샘플을 Failure Replay로 직접 확인 필요.
+
+Cluster 3 (총 4건)
+  공통 특징: wrongWing=8, parity=있음, 정체 슬롯 7개
+  추천: 공통 특징이 뚜렷하지 않음 -- 개별 샘플을 Failure Replay로 직접 확인 필요.
+
+Cluster 14 (총 4건)
+  공통 특징: wrongWing=7, parity=있음, 정체 슬롯 5개
+  추천: Recovery(Disruption/Setup)까지 시도했지만 실패 -- 현재 라이브러리가 알고 있는 교란 패턴 밖의 상태일 가능성. 이 클러스터의 remainingEdges 조합을 직접 살펴보고 전용 알고리즘을 유도해볼 것.
