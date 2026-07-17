@@ -1,0 +1,30 @@
+{
+  "byStateSignature": {
+    "w13|p1": {
+      "stateSignature": "w13|p1",
+      "primitiveSequence": [
+        "PARITY"
+      ],
+      "supportCount": 4,
+      "agreementCounts": [
+        4
+      ],
+      "votingReplayCounts": [
+        5
+      ]
+    },
+    "w10|p1": {
+      "stateSignature": "w10|p1",
+      "primitiveSequence": [
+        "BASE"
+      ],
+      "supportCount": 2,
+      "agreementCounts": [
+        2
+      ],
+      "votingReplayCounts": [
+        3
+      ]
+    }
+  }
+}

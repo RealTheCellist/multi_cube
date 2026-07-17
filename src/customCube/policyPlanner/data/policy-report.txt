@@ -1,0 +1,44 @@
+========================================
+Policy Report -- Policy Generalization Sprint v1
+========================================
+
+--- Policy Database ---
+분석한 GoalCluster (상태 시그니처) 수: 3
+추출된 Policy 수: 2 (majority 없어 Policy 없음: 1개)
+
+Cluster w13|p1 (distinct Replay 5개, Goal Candidate 22개)
+  -> Policy: [PARITY]
+     단계별 동의 Replay 수: 4 / 투표 Replay 수: 5
+Cluster w10|p1 (distinct Replay 3개, Goal Candidate 7개)
+  -> Policy: [BASE]
+     단계별 동의 Replay 수: 2 / 투표 Replay 수: 3
+Cluster w9|p1 (distinct Replay 2개, Goal Candidate 3개)
+  -> Policy 없음 (첫 단계부터 과반 동의 실패)
+
+--- Replay Benchmark (Policy별, 75건 전체) ---
+Policy w13|p1 [PARITY]
+  적용 가능율 (Level 1): 30.7% (23/75)
+  적용된 것 중 성공률 (Level 2): 100.0% (23/23)  Regression율 (Level 3): 0.0% (0/23)
+  평균 WrongWing 변화 (적용된 것 중): -1.09, 평균 Pair 변화: 0.22
+
+Policy w10|p1 [BASE]
+  적용 가능율 (Level 1): 30.7% (23/75)
+  적용된 것 중 성공률 (Level 2): 100.0% (23/23)  Regression율 (Level 3): 0.0% (0/23)
+  평균 WrongWing 변화 (적용된 것 중): -1.17, 평균 Pair 변화: 0.43
+
+--- Coverage 분석 ---
+Coverage (75개 Replay 중 자기 자신의 상태가 어떤 Policy와도 일치하는 비율): 18.7% (14/75)
+
+--- Primitive 사용 빈도 (모든 Policy의 primitiveSequence 합산) ---
+  PARITY: 1
+  BASE: 1
+
+--- 성공 기준 판정 (Policy별, Level 1 AND 2 AND 3 모두 충족해야 통과) ---
+  w13|p1: Level1(적용가능 70%+)=FAIL  Level2(성공 60%+)=PASS  Level3(regression 20%↓)=PASS  종합=FAIL
+  w10|p1: Level1(적용가능 70%+)=FAIL  Level2(성공 60%+)=PASS  Level3(regression 20%↓)=PASS  종합=FAIL
+전체 Sprint 성공 여부 (Policy 하나라도 3개 Level 전부 통과): FAIL
+
+--- 실패 조건 판정 (하나라도 해당하면 Sprint 종료) ---
+Replay마다 Policy가 전부 달라짐 (모든 Cluster의 distinct Replay <= 1): 해당없음
+Regression > 20% (어떤 Policy든): 해당없음
+Coverage < 50%: 해당 (18.7%)

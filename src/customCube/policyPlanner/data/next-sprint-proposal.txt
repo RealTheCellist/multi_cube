@@ -1,0 +1,76 @@
+========================================
+성공 기준 충족 여부 / 제품 통합 여부 / 다음 Sprint 제안
+Policy Generalization Sprint v1
+========================================
+
+성공 기준 충족 여부
+----------------------------------------------
+Level 1 (Policy 하나가 75건 중 70%+에서 적용 가능): 2개 Policy 모두 FAIL
+  (w13|p1->[PARITY] 26.7~30.7%, w10|p1->[BASE] 29.3~30.7% -- 실행마다
+  약간 변동하는데, 이는 tryFixWing/bestFixOverall 등 내부 함수가
+  Math.random() 기반 셔플을 쓰기 때문이다 -- Capability Analysis Engine이
+  이미 공개했던 것과 동일한 한계다. 다만 두 번의 실행 모두 70%에 크게
+  못 미쳤으므로 이 노이즈가 결론을 바꾸지는 않는다.)
+Level 2 (적용된 것 중 60%+ WrongWing 감소): 2개 Policy 모두 PASS (100%)
+Level 3 (Regression 20% 이하): 2개 Policy 모두 PASS (0%)
+=> 전체 Sprint 성공 기준(하나의 Policy가 Level 1/2/3 전부 충족): 미충족
+   (Level 1에서 전부 탈락)
+
+실패 조건 판정
+----------------------------------------------
+Replay마다 Policy가 전부 달라짐: 해당없음 (w13|p1은 5개 중 4개, w10|p1은
+  3개 중 2개 Replay가 실제로 동일한 첫 Primitive에 합의함 -- 완전한
+  무작위는 아니었다)
+Regression > 20%: 해당없음 (두 Policy 모두 0%)
+Coverage < 50%: 해당함 (18.7%, 75개 중 14개 Replay만 두 Policy 중
+  하나와 시작 상태가 일치)
+=> 실패 조건 중 "Coverage < 50%"가 실제로 발생, Sprint 종료 사유 충족.
+
+제품 통합 여부
+----------------------------------------------
+미통합. spec section 12에 따라 이번 Sprint는 애초에 제품 코드 통합을
+시도하지 않았다. Policy는 policyPlanner/ 안에서만 검증됐고, 5개 보호
+파일(fiveByFiveEdges.ts 포함)은 git diff 0줄이다.
+
+이번 Sprint가 실제로 확인한 것
+----------------------------------------------
+1. Goal Candidate를 Replay 단위로 일반화하는 것(Solver Integration
+   Sprint v1)은 실패했지만, 상태(State) 단위로 재추출하면 다른 그림이
+   나온다: 32개의 Replay-specific Goal Candidate 중 실제로 5개 replay가
+   공유하는 시작 상태(w13|p1)에서는 4/5 replay가 "PARITY 먼저"에
+   합의했고, 3개 replay가 공유하는 w10|p1에서는 2/3이 "BASE 먼저"에
+   합의했다. 이는 우연이라기엔 replay 수 대비 합의율이 낮지 않다.
+2. 이렇게 추출된 두 Policy는 "적용되기만 하면" 매우 신뢰할 만하다 --
+   100% 성공률, 0% Regression. 이는 Solver Integration Sprint v1에서
+   측정한 개별 Goal Candidate들의 성공률(최고 37.3%, 대부분 30% 미만
+   이면서 Regression도 0%는 아니었던 것)보다 훨씬 깨끗한 신호다.
+3. 문제는 "적용 가능성" 자체다: 두 Policy 모두 75개 Replay 중 약
+   27~31%에서만 첫 Primitive가 실제로 무언가를 찾아낸다. 이는
+   Level 1의 70% 기준에 크게 못 미치고, Coverage(애초에 이 두 Policy가
+   다루는 상태와 일치하는 Replay의 비율)도 18.7%에 불과하다 -- 즉 State
+   기반 Policy 자체는 "일반화되면 안전하다"는 것을 보여줬지만, "얼마나
+   자주 쓸 수 있는가"라는 두 번째 축에서 막혔다.
+
+다음 Sprint 제안
+----------------------------------------------
+이 Sprint의 결과는 앞선 Sprint(작업지시서 본문의 "이 Sprint를 선택한
+이유")가 예견한 두 갈래 결론 중 후자에 정확히 해당한다: "이것도
+실패한다면, 현재 Primitive 집합과 Planner 구조에서는 일반화 가능한
+정책이 존재하지 않는다는 강한 근거를 얻는다"는 조건이 문자 그대로
+충족됐다 -- 다만 완전한 실패가 아니라 "존재는 하지만 너무 좁다"는 실패다
+(Level 2/3는 통과, Level 1/Coverage만 탈락).
+
+따라서 다음 단계로 두 가지가 합리적이다:
+(a) Planner 계열 연구 종료, 새로운 Primitive(실제 새 회전 능력) 설계로
+    연구 축 전환 -- 이번 결론의 본문이 이미 제안한 방향과 일치한다.
+(b) 만약 Planner 계열을 한 번 더 본다면, "Coverage를 넓히는 방법"
+    자체가 유일하게 남은 질문이다 -- 예를 들어 상태 시그니처를
+    w{wrongWing}|p{parity} 두 축이 아니라 더 거친(coarse) 구간
+    (예: wrongWing을 5단위로 묶는 등)으로 재정의하면 Cluster당 Replay
+    수가 늘어 Coverage가 오르는지, 그 대신 Policy의 신뢰도(Level 2/3)가
+    희생되는지를 검증하는 것이다.
+본 결론 문서는 (a)를 우선 추천한다 -- Planner 계열 접근은 이번까지
+7개 서로 다른 각도(Planner v2, Recovery, MO/PP BFS, Primitive Discovery,
+Capability Expansion, Goal Integration, Policy Generalization)에서
+시도됐고, 그중 가장 깨끗한 신호(Policy의 100% 성공률)조차 "너무 좁다"는
+벽에 부딪혔다.
