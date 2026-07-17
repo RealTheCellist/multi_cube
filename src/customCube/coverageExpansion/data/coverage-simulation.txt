@@ -1,0 +1,53 @@
+========================================
+Coverage Simulation -- Coverage Expansion Sprint v1
+========================================
+
+--- baseline (sanity check) ---
+  Coverage: 22.7% (17/75)
+  WrongWing 개선 Replay 수: 17
+  Regression율 (활성화된 것 중): 0.0% (0/17)
+  평균 WrongWing 변화 (활성화된 것 중): -2.24
+  평균 Pair 변화 (활성화된 것 중): 0.76
+  평균 Move 수 (활성화된 것 중): 82.8
+  평균 실행 시간: 227ms
+  안전성 (Regression <= 10%): 유지됨
+
+--- minimumCycleLength 4->3 ---
+  Coverage: 22.7% (17/75)
+  WrongWing 개선 Replay 수: 17
+  Regression율 (활성화된 것 중): 0.0% (0/17)
+  평균 WrongWing 변화 (활성화된 것 중): -2.24
+  평균 Pair 변화 (활성화된 것 중): 0.82
+  평균 Move 수 (활성화된 것 중): 80.2
+  평균 실행 시간: 252ms
+  안전성 (Regression <= 10%): 유지됨
+
+--- alternateStart ON ---
+  Coverage: 26.7% (20/75)
+  WrongWing 개선 Replay 수: 20
+  Regression율 (활성화된 것 중): 0.0% (0/20)
+  평균 WrongWing 변화 (활성화된 것 중): -2.05
+  평균 Pair 변화 (활성화된 것 중): 0.65
+  평균 Move 수 (활성화된 것 중): 85.8
+  평균 실행 시간: 296ms
+  안전성 (Regression <= 10%): 유지됨
+
+--- parityPreTry ON ---
+  Coverage: 10.7% (8/75)
+  WrongWing 개선 Replay 수: 8
+  Regression율 (활성화된 것 중): 0.0% (0/8)
+  평균 WrongWing 변화 (활성화된 것 중): -3.00
+  평균 Pair 변화 (활성화된 것 중): 0.88
+  평균 Move 수 (활성화된 것 중): 147.0
+  평균 실행 시간: 318ms
+  안전성 (Regression <= 10%): 유지됨
+
+--- combined (minCycle=3 + alternateStart + parityPreTry) ---
+  Coverage: 16.0% (12/75)
+  WrongWing 개선 Replay 수: 12
+  Regression율 (활성화된 것 중): 0.0% (0/12)
+  평균 WrongWing 변화 (활성화된 것 중): -2.92
+  평균 Pair 변화 (활성화된 것 중): 0.92
+  평균 Move 수 (활성화된 것 중): 96.8
+  평균 실행 시간: 366ms
+  안전성 (Regression <= 10%): 유지됨

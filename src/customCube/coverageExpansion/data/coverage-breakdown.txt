@@ -1,0 +1,14 @@
+========================================
+Coverage Breakdown Report -- Coverage Expansion Sprint v1
+========================================
+
+전체 Replay: 75
+활성화 (CycleChase 실제 발동): 17
+
+--- 비활성 원인별 분류 ---
+  NO_WANTS_CYCLE : 3
+  ONLY_3_CYCLE : 9
+  FIRST_HOP_FAIL : 46
+  BROKEN_BY_PARITY : 0
+  INSUFFICIENT_PAIR : 0
+  UNKNOWN : 0

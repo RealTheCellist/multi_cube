@@ -1,0 +1,21 @@
+========================================
+Coverage Expansion Report -- Coverage Expansion Sprint v1
+========================================
+
+Baseline (Primitive Invention Sprint v1 재현): Coverage 22.7%, Regression 0.0%, avgWrongWingDelta -2.24
+가장 좋은 안전한(Regression<=10%) 조건: alternateStart ON
+  Coverage: 26.7%  Regression: 0.0%  avgWrongWingDelta: -2.05
+
+--- 성공 기준 판정 ---
+Level 1 (Coverage 30% 이상): FAIL (실제 26.7%)
+Level 2 (Regression 10% 이하): PASS (실제 0.0%)
+Level 3 (평균 WrongWing 감소 기존(-2.24) 이상 유지): FAIL (실제 -2.05)
+
+--- 실패 조건 판정 ---
+Regression > 10%: 해당없음
+Coverage 증가 없음 (안전한 변형 중 baseline보다 높은 것 없음): 해당없음
+평균 개선 감소 (baseline -2.24보다 나쁨): 해당
+CycleChase 안전성 상실 (Coverage를 늘리는 모든 조건이 Regression 기준을 깸): 해당없음
+
+종합 판정: 실패 -- 그러나 CycleChase의 적용 한계를 정의하는 연구 결과
+제품 통합 여부: 미통합 (spec -- 이번 Sprint는 항상 통합하지 않는다)
