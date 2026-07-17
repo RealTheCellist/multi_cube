@@ -1,0 +1,170 @@
+========================================
+Capability Analysis Report -- 5x5x5 Edge Solver
+========================================
+
+총 Failure: 75
+Cluster: 22
+발견된 Capability Gap 종류: 5
+
+--- 가장 부족한 Capability ---
+  Conflict-aware Setup Primitive (Conflict 감소)
+  영향 Cluster: 2, 13, 4, 10, 17, 8, 12, 3, 14, 15, 1, 9, 11, 6, 7, 16, 19, 20, 21, 22
+  점유율: 92% (69/75건)
+  예상 WrongWing 감소: ~8
+  추천 우선순위: ★★★★★
+
+--- Primitive Candidate 전체 ---
+Conflict-aware Setup Primitive (Conflict 감소)
+  필요 Cluster: 2, 13, 4, 10, 17, 8, 12, 3, 14, 15, 1, 9, 11, 6, 7, 16, 19, 20, 21, 22
+  영향도: 92% (69/75건)
+  예상 효과: WrongWing 평균 -> 약 8 감소
+  우선순위: ★★★★★
+
+Cycle Resolution Primitive (Cycle 제거)
+  필요 Cluster: 2, 17, 18, 3, 15, 1, 9, 11, 5, 6, 19, 20, 22
+  영향도: 52% (39/75건)
+  예상 효과: WrongWing 평균 -> 약 6 감소
+  우선순위: ★★★☆☆
+
+Multi-Pair Swap Primitive (Multi Swap)
+  필요 Cluster: 2, 17, 18, 3, 15, 1, 9, 11, 5, 6, 19, 20, 22
+  영향도: 52% (39/75건)
+  예상 효과: WrongWing 평균 -> 약 6 감소
+  우선순위: ★★★☆☆
+
+향상된 Pair Creation Primitive (Pair 생성)
+  필요 Cluster: 2, 3, 15, 1, 9, 11, 6, 20
+  영향도: 33.3% (25/75건)
+  예상 효과: WrongWing 평균 -> 약 4 감소
+  우선순위: ★★☆☆☆
+
+Collateral-safe Pair Primitive (Pair 유지)
+  필요 Cluster: 2, 3, 15, 1, 9, 11, 6, 20
+  영향도: 33.3% (25/75건)
+  예상 효과: WrongWing 평균 -> 약 4 감소
+  우선순위: ★★☆☆☆
+
+--- Capability 유사도로 병합된 Cluster 그룹 ---
+  Cluster 2, 17, 18, 3, 15, 1, 9, 11, 5, 6, 19, 20, 22 -- 유사한 Capability Gap (동일 Primitive로 해결 가능성)
+  Cluster 13, 4, 10, 8, 12, 14, 7, 16, 21 -- 유사한 Capability Gap (동일 Primitive로 해결 가능성)
+
+--- Cluster별 Capability Matrix (Gap 있는 것만, 상위 10개) ---
+Cluster 2 -- WrongWing=13, Parity=있음 (8건)
+  대표 샘플 hash: 45959141 (Failure Replay로 즉시 재현 가능)
+  Capability Matrix:
+                     BASE     FLIP     CASE     PARITY   RECOVERY 
+    Pair 생성          X        X        X        X        X        
+    Pair 유지          △        △        △        △        △        
+    Cycle 제거         X        X        X        X        X        
+    Conflict 감소      X        X        X        X        X        
+    Multi Swap       X        X        X        X        X        
+  부족한 Capability: Pair 생성, Pair 유지, Cycle 제거, Conflict 감소, Multi Swap
+  신뢰도: 80%
+
+Cluster 13 -- WrongWing=9, Parity=있음 (7건)
+  대표 샘플 hash: 1e928fb1 (Failure Replay로 즉시 재현 가능)
+  Capability Matrix:
+                     BASE     FLIP     CASE     PARITY   RECOVERY 
+    Pair 생성          O        X        X        X        X        
+    Pair 유지          O        △        △        △        △        
+    Cycle 제거         O        X        X        X        X        
+    Conflict 감소      △        X        X        X        X        
+    Multi Swap       O        X        X        X        X        
+  부족한 Capability: Conflict 감소
+  신뢰도: 14%
+
+Cluster 4 -- WrongWing=10, Parity=있음 (6건)
+  대표 샘플 hash: 84976575 (Failure Replay로 즉시 재현 가능)
+  Capability Matrix:
+                     BASE     FLIP     CASE     PARITY   RECOVERY 
+    Pair 생성          O        X        X        O        X        
+    Pair 유지          O        △        △        O        △        
+    Cycle 제거         O        X        X        O        X        
+    Conflict 감소      △        X        X        △        X        
+    Multi Swap       O        X        X        O        X        
+  부족한 Capability: Conflict 감소
+  신뢰도: 0%
+
+Cluster 10 -- WrongWing=14, Parity=있음 (6건)
+  대표 샘플 hash: 70a5020b (Failure Replay로 즉시 재현 가능)
+  Capability Matrix:
+                     BASE     FLIP     CASE     PARITY   RECOVERY 
+    Pair 생성          O        X        X        X        X        
+    Pair 유지          O        △        △        △        △        
+    Cycle 제거         O        X        X        X        X        
+    Conflict 감소      △        X        X        X        X        
+    Multi Swap       O        X        X        X        X        
+  부족한 Capability: Conflict 감소
+  신뢰도: 33%
+
+Cluster 17 -- WrongWing=11, Parity=있음 (6건)
+  대표 샘플 hash: 36336c1 (Failure Replay로 즉시 재현 가능)
+  Capability Matrix:
+                     BASE     FLIP     CASE     PARITY   RECOVERY 
+    Pair 생성          X        X        X        O        X        
+    Pair 유지          △        △        △        O        △        
+    Cycle 제거         X        X        X        △        X        
+    Conflict 감소      X        X        X        △        X        
+    Multi Swap       X        X        X        X        X        
+  부족한 Capability: Cycle 제거, Conflict 감소, Multi Swap
+  신뢰도: 72%
+
+Cluster 8 -- WrongWing=7, Parity=없음 (5건)
+  대표 샘플 hash: e7a801fb (Failure Replay로 즉시 재현 가능)
+  Capability Matrix:
+                     BASE     FLIP     CASE     PARITY   RECOVERY 
+    Pair 생성          O        X        X        O        X        
+    Pair 유지          O        △        △        O        △        
+    Cycle 제거         O        X        X        O        X        
+    Conflict 감소      △        X        X        △        X        
+    Multi Swap       O        X        X        O        X        
+  부족한 Capability: Conflict 감소
+  신뢰도: 20%
+
+Cluster 12 -- WrongWing=15, Parity=있음 (5건)
+  대표 샘플 hash: 7541612b (Failure Replay로 즉시 재현 가능)
+  Capability Matrix:
+                     BASE     FLIP     CASE     PARITY   RECOVERY 
+    Pair 생성          X        X        X        O        X        
+    Pair 유지          △        △        △        O        △        
+    Cycle 제거         X        X        X        O        X        
+    Conflict 감소      X        X        X        △        X        
+    Multi Swap       X        X        X        O        X        
+  부족한 Capability: Conflict 감소
+  신뢰도: 40%
+
+Cluster 18 -- WrongWing=12, Parity=있음 (5건)
+  대표 샘플 hash: dc517e57 (Failure Replay로 즉시 재현 가능)
+  Capability Matrix:
+                     BASE     FLIP     CASE     PARITY   RECOVERY 
+    Pair 생성          X        X        X        O        X        
+    Pair 유지          △        △        △        O        △        
+    Cycle 제거         X        X        X        △        X        
+    Conflict 감소      X        X        X        O        X        
+    Multi Swap       X        X        X        X        X        
+  부족한 Capability: Cycle 제거, Multi Swap
+  신뢰도: 100%
+
+Cluster 3 -- WrongWing=8, Parity=있음 (4건)
+  대표 샘플 hash: 68977335 (Failure Replay로 즉시 재현 가능)
+  Capability Matrix:
+                     BASE     FLIP     CASE     PARITY   RECOVERY 
+    Pair 생성          X        X        X        X        X        
+    Pair 유지          △        △        △        △        △        
+    Cycle 제거         X        X        X        X        X        
+    Conflict 감소      X        X        X        X        X        
+    Multi Swap       X        X        X        X        X        
+  부족한 Capability: Pair 생성, Pair 유지, Cycle 제거, Conflict 감소, Multi Swap
+  신뢰도: 80%
+
+Cluster 14 -- WrongWing=7, Parity=있음 (4건)
+  대표 샘플 hash: 1513fcff (Failure Replay로 즉시 재현 가능)
+  Capability Matrix:
+                     BASE     FLIP     CASE     PARITY   RECOVERY 
+    Pair 생성          O        X        X        X        X        
+    Pair 유지          O        △        △        △        △        
+    Cycle 제거         O        X        X        X        X        
+    Conflict 감소      △        X        X        X        X        
+    Multi Swap       O        X        X        X        X        
+  부족한 Capability: Conflict 감소
+  신뢰도: 0%
