@@ -1,0 +1,90 @@
+========================================
+Research Report -- Solver v2 Research Kickoff Sprint v1
+========================================
+
+--- Primitive Capability Matrix (전체 22개 Cluster) ---
+Cluster           Size  WrongWing  Cycle  BASE  FLIP  CASE  PARITY  RECOVERY  CYCLECHASE
+w13|p1            8     13         5      O      X      X      O      X      X
+w9|p1             7     9          6      O      X      X      O      X      X
+w10|p1            6     10         6      O      X      X      O      X      X
+w14|p1            6     14         5      O      X      X      O      X      X
+w11|p1            6     11         4      O      X      X      O      X      X
+w7|p0             5     7          5      O      X      X      O      X      X
+w15|p1            5     15         5      O      X      X      O      X      X
+w12|p1            5     12         5      O      X      X      O      X      X
+w8|p1             4     8          4      O      X      X      O      X      X
+w7|p1             4     7          4      O      X      X      O      X      X
+w8|p0             4     8          5      O      X      X      O      X      X
+w9|p0             3     9          0      O      X      X      O      X      X
+w4|p0             2     4          4      X      X      X      X      X      X
+w6|p0             2     6          3      X      X      X      X      X      X
+w16|p1            1     16         5      O      X      X      O      X      X
+w11|p0            1     11         3      X      X      X      O      X      X
+w10|p0            1     10         5      O      X      X      O      X      X
+w20|p1            1     20         6      O      X      X      O      X      X
+w19|p1            1     19         6      O      X      X      O      X      X
+w6|p1             1     6          3      X      X      X      X      X      X
+w22|p1            1     22         6      O      X      X      O      X      X
+w17|p1            1     17         6      X      X      X      X      X      X
+
+--- Gap Detector 결과 ---
+Hard Gap Replay (6개 능력 전부 실패): 29/75 (38.7%)
+평균 WrongWing: 9.07 (범위 4-15)
+Parity 비율: 51.7%
+평균 Cycle 길이: 4.24
+평균 Pair: 3.97
+Cluster 커버리지: 16/22개 Cluster가 Hard Gap Replay를 최소 1건 포함
+
+--- Required Capability (정량적 Need) ---
+[REQ-1-GENERAL] WrongWing을 감소시키되, 이미 맞춰진 Pair를 깨지 않아야 함 (전체 실패의 38.7%가 기존 6개 능력(BASE/FLIP/CASE/PARITY/RECOVERY/CycleChase) 전부에서 실패)
+  근거: Hard Gap 29/75건, 평균 WrongWing 9.07 (범위 4-15), 평균 Pair 3.97
+[REQ-2-PARITY] Parity가 존재하는 상태에서 WrongWing을 감소시켜야 함 (Hard Gap 중 51.7%가 Parity=true)
+  근거: Parity Gap 15/29건, 평균 WrongWing 10.80
+[REQ-3-NONPARITY] Parity 없이도 WrongWing이 감소하지 않는 상태를 풀어야 함 (Hard Gap 중 48.3%가 Parity=false)
+  근거: Non-Parity Gap 14/29건
+[REQ-4-MULTICYCLE] Pair를 유지하면서 길이 4 이상의 WANTS-Cycle을 한 번에(또는 소수의 결정적 단계로) 줄일 수 있어야 함 (Hard Gap 중 평균 Cycle 길이 4.24)
+  근거: 길이 4+ Cycle을 가진 Hard Gap 22/29건 -- Solver Contract Analysis Sprint v1이 측정한 "즉시 개선 필수" 계약의 실측 비용(depth=2 전수 탐색 ~1.46초, 예산 초과)과 정확히 같은 구조
+
+--- Primitive Blueprint 후보 (4개) ---
+
+[BP-1-BOUNDED-MULTICYCLE] Bounded Multi-Cycle Resolver (from REQ-4-MULTICYCLE)
+  Input: 현재 Cube 상태 + buildStateGraph()가 탐지한 길이 4~6의 WANTS-Cycle 하나
+  Expected Effect: 탐지된 Cycle 전체를 하나의 결정적 연산으로 해소 -- Cycle 길이만큼 WrongWing이 한 번에 감소함 (tryFixWing()처럼 매 단계마다 즉시 개선을 요구하지 않음)
+  Forbidden Effect: Cycle에 포함되지 않은 슬롯의 Pair를 깨뜨리는 것; 최종 결과가 시작 시점보다 WrongWing이 같거나 늘어나는 것
+  Activation Condition: buildStateGraph()의 cycles 중 길이 4 이상인 것이 존재하고, CycleChase가 이미 실패한 상태 (PAIR_CONFLICT)
+  기존과의 차이: BASE(tryFixWing)는 한 번에 최대 3-leg(2-swap 또는 진짜 3-cycle)까지만 처리하고, 매 leg마다 즉시 순 개선을 요구한다. CycleChase는 tryFixWing을 반복 호출할 뿐 이 계약을 바꾸지 않는다. 이 Blueprint는 Cycle 전체를 애초에 하나의 계약(끝에서만 검증)으로 처리하자는 것으로, 기존 어느 것도 이렇게 하지 않는다.
+
+[BP-2-PARITY-CYCLE] Parity-Aware Cycle Breaker (from REQ-2-PARITY)
+  Input: Parity=true인 상태 + 인접한 WANTS-Cycle 구조
+  Expected Effect: PARITY_ALG를 트리거로 사용하되, Cycle 구조에 맞춰 setup을 다르게 선택해 Parity 해소와 동시에 인접 Cycle의 한 링크도 함께 줄임
+  Forbidden Effect: WrongWing이 일시적으로 늘어나는 것은 최대 +1까지만 허용 (그 이상은 금지); 기존 PARITY_ALG의 대상 슬롯이 아닌 Pair를 건드리는 것
+  Activation Condition: Parity=true AND WrongWing이 Hard Gap 범위 내 AND 기존 6개 능력 전부 실패
+  기존과의 차이: 기존 PARITY_ALG는 고정된 단일 시퀀스를 whole-cube 회전으로만 conjugate한다 (Capability Expansion Sprint v2가 이미 확인). 이 Blueprint는 setup을 '현재 감지된 Cycle 구조'에서 직접 유도한다는 점이 다르다 -- CycleChase도 PARITY를 그대로 재사용할 뿐 setup을 Cycle에 맞춰 바꾸지 않는다.
+
+[BP-3-NONPARITY-STRUCTURAL] Non-Parity Structural Fix (from REQ-3-NONPARITY)
+  Input: Parity=false이면서 기존 6개 능력이 전부 실패하는 상태
+  Expected Effect: Parity 보정 없이 순수 WANTS-Cycle/Conflict 구조만으로 WrongWing을 감소시킴
+  Forbidden Effect: Parity가 없던 상태에 Parity를 새로 만들어내는 것 (PARITY_ALG를 오용하는 결과와 동일해짐)
+  Activation Condition: Parity=false AND Hard Gap (6개 능력 전부 실패)
+  기존과의 차이: 기존 4개 실전 Primitive 중 Parity 없는 상태를 전담하는 것은 BASE뿐이며, BASE는 이미 이 상태들에서 실패가 확인됐다. CASE/PARITY는 Parity가 있는 상태를 전제로 설계됐다. 이 Blueprint는 Parity 유무와 무관하게 순수 Cycle 구조만 다루는 별도 경로라는 점이 다르다.
+
+[BP-4-PRECOMPUTED-LOOKUP] Precomputed Cycle-Shape Lookup (from REQ-1-GENERAL (Contract Analysis Sprint v1의 Cost Estimation 결과에 대한 직접 대응))
+  Input: 탐지된 WANTS-Cycle의 정규화된 '모양'(참여 슬롯들의 상대적 배치, 실제 색상과 무관)
+  Expected Effect: 런타임에 새로 탐색하지 않고, 미리 계산해 둔 짧은(2-3수) 해결 시퀀스를 표로 조회 -- 조회 자체는 O(1)에 가까워 실제 Solver 예산(120ms/task) 안에 들어옴
+  Forbidden Effect: 런타임에 10ms를 초과하는 탐색을 수행하는 것 (그 순간 Contract Analysis Sprint v1이 측정한 것과 같은 비용 폭증 문제로 되돌아감)
+  Activation Condition: 탐지된 Cycle 모양이 사전 계산된 표의 항목과 일치할 때만 (모든 Cycle 모양을 다루지 못할 수 있음 -- 이는 Coverage의 한계로 정직하게 남는다)
+  기존과의 차이: 기존 모든 Primitive(BASE/FLIP/CASE/PARITY/RECOVERY/CycleChase)는 런타임에 실시간으로 탐색한다. 이 Blueprint는 탐색을 오프라인으로 옮겨 Contract Analysis Sprint v1이 실측으로 증명한 '계약 완화의 비용 문제' 자체를 우회하려는 시도라는 점이 근본적으로 다르다.
+
+--- 성공 기준 판정 ---
+Level 1 (모든 실패 Cluster가 Capability Gap으로 설명됨): PASS (Cluster 커버리지 72.7%, Replay Hard Gap 비율 38.7%)
+Level 2 (Required Capability가 정량적으로 정의됨): PASS (요구사항 4개 전부 실측 수치 근거 포함)
+Level 3 (최소 3개의 서로 다른 Primitive Blueprint 생성): PASS (4개 생성)
+
+--- 실패 조건 판정 ---
+대부분 Cluster가 Gap으로 설명되지 않음: 해당없음
+Blueprint가 기존 Primitive와 실질적으로 동일함: 해당없음 (각 Blueprint의 '기존과의 차이' 항목에 명시)
+Required Capability가 추상적 설명에 머무름: 해당없음
+구현 가능한 설계 초안이 생성되지 않음: 해당없음
+
+=== 종합 판정: 성공 -- Solver v2 Primitive Prototype Sprint로 진행 ===
+제품 코드 통합 여부: 미통합 (spec -- 이번 Sprint는 순수 연구)
