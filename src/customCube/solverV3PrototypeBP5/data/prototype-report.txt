@@ -1,0 +1,67 @@
+========================================
+Solver v3 Primitive Prototype Sprint v1 (BP-5) -- Prototype Report
+========================================
+
+--- STEP2: Sparse Wrongness Candidate ---
+전체 Replay: 75건
+Extended Hard Gap (9개 능력 전부 실패): 21건
+Sparse 프로파일 일치 (WrongWing bucket<=3 AND Cycle<=2): 29건
+BP-5 Candidate (둘 다 충족): 18건
+  27053491  WrongWing=9 CycleCount=0 Conflict=9 Parity=false
+  68977335  WrongWing=8 CycleCount=2 Conflict=0 Parity=true
+  a061555d  WrongWing=11 CycleCount=1 Conflict=8 Parity=false
+  1af658ab  WrongWing=4 CycleCount=1 Conflict=0 Parity=false
+  60b5c3b1  WrongWing=6 CycleCount=2 Conflict=0 Parity=false
+  4e27e5a1  WrongWing=4 CycleCount=1 Conflict=0 Parity=false
+  5e5b20b  WrongWing=8 CycleCount=2 Conflict=0 Parity=false
+  e5101f85  WrongWing=9 CycleCount=2 Conflict=0 Parity=true
+  4749cd9d  WrongWing=7 CycleCount=2 Conflict=0 Parity=false
+  8b27576b  WrongWing=7 CycleCount=2 Conflict=0 Parity=false
+  555b1ba5  WrongWing=10 CycleCount=2 Conflict=0 Parity=true
+  25fd9a99  WrongWing=9 CycleCount=2 Conflict=0 Parity=false
+  fced5217  WrongWing=7 CycleCount=0 Conflict=7 Parity=false
+  a22dd0c9  WrongWing=6 CycleCount=2 Conflict=0 Parity=true
+  bb9b5a0f  WrongWing=7 CycleCount=1 Conflict=0 Parity=true
+  c7ddf36b  WrongWing=9 CycleCount=1 Conflict=7 Parity=true
+  2add987f  WrongWing=8 CycleCount=0 Conflict=8 Parity=false
+  80eed73f  WrongWing=6 CycleCount=1 Conflict=0 Parity=false
+
+--- STEP3: Bounded Lookahead 실측 ---
+  27053491  leaves=9 nodes=7 avgBF=4.00 time=503ms deadlineHit=true
+  68977335  leaves=1 nodes=4 avgBF=1.00 time=584ms deadlineHit=true
+  a061555d  leaves=7 nodes=6 avgBF=6.33 time=513ms deadlineHit=true
+  1af658ab  leaves=11 nodes=10 avgBF=3.00 time=524ms deadlineHit=true
+  60b5c3b1  leaves=9 nodes=8 avgBF=4.75 time=532ms deadlineHit=true
+  4e27e5a1  leaves=9 nodes=8 avgBF=2.00 time=621ms deadlineHit=true
+  5e5b20b  leaves=9 nodes=7 avgBF=3.29 time=580ms deadlineHit=true
+  e5101f85  leaves=10 nodes=7 avgBF=5.00 time=555ms deadlineHit=true
+  4749cd9d  leaves=7 nodes=6 avgBF=2.67 time=565ms deadlineHit=true
+  8b27576b  leaves=5 nodes=5 avgBF=1.60 time=559ms deadlineHit=true
+  555b1ba5  leaves=14 nodes=9 avgBF=6.33 time=648ms deadlineHit=true
+  25fd9a99  leaves=5 nodes=6 avgBF=3.33 time=534ms deadlineHit=true
+  fced5217  leaves=16 nodes=11 avgBF=4.36 time=609ms deadlineHit=true
+  a22dd0c9  leaves=12 nodes=9 avgBF=3.11 time=547ms deadlineHit=true
+  bb9b5a0f  leaves=3 nodes=5 avgBF=3.20 time=670ms deadlineHit=true
+  c7ddf36b  leaves=3 nodes=4 avgBF=5.75 time=545ms deadlineHit=true
+  2add987f  leaves=1 nodes=4 avgBF=1.50 time=519ms deadlineHit=true
+  80eed73f  leaves=6 nodes=6 avgBF=3.00 time=501ms deadlineHit=true
+
+--- STEP4: Contract Feasibility Report ---
+Candidate 수: 18
+Branching Factor: 평균 3.70 / 최대 20 / 최소 0
+탐색 노드 수: 평균 6.78 / 최대 11
+탐색 시간: 평균 561.6ms / 최대 670ms
+Deadline 도달률: 100.0%
+Task Budget: 120ms (평균 시간 기준) -- 초과
+Plan Budget: 1000ms (최대 시간 기준) -- 충족
+=== Contract 판정: FAIL ===
+
+Contract FAIL -- spec 5절/STEP5 규칙에 따라 효과 측정 없이 즉시 Prototype을 종료한다.
+이는 Sprint 실패가 아니라, BP-5가 이 좁혀진 부분집합에서도 Solver Contract 안에서 실행 불가능함을 실측으로 입증한 유효한 연구 결과다.
+
+--- Level 1~3 판정 ---
+Level 1 (Candidate 추출/측정/보고 완료): PASS
+Level 2 (Contract 예산 이내): FAIL (평균 561.6ms > 120ms 또는 최대 670ms > 1000ms)
+Level 3 (비용 초과 근거 제시): PASS (위 STEP3/STEP4 실측 수치로 제시함)
+
+=== 결론: C. BP-5 기각 → Solver v3 Blueprint 재검토 ===
