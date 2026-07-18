@@ -1,0 +1,51 @@
+========================================
+Prototype Benchmark Report -- Solver v2 Primitive Prototype Sprint v1
+========================================
+
+--- CycleChase vs Bounded Multi-Cycle Resolver ---
+[CycleChase (Hard Gap 29건)]
+  Coverage: 12.9% (4/31)
+  WrongWing 개선 건수: 4
+  Regression (활성화된 것 중): 0.0% (0/4)
+  평균 WrongWing 변화: -1.75
+  평균 Pair 변화: 0.75
+  평균 시간: 296.7ms
+
+[Bounded Multi-Cycle Resolver (Hard Gap 29건)]
+  Coverage: 12.9% (4/31)
+  WrongWing 개선 건수: 4
+  Regression (활성화된 것 중): 0.0% (0/4)
+  평균 WrongWing 변화: -1.25
+  평균 Pair 변화: 1.75
+  평균 시간: 300.4ms
+
+[CycleChase (전체 75건)]
+  Coverage: 25.3% (19/75)
+  WrongWing 개선 건수: 19
+  Regression (활성화된 것 중): 0.0% (0/19)
+  평균 WrongWing 변화: -2.16
+  평균 Pair 변화: 0.74
+  평균 시간: 310.8ms
+
+[Bounded Multi-Cycle Resolver (전체 75건)]
+  Coverage: 28.0% (21/75)
+  WrongWing 개선 건수: 21
+  Regression (활성화된 것 중): 0.0% (0/21)
+  평균 WrongWing 변화: -2.14
+  평균 Pair 변화: 1.52
+  평균 시간: 400.3ms
+
+--- 성공 기준 판정 ---
+Level 1 (Hard Gap 29건 중 10건+ WrongWing 감소): FAIL (실제 4건)
+Level 2 (Regression 10% 이하): PASS (실제 0.0%)
+Level 3 (Coverage 22.7% -> 32.7%+): FAIL (실제 28.0%, CycleChase 재측정 25.3%)
+
+--- 실패 조건 판정 ---
+Regression > 10%: 해당없음
+Hard Gap 개선 10건 미만: 해당
+평균 실행시간 500ms 초과: 해당없음 (실제 300.4ms)
+Coverage 증가 없음 (전체 75건 기준, CycleChase 재측정 대비): 해당없음
+기존 Primitive보다 실질적 개선 없음: 해당없음
+
+=== 종합 판정: 실패 -- BP-1 폐기/보류, BP-2~BP-4 순차 검증 ===
+제품 코드 통합 여부: 미통합 (spec -- 이번 Sprint는 Prototype 검증만 수행)

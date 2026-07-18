@@ -1,0 +1,100 @@
+// --- ReplayBenchmark (Solver v2 Primitive Prototype Sprint v1) ------------
+// STEP 4: CycleChase vs Bounded Multi-Cycle Resolver, measured on the exact
+// same real states -- reusing solverV2Research/GapDetector.ts (existing,
+// unmodified) to get the authoritative 29 Hard Gap replays, and
+// primitivePrototype/CycleChasePrototype.ts (existing, unmodified) as the
+// baseline comparison target.
+import { cloneCubies } from "../cubeState";
+import { applySeq, wrongWingCount5, type WingLibrary } from "../fiveByFiveEdges";
+import { pairCountOf } from "../goalPlanner/GoalAnalyzer";
+import { deserializeCube } from "../failureAnalysis/cubeSerialization";
+import { allSnapshots, loadDatabase } from "../failureAnalysis/failureDatabase";
+import type { FailureSnapshot } from "../failureAnalysis/failureTypes";
+import { tryCycleChase } from "../primitivePrototype/CycleChasePrototype";
+import { tryBoundedMultiCycleResolver } from "./BoundedResolver";
+
+export interface SingleRunResult {
+  hash: string;
+  activated: boolean;
+  wrongWingBefore: number;
+  wrongWingAfter: number;
+  pairBefore: number;
+  pairAfter: number;
+  timeMs: number;
+  regression: boolean;
+}
+
+function runOne(snapshot: FailureSnapshot, resolver: (cubies: ReturnType<typeof deserializeCube>, lib: WingLibrary, deadline: number) => ReturnType<typeof tryCycleChase>, lib: WingLibrary, deadlineMs: number): SingleRunResult {
+  const cubies = deserializeCube(snapshot.cubeState);
+  const wrongWingBefore = wrongWingCount5(cubies);
+  const pairBefore = pairCountOf(cubies);
+
+  const startedAt = Date.now();
+  const fix = resolver(cubies, lib, startedAt + deadlineMs);
+  const timeMs = Date.now() - startedAt;
+
+  if (!fix) {
+    return { hash: snapshot.hash, activated: false, wrongWingBefore, wrongWingAfter: wrongWingBefore, pairBefore, pairAfter: pairBefore, timeMs, regression: false };
+  }
+
+  applySeq(cubies, fix);
+  const wrongWingAfter = wrongWingCount5(cubies);
+  const pairAfter = pairCountOf(cubies);
+
+  return {
+    hash: snapshot.hash,
+    activated: true,
+    wrongWingBefore,
+    wrongWingAfter,
+    pairBefore,
+    pairAfter,
+    timeMs,
+    regression: pairAfter < pairBefore || wrongWingAfter > wrongWingBefore,
+  };
+}
+
+export function runCycleChaseOn(snapshots: readonly FailureSnapshot[], lib: WingLibrary, deadlineMs: number): SingleRunResult[] {
+  return snapshots.map((s) => runOne(s, (c, l, d) => tryCycleChase(cloneCubies(c), l, d), lib, deadlineMs));
+}
+
+export function runBoundedResolverOn(snapshots: readonly FailureSnapshot[], lib: WingLibrary, deadlineMs: number): SingleRunResult[] {
+  return snapshots.map((s) => runOne(s, (c, l, d) => tryBoundedMultiCycleResolver(cloneCubies(c), l, d), lib, deadlineMs));
+}
+
+export interface BenchmarkSummary {
+  label: string;
+  totalTested: number;
+  activatedCount: number;
+  coverage: number;
+  improvedCount: number;
+  regressionCount: number;
+  regressionRateAmongActivated: number;
+  avgWrongWingDelta: number;
+  avgPairDelta: number;
+  avgTimeMs: number;
+}
+
+export function summarize(label: string, results: readonly SingleRunResult[]): BenchmarkSummary {
+  const totalTested = results.length;
+  const activated = results.filter((r) => r.activated);
+  const improvedCount = results.filter((r) => r.wrongWingAfter < r.wrongWingBefore).length;
+  const regressionCount = activated.filter((r) => r.regression).length;
+  const avg = (nums: number[]) => (nums.length ? nums.reduce((a, b) => a + b, 0) / nums.length : 0);
+
+  return {
+    label,
+    totalTested,
+    activatedCount: activated.length,
+    coverage: totalTested ? activated.length / totalTested : 0,
+    improvedCount,
+    regressionCount,
+    regressionRateAmongActivated: activated.length ? regressionCount / activated.length : 0,
+    avgWrongWingDelta: avg(activated.map((r) => r.wrongWingAfter - r.wrongWingBefore)),
+    avgPairDelta: avg(activated.map((r) => r.pairAfter - r.pairBefore)),
+    avgTimeMs: avg(results.map((r) => r.timeMs)),
+  };
+}
+
+export function loadAll75(failuresDbPath: string): FailureSnapshot[] {
+  return allSnapshots(loadDatabase(failuresDbPath));
+}

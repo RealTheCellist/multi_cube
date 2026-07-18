@@ -1,0 +1,41 @@
+========================================
+Structural Report -- Solver v2 Primitive Prototype Sprint v1
+========================================
+
+--- 성공한 Cycle (5건) ---
+  7541612b  cycleLength=5  leaves=11  time=696ms
+  283cfbcd  cycleLength=4  leaves=7  time=579ms
+  c039e611  cycleLength=6  leaves=10  time=674ms
+  b140b3d7  cycleLength=6  leaves=3  time=651ms
+  c3a1ce7b  cycleLength=6  leaves=1  time=292ms
+
+--- 실패한 Cycle (26건) ---
+  27053491  cycleLength=없음  이유=no chaseable cycle (length<4 or none)  leaves=0  time=0ms
+  68977335  cycleLength=4  이유=no explored leaf net-improved WrongWing (Deferred Validation rejected)  leaves=1  time=221ms
+  1af658ab  cycleLength=4  이유=no explored leaf net-improved WrongWing (Deferred Validation rejected)  leaves=4  time=33ms
+  60b5c3b1  cycleLength=3  이유=no chaseable cycle (length<4 or none)  leaves=0  time=0ms
+  4e27e5a1  cycleLength=4  이유=no explored leaf net-improved WrongWing (Deferred Validation rejected)  leaves=3  time=426ms
+  5e5b20b  cycleLength=5  이유=no explored leaf net-improved WrongWing (Deferred Validation rejected)  leaves=1  time=181ms
+  36336c1  cycleLength=4  이유=no explored leaf net-improved WrongWing (Deferred Validation rejected)  leaves=4  time=394ms
+  e5101f85  cycleLength=5  이유=no explored leaf net-improved WrongWing (Deferred Validation rejected)  leaves=1  time=475ms
+  4749cd9d  cycleLength=4  이유=no explored leaf net-improved WrongWing (Deferred Validation rejected)  leaves=5  time=196ms
+  c76c662f  cycleLength=6  이유=no explored leaf net-improved WrongWing (Deferred Validation rejected)  leaves=6  time=657ms
+  dc517e57  cycleLength=5  이유=no explored leaf net-improved WrongWing (Deferred Validation rejected)  leaves=3  time=556ms
+  755fc60b  cycleLength=4  이유=no explored leaf net-improved WrongWing (Deferred Validation rejected)  leaves=1  time=192ms
+  8b27576b  cycleLength=4  이유=no explored leaf net-improved WrongWing (Deferred Validation rejected)  leaves=8  time=414ms
+  fad41ff1  cycleLength=4  이유=no explored leaf net-improved WrongWing (Deferred Validation rejected)  leaves=8  time=605ms
+  dbb7b6cd  cycleLength=4  이유=no explored leaf net-improved WrongWing (Deferred Validation rejected)  leaves=2  time=389ms
+  589b0a25  cycleLength=3  이유=no chaseable cycle (length<4 or none)  leaves=0  time=0ms
+  25fd9a99  cycleLength=6  이유=no explored leaf net-improved WrongWing (Deferred Validation rejected)  leaves=1  time=167ms
+  fced5217  cycleLength=없음  이유=no chaseable cycle (length<4 or none)  leaves=0  time=0ms
+  a22dd0c9  cycleLength=3  이유=no chaseable cycle (length<4 or none)  leaves=0  time=0ms
+  bb9b5a0f  cycleLength=6  이유=no explored leaf net-improved WrongWing (Deferred Validation rejected)  leaves=5  time=542ms
+  bb6a16b1  cycleLength=5  이유=no explored leaf net-improved WrongWing (Deferred Validation rejected)  leaves=1  time=179ms
+  7f1e11c5  cycleLength=5  이유=no explored leaf net-improved WrongWing (Deferred Validation rejected)  leaves=1  time=189ms
+  71e6edc9  cycleLength=4  이유=no explored leaf net-improved WrongWing (Deferred Validation rejected)  leaves=4  time=530ms
+  c7ddf36b  cycleLength=2  이유=no chaseable cycle (length<4 or none)  leaves=0  time=0ms
+  2add987f  cycleLength=없음  이유=no chaseable cycle (length<4 or none)  leaves=0  time=0ms
+  80eed73f  cycleLength=6  이유=no explored leaf net-improved WrongWing (Deferred Validation rejected)  leaves=2  time=509ms
+
+평균 Cycle 길이: 4.54
+평균 시간: 314.4ms
