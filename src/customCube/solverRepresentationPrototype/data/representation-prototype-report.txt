@@ -1,0 +1,67 @@
+========================================
+Solver Representation Prototype Sprint v1 -- Report
+========================================
+
+--- 0. Sprint 성격 ---
+Representation Blueprint Sprint v1이 선정한 Rescue-Structural Hybrid를 이용해, 기존 Primitive(BASE/FLIP/CASE/PARITY/BP-1)만 재오케스트레이션했을 때 실제 Coverage/Hard Gap이 개선되는지 검증한다. 새 Primitive는 만들지 않으며, Solver/Planner/Executor/Contract를 전혀 수정하지 않는다. 제품 코드에 통합하지 않는다.
+
+--- 1. Representation 분포 ---
+[Rescue-Structural Hybrid] 고유 그룹=31 / 150건
+  상위 그룹: 100100000(15건), 000000000|tier1|parfalse(15건), 000100000(13건), 000000000|tier2|partrue(12건), 000000000|tier1|partrue(11건)
+[Coarse Structural Shape] 고유 그룹=81 / 150건
+  상위 그룹: WWb3|Pb1|partrue|cycCount3|swap2|cycE2|conf0(8건), WWb3|Pb1|partrue|cycCount2|swap0|cycE2|conf0(7건), WWb4|Pb0|partrue|cycCount4|swap2|cycE2|conf0(6건), WWb5|Pb0|partrue|cycCount6|swap2|cycE2|conf0(6건), WWb1|Pb2|parfalse|cycCount1|swap0|cycE2|conf0(5건)
+[Exact Shape Key (BP-4)] 고유 그룹=135 / 150건
+  상위 그룹: WW4|P8|parfalse|cyc[4]|swap0|cycE4|conf0(4건), WW7|P5|parfalse|cyc[3,4]|swap0|cycE7|conf0(3건), WW10|P2|parfalse|cyc[]|swap0|cycE0|conf10(2건), WW8|P5|partrue|cyc[4,4]|swap0|cycE8|conf0(2건), WW8|P4|parfalse|cyc[3,5]|swap0|cycE8|conf0(2건)
+
+--- 2. Primitive 선택 변화 (초기 상태 기준 1순위 Primitive 분포) ---
+[기존 Solver (고정 순서)] 1순위 분포: BASE=150 FLIP=0 CASE=0 PARITY=0 BP1=0
+[Coarse Structural Shape] 1순위 분포: BASE=60 FLIP=0 CASE=0 PARITY=86 BP1=4
+[Exact Shape Key (BP-4)] 1순위 분포: BASE=26 FLIP=0 CASE=0 PARITY=124 BP1=0
+[Rescue-Structural Hybrid] 1순위 분포: BASE=78 FLIP=0 CASE=0 PARITY=63 BP1=9
+
+--- 3. Coverage / Hard Gap / Primitive 성공률 (조건별) ---
+(참고: Coverage = 개선(wrongWingAfter < wrongWingBefore) 발생률 -- 이 프로젝트 전체에서 확립된 정의(ReplayBenchmark.summarize()). '완전 해결(wrongWingCount=0)'은 별도로 병기한다 -- 이 150건은 이미 RECOVERY/CYCLECHASE를 포함한 전체 Solver가 실패한 잔여 상태라, 그보다 약한 5개 Primitive만으로 완전 해결을 요구하는 것은 애초에 달성 불가능에 가깝다.)
+[기존 Solver (고정 순서)] Coverage(개선율)=62.7% (94/150) 완전해결률=0.0% (0건) Hard Gap=37.3% (56건) 평균 round=2.13
+    BASE: 시도=463 성공=212 성공률=45.8%
+    FLIP: 시도=251 성공=0 성공률=0.0%
+    CASE: 시도=251 성공=0 성공률=0.0%
+    PARITY: 시도=251 성공=92 성공률=36.7%
+    BP1: 시도=159 성공=16 성공률=10.1%
+[Coarse Structural Shape] Coverage(개선율)=61.3% (92/150) 완전해결률=0.0% (0건) Hard Gap=38.7% (58건) 평균 round=2.15
+    BASE: 시도=303 성공=112 성공률=37.0%
+    FLIP: 시도=161 성공=0 성공률=0.0%
+    CASE: 시도=161 성공=0 성공률=0.0%
+    PARITY: 시도=392 성공=190 성공률=48.5%
+    BP1: 시도=174 성공=21 성공률=12.1%
+[Exact Shape Key (BP-4)] Coverage(개선율)=62.0% (93/150) 완전해결률=0.0% (0건) Hard Gap=38.0% (57건) 평균 round=2.12
+    BASE: 시도=269 성공=97 성공률=36.1%
+    FLIP: 시도=147 성공=0 성공률=0.0%
+    CASE: 시도=147 성공=0 성공률=0.0%
+    PARITY: 시도=455 성공=196 성공률=43.1%
+    BP1: 시도=171 성공=25 성공률=14.6%
+[Rescue-Structural Hybrid] Coverage(개선율)=62.0% (93/150) 완전해결률=0.0% (0건) Hard Gap=38.0% (57건) 평균 round=1.99
+    BASE: 시도=368 성공=172 성공률=46.7%
+    FLIP: 시도=153 성공=0 성공률=0.0%
+    CASE: 시도=153 성공=0 성공률=0.0%
+    PARITY: 시도=284 성공=102 성공률=35.9%
+    BP1: 시도=195 성공=24 성공률=12.3%
+
+--- 4. Coverage/Hard Gap 비교 (기존 Solver 대비) ---
+[Coarse Structural Shape] Coverage -1.3%p, Hard Gap 상대감소 -3.6%, Regression=38건, Level1=FAIL, Level2=FAIL
+  Regression 발생 replay: a061555d, b714481, 93b485f7, ae3d218b, 36336c1 외 33건
+[Exact Shape Key (BP-4)] Coverage -0.7%p, Hard Gap 상대감소 -1.8%, Regression=44건, Level1=FAIL, Level2=FAIL
+  Regression 발생 replay: 68977335, a061555d, dda1453f, b714481, beb967ad 외 39건
+[Rescue-Structural Hybrid] Coverage -0.7%p, Hard Gap 상대감소 -1.8%, Regression=35건, Level1=FAIL, Level2=FAIL
+  Regression 발생 replay: 68977335, a061555d, dda1453f, b714481, 1e928fb1 외 30건
+
+--- 5. 성공 기준 (Level 1~3) ---
+Level 1 (Coverage +3%p 이상 또는 Hard Gap 상대감소 -5% 이상, 조건 중 하나라도): FAIL
+Level 2 (Regression 0%, 최우수 조건 기준): FAIL
+Level 3 (A/B/C 중 하나로 귀결): PASS
+
+--- 6. 최종 결론 ---
+결정: C. "Exact Shape Key (BP-4)"에서 Regression 44건 발생 -- Representation 기반 재오케스트레이션이 오히려 일부 상태를 악화시켰다. Representation만으로는 한계.
+
+=== Sprint 종료: 실패 ===
+Regression이 발생했다 -- Exit Criteria에 따라 이 Blueprint(Rescue-Structural Hybrid)는 폐기 검토 대상이다.
+보호 파일: fiveByFiveEdges.ts/Planner.ts/Executor.ts/Recovery.ts/CycleChasePrototype.ts 및 BASE_ALG/FLIP_ALG/PARITY_ALG/CASE Library 미수정 (읽기 전용 재사용만). Solver/Planner/Executor/Contract 미수정. 새 Primitive/Replay/Dataset 변경 없음. 제품 코드 미통합.
