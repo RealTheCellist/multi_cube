@@ -1,0 +1,47 @@
+========================================
+Shape Report -- Solver v2 Primitive Prototype Sprint v4 (BP-4)
+========================================
+
+--- Shape Database 통계 ---
+전체 Replay: 75건, 고유 Shape: 69개
+  Singleton Shape (멤버 1개, leave-one-out 시 훈련 증거 0건): 64개
+  Multi-member Shape (멤버 2개+): 5개
+Hard Gap Replay 중 Singleton Shape에 속함 (BP-4가 구조적으로 절대 도울 수 없음): 25건
+Hard Gap Replay 중 Multi-member Shape에 속함 (BP-4가 원리적으로 도울 가능성 있음): 8건
+
+--- BP-4 (Cycle-Shape Lookup) 성공 사례 (0건) ---
+
+--- BP-4 (Cycle-Shape Lookup) 실패 사례 (33건) ---
+  27053491  활성화=false  WrongWing 9->9  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  68977335  활성화=false  WrongWing 8->8  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  a061555d  활성화=false  WrongWing 11->11  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  1af658ab  활성화=false  WrongWing 4->4  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  60b5c3b1  활성화=false  WrongWing 6->6  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  b714481  활성화=false  WrongWing 14->14  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  4549b041  활성화=false  WrongWing 8->8  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  4e27e5a1  활성화=false  WrongWing 4->4  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  5e5b20b  활성화=false  WrongWing 8->8  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  36336c1  활성화=false  WrongWing 11->11  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  e5101f85  활성화=false  WrongWing 9->9  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  4749cd9d  활성화=false  WrongWing 7->7  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  c76c662f  활성화=false  WrongWing 13->13  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  dc517e57  활성화=false  WrongWing 12->12  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  755fc60b  활성화=false  WrongWing 11->11  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  283cfbcd  활성화=false  WrongWing 8->8  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  d27df773  활성화=false  WrongWing 11->11  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  2b7aa5f1  활성화=false  WrongWing 9->9  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  8b27576b  활성화=false  WrongWing 7->7  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  c039e611  활성화=false  WrongWing 8->8  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  fad41ff1  활성화=false  WrongWing 11->11  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  555b1ba5  활성화=false  WrongWing 10->10  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  dbb7b6cd  활성화=false  WrongWing 7->7  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  25fd9a99  활성화=false  WrongWing 9->9  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  1bff489f  활성화=false  WrongWing 12->12  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  fced5217  활성화=false  WrongWing 7->7  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  a22dd0c9  활성화=false  WrongWing 6->6  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  bb9b5a0f  활성화=false  WrongWing 7->7  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  bb6a16b1  활성화=false  WrongWing 12->12  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  7f1e11c5  활성화=false  WrongWing 10->10  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  c7ddf36b  활성화=false  WrongWing 9->9  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  2add987f  활성화=false  WrongWing 8->8  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
+  80eed73f  활성화=false  WrongWing 6->6  이유=Shape Lookup 실패 (증거 없음 또는 추천 Primitive 자체 거부)
