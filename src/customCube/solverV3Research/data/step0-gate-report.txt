@@ -1,0 +1,18 @@
+========================================
+STEP0 Gate Report -- Solver v3 Research Kickoff Sprint v1
+========================================
+
+전체 Replay: 75건
+고유 Shape: 69개
+
+--- Gate 지표 (3개) ---
+Shape 재등장률: 14.7% -> CONDITIONAL
+Cluster 안정성 (Hard-Gap 분류 5회 재실행 합치율): 92.3% -> PASS
+Replay 다양성 (고유 Shape/전체): 92.0% -> FAIL
+
+--- 참고 통계 (Gate 판정에 미사용) ---
+Hard Gap 빈도 (5회 평균): 39.5% (run별 건수: 27, 27, 28, 34, 32)
+
+=== STEP0 Gate 종합 판정: CONDITIONAL ===
+
+STEP0 CONDITIONAL: STEP1~5를 진행한다 (모든 결론에 데이터 한계를 명시적으로 부기).

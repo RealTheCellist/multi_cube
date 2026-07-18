@@ -1,0 +1,61 @@
+========================================
+Solver v3 Research Kickoff Sprint v1 -- Kickoff Report
+========================================
+
+--- STEP0: Failure Dataset Adequacy Gate ---
+Shape 재등장률: 14.7% -> CONDITIONAL
+Cluster 안정성: 88.5% -> PASS
+Replay 다양성: 92.0% -> FAIL
+참고: Hard Gap 빈도 (5회 평균) 38.4% (27, 25, 31, 30, 31)
+=== STEP0 Gate 종합 판정: CONDITIONAL ===
+
+(Gate=CONDITIONAL -- 이하 모든 결론에 데이터 한계가 명시적으로 반영됨)
+
+--- STEP1: Hard Gap 재분류 ---
+평균 원본 Hard Gap: 29.7건
+평균 구제 건수 (BP-1/2/3 결합): 7.0건
+평균 재분류 후 Hard Gap: 22.7건
+평균 과다분류율: 23.6% (range 20.0~25.9%)
+  run: hardGap=32 rescued=8 (BP1=6 BP2=2 BP3=3) newHardGap=24
+  run: hardGap=27 rescued=7 (BP1=5 BP2=0 BP3=2) newHardGap=20
+  run: hardGap=30 rescued=6 (BP1=5 BP2=1 BP3=3) newHardGap=24
+
+--- STEP2: State Representation 후보 비교 ---
+[BP-4 Shape Key (baseline)] 고유그룹=69 Singleton비율=92.8% 재등장률=14.7% 평균그룹크기=1.09
+[Coarse Structural Shape] 고유그룹=45 Singleton비율=66.7% 재등장률=60.0% 평균그룹크기=1.67
+[Capability Fingerprint] 고유그룹=21 Singleton비율=38.1% 재등장률=89.3% 평균그룹크기=3.57
+
+--- STEP3: 구제된 그룹 vs 여전히 Hard Gap인 그룹 ---
+[구제됨] n=6 평균WrongWing=11.00 평균Pair=2.83 Parity율=83.3% 평균Cycle개수=2.83 평균최장Cycle=5.17 평균Conflict=1.17
+[여전히 Hard] n=24 평균WrongWing=8.58 평균Pair=4.42 Parity율=45.8% 평균Cycle개수=1.92 평균최장Cycle=3.83 평균Conflict=1.96
+
+--- STEP4: WANTS Graph 검토 -- 판정: KEEP_WITH_COARSER_GRAIN ---
+WANTS Graph 구조 자체는 유지한다. BP-4의 실패는 그래프가 무의미해서가 아니라, 그 출력을 정밀한 exact-match Key로 소비한 것이 75개 표본에 비해 지나치게 세밀했기 때문이다 (STEP2). 반면 Capability Fingerprint처럼 구조를 완전히 버리는 대안은 재등장률은 높지만 남은 Hard Gap을 전부 하나로 뭉개 새 Primitive 설계에 필요한 구분력을 잃는다. WANTS Graph 파생 지표는 실제로 '구제 가능' 그룹과 '여전히 어려운' 그룹을 구분하는 real signal을 담고 있다 (STEP3). 따라서 그래프 구조는 유지하되, 그것을 소비하는 State Representation은 STEP2의 Coarse Structural Shape처럼 더 거친 grain으로 바꿔야 한다.
+  - Coarse Structural Shape(WANTS Graph 그대로 사용, 구간만 조정)의 재등장률 60.0%는 BP-4의 정밀 Shape Key(14.7%)보다 훨씬 높다 -- 그래프 구조 자체가 아니라 그것을 소비하는 grain이 지나치게 세밀했던 것이 BP-4 실패의 원인이었음을 시사.
+  - Capability Fingerprint(구조를 아예 버리고 능력 성공/실패로만 군집화)는 재등장률이 가장 높지만(89.3%), 여전히 풀리지 않는 상태는 전부 동일한 "000000000" 지문 하나로 뭉쳐 그 이상 구분하지 못한다 -- 새 Primitive를 설계하려는 목적에는 오히려 정보량이 0에 가깝다.
+  - WANTS Graph 파생 지표(Cycle 개수/최장 Cycle 길이/Conflict 엣지 수)는 "BP-1/2/3로 구제된 그룹"과 "여전히 Hard Gap인 그룹" 사이에 실측으로 뚜렷한 차이를 보인다: 평균 Cycle 개수 2.83 vs 1.92, 평균 최장 Cycle 길이 5.17 vs 3.83, 평균 Conflict 엣지 수 1.17 vs 1.96 -- 그래프가 실제로 두 그룹을 구분해내는 신호를 담고 있다는 뜻이다.
+
+--- STEP5: 결론 ---
+Level 1 (State Representation 개선): PASS
+Level 2 (Gate 판정 완료 + 반영): PASS
+Level 3 (결론 구체성): PASS
+
+발동된 Exit Criteria: 없음
+
+=== 8-1 결론: A ===
+BP-1/2/3를 함께 테스트해도 원래 Hard Gap의 평균 23.6%만 구제된다 (80% 기준 미달 -- Exit Criteria 미발동). 구제되지 않는 나머지(평균 24건)는 구제된 그룹과 실측으로 뚜렷이 다른 프로파일(더 적은 WrongWing/Cycle/Conflict, 더 낮은 Parity 비율)을 보여, 기존 BP-1~4 어느 것도 겨냥하지 않은 새로운 부분집합임이 확인됐다. 이 부분집합을 겨냥한 새 Blueprint(BP-5)를 제안한다.
+
+--- 새 Blueprint ---
+[BP-5-SPARSE-WRONGNESS-LOOKAHEAD] Sparse Wrongness Bounded Lookahead
+  derivedFrom: Solver v3 Research Kickoff Sprint v1 STEP3 실측
+  input: Coarse Structural Shape(STEP2)이 식별하는 "희소한 어긋남" 프로파일과 일치하는 상태 -- 실측 기준: 평균 WrongWing 8.6, 평균 Cycle 개수 1.9, 평균 Conflict 엣지 2.0 근방 (구제된 그룹의 평균 WrongWing 11.0/Cycle 2.8/Conflict 1.2보다 뚜렷이 낮음).
+  expectedEffect: 즉시 개선을 요구하지 않는 짧은(2-ply) 앞선 탐색으로, 도너가 부족해 BASE/CASE가 실패하는 고립된 WrongWing을 해소 -- Solver Contract Analysis Sprint v1이 이미 기각한 '전역' depth=2 탐색과 달리, 이 좁고 실측으로 식별된 부분집합에만 적용.
+  forbiddenEffect: 이 프로파일 밖의 상태에 적용되는 것 (Contract Analysis Sprint v1이 실측한 전역 비용 폭증(depth=2 ~1.46s)을 재현하게 됨); Task 120ms 예산을 초과하는 것.
+  activationCondition: Coarse Shape가 sparse-wrongness 프로파일과 일치 AND 기존 9개 능력(BASE/FLIP/CASE/PARITY/RECOVERY/CYCLECHASE/BP-1/BP-2/BP-3) 전부 실패.
+  differsFromExisting: BP-1~3는 모두 풍부한 Cycle/Conflict 구조가 있다고 가정하고 그 구조를 재배치한다. 이 Blueprint가 겨냥하는 부분집합은 그런 구조가 애초에 부족한 상태로, BP-1~3가 활용할 재료 자체가 없다. Contract Analysis Sprint v1의 'depth=2는 전역적으로 비용이 과도하다'는 결론은 유지하되, 이 좁은 부분집합에서의 실제 branching factor는 아직 측정되지 않았다.
+  unverifiedCaveat: 이 부분집합에서의 실제 평균 branching factor/시간 비용은 이번 Sprint에서 측정하지 않았다 -- 다음 Prototype Sprint의 첫 작업(Contract Analysis Sprint v1과 동일한 방법론으로, 단 이 좁은 부분집합에 한정)이어야 한다. 비용이 여전히 예산을 초과하면 이 Blueprint는 그 자리에서 기각되어야 한다.
+
+--- Representation 권고 ---
+WANTS Graph 구조 자체는 유지한다. BP-4의 실패는 그래프가 무의미해서가 아니라, 그 출력을 정밀한 exact-match Key로 소비한 것이 75개 표본에 비해 지나치게 세밀했기 때문이다 (STEP2). 반면 Capability Fingerprint처럼 구조를 완전히 버리는 대안은 재등장률은 높지만 남은 Hard Gap을 전부 하나로 뭉개 새 Primitive 설계에 필요한 구분력을 잃는다. WANTS Graph 파생 지표는 실제로 '구제 가능' 그룹과 '여전히 어려운' 그룹을 구분하는 real signal을 담고 있다 (STEP3). 따라서 그래프 구조는 유지하되, 그것을 소비하는 State Representation은 STEP2의 Coarse Structural Shape처럼 더 거친 grain으로 바꿔야 한다.
+
+제품 코드 통합 여부: 미통합 (spec -- 이번 Sprint는 Research Kickoff, Prototype/제품 코드 작업 아님)
