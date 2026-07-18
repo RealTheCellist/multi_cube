@@ -1,0 +1,129 @@
+========================================
+Solver Dataset Expansion Research Sprint v1 -- Dataset Roadmap Report
+========================================
+
+--- 1. Dataset 편향 분석 ---
+[Shape] 정밀 Shape Key 기준 고유 69개 (전체 75건) -- 68개 Shape가 1~2건뿐. Coarse Shape 기준으로는 고유 45개로 완화되지만 여전히 37개가 대표성 부족.
+  대표성 부족 영역 (68개): WW8|P5|partrue|cyc[4,4]|swap0|cycE8|conf0 (2건), WW4|P8|parfalse|cyc[4]|swap0|cycE4|conf0 (2건), WW8|P4|parfalse|cyc[3,5]|swap0|cycE8|conf0 (2건), WW7|P6|partrue|cyc[3,4]|swap0|cycE7|conf0 (2건), WW9|P3|parfalse|cyc[]|swap0|cycE0|conf9 (1건), WW13|P2|partrue|cyc[2,2,3,5]|swap4|cycE8|conf0 (1건), WW10|P5|partrue|cyc[2,3,4,5,6]|swap2|cycE18|conf0 (1건), WW16|P1|partrue|cyc[4,4,5,5]|swap0|cycE18|conf2 (1건), WW11|P1|parfalse|cyc[3]|swap0|cycE3|conf8 (1건), WW10|P2|parfalse|cyc[2,3,5]|swap2|cycE8|conf0 (1건) ...
+[Replay] WrongWing/Pair 구간별 분포에 뚜렷한 쏠림이 존재 -- 극단값(매우 낮거나 매우 높은 WrongWing) 구간이 대표성 부족.
+  대표성 부족 영역 (3개): WW3-5 (2건), WW18-20 (2건), WW21-23 (1건)
+[HardGap] Hard Gap 여부가 WrongWing 구간별로 고르게 분포하지 않음 -- 일부 구간은 Hard Gap 표본이 2건 이하.
+  대표성 부족 영역 (3개): WW3-5|hardGap=true (2건), WW18-20|hardGap=false (2건), WW21-23|hardGap=false (1건)
+[Cluster] GapDetector.ts의 clusterKey(w|p) 기준 고유 22개 클러스터 중 10개가 2건 이하 -- Policy Generalization Sprint v1이 정성적으로 겪었던 다수결 불성립 문제와 동일한 근본 원인.
+  대표성 부족 영역 (10개): w4|p0 (2건), w6|p0 (2건), w16|p1 (1건), w11|p0 (1건), w10|p0 (1건), w20|p1 (1건), w19|p1 (1건), w6|p1 (1건), w22|p1 (1건), w17|p1 (1건)
+
+--- 2. Dataset 다양성 분석 (Shannon Entropy) ---
+[Shape] 고유=69/75 (비율 92.0%) 엔트로피=6.06bits (정규화 0.99)
+  해석: 거의 균등 분포 -- 다양성은 높지만 반복(재사용 가능한 패턴)이 거의 없다는 뜻이기도 하다.
+[Replay(WrongWing)] 고유=16/75 (비율 21.3%) 엔트로피=3.64bits (정규화 0.91)
+  해석: 거의 균등 분포 -- 다양성은 높지만 반복(재사용 가능한 패턴)이 거의 없다는 뜻이기도 하다.
+[Cluster] 고유=22/75 (비율 29.3%) 엔트로피=4.13bits (정규화 0.93)
+  해석: 거의 균등 분포 -- 다양성은 높지만 반복(재사용 가능한 패턴)이 거의 없다는 뜻이기도 하다.
+[Primitive(6-bit fingerprint)] 고유=4/75 (비율 5.3%) 엔트로피=1.85bits (정규화 0.92)
+  해석: 거의 균등 분포 -- 다양성은 높지만 반복(재사용 가능한 패턴)이 거의 없다는 뜻이기도 하다.
+종합: Shape 축은 정규화 엔트로피 0.99로 거의 균등에 가깝다 -- 이는 "다양성이 풍부하다"가 아니라 "거의 모든 Shape가 정확히 1번씩만 등장해 재사용 가능한 반복 패턴이 없다"는 뜻이다 (uniqueCount=69/75). Cluster 축(w|p 시그니처, 더 거친 grain)은 정규화 엔트로피 0.93로 상대적으로 덜 균등해, 이 grain에서는 실제로 재사용 가능한 반복이 더 많이 존재함을 시사한다 -- Representation의 grain을 어디에 두느냐가 "정보량"의 해석 자체를 바꾼다.
+
+--- 3. Dataset 규모 증가 효과 추정 (모델 기반 추정, 실측 아님 -- N=75 행만 실측) ---
+방법론: Chinese Restaurant Process 시뮬레이션(seed 고정, 300회 평균) 기반 추정이며 실측이 아니다. N=75 행만 실측값이다. 모델은 향후 표본이 기존 75건과 동일한 생성 분포를 따른다고 가정한다 -- 이 가정이 깨지면(예: 다른 replay 소스) 추정이 빗나갈 수 있다.
+
+[ExactShapeKey(BP-4)] 보정된 CRP alpha=416.29
+  N=75 실측: 고유=69, Singleton비율=92.8%, 재등장률=14.7%
+  N=75(실측): 고유=69.0, Singleton비율=92.8%, 재등장률=14.7%, 평균그룹크기=1.09
+  N=150(추정): 고유=128.2, Singleton비율=86.3%, 재등장률=26.3%, 평균그룹크기=1.17
+  N=300(추정): 고유=225.8, Singleton비율=77.2%, 재등장률=41.9%, 평균그룹크기=1.33
+  N=500(추정): 고유=329.2, Singleton비율=69.3%, 재등장률=54.4%, 평균그룹크기=1.52
+  N=1000(추정): 고유=509.5, Singleton비율=57.9%, 재등장률=70.5%, 평균그룹크기=1.96
+
+[CoarseShape(v3 Kickoff)] 보정된 CRP alpha=47.03
+  N=75 실측: 고유=45, Singleton비율=66.7%, 재등장률=60.0%
+  N=75(실측): 고유=45.0, Singleton비율=66.7%, 재등장률=60.0%, 평균그룹크기=1.67
+  N=150(추정): 고유=67.6, Singleton비율=52.9%, 재등장률=76.2%, 평균그룹크기=2.22
+  N=300(추정): 고유=94.2, Singleton비율=43.6%, 재등장률=86.3%, 평균그룹크기=3.19
+  N=500(추정): 고유=115.7, Singleton비율=37.2%, 재등장률=91.4%, 평균그룹크기=4.32
+  N=1000(추정): 고유=146.7, Singleton비율=30.8%, 재등장률=95.5%, 평균그룹크기=6.82
+
+Cluster 안정성 참고: Cluster 안정성(Solver v3 Kickoff STEP0에서 실측 88.5%)은 Dataset 크기의 함수가 아니라, Primitive 내부의 Math.random() 기반 탐색 순서 randomness의 함수다 -- 표본을 늘려도 개별 replay의 run-to-run 분류 일관성 자체는 구조적으로 개선되지 않는다. 다만 표본이 많아지면 관측되는 평균값의 통계적 신뢰구간은 좁아진다. 따라서 이 지표는 이번 성장 추정에서 CRP 모델로 투영하지 않는다 (모델링 대상이 아님을 명시).
+
+Lookup 가능성 참고: BP-4류 Lookup 접근의 실현 가능성은 위 projections의 expectedAvgGroupSize/expectedReentryRate로 직접 읽는다 -- leave-one-out이 의미 있으려면 평균 그룹 크기가 최소 2 이상(자기 자신을 제외하고도 훈련 증거가 남아야 함)이어야 한다.
+
+--- 4. Sampling 전략 비교 ---
+[Random] 기존과 동일한 방식으로 무작위 스크램블/실패 상태를 추가 수집
+  장점: 구현이 가장 단순 (기존 파이프라인 그대로 재사용) / 편향을 새로 주입하지 않음
+  단점: DatasetBiasReport STEP1이 확인한 기존 편향(극단 WrongWing 구간/Hard Gap 저빈도 구간)이 그대로 재생산될 가능성이 높음 / DatasetGrowthEstimator STEP3의 CRP 모델 가정(향후 표본도 기존 75건과 동일 분포)과 가장 잘 맞는 전략이지만, 그만큼 새로운 정보 획득 속도가 느림
+  예상 효과: STEP3 projections(모델 자체가 이 가정 위에 서 있음)에 가장 가깝게 도달 -- 예측 가능하지만 최적은 아님
+[Hard Gap 우선] 기존 6~9개 능력이 전부 실패하는(Hard Gap) 상태를 우선적으로 더 많이 수집
+  장점: Strategy Review Sprint v1의 Q1 결론(Hard Gap이 가장 근본적이고 미해결인 축)과 직접 정렬됨 / BP-1~5가 검증에 사용한 표본 자체를 두껍게 만들어 향후 Blueprint 재검증의 통계적 신뢰도를 높임
+  단점: Hard Gap이 아닌 일반 상태의 대표성이 상대적으로 더 희석됨 -- Cluster/Replay 축의 편향은 오히려 악화될 수 있음 / 'Hard Gap'의 정의 자체가 randomness에 취약(Solver v3 Kickoff STEP0에서 실측 88.5% 안정성)하므로, 수집 기준 자체가 흔들릴 위험
+  예상 효과: Hard Gap 관련 연구(Primitive/Blueprint 재검증)에는 가장 효율적이나, Representation/Cluster 축 편향 해소에는 기여가 적음
+[Failure 유형 균등] WrongWing 구간별/Parity 여부별로 균등한 개수를 목표로 수집
+  장점: STEP1이 식별한 '극단 WrongWing 구간 대표성 부족'을 직접 해소 / 향후 어떤 WrongWing 구간을 대상으로 한 연구든 표본 부족 문제를 겪지 않음
+  단점: Hard Gap 발생률이 구간별로 다르므로, 균등 수집이 Hard Gap 표본 확보에는 비효율적일 수 있음
+  예상 효과: Replay 축의 균형은 가장 잘 잡히지만, Shape/Cluster 축 재등장률 개선에는 간접적으로만 기여
+[Shape 균등] 이미 관측된 Shape(Coarse Shape 기준)별로 최소 2건 이상을 목표로 우선 수집
+  장점: DatasetGrowthEstimator STEP3가 Lookup 가능성의 핵심 조건으로 지목한 '평균 그룹 크기 2 이상'을 가장 직접적으로 겨냥 / BP-4류 Lookup 접근을 재검증하려는 목적이라면 가장 효율적인 전략
+  단점: 이미 관측되지 않은 Shape(새로운 카테고리)는 이 전략만으로는 절대 발견되지 않음 -- CRP 모델이 가정하는 'unseen shape 발생'을 이 전략은 오히려 억제함 / Coarse Shape 자체가 아직 '올바른 grain'인지 확정되지 않은 상태에서 그 기준으로 수집을 최적화하는 것은 순환 논리의 위험이 있음
+  예상 효과: Lookup 연구에는 최적이지만 새로운 Shape 발견(Representation 연구의 다른 축)에는 오히려 역행
+[Hybrid] 위 4개 전략을 일정 비율로 혼합 (예: Hard Gap 우선 40% + Shape 균등 30% + Failure 유형 균등 20% + Random 10%)
+  장점: 단일 전략의 맹점(Random의 편향 재생산, Hard Gap 우선의 대표성 희석, Shape 균등의 신규 카테고리 억제)을 서로 보완 / STEP6 Roadmap의 '우선 확보 대상'을 단계적으로 반영하기 용이 (비율을 Sprint별로 조정 가능)
+  단점: 설계/운영이 가장 복잡함 -- 각 하위 전략의 비율을 어떻게 정할지 자체가 별도의 판단을 요구 / 단일 지표로 효과를 측정하기 어려움 (여러 지표를 동시에 추적해야 함)
+  예상 효과: 장기적으로 가장 균형 잡힌 개선을 기대할 수 있으나, 단기간에 어느 한 지표를 극적으로 개선하지는 못함
+
+--- 5. Dataset 품질 기준 (Standard Dataset Metrics) -- 현재 기준선(N=75) ---
+Shape 재등장률 (Coarse): 60.0%
+Singleton 비율 (Coarse): 66.7%
+Replay 다양성 (WrongWing 분포 엔트로피): 3.64 bits
+Cluster 안정성: 이번 Sprint에서 재측정하지 않음 (비용 때문) -- Solver v3 Kickoff 실측치 인용: 88.5%
+Hard Gap 비율: 42.7%
+Coverage 분포:
+  [BASE] 41.3% (이번 Sprint 재측정) -- profileAllReplays() (solverV2Research/GapDetector.ts, 이번 Sprint에서 재실행, 저비용)
+  [FLIP] 0.0% (이번 Sprint 재측정) -- profileAllReplays() (solverV2Research/GapDetector.ts, 이번 Sprint에서 재실행, 저비용)
+  [CASE] 0.0% (이번 Sprint 재측정) -- profileAllReplays() (solverV2Research/GapDetector.ts, 이번 Sprint에서 재실행, 저비용)
+  [PARITY] 46.7% (이번 Sprint 재측정) -- profileAllReplays() (solverV2Research/GapDetector.ts, 이번 Sprint에서 재실행, 저비용)
+  [RECOVERY] 4.0% (이번 Sprint 재측정) -- profileAllReplays() (solverV2Research/GapDetector.ts, 이번 Sprint에서 재실행, 저비용)
+  [CYCLECHASE] 0.0% (이번 Sprint 재측정) -- profileAllReplays() (solverV2Research/GapDetector.ts, 이번 Sprint에서 재실행, 저비용)
+  [BP-1 (Bounded Multi-Cycle Resolver)] 18.7% (이전 Sprint 실측치 인용) -- solverV3PrototypeBP5/data/prototype-report.txt 직전 실측 실행 기준 (run마다 18.7~32.0% 범위, 가장 최근 값 인용)
+  [BP-2 (Parity-Aware Cycle Breaker)] 9.3% (이전 Sprint 실측치 인용) -- solverV2PrototypeBP4/data/prototype-benchmark-report.txt
+  [BP-3 (Non-Parity Structural Fix)] 22.7% (이전 Sprint 실측치 인용) -- solverV2PrototypeBP4/data/prototype-benchmark-report.txt
+  [BP-4 (Precomputed Cycle-Shape Lookup)] 0.0% (이전 Sprint 실측치 인용) -- solverV2PrototypeBP4/data/prototype-benchmark-report.txt
+
+--- 6. Dataset Roadmap ---
+목표 Dataset 규모: 300건 (중간 체크포인트: 150건)
+권장 Representation: Coarse Structural Shape (Solver v3 Kickoff STEP2/STEP4가 이미 채택 권고한 grain)
+권장 Sampling 전략: Hybrid (Hard Gap 우선 40% + Shape 균등 30% + Failure 유형 균등 20% + Random 10%)
+권장 수집 순서:
+  - 1단계 (75 -> 150): 10개 저대표 클러스터와 3개 저대표 Hard Gap 구간을 우선 채움 -- Coarse Shape 평균 그룹 크기가 1.67 -> 2.22로 Lookup 최소 기준(>=2)을 넘는 지점.
+  - 2단계 (150 -> 300): Shape 균등 비중을 늘려 나머지 저대표 Shape를 채움 -- Coarse Shape 평균 그룹 크기 3.19, Singleton 비율 43.6%까지 개선 예상.
+  - 3단계 (300 도달 후): 중단 조건을 재평가 -- 실측치가 STEP3 예측과 크게 어긋나면(모델 가정 붕괴) 500/1000 확장 여부를 이 시점에 재결정, 어긋나지 않으면 STEP3 projection에 따라 500까지 이어갈지 판단.
+우선 확보 대상 (12개 중 일부):
+  - [Shape] WW8|P5|partrue|cyc[4,4]|swap0|cycE8|conf0 (2건)
+  - [Shape] WW4|P8|parfalse|cyc[4]|swap0|cycE4|conf0 (2건)
+  - [Shape] WW8|P4|parfalse|cyc[3,5]|swap0|cycE8|conf0 (2건)
+  - [Replay] WW3-5 (2건)
+  - [Replay] WW18-20 (2건)
+  - [Replay] WW21-23 (1건)
+  - [HardGap] WW3-5|hardGap=true (2건)
+  - [HardGap] WW18-20|hardGap=false (2건)
+  - [HardGap] WW21-23|hardGap=false (1건)
+  - [Cluster] w4|p0 (2건)
+  - [Cluster] w6|p0 (2건)
+  - [Cluster] w16|p1 (1건)
+중단 조건:
+  - 300건 도달 시점에 실측 Coarse Shape 재등장률이 STEP3 예측(86.3%)과 15%p 이상 벌어지면 -- CRP 모델의 '동일 분포 가정'이 깨진 것이므로 추가 확장 전에 재보정 필요.
+  - 특정 Sampling 전략(Hard Gap 우선 등)으로 수집한 표본이 계속 기존 Shape/Cluster에만 재등장하고 새로운 카테고리를 전혀 만들지 못하면 -- 그 전략은 중단하고 비중 재조정.
+  - avg group size가 목표(>=3)에 도달했는데 실제 하위 연구(BP-4류 Lookup 재검증 등)에서 여전히 개선이 없으면 -- Dataset 문제가 아니라 다른 축(Representation/Primitive) 문제로 재분류.
+연구 종료 조건:
+  - 300~500 구간에서 Coarse Shape avg group size가 3 이상, Singleton 비율 45% 이하로 안정화되면 -- 이 Sprint의 1차 목표 달성, Dataset Research를 종료하고 실제 수집/생성 Sprint로 이관.
+  - Exact Shape Key(BP-4의 원래 grain)는 N=1000까지 확장해도 평균 그룹 크기가 1.96에 그쳐 여전히 Lookup 최소 기준(>=2)에 못 미친다 -- 이 grain을 계속 쓰는 연구라면 Dataset 확장만으로는 해결되지 않으므로, 반드시 Coarse Shape(또는 더 거친 grain)로 전환한 뒤에 확장을 진행해야 한다.
+  - 확장이 목표 규모(300)에 도달했지만 Cluster 안정성(88.5%, Dataset 크기와 무관한 지표)이 여전히 낮다면 -- 그건 Dataset 문제가 아니라 Primitive 내부 randomness 문제이므로 별도 트랙으로 분리.
+
+--- 7. 성공 기준 (Level 1~3) ---
+Level 1 (편향이 실측 근거와 함께 정량화됨): PASS
+Level 2 (규모 증가 기대효과가 근거와 함께 제시됨, 실측/추정 구분 명시): PASS
+Level 3 (확보 전략이 즉시 실행 가능한 수준): PASS
+
+--- 8. 최종 권고 ---
+=== 결론: B. Dataset 150~300 규모 확장 권고 ===
+DatasetGrowthEstimator STEP3의 CRP 추정에 따르면, Coarse Shape 기준 평균 그룹 크기는 N=150에서 이미 2.22(Lookup 최소 기준 2를 통과)에 도달하고, N=300에서 3.19까지 개선된다. 반면 500/1000까지 늘려도(N=1000: avg group 6.82) 한계효용은 뚜렷이 감소한다. 동시에 Exact Shape Key(BP-4의 원래 grain)로는 1000까지 늘려도 Lookup 최소 기준을 넘지 못해, 확장 규모보다 Representation 선택이 더 결정적임을 재확인했다 -- 이것이 500 이상(C)이 아니라 150~300(B)을 권고하는 핵심 근거다. Hybrid 전략을 권장하는 것은 단일 전략(Random/Hard Gap 우선/Shape 균등)이 각각 다른 축의 편향을 남기기 때문이다 (ReplaySamplingStrategy STEP4).
+
+=== Sprint 종료: 성공 ===
+제품 코드 통합 여부: 미통합 (spec -- 새 Primitive/Prototype/제품 코드 수정/Replay 생성기 수정/새 Failure 생성 전부 금지)
