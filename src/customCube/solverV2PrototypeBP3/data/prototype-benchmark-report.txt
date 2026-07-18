@@ -1,0 +1,98 @@
+========================================
+Prototype Benchmark Report -- Solver v2 Primitive Prototype Sprint v3 (BP-3)
+========================================
+
+| Primitive  | Hard Gap 개선 | Coverage | Regression | 실행시간 |
+| ---------- | ----------- | -------- | ---------- | ---- |
+| CycleChase | 2/29 | 6.9% | 0.0% | 260.2ms |
+| BP-1 | 5/29 | 17.2% | 0.0% | 293.0ms |
+| BP-2 | 0/29 | 0.0% | 0.0% | 10.5ms |
+| BP-3 | 1/29 | 3.4% | 0.0% | 414.1ms |
+
+--- CycleChase vs BP-1(Bounded) vs BP-2(Parity-Aware) vs BP-3(Non-Parity Structural) ---
+[CycleChase (Hard Gap 29건)]
+  Coverage: 6.9% (2/29)
+  WrongWing 개선 건수: 2
+  Regression (활성화된 것 중): 0.0% (0/2)
+  평균 WrongWing 변화: -2.50
+  평균 Pair 변화: 0.50
+  Cycle/Pair 구조 보존율 (활성화된 것 중 Pair 유지+): 100.0%
+  평균 시간: 260.2ms
+
+[BP-1 Bounded Resolver (Hard Gap 29건)]
+  Coverage: 17.2% (5/29)
+  WrongWing 개선 건수: 5
+  Regression (활성화된 것 중): 0.0% (0/5)
+  평균 WrongWing 변화: -2.00
+  평균 Pair 변화: 2.20
+  Cycle/Pair 구조 보존율 (활성화된 것 중 Pair 유지+): 100.0%
+  평균 시간: 293.0ms
+
+[BP-2 Parity-Aware (Hard Gap 29건)]
+  Coverage: 0.0% (0/29)
+  WrongWing 개선 건수: 0
+  Regression (활성화된 것 중): 0.0% (0/0)
+  평균 WrongWing 변화: 0.00
+  평균 Pair 변화: 0.00
+  Cycle/Pair 구조 보존율 (활성화된 것 중 Pair 유지+): 100.0%
+  평균 시간: 10.5ms
+
+[BP-3 Non-Parity Structural Fix (Hard Gap 29건)]
+  Coverage: 3.4% (1/29)
+  WrongWing 개선 건수: 1
+  Regression (활성화된 것 중): 0.0% (0/1)
+  평균 WrongWing 변화: -2.00
+  평균 Pair 변화: 3.00
+  Cycle/Pair 구조 보존율 (활성화된 것 중 Pair 유지+): 100.0%
+  평균 시간: 414.1ms
+
+[CycleChase (전체 75건)]
+  Coverage: 25.3% (19/75)
+  WrongWing 개선 건수: 19
+  Regression (활성화된 것 중): 0.0% (0/19)
+  평균 WrongWing 변화: -2.16
+  평균 Pair 변화: 0.74
+  Cycle/Pair 구조 보존율 (활성화된 것 중 Pair 유지+): 100.0%
+  평균 시간: 299.0ms
+
+[BP-1 Bounded Resolver (전체 75건)]
+  Coverage: 32.0% (24/75)
+  WrongWing 개선 건수: 24
+  Regression (활성화된 것 중): 0.0% (0/24)
+  평균 WrongWing 변화: -2.04
+  평균 Pair 변화: 1.38
+  Cycle/Pair 구조 보존율 (활성화된 것 중 Pair 유지+): 100.0%
+  평균 시간: 393.5ms
+
+[BP-2 Parity-Aware (전체 75건)]
+  Coverage: 9.3% (7/75)
+  WrongWing 개선 건수: 7
+  Regression (활성화된 것 중): 0.0% (0/7)
+  평균 WrongWing 변화: -1.43
+  평균 Pair 변화: 0.00
+  Cycle/Pair 구조 보존율 (활성화된 것 중 Pair 유지+): 100.0%
+  평균 시간: 14.3ms
+
+[BP-3 Non-Parity Structural Fix (전체 75건)]
+  Coverage: 25.3% (19/75)
+  WrongWing 개선 건수: 19
+  Regression (활성화된 것 중): 0.0% (0/19)
+  평균 WrongWing 변화: -1.89
+  평균 Pair 변화: 1.26
+  Cycle/Pair 구조 보존율 (활성화된 것 중 Pair 유지+): 100.0%
+  평균 시간: 501.1ms
+
+--- 성공 기준 판정 ---
+Level 1 (Hard Gap 중 8건+ WrongWing 감소): FAIL (실제 1건)
+Level 2 (Regression 10% 이하): PASS (실제 0.0%)
+Level 3 (Coverage 35% 이상): FAIL (실제 25.3%)
+
+--- 실패 조건 판정 ---
+Hard Gap 개선 8건 미만: 해당
+Regression 10% 초과: 해당없음
+Coverage 증가 없음 (CycleChase 대비): 해당 (BP-3 25.3% vs CycleChase 25.3%)
+평균 실행시간 500ms 초과: 해당없음 (실제 414.1ms)
+기존 Primitive보다 구조 보존율 악화: 해당없음 (BP-3 100.0% vs 기존 평균 100.0%)
+
+=== 종합 판정: 실패 -- BP-3는 Prototype 상태로만 유지, 다음 Sprint는 BP-4 검증 ===
+제품 코드 통합 여부: 미통합 (spec -- 이번 Sprint는 Prototype 검증만 수행)

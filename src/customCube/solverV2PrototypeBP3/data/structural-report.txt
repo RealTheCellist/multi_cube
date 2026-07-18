@@ -1,0 +1,36 @@
+========================================
+Structural Report -- Solver v2 Primitive Prototype Sprint v3 (BP-3)
+========================================
+
+--- Non-Parity Structural Fix 성공 사례 (1건) ---
+  bb6a16b1  WrongWing 12->10  Pair 1->4  Parity true->true  time=609ms
+
+--- Non-Parity Structural Fix 실패 사례 (28건) ---
+  27053491  활성화=false  WrongWing 9->9  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  68977335  활성화=false  WrongWing 8->8  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  1af658ab  활성화=false  WrongWing 4->4  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  60b5c3b1  활성화=false  WrongWing 6->6  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  7541612b  활성화=false  WrongWing 15->15  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  4e27e5a1  활성화=false  WrongWing 4->4  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  5e5b20b  활성화=false  WrongWing 8->8  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  36336c1  활성화=false  WrongWing 11->11  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  e5101f85  활성화=false  WrongWing 9->9  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  4749cd9d  활성화=false  WrongWing 7->7  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  755fc60b  활성화=false  WrongWing 11->11  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  283cfbcd  활성화=false  WrongWing 8->8  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  8b27576b  활성화=false  WrongWing 7->7  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  c039e611  활성화=false  WrongWing 8->8  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  fad41ff1  활성화=false  WrongWing 11->11  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  dbb7b6cd  활성화=false  WrongWing 7->7  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  25fd9a99  활성화=false  WrongWing 9->9  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  74e01ec9  활성화=false  WrongWing 13->13  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  fced5217  활성화=false  WrongWing 7->7  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  a22dd0c9  활성화=false  WrongWing 6->6  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  c3a1ce7b  활성화=false  WrongWing 9->9  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  bb9b5a0f  활성화=false  WrongWing 7->7  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  42c89b9  활성화=false  WrongWing 17->17  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  71e6edc9  활성화=false  WrongWing 9->9  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  6a32972d  활성화=false  WrongWing 14->14  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  c7ddf36b  활성화=false  WrongWing 9->9  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  2add987f  활성화=false  WrongWing 8->8  이유=구조적 후보 없음 또는 Deferred Validation 거부
+  80eed73f  활성화=false  WrongWing 6->6  이유=구조적 후보 없음 또는 Deferred Validation 거부
