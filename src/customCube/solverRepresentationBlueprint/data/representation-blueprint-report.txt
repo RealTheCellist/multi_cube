@@ -1,0 +1,106 @@
+========================================
+Solver Representation Blueprint Sprint v1 -- Report
+========================================
+
+--- 0. Sprint 성격 ---
+Representation Revalidation Sprint v1의 결론(B. 새 Representation 필요)에 따라, 150-replay Dataset을 이용해 차세대 State Representation을 설계하는 연구/설계 Sprint. 새 Primitive는 만들지 않으며, Solver/Planner/Dataset/Contract를 전혀 수정하지 않는다. 제품 코드에 통합하지 않는다.
+
+--- 1. 기존 Representation 한계 (Hard Gap 설명력) ---
+전체 150건 중 Hard Gap 68건 (45.3%).
+[Exact Shape Key (BP-4)] Hard Gap 68건 중 설명됨=17건 / 미설명(단일)=51건 (75.0%), 사용가능 클러스터(크기>=2)=7개, 평균 클러스터 크기=2.43
+[Coarse Structural Shape] Hard Gap 68건 중 설명됨=41건 / 미설명(단일)=27건 (39.7%), 사용가능 클러스터(크기>=2)=13개, 평균 클러스터 크기=3.15
+[Capability Fingerprint] Hard Gap 68건 중 설명됨=65건 / 미설명(단일)=3건 (4.4%), 사용가능 클러스터(크기>=2)=4개, 평균 클러스터 크기=16.25
+판정: Hard Gap 68/150건(45.3%) 중 Exact Shape Key는 75.0%를, Coarse Shape는 39.7%를, Capability Fingerprint는 4.4%를 설명하지 못한다(다른 Hard Gap과 전혀 묶이지 않는 단일 상태로 남음).
+
+--- 2. Feature 분석 ---
+Feature 목록 (11개):
+  - wrongWingCount: solve까지 남은 wrong wing 개수 (fiveByFiveEdges.wrongWingCount5, 기존/미수정)
+  - pairCount: 이미 짝지어진 edge pair 수 (GoalAnalyzer.pairCountOf, 기존/미수정)
+  - parity: parity 존재 여부 (GoalAnalyzer.hasParity, 기존/미수정) -- 0/1
+  - remainingEdgesCount: FailureSnapshot 자체에 기록된 remainingEdges 배열 길이 (failureAnalysisEngine이 이미 기록한 값, 재계산 아님)
+  - cycleCount: WANTS-그래프의 감지된 cycle 개수 (buildStateGraph, 기존/미수정)
+  - maxCycleLength: cycle 중 가장 긴 길이
+  - avgCycleLength: cycle 길이 평균 (cycle 없으면 0)
+  - swapEdgeCount: WANTS-그래프의 SWAP(2-cycle) 엣지 수
+  - cycleEdgeCount: WANTS-그래프의 CYCLE(3+-cycle) 엣지 수
+  - conflictEdgeCount: WANTS-그래프의 CONFLICT(비순환 의존) 엣지 수
+  - capabilitySuccessCount: 9개 능력(BASE/FLIP/CASE/PARITY/RECOVERY/CYCLECHASE/BP-1/BP-2/BP-3) 중 성공한 개수 -- Capability Fingerprint의 비트합
+
+중복(REDUNDANT, |r|>=0.7) 쌍:
+  pairCount ~ remainingEdgesCount: r=-1.000
+  cycleCount ~ cycleEdgeCount: r=0.939
+  maxCycleLength ~ avgCycleLength: r=0.887
+  wrongWingCount ~ remainingEdgesCount: r=0.878
+  wrongWingCount ~ pairCount: r=-0.878
+  wrongWingCount ~ cycleCount: r=0.788
+  wrongWingCount ~ cycleEdgeCount: r=0.727
+독립(INDEPENDENT, |r|<=0.2) 쌍 (상위 5개):
+  wrongWingCount ~ conflictEdgeCount: r=0.007
+  remainingEdgesCount ~ avgCycleLength: r=0.100
+  pairCount ~ avgCycleLength: r=-0.100
+  avgCycleLength ~ swapEdgeCount: r=-0.118
+  swapEdgeCount ~ cycleEdgeCount: r=0.122
+판정: 11개 Feature 중 7개 쌍이 |r|>=0.7로 중복(REDUNDANT), 8개 쌍이 |r|<=0.2로 독립(INDEPENDENT)이다. 가장 강한 중복: pairCount~remainingEdgesCount (r=-1.00). 가장 독립적인 축: wrongWingCount~conflictEdgeCount (r=0.01).
+
+--- 3. Candidate Representation (설계만, 구현 없음) ---
+[Severity Tier Key]
+  대상 약점: Exact/Coarse Shape 둘 다 필드 수(7개/7개)가 많아 조합 폭발로 그룹이 계속 쪼개짐 (STEP1: Coarse Shape도 Hard Gap 상당수를 설명하지 못함).
+  가설: 필드 종류보다 grain의 '폭' 자체가 지배적 변수라면, 단 2개 필드(WrongWing severity tier + parity)만으로도 Coarse Shape보다 더 큰 그룹을 만들 수 있다.
+  설계: tier = floor(wrongWingCount / 5), key = `tier{n}|par{bool}`. 필드 수를 Coarse Shape(7개)의 1/3 이하로 줄인 가장 단순한 대조군.
+[Graph Topology Signature]
+  대상 약점: Exact/Coarse Shape 둘 다 매번 정확한(또는 버킷된) wrongWingCount/pairCount를 포함해, 구조적으로는 동일한 상태도 심각도가 다르면 다른 그룹으로 갈라짐.
+  가설: STEP2 Feature Inventory에서 cycle/edge 구조 Feature가 wrongWingCount/pairCount와 상대적으로 독립적으로 나타난다면, 심각도를 아예 제외하고 순수 그래프 위상만으로 묶는 편이 Hard Gap을 더 잘 군집화할 수 있다.
+  설계: key = 정렬된 cycle 길이 multiset + capped(swap/cycle/conflict) edge 수 + parity. wrongWingCount/pairCount 완전 배제.
+[Rescue-Structural Hybrid]
+  대상 약점: Capability Fingerprint의 "000000000" 퇴화 그룹이 150건에서도 전체의 34.7%(52건)를 차지 (Representation Revalidation Sprint v1 STEP3 실측).
+  가설: 능력 비트가 정보를 담고 있는 케이스(>=1개 성공)는 그대로 두고, 정보가 없는 케이스(전부 실패)만 구조적 하위 키로 세분화하면 Fingerprint의 장점(행동 기반 군집)은 유지하면서 퇴화 문제만 해소할 수 있다.
+  설계: 9-bit fingerprint가 "000000000"이 아니면 그대로 사용, "000000000"이면 `000000000|tier{n}|par{bool}`(Severity Tier Key 재사용)로 대체.
+
+--- 4. 기존 Representation(Coarse Shape) 대비 비교 (실측) ---
+Coarse Shape(재측정): 고유=81 Singleton=65.4% 평균그룹=1.85 Entropy=5.97bits Hard Gap 미설명율=30.2%
+참고: GapDetector의 기존 clusterKey(w{exact}|p{parity}) 고유값 = 25개 (이 Dataset 기준, Cluster Stability Review 등에서 이미 다뤄온 축).
+[Severity Tier Key] Lookup가능=true Coarse Shape보다 우수=true 기존Cluster축만사용=true
+  고유=7 Singleton=0.0% 평균그룹=21.43 Entropy=2.32bits Hard Gap 미설명율=1.6%
+  평균 Group Size 21.43(기존 대비 +19.58), Singleton 0.0%(기존 대비 -65.4%p), Hard Gap 미설명율 1.6%(기존 30.2%) -- 3개 지표 모두 Coarse Shape보다 개선.
+[Graph Topology Signature] Lookup가능=false Coarse Shape보다 우수=false 기존Cluster축만사용=false
+  고유=108 Singleton=74.1% 평균그룹=1.39 Entropy=6.56bits Hard Gap 미설명율=52.4%
+  평균 Group Size 1.39(기존 대비 -0.46), Singleton 74.1%(기존 대비 8.6%p), Hard Gap 미설명율 52.4%(기존 30.2%) -- Coarse Shape 대비 전부 개선되지는 않음.
+[Rescue-Structural Hybrid] Lookup가능=true Coarse Shape보다 우수=true 기존Cluster축만사용=false
+  고유=29 Singleton=20.7% 평균그룹=5.17 Entropy=4.38bits Hard Gap 미설명율=3.2%
+  평균 Group Size 5.17(기존 대비 +3.32), Singleton 20.7%(기존 대비 -44.7%p), Hard Gap 미설명율 3.2%(기존 30.2%) -- 3개 지표 모두 Coarse Shape보다 개선.
+판정: Coarse Shape보다 3개 지표 모두 개선된 후보: Severity Tier Key, Rescue-Structural Hybrid. 새로운 정보를 담은 후보 중 평균 Group Size 개선폭이 가장 큰 것은 "Rescue-Structural Hybrid"이다. [정직 공개] "Severity Tier Key"도 3개 지표 모두 개선(평균 Group Size 21.43)됐지만, 이는 GapDetector의 기존 clusterKey(이 Dataset에서 고유 25개)와 동일한 2개 필드(wrongWingCount/parity)를 더 넓게 버킷팅한 것에 불과해 새로운 정보를 담고 있지 않다 -- 버킷 폭을 넓히기만 하면 무한정 "개선"되는 함정이므로 최우수 후보에서 제외했다.
+
+--- 5. 가장 유망한 Blueprint ---
+선정: Rescue-Structural Hybrid (selected=true)
+실측 근거: 평균 Group Size 5.17(기존 대비 +3.32), Singleton 20.7%(기존 대비 -44.7%p), Hard Gap 미설명율 3.2%(기존 30.2%) -- 3개 지표 모두 Coarse Shape보다 개선.
+필드:
+  - fingerprint (9-bit) <- computeCapabilityFingerprintKey (기존, 미수정) (정보가 있는 케이스(>=1개 능력 성공)에서는 기존 Fingerprint의 행동 기반 군집력을 그대로 유지.)
+  - structural sub-key (all-zero 케이스에 한해) <- Severity Tier Key 재사용 (STEP1/이전 Sprint 실측: "000000000" 그룹이 34.7%를 차지하는 퇴화를 구조적 정보로 세분화해 해소.)
+알고리즘:
+  1. 기존 6개 base 능력(BASE/FLIP/CASE/PARITY/RECOVERY/CYCLECHASE) + BP-1/BP-2/BP-3 재테스트로 9-bit fingerprint 계산 (기존 computeCapabilityFingerprintKey 재사용)
+  2. fingerprint가 "000000000"이 아니면 그대로 key로 사용
+  3. fingerprint가 "000000000"이면 Severity Tier Key를 계산해 `000000000|tier{n}|par{bool}` 형태로 대체
+복잡도: 모든 하위 계산(buildStateGraph/wrongWingCount5/hasParity/computeCapabilityFingerprintKey)은 기존 함수를 그대로 재사용하는 O(1)~O(edge 수) 연산으로, 현재 Coarse Shape 계산 비용과 동일한 자릿수(BP-1/2/3 재테스트가 필요한 Rescue-Structural Hybrid만 예외적으로 재테스트 3회 추가 비용 발생).
+다음 Prototype Sprint 이행 단계:
+  1. Solver Representation Prototype Sprint v1에서 이 key 계산 함수를 그대로 제품 후보 모듈로 승격 (연구 코드 재사용, 새로 작성 아님).
+  2. 확장된(300건 이상) Dataset에서 재검증 -- 이번 Sprint의 150건 결과가 Dataset 규모 증가에도 유지되는지 확인.
+  3. Lookup/Primitive 설계에 실제로 연결하는 것은 이 Blueprint의 범위 밖 -- Prototype Sprint에서 별도로 결정.
+검증 계획:
+  150건 재현성 확인: 동일 Dataset에서 key 계산 결과가 결정적(비-Math.random() 경로)인지 재확인.
+  Hard Gap 설명력이 Dataset 확장 후에도 Coarse Shape 대비 우위를 유지하는지 재측정.
+  Rescue-Structural Hybrid를 선택한 경우, BP-1/2/3 재테스트의 Math.random() 기반 run-to-run 변동성을 반영해 최소 3회 반복 측정.
+열린 리스크:
+  - 150건은 여전히 소규모 -- 이번 Sprint의 개선폭이 Dataset 특유의 표본 효과일 가능성 (Coarse Shape 자체도 75->150에서 Roadmap 예측보다 느리게 개선된 선례 있음).
+  - 이 Blueprint는 아직 어떤 제품 Primitive/Lookup 전략과도 연결되지 않은 순수 Representation 설계 -- 실제 Primitive 설계 적합성은 다음 Sprint에서 별도 검증 필요.
+
+--- 6. 성공 기준 (Level 1~3) ---
+Level 1 (기존 Representation 한계 정량 설명): PASS
+Level 2 (Coarse Shape보다 우수한 후보 >=1개 제안): PASS (Rescue-Structural Hybrid)
+Level 3 (다음 Prototype Sprint에서 즉시 구현 가능한 Blueprint 작성): PASS
+
+--- 7. 최종 결론 ---
+결정: B. 성공 기준 Level 2 충족: Coarse Structural Shape보다 잠재적으로 우수한 후보("Rescue-Structural Hybrid")를 1개 이상 제안함 (평균 Group Size 5.17(기존 대비 +3.32), Singleton 20.7%(기존 대비 -44.7%p), Hard Gap 미설명율 3.2%(기존 30.2%) -- 3개 지표 모두 Coarse Shape보다 개선.).
+
+=== Sprint 종료: 성공 ===
+새 Representation Blueprint 확보 -- 다음 단계는 Solver Representation Prototype Sprint v1에서 "Rescue-Structural Hybrid"의 실제 구현 및 검증을 수행한다.
+보호 파일: fiveByFiveEdges.ts/Planner.ts/Executor.ts/Recovery.ts/CycleChasePrototype.ts 및 BASE_ALG/FLIP_ALG/PARITY_ALG/CASE Library 미수정 (읽기 전용 재사용만). 제품 코드 미통합, 새 Replay/Primitive/Dataset 변경 없음.
