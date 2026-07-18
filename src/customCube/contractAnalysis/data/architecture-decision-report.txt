@@ -1,0 +1,17 @@
+========================================
+Architecture Decision Report -- Solver Contract Analysis Sprint v1
+========================================
+
+--- 성공 기준 판정 ---
+Level 1 (PAIR_CONFLICT 90%+ 계약으로 설명 가능): PASS (실제 100.0%, 정의상 PAIR_CONFLICT = enumerateWingCandidates가 후보를 찾았으나 tryFixWing이 거부한 경우이므로 사실상 자명하게 100%)
+Level 2 (Delayed Improvement 20%+ 존재): FAIL (실제 11.1%)
+Level 3 (계약 완화 시 Task 예산 내 현실적): FAIL (depth=2 예상 1461.1ms vs Task 예산 120ms)
+
+--- 실패 조건 판정 ---
+Delayed Improvement 거의 없음 (<5%): 해당없음
+계약 완화해도 효과 없음 (개선 0건): 해당없음
+계산량 폭증 (depth=2조차 전체 Plan 예산 초과): 해당
+제품 적용 불가능 (Level 3 미달): 해당
+
+=== 최종 판정: 현재 계약 유지 ===
+제품 통합 여부: 미통합 (spec -- 이번 Sprint는 분석 전용)

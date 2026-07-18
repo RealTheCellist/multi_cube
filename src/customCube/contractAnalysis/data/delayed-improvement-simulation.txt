@@ -1,0 +1,49 @@
+========================================
+Delayed Improvement Simulation -- Solver Contract Analysis Sprint v1
+========================================
+
+PAIR_CONFLICT 전체: 36건
+Delayed Improvement (4 step 이내 순 개선): 4건 (11.1%)
+
+--- Step별 최초 개선 분포 ---
+  step 2: 1건
+  step 3: 1건
+  step 4: 2건
+
+--- 개별 결과 ---
+  Replay 84976575: before=10, improvedAtStep=없음, finalWrongWing=11, stepsTaken=3
+  Replay dda1453f: before=10, improvedAtStep=없음, finalWrongWing=10, stepsTaken=4
+  Replay e7a801fb: before=7, improvedAtStep=없음, finalWrongWing=10, stepsTaken=4
+  Replay 1af658ab: before=4, improvedAtStep=없음, finalWrongWing=4, stepsTaken=3
+  Replay beb967ad: before=13, improvedAtStep=없음, finalWrongWing=16, stepsTaken=4
+  Replay 1513fcff: before=7, improvedAtStep=없음, finalWrongWing=8, stepsTaken=3
+  Replay 4e27e5a1: before=4, improvedAtStep=없음, finalWrongWing=7, stepsTaken=3
+  Replay 36336c1: before=11, improvedAtStep=없음, finalWrongWing=11, stepsTaken=3
+  Replay ad12c377: before=10, improvedAtStep=없음, finalWrongWing=11, stepsTaken=3
+  Replay e5101f85: before=9, improvedAtStep=없음, finalWrongWing=11, stepsTaken=3
+  Replay 4749cd9d: before=7, improvedAtStep=없음, finalWrongWing=8, stepsTaken=3
+  Replay 755fc60b: before=11, improvedAtStep=없음, finalWrongWing=11, stepsTaken=3
+  Replay 283cfbcd: before=8, improvedAtStep=없음, finalWrongWing=12, stepsTaken=4
+  Replay d27df773: before=11, improvedAtStep=없음, finalWrongWing=13, stepsTaken=4
+  Replay 2b7aa5f1: before=9, improvedAtStep=없음, finalWrongWing=11, stepsTaken=3
+  Replay 8b27576b: before=7, improvedAtStep=없음, finalWrongWing=7, stepsTaken=2
+  Replay 250f4b61: before=15, improvedAtStep=없음, finalWrongWing=18, stepsTaken=4
+  Replay c039e611: before=8, improvedAtStep=없음, finalWrongWing=8, stepsTaken=4
+  Replay 24facef9: before=13, improvedAtStep=없음, finalWrongWing=15, stepsTaken=4
+  Replay a60e4973: before=12, improvedAtStep=2, finalWrongWing=10, stepsTaken=3
+  Replay fad41ff1: before=11, improvedAtStep=없음, finalWrongWing=12, stepsTaken=2
+  Replay 555b1ba5: before=10, improvedAtStep=없음, finalWrongWing=12, stepsTaken=3
+  Replay dbb7b6cd: before=7, improvedAtStep=없음, finalWrongWing=9, stepsTaken=2
+  Replay b2c9ceb9: before=15, improvedAtStep=없음, finalWrongWing=15, stepsTaken=4
+  Replay 25fd9a99: before=9, improvedAtStep=없음, finalWrongWing=11, stepsTaken=4
+  Replay 849509c9: before=19, improvedAtStep=4, finalWrongWing=18, stepsTaken=4
+  Replay 74e01ec9: before=13, improvedAtStep=없음, finalWrongWing=15, stepsTaken=4
+  Replay 1bff489f: before=12, improvedAtStep=없음, finalWrongWing=17, stepsTaken=4
+  Replay cee673eb: before=10, improvedAtStep=없음, finalWrongWing=12, stepsTaken=4
+  Replay e8be823: before=22, improvedAtStep=3, finalWrongWing=20, stepsTaken=4
+  Replay bb9b5a0f: before=7, improvedAtStep=없음, finalWrongWing=8, stepsTaken=1
+  Replay 8d4ca61f: before=14, improvedAtStep=4, finalWrongWing=13, stepsTaken=4
+  Replay 71e6edc9: before=9, improvedAtStep=없음, finalWrongWing=11, stepsTaken=1
+  Replay d3986111: before=7, improvedAtStep=없음, finalWrongWing=9, stepsTaken=3
+  Replay 80eed73f: before=6, improvedAtStep=없음, finalWrongWing=7, stepsTaken=2
+  Replay aef4b5b5: before=14, improvedAtStep=없음, finalWrongWing=17, stepsTaken=4
