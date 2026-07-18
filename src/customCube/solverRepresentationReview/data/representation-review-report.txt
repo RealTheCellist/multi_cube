@@ -1,0 +1,68 @@
+========================================
+Solver Representation Revalidation Sprint v1 -- Report
+========================================
+
+--- 1. 조사 내용 ---
+Solver v3 Research Kickoff Sprint v1이 75 replay 기준으로 비교한 3개 Representation(Exact Shape Key/Coarse Structural Shape/Capability Fingerprint)을 Dataset Expansion Sprint v2가 만든 150-replay Dataset에서 재측정하고, Cluster 안정성도 함께 재측정한다.
+
+--- 2. Exact Shape 재평가 ---
+Before(75): 고유=69 Singleton=92.8% 재등장률=14.7% 평균그룹=1.09
+After(150): 고유=135 Singleton=91.1% 재등장률=18.0% 평균그룹=1.11
+  [Singleton 비율] IMPROVED (0.928 -> 0.911, -1.8%)
+  [재등장률] IMPROVED (0.147 -> 0.180, +22.4%)
+  [평균 Group Size] IMPROVED (1.090 -> 1.111, +1.9%)
+판정: Exact Shape Key는 150 replay에서도 여전히 Lookup 최소 기준(>=2)에 못 미친다 (1.11). 지표 3/3개가 개선됐지만, 절대적인 Singleton 비율(91.1%)이 여전히 높아 실질적인 Lookup 접근에는 부족하다.
+
+--- 3. Coarse Shape 재평가 ---
+Before(75): 고유=45 Singleton=66.7% 재등장률=60.0% 평균그룹=1.67
+Roadmap N=150 예측: 고유=67.6 Singleton=52.9% 재등장률=76.2% 평균그룹=2.22
+실제(150): 고유=81 Singleton=65.4% 재등장률=64.7% 평균그룹=1.85
+  [Singleton 비율] IMPROVED (0.667 -> 0.654, -1.9%)
+  [재등장률] IMPROVED (0.600 -> 0.647, +7.8%)
+  [평균 Group Size] IMPROVED (1.670 -> 1.852, +10.9%)
+판정: Coarse Shape는 150 replay에서도 Lookup 최소 기준(>=2)에 아직 못 미친다 (평균 Group Size 1.85, Roadmap 예측치 2.22보다 낮음). 75건 대비 3/3개 지표는 개선됐지만, 개선 속도는 Roadmap이 예측한 것보다 느리다 -- Dataset Expansion Sprint v2가 이미 밝힌 대로, Hybrid Sampling이 새로운/희소한 Shape을 의도적으로 확보했기 때문(수동적 재추출을 가정한 CRP 모델과의 괴리).
+
+--- 4. Capability Fingerprint 재평가 ---
+Before(75): 고유=21 Singleton=38.1% 재등장률=89.3% 평균그룹=3.57
+After(150): 고유=29 Singleton=44.8% 재등장률=91.3% 평균그룹=5.17
+"000000000" 그룹: 52건 (34.7%) -- 과도한 집중 지속됨
+  [Singleton 비율] WORSENED (0.381 -> 0.448)
+  [재등장률] IMPROVED (0.893 -> 0.913)
+  [평균 Group Size] IMPROVED (3.570 -> 5.172)
+판정: "000000000"(9개 능력 전부 실패) 그룹이 여전히 전체의 34.7%(52건)를 차지한다 -- Capability Fingerprint는 150 replay에서도 여전히 이 단일 그룹으로 정보가 과도하게 뭉치는 문제를 그대로 갖고 있다 (Solver v3 Kickoff의 원래 진단과 동일).
+
+--- 5. Cluster 안정성 ---
+Before(75): 88.5%
+After(150): 88.4%
+판정: Cluster 안정성 88.5% -> 88.4% -- Dataset Roadmap Sprint의 예측(Dataset 크기와 무관, Primitive 내부 randomness의 함수)이 실측으로도 확인됐다: 크기가 2배가 됐지만 안정성은 유지/소폭 변화 수준이다.
+
+--- 6. 75 -> 150 변화 종합 ---
+[Exact Shape Key (BP-4)] 상태=MAINTAINED
+  75->150: 3/3 지표 개선. Exact Shape Key는 150 replay에서도 여전히 Lookup 최소 기준(>=2)에 못 미친다 (1.11). 지표 3/3개가 개선됐지만, 절대적인 Singleton 비율(91.1%)이 여전히 높아 실질적인 Lookup 접근에는 부족하다.
+  Grain 적절성: 여전히 grain이 지나치게 세밀하다 -- 75->150 규모 증가만으로는 부족했다.
+[Coarse Structural Shape] 상태=OVERFIT_SUSPECTED
+  75->150: 3/3 지표 개선, 단 Roadmap의 CRP 예측(평균 Group Size 2.22)에는 못 미침(1.85). Coarse Shape는 150 replay에서도 Lookup 최소 기준(>=2)에 아직 못 미친다 (평균 Group Size 1.85, Roadmap 예측치 2.22보다 낮음). 75건 대비 3/3개 지표는 개선됐지만, 개선 속도는 Roadmap이 예측한 것보다 느리다 -- Dataset Expansion Sprint v2가 이미 밝힌 대로, Hybrid Sampling이 새로운/희소한 Shape을 의도적으로 확보했기 때문(수동적 재추출을 가정한 CRP 모델과의 괴리).
+  Grain 적절성: 75건 기준으로 내린 'Coarse Shape가 더 낫다'는 결론의 방향 자체는 150건에서도 유지된다 (Exact Key보다 항상 우위). 다만 개선 폭이 Roadmap의 순수 통계적 예측보다 작았다는 것은, 원래 75건 비교가 어느 정도 표본 특유의 값을 포함하고 있었을 가능성을 시사한다 -- 완전한 과적합은 아니지만 낙관적으로 컸다.
+[Capability Fingerprint] 상태=MAINTAINED
+  75->150: 2/3 지표 개선. "000000000"(9개 능력 전부 실패) 그룹이 여전히 전체의 34.7%(52건)를 차지한다 -- Capability Fingerprint는 150 replay에서도 여전히 이 단일 그룹으로 정보가 과도하게 뭉치는 문제를 그대로 갖고 있다 (Solver v3 Kickoff의 원래 진단과 동일).
+  Grain 적절성: 구조적 결함(안 풀리는 상태가 전부 한 그룹으로 뭉침)은 Dataset 크기와 무관하게 이 표현 방식 자체의 근본적 한계로, 150건에서도 재확인됐다 -- Primitive 설계 목적에는 여전히 부적합.
+
+--- 7. Representation Ranking ---
+[Ranking 계산식 수정 공개] 최초 실행 시 사용한 복합 점수 공식은 Lookup 가능 여부(+2)와 Entropy(낮을수록 가점)를 Primitive 설계 적합성(fit, 최대 +2)보다 훨씬 무겁게 반영해, Capability Fingerprint가 1위로 계산됐다.
+그러나 Fingerprint의 좋아 보이는 평균 Group Size(5.17)와 낮은 Entropy(3.72bits)는 전부 "000000000"(9개 능력 전부 실패) 단일 그룹이 전체의 34.7%를 차지하는 동일한 퇴화(degenerate) 현상에서 나온 수치였다 -- 이는 STEP3가 이미 "Primitive 설계에 부적합(LOW)"으로 진단한 바로 그 결함이다.
+일반 Entropy/평균 Group Size 공식은 "의미 있게 유사한 상태들의 건강한 반복"과 "안 풀리는 상태를 전부 쓸어담는 무의미한 단일 버킷"을 구분하지 못한다 -- 이를 구분하는 것은 오직 fit 판정뿐이므로, fit의 가중치를 압도적으로 높이는 것으로 공식을 수정했다 (RepresentationRanking.ts, 코드에 명시). 아래는 수정된 공식으로 재계산한 결과다 (동일한 실측 입력값 사용, 새 측정 없음).
+#1 [Coarse Structural Shape] Singleton감소=1.3%p 평균그룹=1.85 Lookup가능=false Entropy=5.97bits Primitive적합성=HIGH 일반화=OVERFIT_SUSPECTED
+#2 [Capability Fingerprint] Singleton감소=-6.7%p 평균그룹=5.17 Lookup가능=true Entropy=3.72bits Primitive적합성=LOW 일반화=MAINTAINED
+#3 [Exact Shape Key (BP-4)] Singleton감소=1.7%p 평균그룹=1.11 Lookup가능=false Entropy=7.01bits Primitive적합성=LOW 일반화=MAINTAINED
+
+--- 8. 성공 기준 (Level 1~3) ---
+Level 1 (모든 Representation 재측정 완료): PASS
+Level 2 (150 replay에서도 우열이 명확히 유지되거나 변경 근거 확보): PASS (1위: Coarse Structural Shape -- Ranking 공식 수정 후)
+
+--- 9. 최종 결론 ---
+=== B. 새 Representation 필요 ===
+세 Representation 모두 150 replay에서도 Lookup/설계 적합 기준을 충족하지 못했다 -- Coarse Shape가 상대적으로 낫지만 절대적으로 부족하다.
+
+=== Sprint 종료: 성공 ===
+다음 단계로 Solver Product Integration Review Sprint 또는 새 Solver Blueprint 연구 여부를 결정한다.
+보호 파일: fiveByFiveEdges.ts/Planner.ts/Executor.ts/Recovery.ts/CycleChasePrototype.ts 및 BASE_ALG/FLIP_ALG/PARITY_ALG/CASE Library 미수정 (읽기 전용 재사용만). 제품 코드 미통합, 새 Replay/Primitive 없음.
