@@ -1,0 +1,26 @@
+========================================
+BFS Trace Report -- First-Hop Failure Analysis Sprint v1
+========================================
+(bfsMoveWingToPosition은 private이라 직접 계측 불가 -- 동일 구조의 독립 재구현(ShadowBFS)으로 진단.
+ 실제 시스템과 동일한 8000-node 예산을 사용해 depth 6(원본) vs depth 8(+2) vs 30000-node를 비교.)
+
+Replay 68977335: donorExists=true
+  depth=6 (실제와 동일 8000-node 예산 재구현): NODE_BUDGET_EXCEEDED, found=false, nodesVisited=1501, maxDepthReached=3
+  depth=8 (+2 counterfactual, 동일 8000-node 예산): NODE_BUDGET_EXCEEDED, found=false, nodesVisited=1501
+Replay 5e5b20b: donorExists=true
+  depth=6 (실제와 동일 8000-node 예산 재구현): NODE_BUDGET_EXCEEDED, found=false, nodesVisited=1501, maxDepthReached=3
+  depth=8 (+2 counterfactual, 동일 8000-node 예산): NODE_BUDGET_EXCEEDED, found=false, nodesVisited=1501
+Replay 120fc3af: donorExists=true
+  depth=6 (실제와 동일 8000-node 예산 재구현): NODE_BUDGET_EXCEEDED, found=false, nodesVisited=1501, maxDepthReached=3
+  depth=8 (+2 counterfactual, 동일 8000-node 예산): NODE_BUDGET_EXCEEDED, found=false, nodesVisited=1501
+Replay dd4d94fd: donorExists=true
+  depth=6 (실제와 동일 8000-node 예산 재구현): NODE_BUDGET_EXCEEDED, found=false, nodesVisited=1501, maxDepthReached=3
+  depth=8 (+2 counterfactual, 동일 8000-node 예산): NODE_BUDGET_EXCEEDED, found=false, nodesVisited=1501
+Replay bb6a16b1: donorExists=true
+  depth=6 (실제와 동일 8000-node 예산 재구현): FOUND, found=true, nodesVisited=43, maxDepthReached=2
+  depth=8 (+2 counterfactual, 동일 8000-node 예산): FOUND, found=true, nodesVisited=43
+Replay 7f1e11c5: donorExists=true
+  depth=6 (실제와 동일 8000-node 예산 재구현): NODE_BUDGET_EXCEEDED, found=false, nodesVisited=1501, maxDepthReached=3
+  depth=8 (+2 counterfactual, 동일 8000-node 예산): NODE_BUDGET_EXCEEDED, found=false, nodesVisited=1501
+
+Depth+2로 새로 구제된 Replay 수: 0/6

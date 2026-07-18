@@ -1,0 +1,51 @@
+========================================
+First-Hop Trace Database -- First-Hop Failure Analysis Sprint v1
+========================================
+
+Replay 68977335  cycleLength=4  startSlot=x-2,y-2  targetSlot=y-2,z2  wantedColorKey=DR  candidateCount=0  wrongWing=8  pair=5  parity=true
+Replay 84976575  cycleLength=6  startSlot=x-2,z-2  targetSlot=x2,z-2  wantedColorKey=BD  candidateCount=4  wrongWing=10  pair=5  parity=true
+Replay dda1453f  cycleLength=5  startSlot=x-2,z-2  targetSlot=x-2,z2  wantedColorKey=FR  candidateCount=11  wrongWing=10  pair=2  parity=false
+Replay e7a801fb  cycleLength=5  startSlot=x-2,y-2  targetSlot=x-2,z2  wantedColorKey=BD  candidateCount=5  wrongWing=7  pair=5  parity=false
+Replay 1af658ab  cycleLength=4  startSlot=x-2,y2  targetSlot=y-2,z2  wantedColorKey=FU  candidateCount=1  wrongWing=4  pair=8  parity=false
+Replay 7541612b  cycleLength=5  startSlot=x-2,z2  targetSlot=y2,z-2  wantedColorKey=DR  candidateCount=11  wrongWing=15  pair=1  parity=true
+Replay beb967ad  cycleLength=6  startSlot=x-2,y-2  targetSlot=x-2,z-2  wantedColorKey=RU  candidateCount=20  wrongWing=13  pair=2  parity=true
+Replay 1e928fb1  cycleLength=6  startSlot=x-2,z-2  targetSlot=x-2,z2  wantedColorKey=DF  candidateCount=12  wrongWing=9  pair=5  parity=true
+Replay 1513fcff  cycleLength=4  startSlot=x2,y2  targetSlot=y2,z2  wantedColorKey=FU  candidateCount=2  wrongWing=7  pair=7  parity=true
+Replay 4e27e5a1  cycleLength=4  startSlot=x-2,z2  targetSlot=y-2,z2  wantedColorKey=FL  candidateCount=5  wrongWing=4  pair=8  parity=false
+Replay 5e5b20b  cycleLength=5  startSlot=x-2,z-2  targetSlot=x2,y2  wantedColorKey=DL  candidateCount=0  wrongWing=8  pair=4  parity=false
+Replay 120fc3af  cycleLength=6  startSlot=x-2,y-2  targetSlot=x2,y-2  wantedColorKey=BR  candidateCount=0  wrongWing=13  pair=3  parity=true
+Replay dd4d94fd  cycleLength=6  startSlot=x-2,z-2  targetSlot=y-2,z2  wantedColorKey=RU  candidateCount=0  wrongWing=14  pair=2  parity=true
+Replay 36336c1  cycleLength=4  startSlot=x2,y2  targetSlot=x2,z2  wantedColorKey=BL  candidateCount=2  wrongWing=11  pair=3  parity=true
+Replay ad12c377  cycleLength=4  startSlot=x-2,y-2  targetSlot=x2,z-2  wantedColorKey=DF  candidateCount=6  wrongWing=10  pair=3  parity=true
+Replay e5101f85  cycleLength=5  startSlot=x-2,z2  targetSlot=x2,y2  wantedColorKey=DF  candidateCount=1  wrongWing=9  pair=4  parity=true
+Replay 4749cd9d  cycleLength=4  startSlot=x-2,y2  targetSlot=y2,z2  wantedColorKey=DF  candidateCount=6  wrongWing=7  pair=5  parity=false
+Replay 755fc60b  cycleLength=4  startSlot=x-2,y2  targetSlot=x2,z2  wantedColorKey=BD  candidateCount=1  wrongWing=11  pair=2  parity=true
+Replay 283cfbcd  cycleLength=4  startSlot=x-2,y-2  targetSlot=x2,z-2  wantedColorKey=DR  candidateCount=4  wrongWing=8  pair=5  parity=true
+Replay d27df773  cycleLength=4  startSlot=x-2,y-2  targetSlot=x2,z2  wantedColorKey=BD  candidateCount=7  wrongWing=11  pair=4  parity=true
+Replay 2b7aa5f1  cycleLength=4  startSlot=x-2,y-2  targetSlot=x-2,y2  wantedColorKey=BD  candidateCount=15  wrongWing=9  pair=5  parity=true
+Replay 8b27576b  cycleLength=4  startSlot=x-2,y2  targetSlot=x2,y2  wantedColorKey=RU  candidateCount=3  wrongWing=7  pair=5  parity=false
+Replay 250f4b61  cycleLength=6  startSlot=x-2,y2  targetSlot=x2,z-2  wantedColorKey=FL  candidateCount=10  wrongWing=15  pair=1  parity=true
+Replay c039e611  cycleLength=6  startSlot=x-2,y-2  targetSlot=x-2,z-2  wantedColorKey=BL  candidateCount=4  wrongWing=8  pair=4  parity=false
+Replay 24facef9  cycleLength=6  startSlot=x-2,y-2  targetSlot=x2,z2  wantedColorKey=RU  candidateCount=7  wrongWing=13  pair=3  parity=true
+Replay a60e4973  cycleLength=5  startSlot=x-2,z-2  targetSlot=x2,y-2  wantedColorKey=RU  candidateCount=2  wrongWing=12  pair=4  parity=true
+Replay fad41ff1  cycleLength=4  startSlot=x2,y-2  targetSlot=y2,z-2  wantedColorKey=BD  candidateCount=14  wrongWing=11  pair=4  parity=true
+Replay 555b1ba5  cycleLength=6  startSlot=x-2,y2  targetSlot=x2,z2  wantedColorKey=DF  candidateCount=4  wrongWing=10  pair=4  parity=true
+Replay dbb7b6cd  cycleLength=4  startSlot=x-2,z-2  targetSlot=y2,z-2  wantedColorKey=LU  candidateCount=2  wrongWing=7  pair=5  parity=false
+Replay b2c9ceb9  cycleLength=6  startSlot=x-2,y-2  targetSlot=x2,y-2  wantedColorKey=BL  candidateCount=2  wrongWing=15  pair=1  parity=true
+Replay 25fd9a99  cycleLength=6  startSlot=x-2,y2  targetSlot=x2,z2  wantedColorKey=BU  candidateCount=1  wrongWing=9  pair=3  parity=false
+Replay 849509c9  cycleLength=6  startSlot=x-2,z2  targetSlot=x2,y2  wantedColorKey=BR  candidateCount=6  wrongWing=19  pair=0  parity=true
+Replay 74e01ec9  cycleLength=6  startSlot=x-2,y-2  targetSlot=x2,z2  wantedColorKey=DF  candidateCount=6  wrongWing=13  pair=2  parity=true
+Replay 1bff489f  cycleLength=6  startSlot=x-2,y-2  targetSlot=x2,z2  wantedColorKey=DF  candidateCount=6  wrongWing=12  pair=3  parity=true
+Replay cee673eb  cycleLength=6  startSlot=x-2,y-2  targetSlot=x-2,z2  wantedColorKey=DF  candidateCount=2  wrongWing=10  pair=3  parity=true
+Replay 9f5b734d  cycleLength=4  startSlot=x2,z2  targetSlot=y2,z-2  wantedColorKey=BL  candidateCount=5  wrongWing=7  pair=6  parity=true
+Replay e8be823  cycleLength=6  startSlot=x-2,y-2  targetSlot=x-2,y2  wantedColorKey=BD  candidateCount=2  wrongWing=22  pair=0  parity=true
+Replay bb9b5a0f  cycleLength=6  startSlot=x-2,y-2  targetSlot=x-2,z-2  wantedColorKey=BR  candidateCount=13  wrongWing=7  pair=6  parity=true
+Replay 8d4ca61f  cycleLength=6  startSlot=x-2,y-2  targetSlot=y-2,z-2  wantedColorKey=BL  candidateCount=2  wrongWing=14  pair=1  parity=true
+Replay bb6a16b1  cycleLength=5  startSlot=x-2,z2  targetSlot=x2,z-2  wantedColorKey=BD  candidateCount=0  wrongWing=12  pair=1  parity=true
+Replay 7f1e11c5  cycleLength=5  startSlot=x-2,y-2  targetSlot=x2,y-2  wantedColorKey=BD  candidateCount=0  wrongWing=10  pair=4  parity=true
+Replay 71e6edc9  cycleLength=4  startSlot=x-2,y-2  targetSlot=x-2,z-2  wantedColorKey=FL  candidateCount=2  wrongWing=9  pair=4  parity=true
+Replay 6a32972d  cycleLength=6  startSlot=x-2,y-2  targetSlot=x2,z2  wantedColorKey=FR  candidateCount=14  wrongWing=14  pair=1  parity=true
+Replay 85d46a8f  cycleLength=5  startSlot=x-2,z-2  targetSlot=x2,z2  wantedColorKey=DF  candidateCount=9  wrongWing=11  pair=3  parity=true
+Replay d3986111  cycleLength=4  startSlot=x-2,y2  targetSlot=y-2,z2  wantedColorKey=FL  candidateCount=2  wrongWing=7  pair=6  parity=true
+Replay 80eed73f  cycleLength=6  startSlot=x-2,y-2  targetSlot=y-2,z2  wantedColorKey=FR  candidateCount=3  wrongWing=6  pair=6  parity=false
+Replay aef4b5b5  cycleLength=5  startSlot=x-2,y2  targetSlot=x2,y-2  wantedColorKey=DL  candidateCount=2  wrongWing=14  pair=1  parity=true

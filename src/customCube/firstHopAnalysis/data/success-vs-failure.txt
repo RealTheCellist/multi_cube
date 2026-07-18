@@ -1,0 +1,16 @@
+========================================
+Success vs Failure Comparison -- First-Hop Failure Analysis Sprint v1
+========================================
+
+--- 활성화 (17건) ---
+  건수: 16
+  평균 Cycle Length: 5.25
+  평균 WrongWing: 12.81
+  평균 Pair Count: 2.38
+
+--- FIRST_HOP_FAIL (46건) ---
+  건수: 47
+  평균 Cycle Length: 5.06
+  평균 WrongWing: 10.47
+  평균 Pair Count: 3.60
+  평균 Candidate 수: 5.02

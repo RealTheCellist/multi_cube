@@ -1,0 +1,27 @@
+========================================
+Root Cause Report -- First-Hop Failure Analysis Sprint v1
+========================================
+
+FIRST_HOP_FAIL 전체: 47건
+
+--- Failure Mode 분포 ---
+  WRONG_START : 4 (8.5%)
+  NO_VALID_PATH : 6 (12.8%)
+  PAIR_CONFLICT : 37 (78.7%)
+  UNKNOWN : 0 (0.0%)
+
+가장 큰 Failure Mode: PAIR_CONFLICT (78.7%)
+
+--- 성공 기준 판정 ---
+Level 1 (80%+ 구체적 원인으로 분류): PASS (실제 100.0%)
+Level 2 (최대 Failure Mode 50%+ 차지): PASS (실제 PAIR_CONFLICT 78.7%)
+Level 3 (Counterfactual Coverage 30%+ 달성 가능): FAIL (최고 22.7%)
+
+--- 실패 조건 판정 ---
+UNKNOWN > 20%: 해당없음 (실제 0.0%)
+Failure Mode가 지나치게 분산됨 (최대 Mode < 30%): 해당없음
+Simulation에서도 Coverage 증가 없음: 해당
+병목 원인을 특정하지 못함: 해당없음
+
+종합 판정: Level 1~2만 달성 -- 구조적 원인은 규명, 실질적 개선안 없음 (기술적 한계로 문서화)
+제품 통합 여부: 미통합 (spec -- 이번 Sprint는 분석 전용)

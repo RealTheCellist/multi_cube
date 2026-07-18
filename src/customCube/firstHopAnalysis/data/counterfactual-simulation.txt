@@ -1,0 +1,12 @@
+========================================
+Counterfactual Simulation -- First-Hop Failure Analysis Sprint v1
+========================================
+
+Baseline (Primitive Invention/Coverage Expansion Sprint 재현): Coverage 22.7%, Regression 0.0%
+
+--- Counterfactual A: Depth+2 (NO_VALID_PATH 대상, STEP 2 결과 재사용) ---
+  6건 중 0건이 depth+2로 새로 구제됨
+
+--- Counterfactual B: 순 개선 요구 완화 (PAIR_CONFLICT 대상, relaxedCycleChase) ---
+  Coverage: 20.0% (15/75)
+  Regression (활성화된 것 중): 0.0% (0/15)
