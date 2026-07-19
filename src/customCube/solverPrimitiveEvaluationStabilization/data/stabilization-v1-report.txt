@@ -1,0 +1,43 @@
+========================================
+Solver Primitive Evaluation Stabilization Sprint v1 -- Report
+========================================
+
+--- 0. Sprint 성격 ---
+Prototype Refinement Sprint v1이 남긴 문제(BASE의 Math.random() 변동성 때문에 existing-Gap 판정 자체가 실행마다 달라지고, 3회 재현성 검증에서 A/A/B로 갈렸던 것)를 이어받아, Gap 평가 자체를 안정화하는 Evaluation Framework를 구축하고 검증한다. 평가 코드만 신규 작성하며, 기존 Prototype/Solver/Planner/Executor/Recovery/Primitive는 전혀 수정하지 않는다(읽기 전용 재사용만).
+
+--- 1. Gap Classification 방법 비교 (STEP1) ---
+Single Run Gap Total: 65
+Majority Vote Gap Total (N=5, 과반수): 65
+N회 평균(soft, 연속값) Gap Total: 62.60
+Run별 Gap Total 분포: 평균=62.60, 표준편차=2.30, 변동계수=0.037, 95% CI=[60.58, 64.62]
+Single Run ↔ Majority Vote Jaccard 유사도(replay 집합 일치도): 75.7%
+
+--- 2. Primitive별 Gap 판정 변동성 (STEP2) ---
+[BASE] 평균 성공 수=50.80/150 표준편차=1.48 변동계수=0.029 FlipRate(5회 중 비일관 replay 비율)=2.7%
+[FLIP] 평균 성공 수=0.00/150 표준편차=0.00 변동계수=0.000 FlipRate(5회 중 비일관 replay 비율)=0.0%
+[CASE] 평균 성공 수=0.00/150 표준편차=0.00 변동계수=0.000 FlipRate(5회 중 비일관 replay 비율)=0.0%
+[PARITY] 평균 성공 수=58.20/150 표준편차=3.49 변동계수=0.060 FlipRate(5회 중 비일관 replay 비율)=67.3%
+[BP1] 평균 성공 수=30.80/150 표준편차=2.59 변동계수=0.084 FlipRate(5회 중 비일관 replay 비율)=10.7%
+
+--- 3. Gap Rescue 신뢰구간 (STEP3) ---
+baseline(A0): 평균=2.20 표준편차=0.84 95% CI=[1.47, 2.93]
+candidate(A1_wideCycle): 평균=2.40 표준편차=0.89 95% CI=[1.62, 3.18]
+paired diff(candidate−baseline, 동일 Run 내에서 짝지음): 평균=0.20 표준편차=0.45 95% CI=[-0.19, 0.59]
+baseline·candidate CI가 서로 겹치지 않는가 (강한 신호): false
+paired diff CI가 0을 배제하는가 (통계적으로 유의미한 개선, 이 Sprint가 채택한 기준): false
+
+--- 4. 새 Integration 판단 기준 (STEP4) ---
+Gap 판정은 Majority Vote(N=5, 과반수)로 안정화하고, 두 변형 비교는 동일 Run에서 짝지은(paired) GapRescue 차이의 평균과 95% 신뢰구간을 함께 보고한다 -- '건수 >= 고정 threshold' 대신 'paired-diff CI 하한이 0을 초과해야 통계적으로 유의미한 개선'을 Integration 판단 기준으로 채택한다.
+
+--- 5. 성공 기준 (Level 1~3) ---
+Level 1 (Gap 평가의 변동성을 정량화한다): PASS
+Level 2 (재현 가능한 Evaluation 기준을 제안한다): PASS
+Level 3 (Prototype Sprint에서 사용할 표준 Evaluation 절차를 확정한다): FAIL
+
+--- 6. 최종 결론 ---
+결정: B
+Gap 분류 방법 비교: Single Run Gap Total=65, Majority Vote=65, N회 평균(soft)=62.6, Run간 95% CI=[60.6, 64.6], Single↔Majority Jaccard=75.7%. Primitive별 변동계수: BASE=0.03(flipRate 2.7%), FLIP=0.00(flipRate 0.0%), CASE=0.00(flipRate 0.0%), PARITY=0.06(flipRate 67.3%), BP1=0.08(flipRate 10.7%). GapRescue paired-diff(A1_wideCycle - baseline): 평균=0.20, 95% CI=[-0.19, 0.59]. 새 기준(paired-diff CI)을 적용해도 이번 N=5회로는 0을 배제하지 못해 A1_wideCycle이 baseline보다 통계적으로 유의미하게 낫다고 아직 결론 내릴 수 없다 -- 절차 자체는 정의되었으나(Level1/2 PASS) 이번 표본으로는 확정하지 못했다(Level3 FAIL). Run 수를 늘리거나 다른 안정화 기법을 추가로 검토해야 한다.
+
+=== Sprint 종료: 추가 조치 필요 ===
+다음 단계: Solver Primitive Evaluation Stabilization Sprint v2 (Run 수 확대 또는 추가 안정화 기법 검토).
+보호 파일: 기존 Prototype/Solver/Planner/Executor/Recovery/Primitive 전부 미수정(읽기 전용 재사용만, GateExpansionVariants.ts 포함). 평가 코드만 신규 작성. Planner Integration/Hard Coding 없음. 제품 코드 미통합.
