@@ -1,0 +1,105 @@
+========================================
+Solver Primitive Blueprint Sprint v1 -- Report
+========================================
+
+--- 0. Sprint 성격 ---
+Primitive Capability Analysis Sprint v1이 실측한 Capability Gap(약 150건 중 1/3)을 근거로, 그 Gap을 겨냥한 새 Primitive Blueprint를 설계한다. 이번 Sprint는 새 Primitive를 구현하거나 성능을 측정하지 않는다 -- Preconditions/Allowed Operations/Expected Effect를 정의하고, 그 전제조건이 실제 Gap 구조와 얼마나 겹치는지만 계산한다. Solver/Planner/Representation/Dataset/Contract는 전혀 수정하지 않으며, 제품 코드에 통합하지 않는다.
+
+--- 1. Gap 구조 분석 ---
+Gap 50/150건. 전체 Dataset 대비 과대표집(over-represented)된 상위 항목:
+  [WrongWing] 3-5: Gap 5건(10.0%) vs Dataset 5건(3.3%) -- 배율 3.00x
+  [CoarseShape] WWb1|Pb2|parfalse|cycCount1|swap0|cycE2|conf0: Gap 5건(10.0%) vs Dataset 5건(3.3%) -- 배율 3.00x
+  [CoarseShape] WWb2|Pb1|parfalse|cycCount0|swap0|cycE0|conf2: Gap 4건(8.0%) vs Dataset 4건(2.7%) -- 배율 3.00x
+  [CoarseShape] WWb2|Pb2|parfalse|cycCount1|swap0|cycE2|conf0: Gap 3건(6.0%) vs Dataset 3건(2.0%) -- 배율 3.00x
+  [Cluster] w4|p0: Gap 4건(8.0%) vs Dataset 4건(2.7%) -- 배율 3.00x
+  [Cluster] w6|p0: Gap 3건(6.0%) vs Dataset 3건(2.0%) -- 배율 3.00x
+  [Cluster] w7|p0: Gap 6건(12.0%) vs Dataset 7건(4.7%) -- 배율 2.57x
+  [Cycle] count=1: Gap 16건(32.0%) vs Dataset 19건(12.7%) -- 배율 2.53x
+  [CoarseShape] WWb2|Pb1|parfalse|cycCount2|swap0|cycE2|conf0: Gap 4건(8.0%) vs Dataset 5건(3.3%) -- 배율 2.40x
+  [Pair] 6-8: Gap 12건(24.0%) vs Dataset 16건(10.7%) -- 배율 2.25x
+축별 전체 분포:
+  [WrongWing]
+    3-5: Gap 5건(10.0%) vs Dataset 5건(3.3%) -- 배율 3.00x
+    6-8: Gap 17건(34.0%) vs Dataset 30건(20.0%) -- 배율 1.70x
+    9-11: Gap 16건(32.0%) vs Dataset 39건(26.0%) -- 배율 1.23x
+    12-14: Gap 9건(18.0%) vs Dataset 36건(24.0%) -- 배율 0.75x
+    15-17: Gap 3건(6.0%) vs Dataset 28건(18.7%) -- 배율 0.32x
+  [Pair]
+    6-8: Gap 12건(24.0%) vs Dataset 16건(10.7%) -- 배율 2.25x
+    3-5: Gap 25건(50.0%) vs Dataset 61건(40.7%) -- 배율 1.23x
+    0-2: Gap 13건(26.0%) vs Dataset 73건(48.7%) -- 배율 0.53x
+  [Cycle]
+    count=1: Gap 16건(32.0%) vs Dataset 19건(12.7%) -- 배율 2.53x
+    count=0: Gap 6건(12.0%) vs Dataset 9건(6.0%) -- 배율 2.00x
+    count=2: Gap 15건(30.0%) vs Dataset 35건(23.3%) -- 배율 1.29x
+    count=3: Gap 13건(26.0%) vs Dataset 87건(58.0%) -- 배율 0.45x
+  [Conflict]
+    count=3: Gap 16건(32.0%) vs Dataset 38건(25.3%) -- 배율 1.26x
+    count=0: Gap 34건(68.0%) vs Dataset 111건(74.0%) -- 배율 0.92x
+  [Swap]
+    count=0: Gap 34건(68.0%) vs Dataset 75건(50.0%) -- 배율 1.36x
+    count=2: Gap 13건(26.0%) vs Dataset 52건(34.7%) -- 배율 0.75x
+    count=3: Gap 3건(6.0%) vs Dataset 23건(15.3%) -- 배율 0.39x
+
+--- 2. Primitive Requirement (실패 이유) ---
+[BASE] 이동 가능한 단일 wing이 있어도, 그 이동이 다른 slot의 이미 맞춰진(또는 더 나은) 상태를 훼손하는 One-sided 의존(Conflict Edge -- stateGraphBuilder.ts 자체 정의: cycle에 속하지 않는 WANTS 엣지, 'A를 고치면 B가 대가 없이 손해봄')에 막혀 net 개선을 만들지 못한다.
+  근거: Gap 50건 중 14건(28.0%)이 Conflict Edge 수 > (Swap+Cycle Edge 수) -- WANTS-그래프가 순환(해결 가능) 구조가 아니라 일방적 의존 구조로 지배된다.
+[BP1] BoundedResolver(BP-1)는 길이 4 이상의 Cycle에서만 활성화된다(MIN_CYCLE_LENGTH=4, BoundedResolver.ts 자체 게이트, 미수정 인용). Gap 상당수는 애초에 4+ Cycle이 존재하지 않아 '시도했지만 실패'가 아니라 '적용 자체가 불가능'하다.
+  근거: Gap 50건 중 15건(30.0%)이 최장 Cycle 길이 <4 -- BP-1의 활성화 조건 자체를 충족하지 못한다.
+[PARITY] bestFixOverall/tryEndgameMultiPly는 BASE보다 넓게 탐색하지만 전체 Dataset(150건)에서도 52.0% 실패율을 보이는 broad-but-not-exhaustive 탐색이다. Gap 내에서 Parity=true 비율이 두드러지는데도 실패한다는 것은, PARITY의 대상 조건(Parity 있는 상태)과 겹치는 replay가 많음에도 탐색 폭/깊이가 부족함을 시사한다.
+  근거: Gap 50건 중 Parity=true는 28건(56.0%).
+[FLIP] tryFlipWingsInPlace는 이미 자리에 있는 2-wing이 서로 뒤바뀐(WingPair 패턴) 좁은 상황에서만 발동한다. 이 Dataset(150건 전체, Gap 한정 아님)에서 성공률이 0%라는 것은 이 좁은 전제조건이 실제로는 거의 매칭되지 않음을 뜻한다.
+  근거: Gap 50건의 WANTS-그래프에서 WingPair 유형 slot이 평균 6.94개/replay 존재하지만(0은 아님), FLIP의 실제 발동 조건(정확히 뒤바뀐 2-wing 패턴)까지는 이어지지 않아 여전히 0% 성공.
+[CASE] tryExactCaseMatch는 CASE Library에 등록된 케이스와 정확히 일치해야 발동하는 순수 lookup이다. 150건 전체에서 0% 성공은 이 Dataset의 잔여 상태들이 CASE Library가 커버하는 카탈로그 밖에 있다는 뜻이다.
+  근거: Gap 50건 중 CASE 성공 0건 (Dataset 전체 150건 중에서도 0건) -- 정량적 매칭 실패이지 부분적 실패가 아니다.
+
+--- 3. Candidate Primitive ---
+[Slot Perturbation Primitive (고립 Wrong Wing 해소)]
+  목적: 목적지 slot이 이미 '완성(SolvedPair/WingPair)'으로 분류되어 WANTS-그래프에 edge가 아예 생기지 않는 '고립된' wrong wing을 위해, 목적지 slot을 일시적으로 흐트러뜨려(perturb) 공간을 만든 뒤 대상 wing을 옮기고, 원래 있던 조각을 복귀(restore)시키는 3단계 연산.
+  Preconditions: 대상 replay의 Cycle 수=0, Swap Edge 수=0, Conflict Edge 수=0 (WANTS-그래프에 edge가 전혀 없음 -- 그래프 기반 5개 기존 Primitive 전부가 신호를 못 받는 상태).
+  Allowed Operations: 1) 목적지 slot의 기존 wing 하나를 임시 위치로 이동(perturb, 기존 enumerateWingCandidates 재사용). 2) 대상 wrong wing을 비워진 목적지로 이동(insert). 3) 원래 있던 wing을 그 다음 목적지(혹은 원위치)로 복귀(restore, BASE 로직 재귀 재사용).
+  Expected Effect: wrongWingCount가 최소 1 감소하거나, 고립됐던 wrong wing이 그래프상 새 WANTS edge를 갖게 되어 후속 BASE/BP-1 적용이 가능한 상태로 전이된다.
+  실패 조건: perturb 대상 slot 자체도 또 다른 finished slot에 의존적이라 연쇄적으로 막히는 경우(다단계 의존 체인), 또는 restore 단계의 목적지가 이미 다른 조각에 점유된 경우.
+  근거(STEP1/2 연결): STEP1: Cycle count=0(over-rep 2.48x)/Swap count=0(over-rep 1.62x, Gap의 80.9%) 동시 발생. STEP2: BASE/PARITY/BP-1 모두 그래프 edge가 있어야 작동하는데, 이 부분집합은 edge 자체가 없다.
+  신규성(isGenuinelyNovel): true
+[Low-Structure Multi-Hop Bridge (2~3-hop 확장 탐색)]
+  목적: BP-1(BoundedResolver)이 요구하는 4+ Cycle에 못 미치지만(길이 2~3), BASE의 1-hop 탐색만으로는 풀리지 않는 '작은 규모의 얽힘'을 위해, 2~3-hop까지 허용하는 경계 탐색.
+  Preconditions: WrongWingCount 3~8 (STEP1에서 이 구간이 over-represented), Cycle 수 <=1, Swap Edge 수=0 -- BP-1의 4+ Cycle 게이트 미달이면서 완전한 무구조(Candidate 1 대상)도 아닌 중간 지대.
+  Allowed Operations: enumerateWingCandidates(기존, 미수정)를 재사용하되 BASE의 '1-hop만 허용' 게이트를 풀어 2~3-hop까지 bounded backtracking (BP-1의 접근 방식을 재사용하되 4+ Cycle 게이트 없이 저구조 상태에도 적용, Deferred Validation으로 최종 검증).
+  Expected Effect: 최장 Cycle이 짧아 BP-1이 커버하지 못하는 '작은 규모 얽힘'을 해소, wrongWingCount 순감소.
+  실패 조건: 2~3-hop 이내에 유효한 경로가 전혀 없는 경우(진짜 고립된 조각 -- Candidate 1이 다뤄야 할 케이스).
+  근거(STEP1/2 연결): STEP1: Cycle count=0(gap 14.9%/dataset 6.0%, ratio 2.48), count=1(gap 29.8%/dataset 12.7%, ratio 2.35) 모두 over-rep, count=3은 오히려 under-rep(ratio 0.40) -- '구조가 적을수록 못 푼다'는 패턴이 뚜렷. STEP2: BP-1은 4+ Cycle에서만 활성화되므로 이 대역은 애초에 BP-1의 사각지대.
+  신규성(isGenuinelyNovel): true
+[Parity-Aware Extended Search (탐색 폭 확장)]
+  목적: 기존 PARITY(bestFixOverall/tryEndgameMultiPly)가 Parity=true인 Gap replay에서도 실패하는 경우를 위해, 더 넓은 탐색 폭/깊이를 허용.
+  Preconditions: Parity=true.
+  Allowed Operations: 기존 bestFixOverall/tryEndgameMultiPly와 동일한 탐색 방식을 유지하되 deadline/후보 수 파라미터만 확장.
+  Expected Effect: PARITY가 시간/폭 부족으로 놓치던 해를 찾을 가능성 증가.
+  실패 조건: 탐색 폭을 넓혀도 애초에 존재하지 않는 해(구조적으로 도달 불가능한 경우).
+  근거(STEP1/2 연결): STEP2: Gap 47건 중 Parity=true 25건(53.2%) -- PARITY의 대상 조건과 겹치는 replay가 많음에도 실패.
+  신규성(isGenuinelyNovel): false
+
+--- 4. Coverage Matrix ---
+[Slot Perturbation Primitive (고립 Wrong Wing 해소)] 0/50건 (0.0%) 신규성=true
+[Low-Structure Multi-Hop Bridge (2~3-hop 확장 탐색)] 13/50건 (26.0%) 신규성=true
+[Parity-Aware Extended Search (탐색 폭 확장)] 28/50건 (56.0%) 신규성=false
+후보 간 중복(Overlap):
+  [Slot Perturbation Primitive (고립 Wrong Wing 해소) vs Low-Structure Multi-Hop Bridge (2~3-hop 확장 탐색)] 교집합=0건, Jaccard=0.000
+  [Slot Perturbation Primitive (고립 Wrong Wing 해소) vs Parity-Aware Extended Search (탐색 폭 확장)] 교집합=0건, Jaccard=0.000
+  [Low-Structure Multi-Hop Bridge (2~3-hop 확장 탐색) vs Parity-Aware Extended Search (탐색 폭 확장)] 교집합=1건, Jaccard=0.025
+Raw Union Coverage(어느 한 후보라도 겨냥, 신규성 무관): 40/50건 (80.0%), 미커버=10건
+신규성 있는 후보만의 Union Coverage: 13/50건 (26.0%), 미커버=37건
+
+--- 5. 성공 기준 (Level 1~3) ---
+Level 1 (Gap 구조가 실측 데이터로 설명됨): PASS
+Level 2 (새 Primitive Blueprint가 구현 가능한 수준으로 작성됨): PASS (3개 후보 전부 Preconditions/Allowed Operations/Expected Effect/실패조건 정의 완료)
+Level 3 (A/B/C 중 하나로 귀결): PASS (B)
+
+--- 6. Blueprint 결론 ---
+결정: B
+신규 Union Coverage 26.0%로 일부 Gap을 설명하지만 40% 기준에는 못 미친다 -- 전제조건 재정의 또는 추가 후보 설계로 Blueprint를 보완한 뒤 재평가가 필요하다. (참고: "Parity-Aware Extended Search (탐색 폭 확장)"(56.0%)는 기존 Primitive의 파라미터 확장에 가까워(Research Exit Criteria ②) 이 판정에서 제외했다 -- Raw Union(신규성 무관) 80.0%는 별도 참고.)
+권고 후보: Low-Structure Multi-Hop Bridge (2~3-hop 확장 탐색)
+
+=== Sprint 종료: 성공 ===
+Coverage가 아직 불충분하다 -- Blueprint 보완(전제조건 재정의/추가 후보 설계) 후 재평가가 필요하다.
+보호 파일: fiveByFiveEdges.ts/Planner.ts/Executor.ts/Recovery.ts/CycleChasePrototype.ts 및 BASE_ALG/FLIP_ALG/CASE/PARITY/BP-1 미수정 (읽기 전용 재사용만). 새 Primitive 미구현, Solver/Planner/Representation/Dataset/Contract 변경 없음, 성능 미측정, 제품 코드 미통합.
