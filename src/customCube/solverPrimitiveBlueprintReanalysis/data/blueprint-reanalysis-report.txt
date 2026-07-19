@@ -1,0 +1,91 @@
+========================================
+Solver Primitive Blueprint Reanalysis Sprint v1 -- Report
+========================================
+
+--- 0. Sprint 성격 ---
+Primitive Prototype Sprint v2에서 두 Primitive 모두 정상 구현했으나 Blueprint가 예측한 메커니즘이 재현되지 않았다(Level2 FAIL). 이번 Sprint는 새 Primitive를 구현하지 않고, Blueprint가 사용한 Feature(cycleCount 등)가 실제 성공을 얼마나 설명하는지 재측정해 더 나은 Feature/조합이 있는지 규명하는 Research/Blueprint 단계다. Prototype/Solver/Planner/Executor/기존 Primitive는 전혀 수정하지 않는다.
+
+--- 1. 성공/실패 사례 비교 (Feature 평균 차이) ---
+[Multi-Hop Bridge] 성공 6건 / 실패 144건
+  wrongWingCount: 성공군 평균=11.00, 실패군 평균=11.77, 차이=-0.77
+  pairCount: 성공군 평균=2.83, 실패군 평균=3.02, 차이=-0.19
+  cycleCount: 성공군 평균=1.83, 실패군 평균=3.56, 차이=-1.73
+  cycleLength: 성공군 평균=2.33, 실패군 평균=4.60, 차이=-2.26
+  swapEdgeCount: 성공군 평균=2.33, 실패군 평균=1.38, 차이=+0.96
+  cycleEdgeCount: 성공군 평균=2.00, 실패군 평균=12.47, 차이=-10.47
+  conflictEdgeCount: 성공군 평균=5.67, 실패군 평균=1.51, 차이=+4.16
+[Conflict-Dominant Sacrifice Move] 성공 8건 / 실패 142건
+  wrongWingCount: 성공군 평균=12.88, 실패군 평균=11.68, 차이=+1.20
+  pairCount: 성공군 평균=1.88, 실패군 평균=3.08, 차이=-1.20
+  cycleCount: 성공군 평균=2.25, 실패군 평균=3.56, 차이=-1.31
+  cycleLength: 성공군 평균=3.00, 실패군 평균=4.59, 차이=-1.59
+  swapEdgeCount: 성공군 평균=1.75, 실패군 평균=1.39, 차이=+0.36
+  cycleEdgeCount: 성공군 평균=5.38, 실패군 평균=12.43, 차이=-7.05
+  conflictEdgeCount: 성공군 평균=6.50, 실패군 평균=1.40, 차이=+5.10
+
+--- 2. Feature 설명력 (Pearson 상관계수, 성공=1/실패=0) ---
+[Multi-Hop Bridge]
+  cycleLength: r=-0.281
+  conflictEdgeCount: r=0.276
+  cycleEdgeCount: r=-0.184
+  cycleCount: r=-0.131
+  swapEdgeCount: r=0.109
+  wrongWingCount: r=-0.039
+  pairCount: r=-0.019
+[Conflict-Dominant Sacrifice Move]
+  conflictEdgeCount: r=0.388
+  cycleLength: r=-0.227
+  cycleEdgeCount: r=-0.142
+  pairCount: r=-0.139
+  cycleCount: r=-0.114
+  wrongWingCount: r=0.070
+  swapEdgeCount: r=0.046
+
+--- 3. Feature 구간별 성공률 (상위 8개 구간, 표본 수 기준) ---
+[Multi-Hop Bridge]
+  wrongWingCount: 9-11(n=39,성공률=10%) 12-14(n=36,성공률=3%) 6-8(n=30,성공률=0%) 15-17(n=28,성공률=4%) 18-20(n=10,성공률=0%) 3-5(n=5,성공률=0%) 21-23(n=2,성공률=0%)
+  pairCount: 0-2(n=73,성공률=3%) 3-5(n=61,성공률=7%) 6-8(n=16,성공률=0%)
+  cycleCount: 2(n=35,성공률=3%) 3(n=27,성공률=7%) 4(n=23,성공률=0%) 1(n=19,성공률=16%) 5(n=11,성공률=0%) 6(n=10,성공률=0%) 0(n=9,성공률=0%) 8(n=5,성공률=0%)
+  cycleLength: 6(n=48,성공률=0%) 5(n=40,성공률=0%) 4(n=35,성공률=0%) 3(n=12,성공률=17%) 0(n=9,성공률=0%) 2(n=6,성공률=67%)
+  swapEdgeCount: 0(n=75,성공률=0%) 2(n=52,성공률=10%) 4(n=16,성공률=6%) 6(n=6,성공률=0%) 8(n=1,성공률=0%)
+  cycleEdgeCount: 8(n=18,성공률=0%) 0(n=15,성공률=27%) 7(n=14,성공률=0%) 6(n=13,성공률=15%) 9(n=10,성공률=0%) 5(n=9,성공률=0%) 18(n=8,성공률=0%) 4(n=7,성공률=0%)
+  conflictEdgeCount: 0(n=111,성공률=1%) 7(n=13,성공률=31%) 6(n=7,성공률=14%) 8(n=6,성공률=0%) 4(n=4,성공률=0%) 5(n=4,성공률=0%) 10(n=2,성공률=0%) 9(n=1,성공률=0%)
+[Conflict-Dominant Sacrifice Move]
+  wrongWingCount: 9-11(n=39,성공률=5%) 12-14(n=36,성공률=6%) 6-8(n=30,성공률=3%) 15-17(n=28,성공률=11%) 18-20(n=10,성공률=0%) 3-5(n=5,성공률=0%) 21-23(n=2,성공률=0%)
+  pairCount: 0-2(n=73,성공률=8%) 3-5(n=61,성공률=3%) 6-8(n=16,성공률=0%)
+  cycleCount: 2(n=35,성공률=3%) 3(n=27,성공률=7%) 4(n=23,성공률=4%) 1(n=19,성공률=5%) 5(n=11,성공률=9%) 6(n=10,성공률=0%) 0(n=9,성공률=22%) 8(n=5,성공률=0%)
+  cycleLength: 6(n=48,성공률=0%) 5(n=40,성공률=8%) 4(n=35,성공률=3%) 3(n=12,성공률=8%) 0(n=9,성공률=22%) 2(n=6,성공률=17%)
+  swapEdgeCount: 0(n=75,성공률=5%) 2(n=52,성공률=4%) 4(n=16,성공률=6%) 6(n=6,성공률=17%) 8(n=1,성공률=0%)
+  cycleEdgeCount: 8(n=18,성공률=0%) 0(n=15,성공률=20%) 7(n=14,성공률=0%) 6(n=13,성공률=8%) 9(n=10,성공률=0%) 5(n=9,성공률=22%) 18(n=8,성공률=0%) 4(n=7,성공률=0%)
+  conflictEdgeCount: 0(n=111,성공률=0%) 7(n=13,성공률=15%) 6(n=7,성공률=29%) 8(n=6,성공률=17%) 4(n=4,성공률=25%) 5(n=4,성공률=25%) 10(n=2,성공률=0%) 9(n=1,성공률=100%)
+
+--- 4. Feature 조합 비교 ---
+[Multi-Hop Bridge]
+  cycleLength 2~3 AND conflictEdgeCount>0 (게이트 내 신규 발견): 5/10건 매칭 (성공률=50.0%)
+  [활성화 필요조건 그 자체] cycleLength 2~3 (Prototype v2에서 이미 알려진 활성화 게이트 그 자체): 6/18건 매칭 (성공률=33.3%)
+  cycleLength 2~3 AND wrongWingCount 3~11: 4/13건 매칭 (성공률=30.8%)
+  cycleLength 2~3 AND conflictEdgeCount=0: 1/8건 매칭 (성공률=12.5%)
+  [기존 Blueprint] cycleCount<=2 (기존 Blueprint 원안): 4/63건 매칭 (성공률=6.3%)
+  cycleLength 2~3 AND swapEdgeCount=0: 0/7건 매칭 (성공률=0.0%)
+[Conflict-Dominant Sacrifice Move]
+  [활성화 필요조건 그 자체] conflictEdgeCount>0 (이 Primitive의 활성화 필요조건 그 자체): 8/39건 매칭 (성공률=20.5%)
+  conflictEdgeCount>=2: 8/39건 매칭 (성공률=20.5%)
+  [기존 Blueprint] conflictEdgeCount > swap+cycleEdge (기존 Blueprint 원안): 4/21건 매칭 (성공률=19.0%)
+  conflictEdgeCount>0 AND wrongWingCount 6~14: 5/28건 매칭 (성공률=17.9%)
+  conflictEdgeCount>0 AND cycleCount<=1: 3/19건 매칭 (성공률=15.8%)
+(참고: [활성화 필요조건 그 자체]로 표시된 항목은 Prototype 코드가 이미 강제하는 조건이라 성공이 그 밖에서 발생할 수 없음 -- 이 Sprint의 새 발견으로 집계하지 않고 참고용으로만 병기한다.)
+
+--- 5. 성공 기준 (Level 1~3) ---
+Level 1 (Prototype 실패 원인을 실측으로 설명): PASS
+Level 2 (Multi-Hop Bridge: 기존 Blueprint보다 설명력 높은 Feature/조합 발견): PASS (cycleLength 2~3 AND conflictEdgeCount>0 (게이트 내 신규 발견), 50.0% vs 기존 6.3%)
+Level 3 (Multi-Hop Bridge: 새 Blueprint 후보가 명확한 근거 제공, 개선폭>=15%p): PASS (개선폭 +43.7%p)
+Level 2 (Conflict-Dominant Sacrifice Move: 기존 Blueprint보다 설명력 높은 Feature/조합 발견): PASS (conflictEdgeCount>=2, 20.5% vs 기존 19.0%)
+Level 3 (Conflict-Dominant Sacrifice Move: 새 Blueprint 후보가 명확한 근거 제공, 개선폭>=15%p): FAIL (개선폭 +1.5%p)
+
+--- 6. 최종 결론 ---
+결정: A
+Multi-Hop Bridge: "cycleLength 2~3 AND conflictEdgeCount>0 (게이트 내 신규 발견)"가 기존 Blueprint(6.3%) 대비 +43.7%p 개선(50.0%, 10건 표본) -- 새 Blueprint를 확보할 명확한 근거가 있다.
+
+=== Sprint 종료: 성공 ===
+다음 단계: Solver Primitive Blueprint Sprint v2 (새 Blueprint로 재설계).
+보호 파일: fiveByFiveEdges.ts/Planner.ts/Executor.ts/Recovery.ts 및 기존 Primitive/Prototype 코드 미수정 (읽기 전용 재사용만). 새 Primitive 미구현, Hard Coding/Planner Integration 없음. 제품 코드 미통합.
