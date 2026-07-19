@@ -1,0 +1,51 @@
+========================================
+Solver Primitive Prototype Sprint v3 -- Report
+========================================
+
+--- 0. Sprint 성격 ---
+Solver Primitive Blueprint Sprint v2가 확정한 Blueprint(cycleLength 2~3 AND conflictEdgeCount>0)를 새 Prototype(MultiHopBridgePrototypeV3.ts, 독립 구현)으로 실제 구현하고, Blueprint의 Expected Mechanism이 실측으로 확인되는지, 기존 5개 Primitive 대비 의미 있는 신규 Capability를 추가하는지를 검증한다. 새 Prototype은 solverPrimitivePrototype/에서만 구현, 기존 Prototype/Solver/Planner/Executor/Recovery 수정 금지, Hard Coding/Planner Integration 없음, 제품 코드 미통합.
+
+--- 1. Precondition 호출 빈도 (STEP1) ---
+[no_cycle] 9건 (6.0%)
+[out_of_band] 123건 (82.0%)
+[no_conflict] 8건 (5.3%)
+[gate_matched] 10건 (6.7%)
+Blueprint Sprint v2 STEP4 실측 Coverage(6.7%)와 비교: 이번 측정 6.7%
+
+--- 2. Expected Mechanism 검증 (STEP2) ---
+[conflictEdgeCount>0] n=10 평균nodesVisited=6.60 평균candidatesGenerated=5.30 평균leavesExplored=3.40 평균netImprovingLeaves=0.60 평균netImprovingLeafRatio=20.0%
+[conflictEdgeCount==0] n=8 평균nodesVisited=7.13 평균candidatesGenerated=5.13 평균leavesExplored=3.25 평균netImprovingLeaves=0.13 평균netImprovingLeafRatio=2.5%
+탐색 다양성(candidatesGenerated AND leavesExplored 모두)이 conflictEdgeCount>0에서 더 높은가: 예
+net-improving leaf 비율이 conflictEdgeCount>0에서 더 높은가: 예
+
+--- 3. Success/Failure 분류 (STEP3) ---
+Success: 5건 (전체 대비 3.3%, gate_matched 대비 50.0%)
+Deferred Reject: 5건
+Gate Rejected: 140건
+
+--- 4. Regression 분석 (STEP4) ---
+True Regression (net-improvement 없이 채택, 발생하면 안 됨): 0건
+Coverage 축소 (v2는 성공했으나 v3 게이트가 더 이상 시도하지 않는 replay, Regression 아님): 1건
+기존 5개 Primitive(BASE/FLIP/CASE/PARITY/BP-1)가 전부 실패하는 Gap: 54건
+v3가 그 Gap 중 실제로 구제한 건수: 2건
+
+--- 5. 실행 비용 (STEP5, gate_matched 대상) ---
+매칭 수: 10건
+평균 실행 시간: 157.90ms
+평균 탐색 깊이(cycleLength): 2.40
+평균 분기 수(candidatesGenerated/nodesVisited): 0.71
+평균 leavesExplored: 3.40
+평균 nodesVisited: 6.60
+
+--- 6. 성공 기준 (Level 1~3) ---
+Level 1 (Prototype 정상 구현): PASS
+Level 2 (Blueprint 메커니즘이 실측으로 확인됨): PASS
+Level 3 (기존 Prototype 대비 의미 있는 Capability 추가): FAIL
+
+--- 7. 최종 결론 ---
+결정: B
+메커니즘은 실측으로 확인되었으나(Level2 PASS), 기존 5개 Primitive가 전부 실패하던 replay를 실제로 구제한 건수가 2건으로 기준(3건) 미만이다 -- 의미 있는 신규 Capability로 보기엔 부족하다. Prototype 보완이 필요하다.
+
+=== Sprint 종료: 추가 조치 필요 ===
+다음 단계: Solver Primitive Prototype Refinement Sprint v1.
+보호 파일: fiveByFiveEdges.ts/Planner.ts/Executor.ts/Recovery.ts, MultiHopBridgePrototype.ts(v2)/ConflictDominantSacrificePrototype.ts/ContractValidator.ts/PrototypeBenchmark.ts/PrototypeReport.ts, solverV2Prototype/(BoundedResolver.ts/MultiCycleAnalyzer.ts/DeferredValidator.ts) 전부 미수정(읽기 전용 재사용만). Planner Integration/Hard Coding 없음. 제품 코드 미통합.
