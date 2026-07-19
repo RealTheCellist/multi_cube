@@ -1,0 +1,52 @@
+========================================
+Solver Primitive Prototype Sprint v2 -- Report
+========================================
+
+--- 0. Sprint 성격 ---
+Primitive Blueprint Refinement Sprint v1의 결론(A. Prototype 진행 가능)을 이어받아, Priority 1(Multi-Hop Bridge)과 Priority 2(Conflict-Dominant Sacrifice Move)를 실제로 구현하고 150-replay Dataset 전체에서 검증한다. 단일 Primitive/최소 기능/독립 실행 원칙을 따르며, Planner 통합/자동 선택/Hard Coding을 하지 않는다. Solver/Planner/Executor/Recovery 및 기존 Primitive는 전혀 수정하지 않는다.
+
+--- 1. Contract 검증 ---
+Multi-Hop Bridge Preconditions 매칭: 41/150건
+Conflict-Dominant Sacrifice Move Preconditions 매칭: 21/150건
+
+--- 2. Success Rate / Failure Pattern / Regression / 실행 비용 ---
+[Multi-Hop Bridge]
+  Contract: 전체 150건 중 매칭 41건, 매칭 replay 성공 0건(0.0%), 매칭 밖에서 성공 6건
+  전체 Success Rate: 4.0% (6/150건)
+  기존 Gap(5개 Primitive 전부 실패) 중 이 Dataset에서 재확인된 건수: 56건, 그중 이 Prototype이 구제한 건수: 2건
+  Regression: 0건
+  실행 비용: 평균 31.2ms/replay, 평균 avgLeavesExplored=0.35
+  Failure Pattern:
+    out_of_band: 123건
+    deferred_validation_rejected_or_deadline: 12건
+    no_cycle: 9건
+
+[Conflict-Dominant Sacrifice Move]
+  Contract: 전체 150건 중 매칭 21건, 매칭 replay 성공 2건(9.5%), 매칭 밖에서 성공 3건
+  전체 Success Rate: 3.3% (5/150건)
+  기존 Gap(5개 Primitive 전부 실패) 중 이 Dataset에서 재확인된 건수: 54건, 그중 이 Prototype이 구제한 건수: 1건
+  Regression: 0건
+  실행 비용: 평균 123.4ms/replay, 평균 avgConflictEdgesTried=0.38
+  Failure Pattern:
+    no_conflict_edge: 111건
+    insert_failed: 19건
+    sacrifice_failed: 8건
+    no_net_improvement: 7건
+
+--- 3. 성공 기준 (Level 1~3, Primitive별) ---
+[Multi-Hop Bridge]
+  Level 1 (Prototype 정상 구현): PASS
+  Level 2 (Blueprint 예측 메커니즘이 실제 동작): FAIL (매칭 replay 성공률 0.0%)
+  Level 3 (기존 Primitive 대비 의미 있는 Capability 추가): FAIL (Gap 구제 2건)
+[Conflict-Dominant Sacrifice Move]
+  Level 1 (Prototype 정상 구현): PASS
+  Level 2 (Blueprint 예측 메커니즘이 실제 동작): FAIL (매칭 replay 성공률 9.5%)
+  Level 3 (기존 Primitive 대비 의미 있는 Capability 추가): FAIL (Gap 구제 1건)
+
+--- 4. 최종 결론 ---
+결정: C
+모든 Prototype이 Preconditions를 만족하는 replay에서도 성공률 30%에 못 미쳤다(Multi-Hop Bridge 0.0%, Conflict-Dominant Sacrifice Move 9.5%) -- Blueprint가 예측한 메커니즘이 실제로 동작하지 않는다. Primitive 가설 기각, Blueprint 단계로 환류.
+
+=== Sprint 종료: 추가 조치 필요 ===
+다음 단계: Blueprint 단계로 환류.
+보호 파일: fiveByFiveEdges.ts/Planner.ts/Executor.ts/Recovery.ts 및 BASE_ALG/FLIP_ALG/PARITY_ALG/CASE Library/CycleChasePrototype 미수정 (읽기 전용 재사용만). Planner 통합/자동 선택/Hard Coding 없음. 제품 코드 미통합.
