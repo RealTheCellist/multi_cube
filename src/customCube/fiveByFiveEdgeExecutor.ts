@@ -26,7 +26,7 @@ import { analyzeEdgeSlots } from "./fiveByFiveHumanEdges";
 import type { Move } from "./fiveByFiveEdges";
 import type { SolveTask, TraceEntry } from "./fiveByFiveEdgeSolverTypes";
 import { slotKeyForIndex } from "./fiveByFiveEdgePlanner";
-import { attemptRecovery, MAX_RECOVERY_RETRIES, RECOVERY_GEN_BUDGET_MS, RECOVERY_RETRY_BUDGET_MS } from "./fiveByFiveEdgeRecovery";
+import { attemptRecovery, MAX_RECOVERY_RETRIES, RECOVERY_GEN_BUDGET_MS, RECOVERY_RETRY_BUDGET_MS, type SchedulingStrategy } from "./fiveByFiveEdgeRecovery";
 import { DEFAULT_EVALUATOR_WEIGHTS, type EvaluatorWeights } from "./fiveByFiveEdgeEvaluator";
 
 // The ordinary ENDGAME pipeline below loops on `Date.now() < deadline`, so
@@ -193,7 +193,13 @@ export function executeTask(
   // Integration Benchmark passes non-default values to reconstruct
   // counterfactual behavior for comparison, never product callers.
   includeRepair = true,
-  shortCircuitRepair = true
+  shortCircuitRepair = true,
+  // Integration Refinement Sprint v1: pass-through to attemptRecovery, see
+  // fiveByFiveEdgeRecovery.ts's SchedulingStrategy comment. Defaults to
+  // "baseline" -- unchanged production behavior; the Refinement Sprint's
+  // own benchmark code passes "priorityGate"/"reservedBudget" to compare,
+  // never product callers.
+  schedulingStrategy: SchedulingStrategy = "baseline"
 ): Move[] {
   const recoveryEligible = allowRecovery && task.type === "ENDGAME";
   // Reserve RECOVERY_RESERVE_MS off the END of the deadline for the primary
@@ -214,7 +220,8 @@ export function executeTask(
     (working, taskDeadline) => runPrimaryPipeline(working, task, libs, taskDeadline),
     trace,
     includeRepair,
-    shortCircuitRepair
+    shortCircuitRepair,
+    schedulingStrategy
   );
 }
 

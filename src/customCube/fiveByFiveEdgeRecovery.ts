@@ -46,6 +46,41 @@ let nextRecoveryId = 1;
 // treats move count as a tie-breaking cost, never the primary signal.
 const MOVE_COST_WEIGHT = 2;
 
+// Integration Refinement Sprint v1: which candidate-generation ORDER/
+// budget rule generateRecoveryStrategies uses. "baseline" is BYTE-
+// IDENTICAL to this function's pre-Refinement-Sprint behavior (order
+// DISRUPT,DISRUPT,SETUP,REPAIR; all four share genDeadline via the same
+// `Date.now() < genDeadline` gate; no candidate gets special treatment)
+// -- every real production caller (which never passes this param)
+// therefore behaves EXACTLY as before this Sprint. "priorityGate" tries
+// REPAIR FIRST (same shared-genDeadline mechanism, just reordered).
+// "reservedBudget" keeps the original order but gives REPAIR's own slot
+// a guaranteed, unstarvable window -- see REPAIR_RESERVED_SLICE_MS and
+// genRepair()'s own comment for why. Integration Prototype Sprint v1
+// found DISRUPT/SETUP alone can consume 245-481ms against the nominal
+// 300ms genDeadline on Gate-matching snapshots, starving REPAIR's turn
+// out entirely under "baseline" -- these two strategies are this
+// Sprint's disclosed candidate fixes for that specific mechanism.
+export type SchedulingStrategy = "baseline" | "priorityGate" | "reservedBudget";
+
+// Strategy B (reservedBudget)'s own dedicated slice for REPAIR -- sized
+// identically to what the shared slice() would give it under baseline
+// (RECOVERY_GEN_BUDGET_MS/4 = 75ms) for a fair apples-to-apples
+// comparison against baseline/priorityGate (same nominal budget size,
+// just protected from being starved out by DISRUPT/SETUP running long).
+const REPAIR_RESERVED_SLICE_MS = 75;
+
+// Instrumentation hook for Integration Refinement Sprint v1's own STEP1/
+// STEP2 scheduling-verification measurements (matched/skipped/budget-
+// exhausted/timing) -- optional, no-op for every real caller. Reuses the
+// SAME candidate-generation code path under test rather than
+// reconstructing timing externally from outside the function.
+export interface SchedulingEvent {
+  candidateType: RecoveryStrategy["type"];
+  phase: "start" | "generated" | "empty" | "skipped";
+  atMs: number; // Date.now() at the moment of this event
+}
+
 /**
  * Builds >=3 Recovery candidates (spec section 7), each a genuinely
  * different existing search reused at a different aggressiveness/mechanism:
@@ -72,16 +107,22 @@ export function generateRecoveryStrategies(
   // reconstruct the pre-REPAIR baseline behavior for an honest before/
   // after comparison, without needing two copies of this function.
   // Defaults to true (REPAIR included) for real production use.
-  includeRepair = true
+  includeRepair = true,
+  // Integration Refinement Sprint v1: see SchedulingStrategy's own
+  // comment. Defaults to "baseline" -- unchanged production behavior.
+  schedulingStrategy: SchedulingStrategy = "baseline",
+  // Integration Refinement Sprint v1 STEP1/2 instrumentation only -- see
+  // SchedulingEvent's own comment. undefined for every real caller.
+  onEvent?: (e: SchedulingEvent) => void
 ): RecoveryStrategy[] {
   const { lib, flipLib, caseLib } = libs;
   const genDeadline = Math.min(deadline, Date.now() + RECOVERY_GEN_BUDGET_MS);
-  const baseline = wrongWingCount5(cubies);
+  const baselineWrong = wrongWingCount5(cubies);
   const baseScore = scoreWholeState(cubies, weights);
   const candidates: RecoveryStrategy[] = [];
 
-  const add = (type: RecoveryStrategy["type"], description: string, moves: Move[] | null) => {
-    if (!moves || moves.length === 0) return;
+  const add = (type: RecoveryStrategy["type"], description: string, moves: Move[] | null): boolean => {
+    if (!moves || moves.length === 0) return false;
     const clone = cloneCubies(cubies);
     applySeq(clone, moves);
     const afterWrong = wrongWingCount5(clone);
@@ -92,10 +133,11 @@ export function generateRecoveryStrategies(
       type,
       description,
       moves,
-      expectedWrongWingDelta: afterWrong - baseline,
+      expectedWrongWingDelta: afterWrong - baselineWrong,
       expectedFuturePotential: futurePotential,
       score: futurePotential - moves.length * MOVE_COST_WEIGHT,
     });
+    return true;
   };
 
   // Divisor updated 3->4 (Integration Prototype Sprint v1) now that REPAIR
@@ -103,37 +145,82 @@ export function generateRecoveryStrategies(
   // Integration Blueprint Sprint v1's own Integration Contract ("다른
   // 후보와 동일한 예산 배분 규칙을 그대로 따른다"), REPAIR gets a fair
   // share like DISRUPT/SETUP rather than a privileged or leftover slice.
+  // Unchanged by this Sprint -- schedulingStrategy only changes ORDER
+  // (priorityGate) or REPAIR's OWN gating rule (reservedBudget), never
+  // this shared-budget arithmetic itself.
   const slice = () => Math.max(5, Math.floor((genDeadline - Date.now()) / 4));
 
-  if (Date.now() < genDeadline) {
+  const genDisrupt1 = () => {
+    if (Date.now() >= genDeadline) {
+      onEvent?.({ candidateType: "DISRUPT", phase: "skipped", atMs: Date.now() });
+      return;
+    }
+    onEvent?.({ candidateType: "DISRUPT", phase: "start", atMs: Date.now() });
     const d = Math.min(genDeadline, Date.now() + slice());
-    add(
-      "DISRUPT",
-      "가벼운 Disruption (교란 1개 이하, 재귀 없음)",
-      tryEndgameThroughDisruption(cubies, lib, flipLib, d, 1, 0, caseLib)
-    );
-  }
-  if (Date.now() < genDeadline) {
+    const added = add("DISRUPT", "가벼운 Disruption (교란 1개 이하, 재귀 없음)", tryEndgameThroughDisruption(cubies, lib, flipLib, d, 1, 0, caseLib));
+    onEvent?.({ candidateType: "DISRUPT", phase: added ? "generated" : "empty", atMs: Date.now() });
+  };
+
+  const genDisrupt2 = () => {
+    if (Date.now() >= genDeadline) {
+      onEvent?.({ candidateType: "DISRUPT", phase: "skipped", atMs: Date.now() });
+      return;
+    }
+    onEvent?.({ candidateType: "DISRUPT", phase: "start", atMs: Date.now() });
     const d = Math.min(genDeadline, Date.now() + slice());
-    add(
-      "DISRUPT",
-      "확장 Disruption (교란 3개, 재귀 1단계)",
-      tryEndgameThroughDisruption(cubies, lib, flipLib, d, 3, 1, caseLib)
-    );
-  }
-  if (Date.now() < genDeadline) {
+    const added = add("DISRUPT", "확장 Disruption (교란 3개, 재귀 1단계)", tryEndgameThroughDisruption(cubies, lib, flipLib, d, 3, 1, caseLib));
+    onEvent?.({ candidateType: "DISRUPT", phase: added ? "generated" : "empty", atMs: Date.now() });
+  };
+
+  const genSetup = () => {
+    if (Date.now() >= genDeadline) {
+      onEvent?.({ candidateType: "SETUP", phase: "skipped", atMs: Date.now() });
+      return;
+    }
+    onEvent?.({ candidateType: "SETUP", phase: "start", atMs: Date.now() });
     const d = Math.min(genDeadline, Date.now() + slice());
-    add("SETUP", "Multi-ply Setup (즉시 이득 없는 수 + 후속 수습)", tryEndgameMultiPly(cubies, lib, flipLib, d));
-  }
-  if (includeRepair && Date.now() < genDeadline) {
+    const added = add("SETUP", "Multi-ply Setup (즉시 이득 없는 수 + 후속 수습)", tryEndgameMultiPly(cubies, lib, flipLib, d));
+    onEvent?.({ candidateType: "SETUP", phase: added ? "generated" : "empty", atMs: Date.now() });
+  };
+
+  const genRepair = () => {
+    if (!includeRepair) return;
+    if (schedulingStrategy === "reservedBudget") {
+      // Strategy B: REPAIR's slot is protected from the shared-genDeadline
+      // starvation Integration Prototype Sprint v1 found -- always
+      // attempted (never gated by `Date.now() < genDeadline`), using a
+      // fresh REPAIR_RESERVED_SLICE_MS window measured off the OUTER
+      // `deadline` rather than the (possibly already-exhausted) shared
+      // genDeadline. Order is otherwise unchanged (still runs last).
+      onEvent?.({ candidateType: "REPAIR", phase: "start", atMs: Date.now() });
+      const d = Math.min(deadline, Date.now() + REPAIR_RESERVED_SLICE_MS);
+      const w2Result = runSuccessV2(cubies, lib, d, W2_WIDER_HOP);
+      const added = add("REPAIR", "구조적 Cycle 해결 (W2_widerHop, reservedBudget scheduling)", w2Result.matched ? w2Result.moves : null);
+      onEvent?.({ candidateType: "REPAIR", phase: added ? "generated" : "empty", atMs: Date.now() });
+      return;
+    }
+    if (Date.now() >= genDeadline) {
+      onEvent?.({ candidateType: "REPAIR", phase: "skipped", atMs: Date.now() });
+      return;
+    }
+    onEvent?.({ candidateType: "REPAIR", phase: "start", atMs: Date.now() });
     const d = Math.min(genDeadline, Date.now() + slice());
     const w2Result = runSuccessV2(cubies, lib, d, W2_WIDER_HOP);
-    add(
-      "REPAIR",
-      "구조적 Cycle 해결 (W2_widerHop -- cycleLength 2~4 AND conflictEdgeCount>0 Gate, maxCandidatesPerHop=3)",
-      w2Result.matched ? w2Result.moves : null
-    );
-  }
+    const description =
+      schedulingStrategy === "priorityGate"
+        ? "구조적 Cycle 해결 (W2_widerHop, priorityGate scheduling -- REPAIR 우선 시도)"
+        : "구조적 Cycle 해결 (W2_widerHop -- cycleLength 2~4 AND conflictEdgeCount>0 Gate, maxCandidatesPerHop=3)";
+    const added = add("REPAIR", description, w2Result.matched ? w2Result.moves : null);
+    onEvent?.({ candidateType: "REPAIR", phase: added ? "generated" : "empty", atMs: Date.now() });
+  };
+
+  // baseline/reservedBudget keep the ORIGINAL DISRUPT,DISRUPT,SETUP,REPAIR
+  // order (reservedBudget's only change is REPAIR's own gating rule inside
+  // genRepair(), not ordering); priorityGate (Strategy A) tries REPAIR
+  // FIRST, using the exact same shared-genDeadline mechanism as baseline,
+  // simply given first crack at it before DISRUPT/SETUP can consume it.
+  const order = schedulingStrategy === "priorityGate" ? [genRepair, genDisrupt1, genDisrupt2, genSetup] : [genDisrupt1, genDisrupt2, genSetup, genRepair];
+  for (const step of order) step();
 
   return candidates;
 }
@@ -185,7 +272,11 @@ export function attemptRecovery(
   // recommended resolution of its previously-open design question);
   // pass false to reconstruct the pre-short-circuit behavior for STEP3's
   // A/B comparison.
-  shortCircuitRepair = true
+  shortCircuitRepair = true,
+  // Integration Refinement Sprint v1: threaded through to
+  // generateRecoveryStrategies -- see SchedulingStrategy's own comment.
+  // Defaults to "baseline" -- unchanged production behavior.
+  schedulingStrategy: SchedulingStrategy = "baseline"
 ): Move[] {
   const log = (label: string, detail?: string) => trace?.push({ at: Date.now(), label, detail });
   const visited = new Set<number>();
@@ -208,7 +299,7 @@ export function attemptRecovery(
   for (let round = 0; round < MAX_RECOVERY_RETRIES; round++) {
     if (Date.now() > deadline) break;
 
-    const candidates = generateRecoveryStrategies(scratch, libs, deadline, weights, includeRepair);
+    const candidates = generateRecoveryStrategies(scratch, libs, deadline, weights, includeRepair, schedulingStrategy);
     if (candidates.length === 0) {
       log("recovery-no-candidates", `${round + 1}회차: Recovery 후보를 찾지 못함`);
       break;
