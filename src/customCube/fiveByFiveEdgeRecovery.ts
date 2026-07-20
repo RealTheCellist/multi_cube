@@ -109,8 +109,16 @@ export function generateRecoveryStrategies(
   // Defaults to true (REPAIR included) for real production use.
   includeRepair = true,
   // Integration Refinement Sprint v1: see SchedulingStrategy's own
-  // comment. Defaults to "baseline" -- unchanged production behavior.
-  schedulingStrategy: SchedulingStrategy = "baseline",
+  // comment. Integration Validation Sprint v1 (STEP1) promoted
+  // "reservedBudget" (Strategy B) to the PRODUCTION default -- both
+  // independent N=15 full runs in Refinement Sprint v1 showed it clears
+  // Generation Starvation entirely (Generation Skipped 47.6~50.0% ->
+  // 0.0%) with a statistically significant Capability improvement
+  // (paired-diff 95% CI excluding zero, both runs) and zero regressions.
+  // A/B override is NOT removed -- pass "baseline" explicitly to
+  // reconstruct the pre-Validation-Sprint production behavior (used by
+  // this Sprint's own Regression Test).
+  schedulingStrategy: SchedulingStrategy = "reservedBudget",
   // Integration Refinement Sprint v1 STEP1/2 instrumentation only -- see
   // SchedulingEvent's own comment. undefined for every real caller.
   onEvent?: (e: SchedulingEvent) => void
@@ -275,8 +283,10 @@ export function attemptRecovery(
   shortCircuitRepair = true,
   // Integration Refinement Sprint v1: threaded through to
   // generateRecoveryStrategies -- see SchedulingStrategy's own comment.
-  // Defaults to "baseline" -- unchanged production behavior.
-  schedulingStrategy: SchedulingStrategy = "baseline"
+  // Integration Validation Sprint v1 (STEP1): defaults to "reservedBudget",
+  // the new production default -- pass "baseline" to reconstruct the
+  // pre-Validation-Sprint behavior.
+  schedulingStrategy: SchedulingStrategy = "reservedBudget"
 ): Move[] {
   const log = (label: string, detail?: string) => trace?.push({ at: Date.now(), label, detail });
   const visited = new Set<number>();

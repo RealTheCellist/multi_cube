@@ -195,11 +195,11 @@ export function executeTask(
   includeRepair = true,
   shortCircuitRepair = true,
   // Integration Refinement Sprint v1: pass-through to attemptRecovery, see
-  // fiveByFiveEdgeRecovery.ts's SchedulingStrategy comment. Defaults to
-  // "baseline" -- unchanged production behavior; the Refinement Sprint's
-  // own benchmark code passes "priorityGate"/"reservedBudget" to compare,
-  // never product callers.
-  schedulingStrategy: SchedulingStrategy = "baseline"
+  // fiveByFiveEdgeRecovery.ts's SchedulingStrategy comment. Integration
+  // Validation Sprint v1 (STEP1): defaults to "reservedBudget", the new
+  // production default -- pass "baseline"/"priorityGate" explicitly to
+  // reconstruct counterfactual behavior for comparison, never product callers.
+  schedulingStrategy: SchedulingStrategy = "reservedBudget"
 ): Move[] {
   const recoveryEligible = allowRecovery && task.type === "ENDGAME";
   // Reserve RECOVERY_RESERVE_MS off the END of the deadline for the primary
