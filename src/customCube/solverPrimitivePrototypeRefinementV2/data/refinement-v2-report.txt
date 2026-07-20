@@ -1,0 +1,27 @@
+========================================
+Solver Primitive Prototype Refinement Sprint v2 -- Report
+========================================
+
+--- 0. Sprint 성격 ---
+A1_wideCycle(cycleLength 2~4 AND conflictEdgeCount>0)을 새 baseline으로 채택한다 -- Evaluation Stabilization Sprint v2가 paired-diff CI로 기존 A0 baseline보다 통계적으로 유의미하게 우수함을 확인했다(N=5/10/15 전 구간, 독립 2회 재현). 이번 Sprint는 Evaluation Framework를 더 이상 바꾸지 않고 확정된 Standard Evaluation Protocol(Majority Vote Gap 분류 + paired-diff 95% CI, N>=15, 필요시 적응적 확장)을 그대로 적용해 Capability 확장에 집중한다. 기존 Solver/Planner/Executor/Recovery/Primitive/Prototype 및 이전 Sprint들의 Evaluation 코드는 전혀 수정하지 않는다(읽기 전용 재사용만).
+
+--- 1. 데이터 수집 및 변형 비교 (N=15) ---
+[V0_baseline] Coverage=11.3% avgMatched=17.0 Precision=52.5% GapRescue평균=2.00(CI=[2.00, 2.00]) pairedDiff평균=0.00(CI=[0.00, 0.00]) Regression=0
+[V1_wideCycle5] Coverage=18.7% avgMatched=28.0 Precision=46.4% GapRescue평균=2.00(CI=[2.00, 2.00]) pairedDiff평균=0.00(CI=[0.00, 0.00]) Regression=0
+[W1_reordered] Coverage=11.3% avgMatched=17.0 Precision=52.9% GapRescue평균=2.00(CI=[2.00, 2.00]) pairedDiff평균=0.00(CI=[0.00, 0.00]) Regression=0
+[W2_widerHop] Coverage=11.3% avgMatched=17.0 Precision=52.2% GapRescue평균=2.87(CI=[2.69, 3.04]) pairedDiff평균=0.87(CI=[0.69, 1.04]) Regression=0
+
+--- 2. 성공 기준 (Level 1~3) ---
+Level 1 (Capability가 실제로 확장되었다 -- paired-diff CI가 0을 배제하는 정당한 변형 존재): PASS
+Level 2 (Regression 없이 개선되었다): PASS
+Level 3 (개선 폭이 baseline 평균 GapRescue의 20% 이상으로 실질적이다): PASS
+
+--- 3. 최종 결론 ---
+결정: A
+"W2_widerHop"가 baseline(A1_wideCycle) 대비 paired-diff CI=[0.69, 1.04](0 배제)로 통계적으로 유의미하고, baseline 평균 GapRescue의 43.3%만큼 실질적으로 Capability를 확장했다(Regression 0건) -- Integration 가능.
+최적 변형: [W2_widerHop] Coverage=11.3% avgMatched=17.0 Precision=52.2% GapRescue평균=2.87(CI=[2.69, 3.04]) pairedDiff평균=0.87(CI=[0.69, 1.04]) Regression=0
+
+=== Sprint 종료: 성공 ===
+다음 단계: Solver Primitive Integration Blueprint Sprint v1 (확정된 Primitive를 실제 Solver에 통합).
+실제 사용한 Run 수: 15 (Standard Protocol 최소 기준 15회)
+보호 파일: 기존 Solver/Planner/Executor/Recovery/Primitive/Prototype, solverPrimitivePrototypeRefinement/(v1) 및 solverPrimitiveEvaluationStabilization/(v1/v2) 전부 미수정(읽기 전용 재사용만). Hard Coding/Planner Integration 없음. 제품 코드 미통합.
