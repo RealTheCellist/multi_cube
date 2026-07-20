@@ -1,0 +1,59 @@
+========================================
+Solver Primitive Integration Prototype Sprint v1 -- Report
+========================================
+
+--- 0. Sprint 성격 ---
+Integration Blueprint Sprint v1에서 확정한 Integration Contract를 실제 production Solver에 최초 적용했다. W2_widerHop을 Recovery의 REPAIR Strategy로 실제 연결(fiveByFiveEdgeRecovery.ts/fiveByFiveEdgeExecutor.ts, 이번 Sprint에서 처음으로 허용된 product code 수정)하고, Blueprint가 예측한 동작이 실제 Solver에서도 재현되는지 실측으로 검증한다. Solver/Planner/Primitive Registry는 전혀 수정하지 않았다.
+
+데이터셋: 150개 replay
+
+--- 1. STEP2: Recovery Contract 검증 ---
+REPAIR 생성됨: 1/150 (0.7%)
+REPAIR 생성된 것 중 실제 채택됨(chooseBestRecovery 최고점): 1/1 (100.0%)
+REPAIR 미생성(Gate 불일치 또는 Deferred Reject, 둘을 구분하지 않은 합산치): 149/150
+snapshot당 평균 후보 수: 0.04
+
+--- 2. STEP3: Short-circuit 여부 실험 (A/B) ---
+[shortCircuit=true] 성공률 12.0% (18/150), Regression 37건, 평균 760.6ms, 최대 1181ms, short-circuit 발동 0건
+[shortCircuit=false] 성공률 9.3% (14/150), Regression 33건, 평균 785.5ms, 최대 1291ms, short-circuit 발동 0건
+delta: 성공률 2.7%p, 평균시간 -24.9ms, Regression 4건
+
+--- 3. STEP4: Time Budget 검증 ---
+REPAIR 실제 slice 예산: 75ms (RECOVERY_GEN_BUDGET_MS/4)
+Gate 통과(analyzeMultiCycle+conflictEdgeCount>0): 17/150
+Gate 통과분 평균 실행시간: 119.8ms, 최대 218ms
+Gate 통과분 중 slice 예산 초과: 17/17 (100.0%)
+(Blueprint의 Risk 완화책 (c): 시간 내 완료 못 하면 후보 미생성으로 두고 DISRUPT/SETUP만 진행 -- add()가 null/empty를 이미 그렇게 처리하므로 별도 코드 변경 없이 이미 이 완화책이 적용되어 있다.)
+
+--- 4. STEP5: Integration Benchmark (기존 vs REPAIR 포함) ---
+[기존 (REPAIR 미포함)]
+  Solve Rate: 0.0% (0/150)
+  평균 Move: 98.36, 평균 Time: 1036.1ms, 최대 Time: 1290ms
+  Plan 예산(1000ms) 초과: 131건
+  Recovery 호출 수: 40, REPAIR 생성 수: 0, REPAIR short-circuit 수: 0
+  Regression: 0건
+[REPAIR 포함 (실제 production 기본값)]
+  Solve Rate: 0.0% (0/150)
+  평균 Move: 97.21, 평균 Time: 1038.4ms, 최대 Time: 1371ms
+  Plan 예산(1000ms) 초과: 133건
+  Recovery 호출 수: 42, REPAIR 생성 수: 0, REPAIR short-circuit 수: 0
+  Regression: 0건
+delta: Solve Rate 0.0%p (참고용 -- 이 Dataset은 전부 과거 solver 실패 사례라 fully-solved 기준은 구조적으로 0%에 가깝다), 평균 Move -1.15, 평균 Time 2.3ms, Regression 0건
+Rescued(after만 완전히 풀림): 0건, Lost(before만 완전히 풀림): 0건
+[Standard Evaluation Protocol] paired-diff(REPAIR 포함 - 미포함, snapshot당 wrongWing 개선량) 평균 -0.080, stddev 0.959, 95% CI [-0.233, 0.073] (n=150)
+
+--- 5. STEP6: Planner 영향 확인 ---
+베이스라인 mismatch(probe 없이 sigA vs sigB -- 이 Sprint와 무관한 Planner 자체의 사전 존재 timing jitter): 19/150
+includeRepair=false probe 이후 mismatch: 18/150
+includeRepair=true probe 이후 mismatch(이번 Sprint 실제 production 기본값): 22/150
+REPAIR 고유의 증분(with-without): 4건 -- 베이스라인 jitter로 설명되지 않는 REPAIR 자체의 영향
+
+--- 6. 성공 기준 판정 ---
+Level 1 (REPAIR가 정상적으로 Recovery에 연결된다): PASS
+Level 2 (Blueprint 예측 동작이 실제로 확인된다): PASS
+Level 3 (통계적으로 유의한 개선 또는 Integration 가능성 확인): FAIL
+
+--- 7. 최종 결정: B ---
+전체 Production Solver 기준 통계적으로 유의한 개선이 확인되지 않았다 -- paired-diff(REPAIR 포함 - 미포함, snapshot당 wrongWing 개선량) 평균 -0.080, 95% CI [-0.233, 0.073] (0을 포함하거나 음수 -- 유의미한 개선 아님), 전체 Plan 예산 초과 133건. short-circuit 효과: 성공률 delta 2.7%p, 시간 delta -24.9ms. REPAIR 자체 slice 초과율 100.0% (Gate 통과 17건 중). REPAIR가 실제 생성된 사례가 1건(150건 중)으로 극히 드물어(Gate 통과는 17건이지만, DISRUPT/SETUP이 공유 genDeadline을 먼저 소진하는 경우가 대부분) 전체 통계에 미치는 영향 자체가 작다는 것이 근본 원인으로 보인다. Integration 보완 필요.
+
+--- 총 소요 시간: 857.6초 ---

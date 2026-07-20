@@ -186,7 +186,14 @@ export function executeTask(
   deadline: number,
   trace?: TraceEntry[],
   allowRecovery = false,
-  weights: EvaluatorWeights = DEFAULT_EVALUATOR_WEIGHTS
+  weights: EvaluatorWeights = DEFAULT_EVALUATOR_WEIGHTS,
+  // Integration Prototype Sprint v1: pass-through to attemptRecovery, see
+  // fiveByFiveEdgeRecovery.ts's own comments on each. Both default to the
+  // real production behavior (REPAIR included, short-circuited); the
+  // Integration Benchmark passes non-default values to reconstruct
+  // counterfactual behavior for comparison, never product callers.
+  includeRepair = true,
+  shortCircuitRepair = true
 ): Move[] {
   const recoveryEligible = allowRecovery && task.type === "ENDGAME";
   // Reserve RECOVERY_RESERVE_MS off the END of the deadline for the primary
@@ -205,7 +212,9 @@ export function executeTask(
     deadline,
     weights,
     (working, taskDeadline) => runPrimaryPipeline(working, task, libs, taskDeadline),
-    trace
+    trace,
+    includeRepair,
+    shortCircuitRepair
   );
 }
 

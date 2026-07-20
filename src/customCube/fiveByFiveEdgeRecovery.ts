@@ -18,6 +18,15 @@ import { computeEdgeSolverStateHash } from "./fiveByFiveEdgeStateHash";
 import { DEFAULT_EVALUATOR_WEIGHTS, scoreWholeState, type EvaluatorWeights } from "./fiveByFiveEdgeEvaluator";
 import type { RecoveryStrategy, TraceEntry } from "./fiveByFiveEdgeSolverTypes";
 import type { ExecutorLibraries } from "./fiveByFiveEdgeExecutor";
+// Integration Blueprint Sprint v1's chosen Integration Point: W2_widerHop
+// (Prototype Refinement Sprint v2's confirmed Primitive -- A1_wideCycle
+// Gate, cycleLength 2~4 AND conflictEdgeCount>0, maxCandidatesPerHop=3)
+// wired in as a new "REPAIR"-typed Recovery candidate. runSuccessV2
+// already does its own full Gate check + Deferred Validation internally
+// (returns {matched:false} when the Gate isn't satisfied, {moves:null}
+// when no net-improving leaf is found) -- reused UNMODIFIED, the search
+// algorithm itself is not reimplemented here.
+import { runSuccessV2, W2_WIDER_HOP } from "./solverPrimitivePrototypeRefinementV2/SuccessOptimizationV2";
 
 // Section 13's Time Budget table gives Recovery its own small sub-budgets
 // (생성 50ms / Simulation 50ms / Retry 150ms) -- these are PER-TASK budgets
@@ -58,7 +67,12 @@ export function generateRecoveryStrategies(
   cubies: Cubie[],
   libs: ExecutorLibraries,
   deadline: number,
-  weights: EvaluatorWeights = DEFAULT_EVALUATOR_WEIGHTS
+  weights: EvaluatorWeights = DEFAULT_EVALUATOR_WEIGHTS,
+  // Integration Prototype Sprint v1: lets STEP5's Integration Benchmark
+  // reconstruct the pre-REPAIR baseline behavior for an honest before/
+  // after comparison, without needing two copies of this function.
+  // Defaults to true (REPAIR included) for real production use.
+  includeRepair = true
 ): RecoveryStrategy[] {
   const { lib, flipLib, caseLib } = libs;
   const genDeadline = Math.min(deadline, Date.now() + RECOVERY_GEN_BUDGET_MS);
@@ -84,7 +98,12 @@ export function generateRecoveryStrategies(
     });
   };
 
-  const slice = () => Math.max(5, Math.floor((genDeadline - Date.now()) / 3));
+  // Divisor updated 3->4 (Integration Prototype Sprint v1) now that REPAIR
+  // is a 4th generation step sharing the same genDeadline -- per
+  // Integration Blueprint Sprint v1's own Integration Contract ("다른
+  // 후보와 동일한 예산 배분 규칙을 그대로 따른다"), REPAIR gets a fair
+  // share like DISRUPT/SETUP rather than a privileged or leftover slice.
+  const slice = () => Math.max(5, Math.floor((genDeadline - Date.now()) / 4));
 
   if (Date.now() < genDeadline) {
     const d = Math.min(genDeadline, Date.now() + slice());
@@ -105,6 +124,15 @@ export function generateRecoveryStrategies(
   if (Date.now() < genDeadline) {
     const d = Math.min(genDeadline, Date.now() + slice());
     add("SETUP", "Multi-ply Setup (즉시 이득 없는 수 + 후속 수습)", tryEndgameMultiPly(cubies, lib, flipLib, d));
+  }
+  if (includeRepair && Date.now() < genDeadline) {
+    const d = Math.min(genDeadline, Date.now() + slice());
+    const w2Result = runSuccessV2(cubies, lib, d, W2_WIDER_HOP);
+    add(
+      "REPAIR",
+      "구조적 Cycle 해결 (W2_widerHop -- cycleLength 2~4 AND conflictEdgeCount>0 Gate, maxCandidatesPerHop=3)",
+      w2Result.matched ? w2Result.moves : null
+    );
   }
 
   return candidates;
@@ -141,7 +169,23 @@ export function attemptRecovery(
   deadline: number,
   weights: EvaluatorWeights,
   retryTask: (working: Cubie[], taskDeadline: number) => Move[],
-  trace?: TraceEntry[]
+  trace?: TraceEntry[],
+  // Integration Prototype Sprint v1: threaded through to
+  // generateRecoveryStrategies -- see that function's own comment.
+  includeRepair = true,
+  // A REPAIR candidate's moves are already validated as net-improving by
+  // W2_widerHop's own Deferred Validation (runSuccessV2 -> validateDeferred)
+  // BEFORE they ever reach chooseBestRecovery -- unlike DISRUPT/SETUP,
+  // which deliberately may NOT improve wrongWingCount by themselves and
+  // therefore genuinely need the retryTask round trip to become useful.
+  // When true (the default), a chosen REPAIR candidate that already beats
+  // originalBaseline is accepted immediately, skipping the retryTask call
+  // entirely -- avoiding wasted work on a step whose outcome is already
+  // known. Defaults to true (Integration Blueprint Sprint v1's own
+  // recommended resolution of its previously-open design question);
+  // pass false to reconstruct the pre-short-circuit behavior for STEP3's
+  // A/B comparison.
+  shortCircuitRepair = true
 ): Move[] {
   const log = (label: string, detail?: string) => trace?.push({ at: Date.now(), label, detail });
   const visited = new Set<number>();
@@ -164,7 +208,7 @@ export function attemptRecovery(
   for (let round = 0; round < MAX_RECOVERY_RETRIES; round++) {
     if (Date.now() > deadline) break;
 
-    const candidates = generateRecoveryStrategies(scratch, libs, deadline, weights);
+    const candidates = generateRecoveryStrategies(scratch, libs, deadline, weights, includeRepair);
     if (candidates.length === 0) {
       log("recovery-no-candidates", `${round + 1}회차: Recovery 후보를 찾지 못함`);
       break;
@@ -196,6 +240,12 @@ export function attemptRecovery(
         best.expectedFuturePotential >= 0 ? "+" : ""
       }${best.expectedFuturePotential.toFixed(1)}`
     );
+
+    if (best.type === "REPAIR" && shortCircuitRepair && afterDisrupt < originalBaseline) {
+      log("recovery-repair-short-circuit", `REPAIR가 이미 net-improvement 검증됨(wrongWing ${originalBaseline} -> ${afterDisrupt}) -- retryTask 생략`);
+      applySeq(cubies, applied);
+      return applied;
+    }
 
     const retryDeadline = Math.min(deadline, Date.now() + RECOVERY_RETRY_BUDGET_MS);
     const retryMoves = retryTask(scratch, retryDeadline);
