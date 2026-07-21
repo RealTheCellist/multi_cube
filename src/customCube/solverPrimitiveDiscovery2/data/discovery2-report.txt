@@ -1,0 +1,71 @@
+========================================
+Primitive Discovery Sprint #3 -- Report
+========================================
+
+--- STEP1: Remaining Gap Verification ---
+전체 snapshot: 335건
+현재 production이 이미 해결(stale): 0건
+REPAIR 현재 Gate(cycleLength 2~4) 해당: 118건
+남은 Gap(!stale && !gateEligible): 217건
+  - cycleLength 5-6: 189건
+  - cycleLength no-cycle: 28건
+CCR 목표 모집단(cycleLength 5-6, conflictEdgeCount=0, 재검증 후): 173건
+
+--- STEP2: CCR Target Profiling ---
+n: 173
+평균 wrongWingCount: 12.24
+parity 있는 비율: 87.3%
+평균 cycle 개수: 4.10
+다중 cycle(cycleCount>1) 비율: 91.9%
+평균 wrongWing 밀도(wrongWingCount / (primaryCycleLength*2)): 1.10
+Edge Orbit 분포(주 cycle 노드 기준): {"xz":321,"yz":306,"xy":334}
+Wing Pairing 상태 분포(주 cycle 노드 기준): {"unpaired":361,"half-paired":600}
+
+--- STEP3: Structural Pattern Mining (Top 10 cycle shape) ---
+  5+3: 11건 (6.4%)
+  5+3+2: 8건 (4.6%)
+  6: 8건 (4.6%)
+  5+2: 7건 (4.0%)
+  6+2: 7건 (4.0%)
+  5: 6건 (3.5%)
+  6+4+2: 5건 (2.9%)
+  6+3: 5건 (2.9%)
+  5+3+2+2: 3건 (1.7%)
+  6+5+4+3+2: 3건 (1.7%)
+
+--- STEP4: Existing Primitive Reuse Analysis (REPAIR 탐색 코어, cycleLength band만 2~6으로 확장) ---
+Probe 대상: 173건 (REPAIR의 실제 75ms reservedBudget 창 기준, W2_widerHop과 동일 옵션)
+Match(net-improve, Deferred Validation 통과) 비율: 11.0% (19/173)
+평균 leavesExplored: 1.1, 평균 nodesVisited: 2.2
+Leaf Cap(MAX_LEAVES_EXPLORED) 도달 비율: 0.0%
+Deadline(75ms) 도달 비율: 91.9%
+평균 소요시간: 156.08ms
+
+이 결과(leavesExplored 평균 1.1, nodesVisited 평균 2.2인데 Deadline 도달률 91.9%)는 처음엔 '3^5/3^6 분기 폭발로 조기 절단' 가설을 시사하는 듯 보였으나, leafCapHitRate가 0.0%로 실측되어 그 가설과 모순되었다 -- 자체 재검증 실시:
+이론적 분기 비교(maxCandidatesPerHop=3 기준, cap=64) -- 참고용, 아래 실측으로 기각된 가설:
+  cycleLength 2: 이론적 최대 leaves = 3^2 = 9
+  cycleLength 3: 이론적 최대 leaves = 3^3 = 27
+  cycleLength 4: 이론적 최대 leaves = 3^4 = 81 (cap 64 초과)
+  cycleLength 5: 이론적 최대 leaves = 3^5 = 243 (cap 64 초과)
+  cycleLength 6: 이론적 최대 leaves = 3^6 = 729 (cap 64 초과)
+
+단일 첫-hop enumerateWingCandidates() 소요시간(n=173, 500ms 여유 예산으로 측정 자체는 절단되지 않음): 평균 186.2ms, p50 73ms, p95 611ms, max 1219ms
+-> p50(73ms)만으로도 REPAIR의 75ms reservedBudget에 근접/초과하며, p95(611ms)는 이를 크게 초과한다. 즉 91.9% Deadline 도달의 실제 원인은 DFS 분기 폭발이 아니라 "이 모집단(평균 wrongWingCount 12.2, cycleLength 2~4보다 밀집됨)에서 단일 hop의 candidate 탐색 비용 자체가 REPAIR의 75ms 창을 거의 항상 넘어선다"는 예산 부족(budget starvation)이다.
+
+--- STEP4 재검증: 동일 Probe, 1000ms 예산(REPAIR 75ms reservedBudget 대신 실제 전체 plan 예산) ---
+Match 비율: 52.6% (91/173) -- 75ms 기준 11.0%(19건) 대비 +72건
+평균 leavesExplored: 13.9, 평균 nodesVisited: 27.5, Leaf Cap 도달: 0.0%, Deadline 도달: 80.9%
+결론: 탐색 메커니즘(bounded DFS + Deferred Validation) 자체는 cycleLength 5~6에서도 유효하다 -- 문제는 알고리즘이 아니라 REPAIR 고유의 75ms reservedBudget 예산이 이 모집단에는 너무 작다는 것이다(Integration Refinement Sprint v1이 이미 발견한 "Recovery 후보 생성 예산 기아" 문제와 동일 범주, 다른 지점에서 재발). 단, 80.9%가 1000ms에서도 여전히 Deadline에 도달하므로 예산을 늘려도 완전히 해소되지는 않는다 -- 실제 최적 예산/커버리지 지점은 CCR Prototype Sprint v1에서 별도 튜닝이 필요하다.
+
+--- 성공 기준 판정 ---
+Level 1 (CCR 대상 구조를 명확히 정의): PASS (173건, Top shape=5+3 6.4%)
+Level 2 (기존 Primitive 재사용 가능성 판단): PASS -- 탐색 알고리즘(bounded DFS+Deferred Validation)은 재사용 가능하나(충분한 예산 시 match율 52.6%), REPAIR 고유의 75ms reservedBudget 스케줄링 계약은 그대로 재사용 불가(match율 11.0%로 저하) -- CCR은 자신만의 예산 계약이 필요하다.
+Level 3 (Prototype 구현 가능한 Blueprint 완성): PASS (docs/BLUEPRINT_PRIMITIVE_2_CCR.md)
+
+--- STEP6: Feasibility Check ---
+기존 REPAIR 탐색 코어(bounded DFS, enumerateWingCandidates/applySeq/wrongWingCount5/pairCountOf/validateDeferred 전부 재사용 가능)를 cycleLength band만 넓혀 재사용할 수 있다 -- 단, REPAIR 고유의 75ms reservedBudget을 그대로 물려받으면 실효 match율이 11.0%로 사실상 무력화된다(단일 hop의 candidate 탐색 비용 자체가 이미 그 예산을 넘어서기 때문, DFS 분기 폭발이 원인이 아님). 예산을 늘리면(1000ms) match율이 52.6%로 회복된다 -- 즉 CCR은 "새 탐색 알고리즘"이 아니라 "기존 탐색 알고리즘 + 자신만의 예산/스케줄링 계약"이 필요한 케이스다.
+
+--- 최종 결정: A ---
+CCR Prototype Sprint v1 (기존 bounded DFS 탐색 코어 재사용 + CCR 자신만의 예산 계약 설계)으로 진행. REPAIR와 동일한 75ms reservedBudget을 그대로 물려받지 않도록 주의.
+
+--- 총 소요 시간: 575.9초 ---
