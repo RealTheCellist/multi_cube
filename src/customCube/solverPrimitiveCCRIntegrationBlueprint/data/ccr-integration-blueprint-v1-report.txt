@@ -1,0 +1,70 @@
+========================================
+CCR Integration Blueprint Sprint v1 -- Report
+========================================
+
+--- 0. Sprint 성격 ---
+Production Solver/Planner/Executor/Recovery/어떤 Primitive도 수정하지 않는다. 새 디렉토리 solverPrimitiveCCRIntegrationBlueprint/만 추가했다. STEP5의 'Integration Simulation'은 두 개의 실제 실행 결과(1. 실제 production engine.solve()의 결과 -- analyzeProductionPath, 읽기 전용/미수정 재사용; 2. 이전 Sprint에서 이미 검증된 runCCRPrototype()을 원본 snapshot 상태에 직접 호출한 결과)를 조합하는 방식으로 수행했다 -- CCR을 실제 fiveByFiveEdgeRecovery.ts에 배선하지 않았다.
+
+데이터셋: 335개 snapshot
+
+--- STEP1: Production Integration Point ---
+[repair_before] REPAIR 이전 (Recovery 후보 순서에서 REPAIR보다 먼저 생성) (layer=Recovery, 실측가능=예)
+  호출빈도: Recovery 자체가 트리거되는 빈도(=ENDGAME 태스크가 기본 파이프라인에서 0 progress일 때만)로 상한이 정해진다 -- 이 335건 dataset에서 실측 가능 (본 Sprint STEP5에서 재측정).
+  예상Coverage: REPAIR와 CCR의 Gate가 서로소(cycleLength 2~4 vs 5~6)이므로, 생성 순서(이전/이후)는 최종 결과에 영향이 없다 -- 어느 쪽이 성공하든 같은 State에서 동시에 성공할 수 없기 때문. 순서는 오직 '이 state가 REPAIR 대상이 아님을 얼마나 빨리 아는가'라는 지연시간 문제일 뿐이다.
+  상호작용: REPAIR를 먼저 시도하면 REPAIR의 Gate 체크(analyzeMultiCycle+countConflictEdges, 매우 저렴)가 즉시 실패를 반환하므로 CCR 차례로 넘어가는 데 걸리는 추가 지연은 무시할 수준이다. CCR을 먼저 시도해도 대칭적으로 마찬가지.
+[repair_after] REPAIR 이후 (현재 REPAIR가 생성되는 순서, 그 다음에 CCR) (layer=Recovery, 실측가능=예)
+  호출빈도: REPAIR 이전과 동일 -- Recovery 트리거 빈도가 상한.
+  예상Coverage: REPAIR 이전과 동일 (Gate 서로소).
+  상호작용: REPAIR가 이미 이 연구 전체에서 '가장 나중에 추가된 후보'로 자리잡은 관례(RepresentationPrimitiveSelector.ts의 FIXED_BASELINE_ORDER 주석: 'BP1 appended last as the newest/most expensive addition')와 일치 -- CCR을 REPAIR 뒤에 추가하는 것이 기존 코드베이스의 확립된 패턴과 가장 자연스럽게 들어맞는다.
+[parity_before] PARITY 이전 (메인 파이프라인, PARITY 태스크보다 먼저 실행되는 새 SolveTaskType) (layer=MainPipeline, 실측가능=아니오)
+  호출빈도: 이론상 100%에 가까움(모든 solve() 호출이 도달) -- 하지만 이는 Planner에 새 MacroGoalType/Task 생성 규칙을 추가해야 함을 의미하며, 이번 Sprint의 '절대 금지: Planner 수정'을 위반한다.
+  예상Coverage: 측정 불가능: 335개 snapshot은 전부 '전체 파이프라인(PARITY/ENDGAME/Recovery 포함)이 이미 실행되고 실패한 이후'의 상태다. PARITY 실행 '이전' 상태의 cube를 이 dataset에서 재구성할 방법이 없다 -- 새로운 데이터 수집(PARITY 실행 전 시점의 snapshot capture)이 필요하며 이는 이번 Sprint 범위 밖이다.
+  상호작용: PAIR/FLIP/PARITY 태스크들은 실제로 cube 상태를 변경한다 -- CCR가 의존하는 WANTS-그래프 cycle 구조가 이 태스크들의 부수효과로 생성되거나 파괴될 수 있어, '이전' 배치의 실제 상호작용은 근거 있는 추측 이상이 되기 어렵다.
+[parity_after] PARITY 이후 (메인 파이프라인, PARITY와 ENDGAME 사이의 새 SolveTaskType) (layer=MainPipeline, 실측가능=아니오)
+  호출빈도: PARITY 이전과 동일한 이유로 측정 불가 + Planner 수정 필요.
+  예상Coverage: PARITY 태스크 자체(tryExactCaseMatch)가 진행을 만들면 cube 상태가 바뀌어 CCR의 Gate 적합성이 달라질 수 있다 -- 이 역시 이 dataset만으로는 검증 불가.
+  상호작용: Recovery 레이어(REPAIR 이전/이후)와 기능적으로 유사한 지점이지만, ENDGAME이 아니라 자체 SolveTaskType이 되면 TASK_LOCAL_BUDGET_MS(120ms) 같은 PAIR/FLIP/PARITY용 짧은 예산 체계에 종속될 위험이 있다 -- CCR 자신의 큰 예산 요구(STEP3 참고)와 충돌한다.
+Recovery 레이어 실측 호출 빈도: 23.6% (79/335)
+선택된 Integration Point: repair_after
+근거: 측정 가능한 두 후보(REPAIR 이전/이후)는 Gate가 서로소이므로 결과상 동등하다 -- 결정은 관례와 코드 가독성 문제다: REPAIR를 이미 '가장 나중에 추가된 후보'로 두는 기존 패턴을 그대로 따라 CCR도 REPAIR 뒤에 둔다. 측정 불가능한 두 후보(PARITY 이전/이후)는 Planner 수정이 필요하고(이번 Sprint 절대 금지 항목), Coverage/상호작용을 검증할 데이터가 없다 -- 따라서 이번 Blueprint에서는 채택할 수 없다. Recovery 레이어 자체의 실측 호출 빈도는 23.6%(79/335)로, CCR이 실제로 차례를 받을 수 있는 상한을 이 값이 정의한다.
+
+--- STEP2: Scheduling Contract ---
+호출 조건: task.type === 'ENDGAME' AND primary pipeline made zero progress (Recovery already triggered) AND CCR Gate: cycleLength(cubies) in [5,6] AND conflictEdgeCount(cubies) === 0
+우선순위: REPAIR와 CCR은 Gate가 서로소(cycleLength 2~4 vs 5~6)이므로 '더 우선한다'는 개념 자체가 무의미하다 -- 어느 한 state에서 둘 다 매치되는 경우가 구조적으로 없다(CCR Prototype Sprint v1 STEP6에서 Duplicate Success 0건으로 실측 확인됨). 따라서 순서는 결과가 아니라 지연시간(latency)만 좌우한다.
+REPAIR와의 실행 순서: generateRecoveryStrategies()의 후보 생성 순서에서 CCR을 REPAIR 바로 뒤에 둔다: DISRUPT, DISRUPT, SETUP, REPAIR, CCR. REPAIR가 이미 '가장 나중에 추가된 후보' 관례를 확립했으므로(fiveByFiveEdgeRecovery.ts 주석, RepresentationPrimitiveSelector.ts의 FIXED_BASELINE_ORDER 주석 모두 동일 패턴), CCR도 그 다음에 추가하는 것이 가장 낮은 리스크의 선택이다.
+Budget 배분: REPAIR의 reservedBudget 패턴(REPAIR_RESERVED_SLICE_MS=75ms, 공유 genDeadline을 우회)을 그대로 계승하되, CCR 자신의 슬라이스 크기는 STEP3의 Budget Contract 평가를 따른다 -- DISRUPT/SETUP이 공유하는 genDeadline(RECOVERY_GEN_BUDGET_MS=300ms)과는 별개의, CCR 전용 예산 창을 갖는다(REPAIR와 동일한 설계 철학).
+Starvation 방지: CCR이 자신만의 예산 창을 가지므로(REPAIR의 reservedBudget과 동일한 원리) DISRUPT/SETUP/REPAIR의 예산을 잠식하지 않는다. 역방향(CCR이 DISRUPT/SETUP/REPAIR에 의해 굶주리는 것) 역시 동일한 이유로 방지된다 -- Integration Refinement Sprint v1이 REPAIR를 위해 이미 검증한 것과 동일한 안전장치를 CCR에도 그대로 적용하는 것뿐, 새로운 메커니즘이 아니다.
+
+--- STEP3: Budget Contract 평가 ---
+PLAN_TIME_BUDGET_MS=1000ms, Planner 예약=200ms, Recovery 전체 예약(RECOVERY_RESERVE_MS)=450ms, 최악의 경우 Recovery가 쓸 수 있는 상한=800ms
+CCR 이상적 budget(Prototype Sprint v1): 1000ms
+Budget 곡선(재측정):
+  150ms: match=17.3%(30/173)
+  250ms: match=24.9%(43/173)
+  500ms: match=40.5%(70/173)
+  1000ms: match=47.4%(82/173)
+[fixed] feasible=false: CCR Prototype Sprint v1의 최선 budget(1000ms)을 고정으로 그대로 쓰면, 이는 Recovery 전체에 예약된 시간(RECOVERY_RESERVE_MS=450ms = RECOVERY_GEN_BUDGET_MS 300ms + MAX_RECOVERY_RETRIES(1)×RECOVERY_RETRY_BUDGET_MS 150ms)의 2.2배이고, PAIR/FLIP/PARITY 태스크가 하나도 시간을 쓰지 않는다는 비현실적 가정 하에서도 Planner 예약(200ms) 이후 남는 전체 여유(800ms)보다도 크다. 고정 예산은 구조적으로 성립하지 않는다.
+[adaptive] feasible=true: STEP5의 Integration Simulation이 실측한 실제 잔여 시간 분포를 기준으로, 사전에 정해둔 몇 단계(예: 500/750/1000ms) 중 그 순간 감당 가능한 가장 큰 값을 고르는 방식 -- fixed보다는 현실적이지만, remainingTime 방식과 달리 여전히 '몇 단계 중 하나'라는 임의성이 남는다.
+[remainingTime] feasible=true: ENDGAME 기본 파이프라인이 이미 쓰는 것과 동일한 패턴(`while (Date.now() < deadline)`, fiveByFiveEdgeExecutor.ts의 runPrimaryPipeline ENDGAME 분기) -- CCR도 '그 순간 실제로 남은 deadline - Date.now()'를 그대로 예산으로 쓴다. 새 메커니즘이 아니라 기존 코드베이스 전역에 이미 있는 패턴의 재사용이다. 다만 STEP3의 Budget Contract 곡선(150ms→19.1%, 250ms→31.2%, 500ms→46.2%, 1000ms→53.2%, CCR Prototype Sprint v1 실측)에 따르면 500ms 미만으로 떨어지면 match율이 급격히 낮아지므로, 최소 확보 목표(floor)를 함께 명세해야 한다.
+권장 정책: remainingTime, 권장 최소 floor: 500ms
+
+--- STEP5: Integration Simulation ---
+[시나리오 A: CCR budget=1000ms(이상적)] CCR 호출 비율: 10.7%, 예상 신규 Capability: 11건, 베이스라인 평균 Runtime 1079.3ms -> 통합 후 추정 1177.1ms
+[시나리오 B: CCR budget=500ms(권장 floor)] CCR 호출 비율: 10.7%, 예상 신규 Capability: 9건, 베이스라인 평균 Runtime 1079.3ms -> 통합 후 추정 1135.0ms
+Recovery 트리거 중 CCR Gate 적합 비율: 45.6%
+
+--- STEP4: Risk Analysis ---
+[Regression] severity=low: CCR과 REPAIR의 Gate가 서로소이고(CCR Prototype Sprint v1 STEP6에서 Duplicate Success 0건 실측 확인), CCR 자신도 REPAIR와 동일한 Deferred Validation 불변식(net-improvement만 채택)을 그대로 재사용한다 -- REPAIR가 통합 이후 4개 Sprint에 걸쳐 Regression 0건을 유지한 것과 동일한 안전장치. 구조적으로 Regression 위험은 낮다.
+[Runtime] severity=medium: 현재 실측 평균 Runtime 1079.3ms(Deadline Miss율 93.4%, 이미 명목 예산 근처/초과)에 CCR 자신의 평균 소요시간(909.8ms, Gate 적합 시)을 Recovery 호출률(23.6%) × CCR Gate 적합 비율(45.6%)만큼 가중해 더하면, 추정 평균 Runtime은 1177.1ms(+9.1%)다. 이미 예산 근처인 상태에서의 추가 증가이므로 UX상 체감 가능한 지연이 발생할 위험이 실재한다 -- remainingTime 기반 예산과 floor 설정(BudgetContractEvaluation.ts)으로 완화가 필요하다.
+[Starvation] severity=low: SchedulingContract.ts의 설계(CCR 전용 예산 슬라이스, REPAIR의 reservedBudget과 동일한 원리)를 따르면 CCR이 DISRUPT/SETUP/REPAIR의 공유 genDeadline을 잠식하지 않고, 역으로 그것들에 의해 굶주리지도 않는다 -- Integration Refinement Sprint v1이 REPAIR를 위해 이미 검증한 메커니즘의 재사용.
+[Scheduler] severity=low: generateRecoveryStrategies()의 candidates 배열에 5번째 타입이 추가되는 것 자체는 순수한 목록 확장이다(chooseBestRecovery()는 이미 임의 개수의 candidates에 대해 동작하도록 작성되어 있음, `candidates.reduce`) -- 알고리즘적 변경이 필요 없다. 코드 복잡도는 소폭 증가하지만 런타임 동작에는 영향이 없다.
+
+--- 성공 기준 판정 ---
+Level 1 (Integration Point 확정): PASS (선택: repair_after)
+Level 2 (Scheduling과 Budget Contract 확정): PASS (정책: remainingTime, floor=500ms)
+Level 3 (Regression 없이 Integration 가능함을 입증): PASS (Runtime risk severity=medium, 예상 신규 Capability=11건)
+
+--- 최종 결정: A ---
+Integration Point(repair_after), Scheduling Contract, Budget Contract(remainingTime, floor 500ms)가 모두 확정되었고, Runtime 위험도(medium)가 과도하지 않다. 다음 단계: CCR Production Integration Sprint v1.
+
+--- 총 소요 시간: 784.6초 ---
