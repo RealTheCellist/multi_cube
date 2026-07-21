@@ -88,7 +88,11 @@ export interface SolveStrategy {
 // follow-on case (SETUP), always evaluated against a scratch clone before
 // ever touching the real cube -- see fiveByFiveEdgeRecovery.ts.
 
-export type RecoveryType = "DISRUPT" | "SETUP" | "REPAIR";
+// "CCR" (Clean-Cycle Resolution, CCR Production Integration Sprint v1)
+// added alongside DISRUPT/SETUP/REPAIR -- targets cycleLength 5~6,
+// conflictEdgeCount=0, a disjoint Gate from REPAIR's own cycleLength 2~4
+// (see solverPrimitiveCCRPrototype/CCRGate.ts).
+export type RecoveryType = "DISRUPT" | "SETUP" | "REPAIR" | "CCR";
 
 export interface RecoveryStrategy {
   id: number;

@@ -1,0 +1,59 @@
+========================================
+CCR Production Integration Sprint v1 -- Report
+========================================
+
+--- 0. Sprint 성격 ---
+CCR Integration Blueprint Sprint v1이 확정한 Blueprint(Integration Point=repair_after, Scheduling=DISRUPT,DISRUPT,SETUP,REPAIR,CCR 순서, Budget=remainingTime 정책)를 실제 production Recovery 경로(fiveByFiveEdgeRecovery.ts)에 연결했다. 이번 Sprint의 유일한 production 변경: (1) fiveByFiveEdgeSolverTypes.ts의 RecoveryType에 "CCR" 추가, (2) fiveByFiveEdgeRecovery.ts에 genCCR() 추가 + includeCCR 파라미터(기본값 true, Executor는 이 파라미터를 모르고 그대로 두므로 Executor 코드 변경 없이 실제 production이 자동으로 CCR을 포함하게 됨). runCCRPrototype() 내부 로직(Gate/DFS/Deferred Validation)은 CCR Prototype Sprint v1 그대로, 한 줄도 수정하지 않았다. Planner.ts/Executor.ts/Production Solver Core/DISRUPT/SETUP/REPAIR는 전부 읽기 전용.
+
+데이터셋: 335개 snapshot
+
+--- STEP1: Recovery Integration (실제 solve() 경로, CCR 실연결 상태) ---
+Recovery 호출률: 22.1%
+CCR 호출 횟수: 0건 / 335건 중
+CCR Gate 통과(생성)율: 0.0%, CCR 채택율: 0.0%
+
+--- STEP2: Runtime Budget (remainingTime 정책 실측) ---
+평균 CCR Budget(실제 remainingTime): 0.0ms
+Floor(500ms) 적용 비율(CCR이 실제로 호출된 건 중): 0.0%
+평균 Runtime: 1075.7ms, p95: 1227ms, Deadline Miss율: 97.3%
+Regression(실제 solve() 경로): 0건
+
+--- STEP3: End-to-End Capability (Recovery-level, Standard Evaluation Protocol N=15, 초기 N에서 결정적) ---
+[Baseline -- Production Recovery] Coverage: 2.9%, GapRescue 평균 0.47/run, Regression 0건, 평균 Runtime 393.4ms
+[Candidate -- Production Recovery + CCR] Coverage: 24.1%, GapRescue 평균 6.20/run, Regression 0건, 평균 Runtime 759.5ms
+Precision(Candidate, matched 대비 succeeded -- CCR 대상 population 기준): Recall(CCR 대상 173건 중 과반수 안정 성공) 43.9%
+paired-diff(Candidate - Baseline) GapRescue: 평균 5.733, 95% CI [5.006, 6.461]
+Runtime 증가율: 93.1%
+CCR 호출률(Recovery-level, CCR Gate 적합 비율): 51.6%
+
+--- STEP4: Regression Analysis ---
+True Regression: 0건
+False Regression(noise, 소수 run에서만 관측): 0건
+Duplicate Success(REPAIR와 CCR 둘 다 성공, 기대값 0): 0건
+CCR Only Success: 82건
+REPAIR Only Success: 48건
+CCR Skip(Gate 미적합): 162건
+Deferred Reject(Gate 적합, Deferred Validation 거부): 91건
+
+--- STEP5: Standard Evaluation ---
+사용한 N: 15 (최소 15, 최대 30), CI 결정적 여부: true
+Runtime CI 근사(Baseline avg 393.4ms, Candidate avg 759.5ms): 차이 366.1ms
+Capability CI: paired-diff 95% CI [5.006, 6.461]
+
+--- STEP6: Integration Validation (Blueprint 예측 vs 실제) ---
+Integration Point: 예측=repair_after, 실제=repair_after (genCCR이 REPAIR 다음에 항상 생성됨, 코드로 확정) -- 일치
+Budget Contract: 예측=remainingTime, floor 500ms, 실제 평균 remainingTime=0.0ms, floor 충족율=0.0%
+Scheduling: 예측=DISRUPT,DISRUPT,SETUP,REPAIR,CCR, 실제=코드상 순서 동일(fiveByFiveEdgeRecovery.ts의 order 배열) -- 일치
+Capability 증가: 예측 11건 (전체 335건 기준 이상적 시나리오) vs 실제 CCR Only Success 82건 -- 예측 오차 71건
+Runtime 증가율: 예측 +9.1% vs 실제 +93.1% -- 예측 오차 84.0%p
+CCR 호출 비율: 예측 10.7% vs 실제 51.6% -- 예측 오차 40.9%p
+
+--- 성공 기준 판정 ---
+Level 1 (Blueprint와 동일한 Scheduling/Budget이 실제 Production에서 정상 동작): FAIL (CCR 호출 0건, 평균 budget 0.0ms)
+Level 2 (Capability 증가가 Blueprint 예측 범위 안에서 재현): PASS (실제 신규 Capability 82건, CI lower 5.006)
+Level 3 (Regression 없이 Runtime 증가가 허용 범위 내이며 새 Capability가 유지됨): FAIL (True Regression 0건, Runtime 증가 93.1%)
+
+--- 최종 결정: C ---
+Blueprint와 실제 Production 결과가 크게 다르다 -- CCR Integration Blueprint Revision Sprint v1이 필요하다.
+
+--- 총 소요 시간: 10680.7초 ---

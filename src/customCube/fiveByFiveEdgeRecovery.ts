@@ -27,6 +27,12 @@ import type { ExecutorLibraries } from "./fiveByFiveEdgeExecutor";
 // when no net-improving leaf is found) -- reused UNMODIFIED, the search
 // algorithm itself is not reimplemented here.
 import { runSuccessV2, W2_WIDER_HOP } from "./solverPrimitivePrototypeRefinementV2/SuccessOptimizationV2";
+// CCR Production Integration Sprint v1's chosen Integration Point:
+// repair_after (CCR Integration Blueprint Sprint v1) -- runCCRPrototype
+// reused UNMODIFIED (its own Gate/DFS/Deferred Validation are exactly
+// CCR Prototype Sprint v1's, untouched by this Sprint). Wired in as a new
+// "CCR"-typed Recovery candidate, generated last (after REPAIR).
+import { runCCRPrototype } from "./solverPrimitiveCCRPrototype/CCRPrototype";
 
 // Section 13's Time Budget table gives Recovery its own small sub-budgets
 // (생성 50ms / Simulation 50ms / Retry 150ms) -- these are PER-TASK budgets
@@ -121,7 +127,17 @@ export function generateRecoveryStrategies(
   schedulingStrategy: SchedulingStrategy = "reservedBudget",
   // Integration Refinement Sprint v1 STEP1/2 instrumentation only -- see
   // SchedulingEvent's own comment. undefined for every real caller.
-  onEvent?: (e: SchedulingEvent) => void
+  onEvent?: (e: SchedulingEvent) => void,
+  // CCR Production Integration Sprint v1: mirrors includeRepair's own
+  // pattern exactly. Defaults to true (CCR included) for real production
+  // use -- since fiveByFiveEdgeExecutor.ts's own executeTask() (frozen
+  // this Sprint) calls attemptRecovery()/this function without ever
+  // passing this new trailing parameter, the real production call site
+  // automatically gets CCR via this default with ZERO Executor changes.
+  // The CCR Production Integration Sprint v1 benchmark passes false to
+  // reconstruct the pre-CCR baseline for an honest before/after
+  // comparison, never product callers.
+  includeCCR = true
 ): RecoveryStrategy[] {
   const { lib, flipLib, caseLib } = libs;
   const genDeadline = Math.min(deadline, Date.now() + RECOVERY_GEN_BUDGET_MS);
@@ -222,12 +238,38 @@ export function generateRecoveryStrategies(
     onEvent?.({ candidateType: "REPAIR", phase: added ? "generated" : "empty", atMs: Date.now() });
   };
 
+  // CCR Production Integration Sprint v1: Integration Point "repair_after"
+  // (CCR Integration Blueprint Sprint v1) -- always generated LAST,
+  // regardless of schedulingStrategy (the REPAIR A/B scheduling question
+  // is unrelated to CCR's own placement). Budget Contract: "remainingTime"
+  // (Blueprint's own recommendation) -- CCR is simply given the REAL
+  // outer `deadline` as-is (the same `while (Date.now() < deadline)`
+  // pattern runPrimaryPipeline's own ENDGAME branch already uses), not a
+  // separately-reserved fixed slice like REPAIR's own
+  // REPAIR_RESERVED_SLICE_MS. The Blueprint's own recommended 500ms FLOOR
+  // is a target, not an enforced guarantee here: enforcing it would
+  // require enlarging fiveByFiveEdgeExecutor.ts's own RECOVERY_RESERVE_MS,
+  // which is out of this Sprint's allowed scope (Executor is frozen) --
+  // this Sprint measures how often that floor is actually met in practice
+  // as an empirical finding (see solverPrimitiveCCRProductionIntegration/),
+  // not an assumption baked into the code.
+  const genCCR = () => {
+    if (!includeCCR) return;
+    onEvent?.({ candidateType: "CCR", phase: "start", atMs: Date.now() });
+    const result = runCCRPrototype(cubies, lib, deadline, "singleCycle");
+    const added = add("CCR", `Clean-Cycle Resolution (remainingTime=${Math.max(0, deadline - Date.now())}ms 남음)`, result.matched ? result.moves : null);
+    onEvent?.({ candidateType: "CCR", phase: added ? "generated" : "empty", atMs: Date.now() });
+  };
+
   // baseline/reservedBudget keep the ORIGINAL DISRUPT,DISRUPT,SETUP,REPAIR
   // order (reservedBudget's only change is REPAIR's own gating rule inside
   // genRepair(), not ordering); priorityGate (Strategy A) tries REPAIR
   // FIRST, using the exact same shared-genDeadline mechanism as baseline,
   // simply given first crack at it before DISRUPT/SETUP can consume it.
-  const order = schedulingStrategy === "priorityGate" ? [genRepair, genDisrupt1, genDisrupt2, genSetup] : [genDisrupt1, genDisrupt2, genSetup, genRepair];
+  // CCR is always appended last in both variants (Integration Point
+  // "repair_after" is independent of the REPAIR scheduling A/B question).
+  const order =
+    schedulingStrategy === "priorityGate" ? [genRepair, genDisrupt1, genDisrupt2, genSetup, genCCR] : [genDisrupt1, genDisrupt2, genSetup, genRepair, genCCR];
   for (const step of order) step();
 
   return candidates;
@@ -286,7 +328,11 @@ export function attemptRecovery(
   // Integration Validation Sprint v1 (STEP1): defaults to "reservedBudget",
   // the new production default -- pass "baseline" to reconstruct the
   // pre-Validation-Sprint behavior.
-  schedulingStrategy: SchedulingStrategy = "reservedBudget"
+  schedulingStrategy: SchedulingStrategy = "reservedBudget",
+  // CCR Production Integration Sprint v1: threaded through to
+  // generateRecoveryStrategies -- see that function's own includeCCR
+  // comment. Defaults to true (CCR included) for real production use.
+  includeCCR = true
 ): Move[] {
   const log = (label: string, detail?: string) => trace?.push({ at: Date.now(), label, detail });
   const visited = new Set<number>();
@@ -309,7 +355,7 @@ export function attemptRecovery(
   for (let round = 0; round < MAX_RECOVERY_RETRIES; round++) {
     if (Date.now() > deadline) break;
 
-    const candidates = generateRecoveryStrategies(scratch, libs, deadline, weights, includeRepair, schedulingStrategy);
+    const candidates = generateRecoveryStrategies(scratch, libs, deadline, weights, includeRepair, schedulingStrategy, undefined, includeCCR);
     if (candidates.length === 0) {
       log("recovery-no-candidates", `${round + 1}회차: Recovery 후보를 찾지 못함`);
       break;
@@ -342,8 +388,14 @@ export function attemptRecovery(
       }${best.expectedFuturePotential.toFixed(1)}`
     );
 
-    if (best.type === "REPAIR" && shortCircuitRepair && afterDisrupt < originalBaseline) {
-      log("recovery-repair-short-circuit", `REPAIR가 이미 net-improvement 검증됨(wrongWing ${originalBaseline} -> ${afterDisrupt}) -- retryTask 생략`);
+    // CCR Production Integration Sprint v1: CCR's own moves (runCCRPrototype
+    // -> its own internal validateDeferred gate, byte-identical invariant to
+    // REPAIR's runSuccessV2) are ALSO already guaranteed net-improving by
+    // the time they reach here -- the same reasoning this short-circuit
+    // already relies on for REPAIR, extended to the one other candidate
+    // type that shares the exact same guarantee.
+    if ((best.type === "REPAIR" || best.type === "CCR") && shortCircuitRepair && afterDisrupt < originalBaseline) {
+      log("recovery-repair-short-circuit", `${best.type}가 이미 net-improvement 검증됨(wrongWing ${originalBaseline} -> ${afterDisrupt}) -- retryTask 생략`);
       applySeq(cubies, applied);
       return applied;
     }
