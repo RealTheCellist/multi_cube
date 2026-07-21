@@ -1,0 +1,50 @@
+========================================
+CCR Prototype Sprint v1 -- Report
+========================================
+
+--- 0. Sprint 성격 ---
+Primitive Discovery Sprint #3의 Blueprint(docs/BLUEPRINT_PRIMITIVE_2_CCR.md)를 기반으로 Primitive #2(CCR)의 첫 Prototype을 구현했다. 새 탐색 알고리즘은 만들지 않는다 -- bounded DFS + Deferred Validation을 그대로 재사용하고(enumerateWingCandidates/applySeq/wrongWingCount5/pairCountOf/validateDeferred 전부 기존 export 그대로), Gate(cycleLength 5~6, conflictEdgeCount=0, 완화 없음)/Budget Contract/Scheduling만 새로 설계했다. solverPrimitiveCCRPrototype/ 디렉토리만 추가했고, Production 코드는 전혀 수정하지 않았다.
+
+데이터셋: 335개 snapshot (지금까지의 연구와 동일)
+CCR 대상(cycleLength 5~6, conflictEdgeCount=0): 173건
+
+--- STEP3: Budget Contract 비교 (singleCycle 전략) ---
+budget(ms) | matchRate | leaves | nodes | leafCap | deadlineHit | avgTime(ms)
+  150ms: match=19.1%(33/173) leaves=1.4 nodes=3.5 leafCap=0.0% deadline=90.2% avgTime=212.0ms
+  250ms: match=31.2%(54/173) leaves=2.3 nodes=6.1 leafCap=0.0% deadline=88.4% avgTime=295.4ms
+  500ms: match=46.2%(80/173) leaves=6.5 nodes=14.2 leafCap=0.0% deadline=86.7% avgTime=522.8ms
+  1000ms: match=53.2%(92/173) leaves=15.1 nodes=29.6 leafCap=0.0% deadline=81.5% avgTime=942.7ms
+선택된 Budget: 1000ms (최고 match율 53.2%의 90% 이상을 달성하는 가장 작은 예산 -- diminishing returns 기준)
+
+--- STEP4: Multi-cycle Strategy 비교 (budget=1000ms) ---
+전략 A(singleCycle, 현재 방식): match=52.6%(91/173) leaves=14.7 avgTime=947.5ms
+전략 B(multiCycle, 다중 cycle 동시 고려): match=43.4%(75/173) leaves=6.8 avgTime=979.4ms
+선택된 전략: singleCycle (match율이 더 높은 쪽 -- A=52.6% vs B=43.4%)
+
+--- STEP5: Capability Benchmark (Standard Evaluation Protocol, N=15, 초기 N에서 결정적) ---
+[Baseline -- REPAIR only] Coverage: 35.2%, Precision: 33.1%, GapRescue 평균 7.60/run, Regression 0건
+[Candidate -- REPAIR + CCR Prototype] Coverage: 86.9%, Precision: 44.7%, GapRescue 평균 14.20/run, Regression 0건
+paired-diff(Candidate - Baseline) GapRescue: 평균 6.600, 95% CI [6.343, 6.857]
+
+--- STEP5 (계속): CCR 대상 173(실측 173)건 subset 검증 ---
+Baseline이 이 subset에서 성공한 건수(구조상 0이어야 함): 0
+Candidate가 최소 1회라도 성공한 hash 수: 97/173
+Candidate가 과반수 run에서 안정적으로 성공한 hash 수: 90/173
+Candidate의 run당 평균 성공률(target subset 대비): 52.6%
+
+--- STEP6: Primitive Interaction ---
+REPAIR 과반수 성공 hash 수: 40/335
+CCR 과반수 성공 hash 수: 90/335
+Duplicate Success(둘 다 과반수 성공, 기대값 0 -- Gate가 서로소이므로): 0
+REPAIR 전용(Exclusive) 성공: 40
+CCR 전용(Exclusive) 성공(REPAIR가 닿지 못하는 새 Capability): 90
+
+--- 성공 기준 판정 ---
+Level 1 (CCR가 안정적으로 동작): PASS (과반수 안정 성공 90/173, 평균 성공률 52.6%)
+Level 2 (paired-diff CI가 0을 배제): PASS (95% CI [6.343, 6.857])
+Level 3 (REPAIR와 중복되지 않는 새로운 Capability 확보): PASS (Duplicate 0건, CCR 전용 90건, Regression 기존 0건 vs 새 0건)
+
+--- 최종 결정: A ---
+CCR Prototype이 안정적으로 동작하고, REPAIR와 중복되지 않는 새로운 Capability(90건 전용 성공)를 확보했으며, paired-diff CI가 0을 배제한다. 선택된 설정: budget=1000ms, strategy=singleCycle. 다음 단계: CCR Integration Blueprint Sprint v1 (Production Integration Point/Budget Contract/Scheduling/Risk 분석).
+
+--- 총 소요 시간: 7611.6초 ---
