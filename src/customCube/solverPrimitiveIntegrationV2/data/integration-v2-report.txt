@@ -1,0 +1,45 @@
+========================================
+Solver Primitive Integration Sprint v2 -- Report
+========================================
+
+--- 0. Sprint 성격 ---
+Gate Relaxation Validation Sprint v1이 확인한 결과(conflictEdgeCount>0는 불필요)를 실제 production에 적용했다 -- solverPrimitivePrototypeRefinementV2/SuccessOptimizationV2.ts의 runSuccessV2 Gate에서 conflictEdgeCount>0 조건을 제거(cycleLength 2~4만 남김). DFS 본문/Success Optimization/후보 순서/Scheduling(reservedBudget)은 전혀 건드리지 않았다. fiveByFiveEdgeSolverEngine.ts/fiveByFiveEdgePlanner.ts/Primitive Registry/DeferredValidator/Executor Architecture는 전부 읽기 전용(호출만 함, 파라미터 추가 없이 그대로 호출) -- STEP1의 Gate 수정 자체가 이미 production 경로에 반영되어 있어 별도 override 없이도 실제 solve()가 새 동작을 그대로 보인다.
+
+데이터셋: 335개 snapshot (Primitive Discovery Sprint #2 / Gate Relaxation Validation Sprint v1과 동일한 335개)
+
+--- STEP2: Contract Verification (실제 solve() 경로, 새 Gate 적용된 production) ---
+REPAIR 생성률: 0.3%, REPAIR 채택률: 0.3%
+Generation Skipped(REPAIR 차례 자체가 시작 못 됨): 구조적으로 0% -- reservedBudget 스케줄링(fiveByFiveEdgeRecovery.ts의 generateRecoveryStrategies) 코드 자체를 이번 Sprint가 전혀 건드리지 않았고, 그 코드는 REPAIR 차례를 항상 무조건 실행하도록 되어 있어(Integration Refinement/Validation Sprint에서 이미 검증됨) 이 값은 측정이 아니라 코드 검사로 확정되는 사실이다. (참고: trace 기반 근사 측정("recovery-no-candidates")은 DISRUPT/SETUP까지 포함한 전체 후보 부재를 뜻해 이 지표와 다른 것이라 자체 검증 중 발견하고 폐기했다.)
+Recovery 호출률: 34.3%, 평균 Retry 횟수: 0.003, Short-circuit 비율: 0.3%
+평균 Runtime: 1041.0ms, p95: 1165ms, p99: 1224ms, Deadline Miss율: 89.0%
+
+--- STEP6: Production Regression Test (같은 pass 재사용) ---
+Solve Rate(단일 solve() 호출 기준, 이 dataset+1초 예산 설계상 낮은 게 정상): 0.0%
+Regression(전체 합산): 0건
+평균 heap delta(근사치, GC 타이밍에 민감): 1017.2KB
+Planner Output 영향: 베이스라인 자체 jitter 50/335, probe 이후 mismatch 45/335, Gate 변경 고유 증분 -5건
+
+--- STEP3: Capability Evaluation (Standard Evaluation Protocol, N=15, 초기 N에서 결정적) ---
+[Baseline -- 기존 strict Gate 재구성] Coverage: 12.2%, Precision: 45.7%, GapRescue 평균 5.80/run, Regression 0건
+[Candidate -- 실제 production 새 Gate] Coverage: 35.2%, Precision: 31.1%, GapRescue 평균 8.07/run, Regression 0건
+paired-diff(Candidate - Baseline) GapRescue: 평균 2.267, 95% CI [2.035, 2.498]
+
+--- STEP4: Target Subset Verification (cycleLength 2~4, conflictEdgeCount=0, 77건) ---
+Target subset 크기(실측): 77건
+Baseline이 이 subset에서 성공한 건수(구조상 0이어야 함): 0
+Candidate가 최소 1회라도 성공한 hash 수: 21/77
+Candidate가 과반수 run에서 안정적으로 성공한 hash 수: 17/77
+Candidate의 run당 평균 성공률(target subset 대비): 23.2%
+
+--- STEP5: Large Sample Validation ---
+사용한 N: 15 (초기 15, 최대 30까지 adaptive extension 허용), CI 결정적 여부: true
+
+--- 성공 기준 판정 ---
+Level 1 (REPAIR Gate 확대 후 Generation 증가): PASS (avgMatched Baseline 41.00 -> Candidate 118.00)
+Level 2 (paired-diff CI가 0을 배제): PASS (95% CI [2.035, 2.498])
+Level 3 (Regression 없이 Production 기본값으로 채택 가능): PASS (STEP3 Regression 기존 0건 vs 새 0건, STEP6 실제 solve() Regression 0건, Planner 고유 증분 -5건)
+
+--- 최종 결정: A ---
+REPAIR Gate 확대(conflictEdgeCount>0 제거)가 Production 기본값으로 안전하게 유지 가능함이 확인되었다 -- Recovery 계약(Generation Skip, Retry, Short-circuit) 유지, paired-diff CI가 0을 배제, Regression 없음, Planner 영향 없음. 이미 STEP1에서 이 변경은 실제 production 코드에 반영되어 있다. 다음 단계: Primitive Discovery Sprint #3 (cycleLength 5~6 중심 CCR Prototype 설계).
+
+--- 총 소요 시간: 5572.4초 ---

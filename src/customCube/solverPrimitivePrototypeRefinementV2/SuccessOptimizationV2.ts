@@ -11,6 +11,23 @@
 // wrongWingCount5/pairCountOf/validateDeferred, all EXISTING exports,
 // unmodified) exactly like every prior Sprint's own DFS reimplementation
 // in this series.
+//
+// GATE CHANGE (Solver Primitive Integration Sprint v2, 2026-07-21): the
+// `conflictEdgeCount>0` requirement was REMOVED from runSuccessV2's own
+// Gate below -- Gate Relaxation Validation Sprint v1 established
+// (Standard Evaluation Protocol, N=15, two independent full runs) that
+// this requirement was an empirically-chosen Blueprint precondition, not
+// a real mechanical necessity: relaxing it resolves 17-19 of the
+// 77-snapshot `cycleLength 2~4, conflictEdgeCount=0` population that
+// REPAIR could never reach before, with a paired-diff 95% CI excluding
+// zero and ZERO regressions in both runs (G1's Gate is a strict superset
+// of the old Gate, using the byte-identical search below, so it
+// provably cannot perform worse on the cases the old Gate already
+// covered). The Gate is now simply `cycleLength 2~4` -- the DFS body
+// (runParametrizedSearchV2), the SuccessVariant options
+// (W1_REORDERED/W2_WIDER_HOP), and every low-level building block below
+// are completely unchanged; this Sprint's own STEP1 change is this file's
+// single deleted line (and its now-unused import) and nothing else.
 import type { Cubie } from "../cubeState";
 import { cloneCubies } from "../cubeState";
 import { applySeq, enumerateWingCandidates, slotKey, wrongWingCount5, wrongWings5, type Move, type WingLibrary } from "../fiveByFiveEdges";
@@ -18,7 +35,6 @@ import { pairCountOf } from "../goalPlanner/GoalAnalyzer";
 import { validateDeferred } from "../solverV2Prototype/DeferredValidator";
 import { analyzeMultiCycle } from "../solverV2Prototype/MultiCycleAnalyzer";
 import { MAX_LEAVES_EXPLORED } from "../solverV2Prototype/BoundedResolver";
-import { countConflictEdges } from "../solverPrimitivePrototype/MultiHopBridgePrototypeV3";
 
 const PER_HOP_DEADLINE_MS = 60;
 const MIN_CYCLE_LENGTH = 2;
@@ -125,7 +141,6 @@ export function runSuccessV2(cubies: Cubie[], lib: WingLibrary, deadline: number
   const analysis = analyzeMultiCycle(cubies);
   if (!analysis) return { matched: false, moves: null };
   if (analysis.cycleLength < MIN_CYCLE_LENGTH || analysis.cycleLength > MAX_CYCLE_LENGTH) return { matched: false, moves: null };
-  if (countConflictEdges(cubies) === 0) return { matched: false, moves: null };
   const moves = runParametrizedSearchV2(cubies, analysis.cycleNodes, lib, deadline, variant.options);
   return { matched: true, moves };
 }
