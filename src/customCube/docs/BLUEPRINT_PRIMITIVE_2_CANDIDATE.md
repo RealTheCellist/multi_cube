@@ -96,36 +96,57 @@ if the structure doesn't hold.
 `solverV2Prototype/DeferredValidator.ts`'s `validateDeferred` already
 enforces for REPAIR) — no new validation philosophy needed here.
 
-## 5. An open question worth answering BEFORE building a new Primitive
+## 5. UPDATE (Gate Relaxation Validation Sprint v1, 2026-07-21): the cheap experiment was run — RESULT A
 
-The 77-case `cycleLength 2-4, conflictEdgeCount=0` bucket sits **inside**
-REPAIR's own cycle-length range — only the `conflictEdgeCount>0`
-requirement excludes it. `runSuccessV2`/`W2_widerHop`'s own bounded DFS
-mechanism doesn't obviously *require* a conflict edge to exist — that
-requirement came from the original Blueprint's own empirically-chosen
-precondition, not a proven mechanical necessity.
+The open question above was answered empirically, not just flagged.
+`solverPrimitiveGateRelaxation/` compared REPAIR's real, unmodified Gate
+(G0: `cycleLength 2~4 AND conflictEdgeCount>0`, calling `runSuccessV2`
+directly) against a relaxed Gate (G1: `cycleLength 2~4` only — a
+disclosed hop-for-hop reimplementation of `runSuccessV2`'s own DFS body
+with exactly the `conflictEdgeCount===0` early-return removed, otherwise
+byte-identical) across all 335 snapshots, N=15 runs, Standard Evaluation
+Protocol.
 
-**Before designing and implementing a whole new CCR Primitive, it's worth
-first running a cheap experiment**: does simply relaxing REPAIR's own
-Gate to drop the `conflictEdgeCount>0` requirement (keeping cycleLength
-2~4) already resolve a meaningful share of that 77-case bucket, using the
-EXISTING, unmodified `runSuccessV2`? If so, a large chunk of this gap
-closes via a Refinement-stage Gate change to REPAIR itself, not a new
-Primitive — and CCR's own scope narrows to specifically the cycleLength
-5-6 population (173 cases, the part REPAIR's cycle-length cap excludes
-regardless of the conflict-edge question). This is a Prototype-stage
-question, not answered here — flagged so the next Sprint spends its
-first cycle on the cheapest test, not the most code.
+**Result**: G1 resolves **17-19 of the 77** `cycleLength 2-4,
+conflictEdgeCount=0` snapshots (stably, across a majority of runs) —
+paired-diff GapRescue 95% CI excludes zero in two independent full runs
+([1.300, 2.033] and [2.300, 3.033]), **zero regressions**, and — crucially
+— G1's performance on REPAIR's *own* original population is mathematically
+unchanged (G1's Gate is a strict superset of G0's, so it cannot do worse
+there; verified numerically: G0/G1 success counts on the shared
+population matched within rounding in both runs). The initial blended-
+precision comparison looked like a "Coarsening Trap" (45.9%→30.6%) but
+this was a measurement artifact of averaging in a genuinely harder new
+population, not a real capability regression — confirmed by splitting
+precision per-population instead of blending it (see
+`solverPrimitiveGateRelaxation/CoarseningCheck.ts`'s own disclosed
+correction).
 
-## 6. What this Blueprint does NOT do
+**Decision: A.** `conflictEdgeCount>0` was an unnecessary constraint for
+the `cycleLength 2~4` band. **CCR's own scope now narrows to specifically
+the `cycleLength 5-6` population (173 cases, 51.6% of all current
+failures)** — the part no Gate relaxation of REPAIR can reach, since
+REPAIR's search is only validated/tuned for cycles up to length 4.
 
-No algorithm was designed. No code beyond the read-only Gap Analysis
-driver (`runPrimitiveDiscoverySprint2.ts`,
-`primitiveDiscoverySprint2/StructuralRepresentation.ts`,
-`RevalidationCheck.ts`, `StructuralClustering.ts` — all read-only,
-imports existing unmodified analysis functions, touches nothing in
-Solver/Planner/Executor/Recovery/Primitive Registry) was written. The
-next step, per `docs/PRIMITIVE_RESEARCH_PROCESS.md`, is **Prototype**:
-first the cheap REPAIR-gate-relaxation experiment above, then (if still
-needed) a real CCR implementation and a benchmark against this same
-recollected dataset.
+This Sprint did **not** change REPAIR's production Gate — that would be
+an Integration-stage decision (a real `MAX_CYCLE_LENGTH`/gate change to
+`fiveByFiveEdgeRecovery.ts`'s dependency chain, requiring its own
+Integration Blueprint → Prototype → Refinement → Validation cycle, exactly
+like REPAIR's own first shipping did). What this Sprint establishes is
+that such a change is *worth pursuing* and *would work* — the next
+Integration-side Sprint can wire in the relaxed Gate with high confidence
+instead of guessing.
+
+## 6. What this Blueprint (and the Gate Relaxation Sprint) does NOT do
+
+No algorithm was designed for CCR. No production code was changed —
+`fiveByFiveEdgeRecovery.ts`, `SuccessOptimizationV2.ts`,
+`MultiHopBridgePrototypeV3.ts`, `DeferredValidator.ts` are all still
+exactly as REPAIR shipped them; G1 lives only in the new, isolated
+`solverPrimitiveGateRelaxation/` directory as a benchmark, never imported
+by anything real. The next steps, per `docs/PRIMITIVE_RESEARCH_PROCESS.md`:
+(a) an Integration-side Sprint to actually relax REPAIR's shipped Gate
+(cycleLength 2~4, drop `conflictEdgeCount>0`) following the same
+Blueprint→Prototype→Refinement→Validation cycle REPAIR itself went
+through; (b) a real CCR Prototype targeting specifically `cycleLength
+5-6` (173 cases), now that (a)'s scope no longer overlaps with it.

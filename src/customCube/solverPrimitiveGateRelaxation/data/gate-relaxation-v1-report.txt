@@ -1,0 +1,39 @@
+========================================
+Gate Relaxation Validation Sprint v1 -- Report
+========================================
+
+--- 0. Sprint 성격 ---
+Primitive Discovery Sprint #2가 발견한 최대 Gap(cycleLength 2~4, conflictEdgeCount=0, 77건)에 대해, 새 Primitive(CCR)를 만들기 전에 REPAIR(W2_widerHop)의 Gate에서 conflictEdgeCount>0 조건만 제거(G1)했을 때 Capability가 실제로 늘어나는지 검증한다. runSuccessV2/DeferredValidator/SuccessOptimizationV2/MultiHopBridgePrototypeV3/Evaluation Stabilization/Solver/Planner/Executor/Recovery는 전부 읽기 전용(호출만 함). G0는 runSuccessV2를 그대로 호출, G1만 disclosed hop-for-hop 재구현(conflict-edge 검사 한 줄만 제거).
+
+데이터셋: 335개 snapshot (Primitive Discovery Sprint #2가 수집한 335개 전부)
+
+--- STEP2/3: Standard Evaluation Protocol (Majority Vote Gap + paired-diff 95% CI) ---
+사용한 N: 15회 (초기 15, 초기 N에서 이미 결정적), CI 결정적 여부: true
+
+[G0 -- 기존/REPAIR 실제 Gate] Coverage: 12.2%, Precision: 46.0%, GapRescue 평균 4.87/run, Regression 0건
+[G1 -- Relaxed(conflictEdgeCount 제거)] Coverage: 35.2%, Precision: 30.6%, GapRescue 평균 6.53/run, Regression 0건
+paired-diff(G1 - G0) GapRescue: 평균 1.667, 95% CI [1.300, 2.033]
+
+--- STEP4: Failure Classification (cycleLength 2~4, conflictEdgeCount=0 target subset) ---
+Target subset 크기(실측): 77건 (Primitive Discovery Sprint #2 예상: 77건)
+G0가 이 subset에서 성공한 건수(합산, 구조상 0이어야 함): 0
+G1이 최소 1회라도 성공한 hash 수: 19/77
+G1이 과반수 run에서 안정적으로 성공한 hash 수: 17/77
+G1의 run당 평균 성공률(target subset 대비): 22.4%
+
+--- STEP5: Coarsening Trap 검증 ---
+참고: 단순 blended precision(G0 전체 대비 G1 전체) 비교는 Gate가 상위집합(superset) 관계일 때 오판 소지가 있다 -- G1의 Gate는 G0의 Gate를 항상 포함하므로, conflictEdgeCount=0인 새 모집단의 성공률이 G0의 기존 모집단보다 낮기만 해도 blended precision은 항상 떨어진다(coarsening 여부와 무관하게). 그래서 이 STEP은 (a) G0가 원래 다루던 모집단에서 G1이 정말 성능을 유지하는지와 (b) 새로 열린 모집단이 진짜 유의미한 성공률을 보이는지를 분리해서 본다.
+(a) 기존(G0-eligible) 모집단에서 Precision 보존 여부(허용 오차 5%p): true
+(b) 신규(conflictEdgeCount=0) 모집단에서 G1 성공률: 22.4% (유의미 기준 10% 초과 여부: true)
+기존 모집단 내 Regression 증가 여부: false
+판정 -- Coarsening Trap(기존 모집단 자체가 저하됨): false, 진짜 Capability 증가(기존 유지 + 신규 유의미 + Regression 없음): true
+
+--- 성공 기준 판정 ---
+Level 1 (77건 영역에서 새 성공 사례 존재): PASS (19건)
+Level 2 (paired-diff CI가 0을 배제): PASS (95% CI [1.300, 2.033])
+Level 3 (Regression 없이 Capability 증가, Coarsening Trap 아님): PASS
+
+--- 최종 결정: A ---
+conflictEdgeCount>0는 불필요한 제약이었다 -- REPAIR의 Gate만 완화해도(cycleLength 2~4로 확장) 통계적으로 유의한 Capability 증가가 확인되었다(paired-diff 95% CI [1.300, 2.033]), Regression 없음, Coarsening Trap 아님. CCR의 범위는 주로 cycleLength 5~6 영역으로 축소된다.
+
+--- 총 소요 시간: 4893.3초 ---
