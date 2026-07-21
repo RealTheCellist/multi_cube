@@ -1,0 +1,41 @@
+========================================
+Primitive Discovery Sprint #2 -- Gap Analysis Report
+========================================
+
+전체 데이터셋: 335개 snapshot (기존 150개 + 이번 Sprint STEP1에서 새로 수집한 185개)
+
+--- STEP1b: Revalidation (기존 pre-REPAIR snapshot 중 현재 Solver가 이미 해결한 것 제외) ---
+Pre-cutoff(기존) snapshot: 150개, 그중 현재 Solver가 한 번의 solve() 호출로 이미 완전히 푼 것(stale, 제외): 0개
+현재 실패 모집단(clustering 대상): 335개
+
+--- STEP2: Structural Clustering (wrongWing/parity/cycleLength/cycleCount/conflictEdgeCount) ---
+Cluster 수: 173개
+
+상위 10개 Cluster:
+  [w10|p1|cl5|cc3|ce0] 총 8건 -- wrongWing=10, parity=있음, cycleLength=5, cycleCount=3, conflictEdgeCount=0 (REPAIR Gate 적격 비율: 0%)
+  [w10|p1|cl4|cc3|ce0] 총 7건 -- wrongWing=10, parity=있음, cycleLength=4, cycleCount=3, conflictEdgeCount=0 (REPAIR Gate 적격 비율: 0%)
+  [w8|p0|cl0|cc0|ce8] 총 7건 -- wrongWing=8, parity=없음, cycleLength=0, cycleCount=0, conflictEdgeCount=8 (REPAIR Gate 적격 비율: 0%)
+  [w4|p0|cl4|cc1|ce0] 총 6건 -- wrongWing=4, parity=없음, cycleLength=4, cycleCount=1, conflictEdgeCount=0 (REPAIR Gate 적격 비율: 0%)
+  [w14|p1|cl5|cc4|ce0] 총 6건 -- wrongWing=14, parity=있음, cycleLength=5, cycleCount=4, conflictEdgeCount=0 (REPAIR Gate 적격 비율: 0%)
+  [w7|p0|cl4|cc2|ce0] 총 6건 -- wrongWing=7, parity=없음, cycleLength=4, cycleCount=2, conflictEdgeCount=0 (REPAIR Gate 적격 비율: 0%)
+  [w6|p0|cl6|cc1|ce0] 총 6건 -- wrongWing=6, parity=없음, cycleLength=6, cycleCount=1, conflictEdgeCount=0 (REPAIR Gate 적격 비율: 0%)
+  [w8|p1|cl5|cc2|ce0] 총 6건 -- wrongWing=8, parity=있음, cycleLength=5, cycleCount=2, conflictEdgeCount=0 (REPAIR Gate 적격 비율: 0%)
+  [w8|p1|cl4|cc2|ce0] 총 5건 -- wrongWing=8, parity=있음, cycleLength=4, cycleCount=2, conflictEdgeCount=0 (REPAIR Gate 적격 비율: 0%)
+  [w9|p1|cl5|cc2|ce0] 총 5건 -- wrongWing=9, parity=있음, cycleLength=5, cycleCount=2, conflictEdgeCount=0 (REPAIR Gate 적격 비율: 0%)
+
+전체 중 REPAIR Gate 적격(cycleLength 2~4 AND conflictEdgeCount>0): 41/335 (12.2%)
+
+--- STEP2b: Macro Clustering (cycleLength band x conflictEdges 유무) -- exact-tuple clustering의 과도한 파편화(173개 cluster, 최대 8건)를 피하기 위한 보조 뷰 ---
+  [5-6|conflictEdges=no] 총 173건 -- cycleLength=5-6, conflictEdges=없음, 평균 wrongWing=12.2 (REPAIR Gate 적격 비율: 0%)
+  [2-4 (REPAIR range)|conflictEdges=no] 총 77건 -- cycleLength=2-4 (REPAIR range), conflictEdges=없음, 평균 wrongWing=8.9 (REPAIR Gate 적격 비율: 0%)
+  [2-4 (REPAIR range)|conflictEdges=yes] 총 41건 -- cycleLength=2-4 (REPAIR range), conflictEdges=있음, 평균 wrongWing=12.6 (REPAIR Gate 적격 비율: 100%)
+  [none|conflictEdges=yes] 총 28건 -- cycleLength=none, conflictEdges=있음, 평균 wrongWing=8.8 (REPAIR Gate 적격 비율: 0%)
+  [5-6|conflictEdges=yes] 총 16건 -- cycleLength=5-6, conflictEdges=있음, 평균 wrongWing=14.8 (REPAIR Gate 적격 비율: 0%)
+
+--- STEP3: 가장 큰 미해결 Cluster (Macro 기준으로 최종 선정) ---
+선정: [5-6|conflictEdges=no] 총 173건 -- cycleLength=5-6, conflictEdges=없음, 평균 wrongWing=12.2
+REPAIR Gate 적격 비율: 0%
+대표 hash 목록 (최대 10개): 45959141, 84976575, dda1453f, e7a801fb, 70a5020b, beb967ad, 1e928fb1, d37ca819, 5e5b20b, ae3d218b
+
+(참고: exact-tuple 기준 가장 큰 미해결 cluster는 [w10|p1|cl5|cc3|ce0] 8건이었으나, 파편화가 심해 macro cluster를 최종 target으로 채택.)
+
