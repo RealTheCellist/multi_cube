@@ -1,0 +1,44 @@
+Incremental Recovery Production Integration Sprint v1 -- Report
+Generated: 2026-07-22T12:31:34.826Z
+
+STEP0. Population: 335 real snapshots total; 75-snapshot stride-sample used for the N=30-trial comparison (project-standard cost-driven subsample).
+STEP1. Production wiring: fiveByFiveEdges.ts's tryFixWing() gained an optional perCallBudgetMs param (byte-identical to pre-Sprint behavior when omitted); fiveByFiveEdgeExecutor.ts's runPrimaryPipeline()/executeTask() thread FIXED_BUDGET_MS=140 through as the new real production default. Verified via git-stash type-check comparison: 192 errors both before and after (zero new).
+
+STEP1/2 (corrected). Real per-call tryFixWing Budget Compliance (production-realistic outerDeadlineMs=120, matching TASK_LOCAL_BUDGET_MS exactly, tryFixWing is deterministic so a single full-population pass suffices):
+  n=3801 real wrong wings across all 335 snapshots.
+  Baseline (pairBudgetMs=undefined): avgRuntimeMs=163.86, overrunRate=55.12%, abortRate=59.98%
+  Candidate (pairBudgetMs=140): avgRuntimeMs=89.80, overrunRate=2.10%, abortRate=61.22%
+
+STEP2-3. End-to-End Runtime + Capability Validation (30 trials, 75 snapshots each):
+  avg whole-cube-improved count: baseline=52.83/75, candidate=52.60/75
+  avg whole-cube-solved count: baseline=0.00/75, candidate=0.00/75
+  avg Runtime: baseline=1080.4ms, candidate=1081.4ms
+  avg Deadline Miss rate: baseline=39.47%, candidate=39.38%
+  avg task-active rate (task-level capability proxy): baseline=70.44%, candidate=70.13%
+  Deferred Reject: not-applicable-at-this-layer (Visited Registry untouched)
+
+STEP4. Regression Analysis (avg across trials):
+  True Regression rate: 4.22%
+  Duplicate Success rate: 62.04%
+  Incremental-Recovery-Only Success rate: 5.11%
+  Abort Regression rate (aliased to True Regression, see file header): 4.22%
+
+STEP5. Standard Evaluation (paired-diff across N=30 trials):
+  Primary (whole-cube-improved count diff): mean=-0.233, 95% CI=[-0.691, 0.224], Cohen's d_z=-0.183 (negligible)
+  Secondary (whole-cube-solved count diff): mean=0.000, 95% CI=[0.000, 0.000]
+  Integration Runtime (avg wall ms diff): mean=1.02ms, 95% CI=[-6.47, 8.50]
+  Integration Deadline Miss (rate diff, pp): mean=-0.09pp, 95% CI=[-0.90, 0.72]
+
+STEP6. Production Readiness Review + Level 1-3 Judgment:
+  Level1 (Production Integration works): PASS
+    30 independent end-to-end trials completed, each running the real, unmodified FiveByFiveEdgeSolverEngine.solve() (Candidate) against a byte-identical mirror with pairBudgetMs=undefined (Baseline) across the same 75-snapshot subsample.
+  Level2 (per-call Budget Compliance >=95%, production-realistic 120ms outer deadline): PASS
+    Per-call tryFixWing Budget Compliance (production-realistic 120ms outer deadline, matching TASK_LOCAL_BUDGET_MS exactly, n=3801 real wrong wings): baseline overrun rate 55.12% (avg runtime 163.9ms) -> candidate overrun rate 2.10% (avg runtime 89.8ms), i.e. Compliance 44.88% -> 97.90%, vs the >=95% target. (Whole-solve-level Deadline Miss rate is reported separately in STEP2/5 as an Integration metric -- it is NOT used for this judgment, since it is insensitive to PAIR-task-level changes; see file header.)
+  Level3 (net capability gain, no Regression increase): FAIL
+    Primary metric (whole-cube-improved count diff, candidate-baseline): mean=-0.233, 95% CI=[-0.691, 0.224]. True Regression rate 4.22% vs Incremental-Recovery-Only Success rate 5.11% (avg over 30 trials) -- gains outweigh losses.
+
+  Prototype-vs-Production error: production True Regression rate 4.22% vs Prototype's own 1.53% (abs error 2.69pp)
+    Prototype's 1.53% True Regression rate was measured at the isolated bfsMoveWingToPosition-call layer (n=3801); Production's rate here is measured at the whole-solve() layer (candidate strictly worse than baseline's final wrongWingCount) -- different measurement granularities, disclosed rather than treated as a strict replication.
+
+DECISION: B
+  Integration succeeded and Budget Compliance holds, but the real whole-solve capability effect differs from the Prototype's own prediction (see prototypeVsProductionError) -- likely because whole-solve outcomes depend on interactions (task ordering, Recovery-layer triggering, shuffle()-driven candidate order) the isolated bfsMoveWingToPosition-level Prototype measurement couldn't capture. Needs an Integration Refinement pass tuned against real solve()-level data.
