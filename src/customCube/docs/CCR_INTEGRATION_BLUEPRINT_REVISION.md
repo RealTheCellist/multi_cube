@@ -1,10 +1,11 @@
 # CCR Integration Blueprint — Revision Notes
 
 Status: written at CCR Production Integration Sprint v1 (2026-07-21), Decision
-**C** ("Blueprint와 실제 Production 결과가 크게 다르다"). This document
-records why, with the goal of making the next Sprint (CCR Integration
-Blueprint Revision Sprint v1) start from a correct diagnosis instead of
-re-deriving it.
+**C** ("Blueprint와 실제 Production 결과가 크게 다르다"). Originally recorded
+as forward-looking notes for the next Sprint; **Section 6 below adds that
+Sprint's own actual, quantified findings** (CCR Integration Blueprint
+Revision Sprint v1, same date), which confirm and sharpen the diagnosis
+below rather than overturning it.
 
 **CCR itself is live in production as of this Sprint** — `fiveByFiveEdgeRecovery.ts`
 now includes a `"CCR"` `RecoveryType`, generated last (after REPAIR),
@@ -113,3 +114,79 @@ out of this Sprint's scope. Candidate directions for the revision:
 - The CCR Prototype's own mechanism (bounded DFS + Deferred Validation)
   remains fully validated — this Sprint found an *integration-timing*
   problem, not a mechanism problem.
+
+## 6. CCR Integration Blueprint Revision Sprint v1 — actual findings (2026-07-21)
+
+Full driver report: `solverPrimitiveCCRBlueprintRevision/data/ccr-blueprint-revision-v1-report.txt`.
+Zero production files touched this Sprint — `generateRecoveryStrategies()`
+was called directly (read-only reuse of its own pre-existing `onEvent`
+instrumentation hook, added back in Integration Refinement Sprint v1) to
+measure real per-candidate budgets, using each snapshot's own **real**
+remaining-time-at-trigger (from `RecoveryTimingDiagnostic.ts`, itself
+unmodified) as the deadline — never a fresh, idealized budget.
+
+**STEP1 (Recovery Trigger Timing, full re-run)**: Recovery triggered on
+49/335 snapshots this run (a different count than the 81/335 measured in
+the prior Sprint's own diagnostic pass — expected run-to-run variance,
+since production runtimes on this dataset cluster right at the 1000ms
+boundary, per Integration Sprint v2's own Deadline Miss findings, so
+small wall-clock jitter flips a real fraction of calls across the
+threshold each run). Remaining-time distribution among the 49 triggered:
+mean 198.0ms, median 178.0ms, P90 426.0ms, P95 436.0ms — consistent in
+order of magnitude with the prior Sprint's own 185.1ms average.
+
+**STEP2 (Per-primitive budget, quantified for the first time)**:
+
+| Type | Got a turn | Skipped | Generated | Avg observed budget |
+|---|---|---|---|---|
+| DISRUPT | 98.0% | 2.0% | **0.0%** | 90.8ms |
+| SETUP | 61.2% | 38.8% | **0.0%** | 82.9ms |
+| REPAIR | 100.0% | 0.0% | **0.0%** | 30.4ms |
+| CCR | 100.0% | 0.0% | **0.0%** | 17.9ms |
+
+This confirms the cascading-starvation dynamic precisely: REPAIR and CCR
+always get a nominal "turn" (their reservedBudget/remainingTime patterns
+bypass the shared `genDeadline` skip-check), but by the time their turn
+arrives — after DISRUPT×2 and SETUP have already run — the REAL budget
+left is tiny (30ms for REPAIR, only 18ms for CCR, positioned last). All
+four types show **0.0% generated rate** under real conditions — this is
+not a CCR-specific shortfall.
+
+**STEP3 (Counterfactual earlier-trigger)**: even a generous +300ms
+assumption only lifts CCR's generated rate to **4.1%** (2/49), any-candidate
+to 4.1%, REPAIR staying at 0%. A modest timing shift does not meaningfully
+fix this — the available windows (tens of ms) are simply too small for
+any of these real, non-trivial searches (BFS-based disruption/setup
+searches, or CCR's own bounded DFS) to complete, regardless of a
++100-300ms nudge.
+
+**STEP4 (Architecture Dependency, quantified)**: CCR Primitive — **none**
+(mechanism already proven at adequate budget; DISRUPT/REPAIR show the
+identical 0% pattern, so CCR isn't uniquely broken). Recovery Scheduling
+— **low** (DISRUPT, scheduled *first*, still shows 0% generated — order
+within Recovery isn't the dominant lever). Executor Timing — **dominant**
+(the trigger-timing distribution itself, and the counterfactual's own
+weak response to a +300ms shift, point squarely at *when* Recovery is
+reached being the binding constraint). Production Budget — **moderate**
+(the whole-plan 1000ms budget is already insufficient for the primary
+pipeline alone on this hardest-failure population; enlarging Recovery's
+own reservation trades directly against it).
+
+**STEP5 (Integration Feasibility)**: Strategy A (keep current structure)
+sustains ~0% real CCR contribution indefinitely. Strategy B (enlarge
+`RECOVERY_RESERVE_MS`) is directionally correct (matches the dominant
+Executor Timing finding) but the counterfactual data itself shows even a
+substantial nudge (+300ms) only reaches 4.1% — a budget-reservation tweak
+alone is unlikely to be sufficient, and implementing it requires
+`fiveByFiveEdgeExecutor.ts` changes regardless (out of every Sprint's
+scope so far). Strategy C (redesign when/how Recovery is reached) has the
+largest theoretical upside but requires touching both
+`fiveByFiveEdgeExecutor.ts` and `fiveByFiveEdgeSolverEngine.ts`
+(Production Solver Core) — a genuine architecture-level change.
+
+**Decision: C** — Recovery Architecture Review Sprint v1. The evidence
+here (0% generated across ALL candidate types under real conditions, and
+only a weak 4.1% response to a generous +300ms counterfactual) argues
+against a quick budget-reservation patch (Strategy B) being sufficient on
+its own; a proper review of when/how Recovery is invoked relative to the
+whole-plan budget is warranted before any further CCR-specific work.

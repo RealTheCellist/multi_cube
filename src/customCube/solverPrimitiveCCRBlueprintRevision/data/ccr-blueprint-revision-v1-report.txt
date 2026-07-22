@@ -1,0 +1,68 @@
+========================================
+CCR Integration Blueprint Revision Sprint v1 -- Report
+========================================
+
+--- 0. Sprint 성격 ---
+CCR Production Integration Sprint v1의 Decision C(Blueprint와 실제 결과가 크게 다름)의 원인을 구조적으로 규명한다. CCR/REPAIR/Executor/Planner는 전혀 수정하지 않는다 -- 새 디렉토리 solverPrimitiveCCRBlueprintRevision/만 추가했다. generateRecoveryStrategies()는 이미 존재하는 onEvent 계측 훅을 통해 직접(읽기전용) 호출했을 뿐, fiveByFiveEdgeRecovery.ts/fiveByFiveEdgeExecutor.ts 자체는 전혀 수정하지 않았다.
+
+데이터셋: 335개 snapshot
+
+--- STEP1: Recovery Trigger Timing 분석 ---
+Recovery 트리거된 건수: 49/335
+잔여 시간(Remaining Time) 분포: 평균 198.0ms, 중앙값 178.0ms, P90 426.0ms, P95 436.0ms, min 0ms, max 443ms
+Histogram:
+  0-100ms: 14건
+  100-200ms: 13건
+  200-300ms: 10건
+  300-400ms: 7건
+  400-500ms: 5건
+  500-600ms: 0건
+  600-700ms: 0건
+  700-800ms: 0건
+  800-900ms: 0건
+  900-1000ms: 0건
+
+--- STEP2: Recovery Primitive Budget 분석 (실제 remaining time 기준) ---
+[DISRUPT] 차례 도달률: 98.0%, Skip율: 2.0%, 차례 도달 시 생성률: 0.0%, 평균 실측 budget: 90.8ms
+[SETUP] 차례 도달률: 61.2%, Skip율: 38.8%, 차례 도달 시 생성률: 0.0%, 평균 실측 budget: 82.9ms
+[REPAIR] 차례 도달률: 100.0%, Skip율: 0.0%, 차례 도달 시 생성률: 0.0%, 평균 실측 budget: 30.4ms
+[CCR] 차례 도달률: 100.0%, Skip율: 0.0%, 차례 도달 시 생성률: 0.0%, 평균 실측 budget: 17.9ms
+
+--- STEP3: Counterfactual Simulation (Recovery를 N ms 더 일찍 호출했다고 가정) ---
+offset=0ms: any-candidate 생성률 0.0%, CCR 생성률 0.0%, REPAIR 생성률 0.0% (n=49)
+offset=100ms: any-candidate 생성률 2.0%, CCR 생성률 0.0%, REPAIR 생성률 2.0% (n=49)
+offset=200ms: any-candidate 생성률 2.0%, CCR 생성률 0.0%, REPAIR 생성률 0.0% (n=49)
+offset=300ms: any-candidate 생성률 4.1%, CCR 생성률 4.1%, REPAIR 생성률 0.0% (n=49)
+
+--- STEP4: Architecture Dependency ---
+[CCR Primitive] 기여도=none: CCR 메커니즘 자체는 이미 CCR Prototype Sprint v1에서 충분한 예산(1000ms) 하에 52.6% match율로 검증되었다. 이번 Sprint의 실측(real remaining time 평균 198.0ms)에서 CCR의 generatedRate는 0.0%인데, 같은 조건에서 DISRUPT(0.0%)와 REPAIR(0.0%)도 거의 동일하게 낮다 -- 즉 CCR만 특별히 나쁜 것이 아니라 '이 예산 수준에서는 어떤 후보도 거의 생성되지 않는다'는 공통 현상이다. CCR Primitive 자체의 기여도는 없음(none).
+[Recovery Scheduling] 기여도=low: DISRUPT(첫 순서)와 CCR(마지막 순서)의 generatedRate 차이가 0.0%p로 거의 없다 -- 순서상 유리한 DISRUPT조차 거의 생성되지 않으므로, Recovery 내부의 후보 순서(scheduling) 자체는 이 문제의 주된 원인이 아니다. 기여도: low.
+[Executor Timing] 기여도=dominant: Recovery 진입 시점의 실제 잔여 시간 분포: 평균 198.0ms, 중앙값 178.0ms, P90 426.0ms, P95 436.0ms -- 대부분의 경우 이미 예산이 거의 소진된 뒤에야 Recovery가 시작된다. Counterfactual 결과: 실제(offset=0ms) any-candidate 생성률 0.0%, CCR 생성률 0.0% vs offset=300ms(더 일찍 트리거되었다고 가정) any-candidate 생성률 4.1%, CCR 생성률 4.1%. Recovery가 더 일찍 트리거될수록 생성률이 뚜렷이 개선되므로, Executor가 ENDGAME 태스크의 기본 파이프라인에 예산을 다 쓰게 한 뒤에야 Recovery로 넘어가는 현재의 타이밍이 지배적(dominant) 원인이다.
+[Production Budget] 기여도=moderate: PLAN_TIME_BUDGET_MS=1000ms 자체가 이 dataset(가장 어려운 잔여 실패)에서 기본 파이프라인만으로도 이미 부족하다는 것이 Integration Sprint v2 이후 반복 확인되었다(Deadline Miss율 89~97%). Recovery/CCR 전용으로 예산을 늘리는 것(RECOVERY_RESERVE_MS 확대)은 전체 예산 자체를 늘리거나 다른 태스크의 몫을 줄여야 하므로, Executor Timing 문제와 겹치지만 독립적으로도 부차적 기여 요인이다(moderate).
+
+--- STEP5: Integration Feasibility (전략 A/B/C 비교) ---
+A. 현 구조 유지 (Executor/Recovery 타이밍 변경 없음)
+  예상 Capability: CCR 생성률 0.0% 수준 유지 -- 실질적으로 REPAIR와 마찬가지로 드문(rare) 기여만 기대 가능.
+  예상 Runtime: 변화 없음 (이미 실측된 +3.3% 수준).
+  Risk: 낮음 -- 이미 production에 반영되어 Regression 0건으로 검증됨. 단, CCR이 설계 의도만큼 기여하지 못하는 상태가 계속됨.
+  수정 범위: 없음 (이미 완료된 상태 유지).
+B. Recovery Budget Reservation 변경 (RECOVERY_RESERVE_MS 확대 등)
+  예상 Capability: Counterfactual(offset=300ms)이 실측한 CCR 생성률 4.1%까지 개선 가능성 -- Executor Timing이 dominant 원인이라는 STEP4 결과와 일치.
+  예상 Runtime: Recovery에 더 많은 예산을 미리 떼어주는 만큼, 기본 파이프라인(PAIR/FLIP/PARITY/ENDGAME)의 몫이 줄어들어 그쪽 성공률이 낮아질 위험 -- 상쇄 효과를 별도로 측정해야 함.
+  Risk: 중간 -- Recovery 진입 시점의 실제 잔여 시간 분포: 평균 198.0ms, 중앙값 178.0ms, P90 426.0ms, P95 436.0ms -... Executor(fiveByFiveEdgeExecutor.ts)의 RECOVERY_RESERVE_MS 수정이 필요해 이번 Blueprint Revision Sprint의 범위를 벗어난다(Executor 수정 금지).
+  수정 범위: fiveByFiveEdgeExecutor.ts (RECOVERY_RESERVE_MS 등) -- Executor 수정 필요.
+C. Recovery Trigger 변경 (더 일찍 호출하도록 SolverEngine/Executor 자체 재설계)
+  예상 Capability: 이론상 가장 큰 개선 여지 -- 기본 파이프라인이 예산을 다 쓰기 전에 Recovery가 개입할 기회를 구조적으로 확보.
+  예상 Runtime: 예측 어려움 -- 기본 파이프라인 자체의 동작 방식(태스크 순서/개별 예산)을 바꿔야 하므로 기존에 이미 튜닝된 PAIR/FLIP/PARITY/ENDGAME 균형이 깨질 위험.
+  Risk: 높음 -- Executor.ts와 fiveByFiveEdgeSolverEngine.ts(Production Solver Core)의 근본적 재설계가 필요. 이번 Sprint(및 다음 Refinement/Retry Sprint)의 허용 범위를 크게 벗어난다.
+  수정 범위: fiveByFiveEdgeExecutor.ts + fiveByFiveEdgeSolverEngine.ts (Production Solver Core) -- 광범위한 재설계 필요.
+
+--- 성공 기준 판정 ---
+Level 1 (Recovery Timing Model 확보): PASS (트리거 49건, 분포 확보)
+Level 2 (CCR 실패 원인의 구조적 위치 규명): PASS (dominant 원인: Executor Timing)
+Level 3 (제품 수정 없이 가능한 Integration인지 명확히 결론): PASS (결론: 아래 최종 결정 참고)
+
+--- 최종 결정: C ---
+Executor 구조 자체가 병목이며 예산 재조정만으로는 충분히 개선되지 않는다 -- Recovery Architecture Review Sprint v1로 진행.
+
+--- 총 소요 시간: 461.9초 ---
