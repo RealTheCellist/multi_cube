@@ -1,0 +1,71 @@
+Solver System Bottleneck Attribution Sprint v1 -- Report
+Generated: 2026-07-22T14:27:39.336Z
+READ-ONLY analysis Sprint -- zero Production code changes (fiveByFiveEdges.ts/Planner/Executor/Recovery/all Primitives/all Prototypes/Budget Contract all read-only this Sprint).
+
+STEP0. Population: 335 real snapshots (full dataset).
+
+STEP1. Stage Runtime Attribution (real production pairBudgetMs=140, full 335-snapshot population):
+  Stage | CallCount | AvgRuntimeMs | MaxRuntimeMs | %ofTotalRuntime
+  PAIR | 2826 | 76.83 | 177 | 73.56%
+  RECOVERY_DISRUPT1 | 254 | 142.32 | 394 | 12.25%
+  RECOVERY_SETUP | 203 | 62.97 | 349 | 4.33%
+  RECOVERY_DISRUPT2 | 152 | 83.97 | 416 | 4.32%
+  RECOVERY_CCR | 203 | 35.75 | 688 | 2.46%
+  RECOVERY_REPAIR | 203 | 22.73 | 353 | 1.56%
+  ENDGAME_BESTFIX | 211 | 18.96 | 381 | 1.36%
+  ENDGAME_MULTIPLY | 211 | 1.47 | 307 | 0.11%
+  FLIP | 2831 | 0.04 | 2 | 0.04%
+  PARITY | 209 | 0.24 | 2 | 0.02%
+  RECOVERY_RETRY | 2 | 0.00 | 0 | 0.00%
+
+STEP2. Budget Savings Flow:
+  avg PAIR savings (baseline - candidate): -5.03ms
+  -> avg ENDGAME delta (candidate - baseline): -0.65ms (13.0% of savings)
+  -> avg RECOVERY delta (candidate - baseline): -18.23ms (362.6% of savings)
+  -> avg unaccounted (savings that went nowhere): 13.85ms (-275.6% of savings)
+
+STEP3. Invocation Chain Analysis (full 335-snapshot population):
+  avg chain length: 18.74, max chain depth: 27
+  top repeated 2-gram patterns:
+    FLIP->PAIR: 2826
+    PAIR->FLIP: 2492
+    PARITY->ENDGAME: 209
+    PAIR->PARITY: 208
+    ENDGAME->RECOVERY: 205
+    RECOVERY->ENDGAME: 2
+    FLIP->PARITY: 1
+
+STEP4. Opportunity Loss Analysis (cases with zero net improvement, full population):
+  total no-improvement cases: 106/335
+  A_budgetUnused: 0 (0.0%)
+  B_endgameConsumedAll: 58 (54.7%)
+  C_recoveryNotTriggered: 0 (0.0%)
+  D_otherPrimitiveBottleneck: 48 (45.3%)
+
+STEP5. Counterfactual Simulation (extensionMs=10, from STEP2's own avg PAIR savings, n=49 snapshots with a real ENDGAME task):
+  avg baseline improvement (no extension): 0.408
+  avg ENDGAME-extended improvement: 0.551
+  avg RECOVERY-extended improvement: 0.041
+  avg CCR-extended improvement: 0.041
+  best redirection: ENDGAME
+
+STEP6. Bottleneck Attribution Matrix:
+  ENDGAME: 54.7%
+    basis: Opportunity Loss category B (ENDGAME consumed all remaining budget): 58/106 no-improvement cases (ENDGAME stages account for 1.5% of total measured Stage Runtime, STEP1)
+  Planner: 45.3%
+    basis: Opportunity Loss category D (neither ENDGAME nor Recovery ever reached): 48/106 no-improvement cases
+  Recovery Trigger: 0.0%
+    basis: Opportunity Loss category C (ENDGAME ran/failed but Recovery never triggered): 0/106 no-improvement cases
+  Executor: 0.0%
+    basis: Opportunity Loss category A (meaningful plan budget left unused, nothing further invoked): 0/106 no-improvement cases
+  Primitive: 0.0%
+    basis: Counterfactual Simulation (n=49): best redirection (ENDGAME) improvement vs baseline improvement -- 0.0% of the gap is NOT closeable by giving any Primitive more time (a real search-capability ceiling, not a scheduling problem)
+  Priority 1: ENDGAME
+
+Level 1-3 Judgment:
+  Level1 (병목 위치 정량화): PASS -- Bottleneck contribution computed for all 5 components from real measurements across 106 no-improvement cases and 49 counterfactual simulations.
+  Level2 (Budget Flow 완성): PASS -- Budget Flow (STEP2) completed: PAIR savings traced to ENDGAME/RECOVERY/unaccounted deltas on the same real cube states.
+  Level3 (Priority 1 확정): FAIL -- No single dominant bottleneck -- top candidates: ENDGAME (54.7%), Planner (45.3%), Recovery Trigger (0.0%).
+
+DECISION: B
+  Bottleneck candidates narrowed to 2-3: ENDGAME (54.7%), Planner (45.3%), Recovery Trigger (0.0%) -- needs an additional, more targeted instrumentation Sprint to disambiguate before committing to one optimization target.
