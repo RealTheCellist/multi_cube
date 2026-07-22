@@ -609,7 +609,7 @@ interface LiteSticker5 {
   dz: number;
   color: Face;
 }
-interface LiteEdge5 {
+export interface LiteEdge5 {
   id: number;
   type: "wingEdge" | "trueEdge";
   x: number;
@@ -617,7 +617,12 @@ interface LiteEdge5 {
   z: number;
   stickers: readonly LiteSticker5[];
 }
-function toLiteEdges(cubies: readonly Cubie[]): LiteEdge5[] {
+// Exported for Incremental Recovery Architecture Prototype Sprint v1's own
+// Traversal Interruptibility benchmark (needs to construct real LiteEdge5[]
+// state from real captured cube snapshots to call the now-exported
+// bfsMoveWingToPosition() directly) -- a pure Cubie[]->LiteEdge5[] data
+// conversion, no search/algorithm logic, unchanged from its prior private form.
+export function toLiteEdges(cubies: readonly Cubie[]): LiteEdge5[] {
   return cubies
     .filter((c) => pieceType5(c) === "wingEdge" || pieceType5(c) === "trueEdge")
     .map((c) => ({
@@ -700,12 +705,33 @@ const MAX_TRACK_NODES = 8000;
 // pieces and the net wrongness count never improves -- confirmed directly
 // via instrumentation (every candidate reported setupFails=0 but
 // noImprove=50, i.e. a setup was always found but never actually helped).
-function bfsMoveWingToPosition(
+export type DeadlineCheckGranularity = "nodeCount" | "queuePop" | "levelTransition";
+
+// Traversal Interruptibility (Incremental Recovery Architecture Prototype
+// Sprint v1): `deadline`/`granularity`/`checkEveryNodes` are all OPTIONAL
+// and preserve prior behavior EXACTLY when omitted -- every added check
+// below is guarded by `deadline !== undefined`, so with no deadline
+// argument (every existing caller: tryFixWing, enumerateWingCandidates,
+// etc. -- none were changed to pass one) the function is byte-identical
+// to its pre-Sprint form: same MAX_TRACK_NODES bound, same traversal
+// order, same returned path. This was added ONLY so a caller that DOES
+// supply a real-time budget can interrupt the search before its own
+// 8000-node bound -- see Prototype Refinement Sprint v1's own STEP2
+// finding (this function's own single-call time reached 1003ms with zero
+// internal time checks) for why. No change to search order, candidate
+// ordering, or which path is returned when not interrupted. Exported
+// (was private) only so this Sprint's own benchmark code can call it
+// directly with a real deadline -- every existing internal caller in this
+// file continues to call it exactly as before.
+export function bfsMoveWingToPosition(
   edges: readonly LiteEdge5[],
   pieceId: number,
   targetPosKey: string,
   maxDepth: number,
-  pins?: readonly { id: number; posKey: string }[]
+  pins?: readonly { id: number; posKey: string }[],
+  deadline?: number,
+  granularity: DeadlineCheckGranularity = "nodeCount",
+  checkEveryNodes: number = 200
 ): Move[] | null {
   const startPiece = edges.find((e) => e.id === pieceId);
   if (!startPiece) return null;
@@ -716,10 +742,13 @@ function bfsMoveWingToPosition(
   const seen = new Set<string>([liteStateKey(edges)]);
   let nodesExplored = 0;
   for (let depth = 0; depth < maxDepth; depth++) {
+    if (deadline !== undefined && granularity === "levelTransition" && Date.now() > deadline) return null;
     const next: { edges: readonly LiteEdge5[]; path: Move[] }[] = [];
     for (const node of frontier) {
+      if (deadline !== undefined && granularity === "queuePop" && Date.now() > deadline) return null;
       for (const move of safe) {
         if (nodesExplored++ > MAX_TRACK_NODES) return null;
+        if (deadline !== undefined && granularity === "nodeCount" && nodesExplored % checkEveryNodes === 0 && Date.now() > deadline) return null;
         const nextEdges = liteApplyMove(node.edges, move);
         if (pins && pins.some((pin) => litePosKeyOf(nextEdges.find((e) => e.id === pin.id)!) !== pin.posKey)) continue;
         const path = [...node.path, move];
