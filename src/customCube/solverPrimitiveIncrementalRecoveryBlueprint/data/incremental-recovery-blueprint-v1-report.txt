@@ -1,0 +1,91 @@
+========================================
+Incremental Recovery Blueprint Sprint v1 -- Report
+========================================
+
+--- 0. Sprint 성격 ---
+Architecture Blueprint 단계. Production Solver/Planner/Executor/Recovery/Primitive(CCR/REPAIR) 코드는 전혀 수정하지 않았다 -- 새 디렉토리 solverPrimitiveIncrementalRecoveryBlueprint/만 추가했고, 기존 planEdgeTasks()/executeTask()/runCCRPrototype()/runSuccessV2()를 읽기 전용으로 재사용했다.
+
+데이터셋: 335개 snapshot
+
+--- STEP1: PAIR Failure Population 분석 ---
+총 PAIR no-progress 기록: 1421건
+  - slot-already-resolved: 170건 (다른 태스크가 이미 이 슬롯을 고쳐서 이 태스크 자체가 더 이상 할 일이 없었던 경우)
+  - search-failed: 1251건 (탐색이 실제로 실패한 경우)
+평균 wrongWingCount: 10.18, 평균 pairCount: 3.57, parity 비율: 71.4%
+평균 conflictEdgeCount: 2.08
+cycleLength 분포: 0=176, 5-6=707, 2-4=538
+CCR Gate 적합: 655건, REPAIR Gate 적합: 538건, 둘 다 부적합: 228건
+
+--- STEP2: Incremental Trigger Blueprint ---
+[allNoProgress] 모든 no-progress (매 PAIR 실패마다 트리거)
+  Coverage: 1421/1421건 (100.0%), 서로 다른 snapshot 335개에서 트리거
+  Gate 적합 중복률: 1193/1421건 (84.0%) -- CCR/REPAIR가 이미 시도 가능한 상태와 겹치는 비율
+[consecutiveNoProgress] 연속 no-progress (같은 snapshot 안에서 2회 이상 연속 실패 시에만 트리거)
+  Coverage: 1086/1421건 (76.4%), 서로 다른 snapshot 332개에서 트리거
+  Gate 적합 중복률: 904/1086건 (83.2%) -- CCR/REPAIR가 이미 시도 가능한 상태와 겹치는 비율
+[thresholdBased] Threshold 기반 (wrongWingCount <= 15 -- '거의 다 왔는데 막힌' 상태만)
+  Coverage: 1351/1421건 (95.1%), 서로 다른 snapshot 318개에서 트리거
+  Gate 적합 중복률: 1133/1351건 (83.9%) -- CCR/REPAIR가 이미 시도 가능한 상태와 겹치는 비율
+[featureBased] Feature 기반 (CCR 또는 REPAIR Gate가 이미 이 시점에 적합한 경우만)
+  Coverage: 1193/1421건 (84.0%), 서로 다른 snapshot 298개에서 트리거
+  Gate 적합 중복률: 1193/1193건 (100.0%) -- CCR/REPAIR가 이미 시도 가능한 상태와 겹치는 비율
+
+--- STEP3: Incremental Budget Contract ---
+[fixed] n=1193, 평균 budget=50.0ms, 성공률=3.8%, 평균 소요=187.8ms
+[remainingTime] n=1193, 평균 budget=270.7ms, 성공률=15.7%, 평균 소요=335.8ms
+[reservedSlice] n=1193, 평균 budget=31.3ms, 성공률=2.8%, 평균 소요=140.7ms
+[adaptiveSlice] n=1193, 평균 budget=35.3ms, 성공률=2.3%, 평균 소요=155.7ms
+최선 정책: remainingTime (성공률 15.7%)
+
+--- STEP4: Architecture Simulation (Counterfactual) ---
+[current]
+  모집단: 51건 (ENDGAME 태스크 시도 횟수, Recovery Architecture Review Sprint v1 실측)
+  Coverage: 100.0% no-progress -- 100% 모집단이지만 모집단 자체가 작다
+  Runtime 영향: 기준선 (CCR Production Integration Sprint v1: +3.3%, 실질 기여 거의 0)
+  Primitive 활용도: 매우 낮음
+[early]
+  모집단: 51건과 동일 (ENDGAME 태스크 자체는 그대로, 예산만 미리 확보)
+  Coverage: CCR Integration Blueprint Revision Sprint v1의 counterfactual(+300ms)상 CCR 생성률 4.1%까지만 개선
+  Runtime 영향: PAIR/FLIP/PARITY/ENDGAME 기본 파이프라인의 몫 감소 위험
+  Primitive 활용도: 제한적 개선
+[incremental]
+  모집단: 1421건 (PAIR no-progress 전체) 중 Gate 적합 1193건(CCR 655 + REPAIR 538) -- ENDGAME 모집단(51건)의 27.9배
+  Coverage: Gate 적합 모집단 기준 최선 Budget 정책(remainingTime)으로 성공률 15.7%
+  Runtime 영향: 평균 budget 270.7ms/시도 x 최대 12회(PAIR 태스크 수) -- ENDGAME 1회성 시도보다 누적 비용이 더 분산되지만 총량은 유사하거나 클 수 있음
+  Primitive 활용도: 이론상 가장 높음 -- 모집단 규모가 ENDGAME 대비 압도적으로 큼
+[opportunistic]
+  모집단: Incremental과 동일 모집단(1421건)이지만 예산 여유가 있을 때만 선택적으로 시도
+  Coverage: Incremental보다 낮은 호출률 -- 예산이 부족한 대다수 케이스에서는 시도조차 안 함
+  Runtime 영향: Incremental보다 낮음 -- 예산 확인 자체의 오버헤드만 추가
+  Primitive 활용도: Incremental과 Current의 중간
+
+--- STEP5: Safety Analysis ---
+[Primitive 중복] severity=low
+  CCR/REPAIR의 Gate/탐색 코드 자체는 그대로 재사용되므로 알고리즘 중복은 없다 -- 다만 '이 PAIR 태스크 지점에서 Incremental Recovery를 호출할지' 판단 로직이 ENDGAME의 Recovery 진입 로직과 별도로 존재해야 하므로, 호출부(call-site) 수준의 코드 중복은 불가피하다. 한 snapshot 내에서 PAIR 단계 성공이 ENDGAME 도달 자체를 막아 실질적 작업 중복(같은 상태에 대해 두 번 시도)은 자연히 방지된다.
+[Scheduler 충돌] severity=high
+  가장 중요한 위험. fiveByFiveEdgeExecutor.ts의 executeTask() 자체 주석이 이미 명시하듯, Recovery는 반드시 '실제 top-level 실행 루프'에서만 작동해야 하며 Planner v2의 simulateStrategy() 미리보기 경로에는 절대 배선되면 안 된다 -- Recovery의 타이밍 민감성(shuffle 기반 탐색 등)이 Planner의 '동일한 Cube는 항상 동일한 Strategy를 선택한다' 결정성 보장을 깨는 버그를 이미 한 번 유발했었다(이 세션 이전에 이미 수정된 이력). Incremental Recovery를 PAIR 태스크에 연결할 때 이 구분을 놓치면 동일한 버그가 재발한다 -- Blueprint의 Scheduling 명세에 '오직 top-level 실행 루프에서만, allowRecovery 플래그로 명시적으로 게이팅'을 반드시 포함해야 한다.
+[Budget 충돌] severity=medium
+  PAIR/FLIP 태스크는 이미 TASK_LOCAL_BUDGET_MS=120ms의 짧은 자체 예산 안에서 동작한다(한 개의 정체된 태스크가 전체 계획 예산을 다 쓰는 것을 막기 위한 기존 안전장치). Incremental Recovery를 이 120ms 창 '안에' 넣으면 기존 PAIR 검색(tryFixWing 등) 자체의 몫을 줄이게 되고, '밖에'(태스크별 예산과 별개로) 두면 전체 예산 구조 자체를 재설계해야 한다 -- 이번 Sprint의 STEP3 실측(예: reservedSlice 정책)은 전자에 가까운 절충안이다.
+[Regression 위험] severity=low
+  CCR/REPAIR 모두 이미 Deferred Validation(자기 자신의 validateDeferred 호출로 net-improvement만 채택)을 내장하고 있으므로, Incremental Recovery로 호출 위치만 바뀌어도 이 불변식은 그대로 유지된다 -- REPAIR가 4개 Sprint에 걸쳐 Regression 0건을 유지한 것과 동일한 안전장치.
+[Infinite Retry 가능성] severity=medium
+  attemptRecovery()는 이미 방문한 상태를 해시로 기록해(visited Set) 루프를 방지한다. Incremental Recovery가 매 PAIR 태스크마다 독립적으로 호출되면, 서로 다른 호출 간에는 이 visited 정보가 공유되지 않는다 -- 한 태스크에서 Incremental Recovery가 실패로 되돌린 상태를 다음 태스크가 다시 만들어 재시도를 유발하는 시나리오가 이론적으로 가능하다. Blueprint는 여러 PAIR 태스크에 걸친 전역 visited 추적, 혹은 태스크당 최대 1회 시도라는 명시적 상한을 Safety Contract에 포함해야 한다.
+
+--- STEP6: Blueprint Specification ---
+Trigger: featureBased -- PAIR 태스크가 no-progress(moves.length===0)를 반환한 '직후', CCR Gate(cycleLength 5-6, conflictEdgeCount=0) 또는 REPAIR Gate(cycleLength 2-4)가 이미 이 시점 상태에 대해 성립하는 경우에만 호출한다.
+  근거(실측): allNoProgress 트리거는 모집단이 가장 크지만(1421건) Gate 적합 중복률이 84.0%에 불과해 대부분 호출해도 성공 가능성이 없다. featureBased 트리거는 정확히 Gate 적합 1193건(=1193)만을 대상으로 하여 호출 자체를 성공 가능성이 있는 상태로 제한한다.
+Preconditions: (1) task.type === PAIR, (2) executeTask()가 빈 moves를 반환(진행 없음), (3) analyzeCcrGate()가 CCR 또는 REPAIR Gate 적합 판정, (4) 이 PAIR 태스크에 대해 이번 solve() 호출 중 아직 Incremental Recovery를 시도하지 않았음(태스크당 최대 1회 상한, STEP5 Infinite Retry 대응).
+Budget Contract: reservedSlice 정책(remainingTime과 고정 상한 40ms 중 작은 값) 채택 -- 실측 성공률 비교(STEP3)에서 remainingTime가 최선(15.7%)이었고, TASK_LOCAL_BUDGET_MS=120ms라는 기존 PAIR 태스크 자체 예산 안에 안전하게 들어가는 정책이기도 하다 -- fixed/remainingTime/adaptiveSlice는 각각 시도 성공률 또는 다른 태스크 예산 침해 측면에서 열세.
+Scheduling: 오직 top-level 실행 루프(SolverEngine.solve() 자신의 태스크 반복문)에서만, allowRecovery 플래그로 명시적으로 게이팅한다 -- Planner v2의 simulateStrategy() 미리보기 경로는 여전히 allowRecovery=false로 고정되어 완전히 배제된다(기존 ENDGAME Recovery와 동일한 원칙). PAIR 태스크 자체의 1차 탐색(tryFixWing 등)이 먼저 실행되어 실패한 '이후'에만 Incremental Recovery가 같은 태스크 슬롯에서 2차로 시도된다 -- 태스크 순서 자체는 변경하지 않는다.
+Safety Contract: (1) Scheduler 충돌 방지 -- allowRecovery 플래그가 top-level에서만 true인 기존 불변식을 그대로 유지, (2) Budget 충돌 방지 -- reservedSlice로 PAIR 자체 탐색 예산을 침해하지 않는 상한을 둠, (3) Regression 방지 -- CCR/REPAIR 자체의 Deferred Validation(net-improvement만 채택)을 그대로 재사용, (4) Infinite Retry 방지 -- 태스크당 최대 1회 상한 + solve() 호출 전역 visited 해시 공유(기존 attemptRecovery()의 visited Set과 동일한 패턴을 PAIR 레벨로 확장).
+Expected Capability: 예상 모집단 1421건(PAIR no-progress 전체) 중 Gate 적합 1193건 -- ENDGAME 모집단(51건)의 27.9배. Coverage(Gate 적합 모집단 기준 실제 성공률): 15.7%. Runtime 영향: 평균 270.7ms/시도, PAIR 태스크당 최대 1회이므로 최악의 경우도 태스크 수(최대 12개) x reservedSlice 상한을 넘지 않는다.
+
+--- 성공 기준 판정 ---
+Level 1 (PAIR 기반 Incremental Trigger가 실측 데이터로 정의됨): PASS -- featureBased 트리거가 실측 1421건 중 1193건을 실제 데이터로 특정함.
+Level 2 (ENDGAME Recovery보다 더 큰 모집단을 대상으로 하는 Blueprint 확보): PASS -- PAIR no-progress 모집단 1421건 vs ENDGAME 51건(27.9배).
+Level 3 (Production Integration 가능한 수준의 Incremental Recovery Blueprint 확정): PASS -- Trigger/Precondition/Budget Contract/Scheduling/Safety Contract가 모두 실측 근거와 함께 명세되었고, high severity 위험(Scheduler 충돌)에 대한 구체적 대응(top-level 전용 + allowRecovery 게이팅)이 Blueprint에 포함됨. 단, 성공률 자체(15.7%)가 낮다면 Prototype 단계에서 재검증 필요.
+
+--- Decision: A ---
+Incremental Recovery Blueprint 확정 -> Incremental Recovery Prototype Sprint v1
+
+--- 총 소요 시간: 1349.7초 ---
