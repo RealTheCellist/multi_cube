@@ -1401,7 +1401,25 @@ export function tryFlipWingsInPlace(cubies: Cubie[], w: Cubie, flipLib: Map<stri
   return null;
 }
 
-export function tryFixWing(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline: number): Move[] | null {
+// `perCallBudgetMs` (Incremental Recovery Production Integration Sprint
+// v1): OPTIONAL, defaults to undefined -- every existing caller that
+// doesn't pass it gets the exact pre-Sprint behavior (each
+// bfsMoveWingToPosition call below runs with no deadline at all, same as
+// before). When a caller DOES supply it (only the real production PAIR-task
+// call site in fiveByFiveEdgeExecutor.ts's runPrimaryPipeline does, as of
+// this Sprint), each bfsMoveWingToPosition call gets its own per-call
+// deadline capped at `perCallBudgetMs` ms from when THAT call starts (never
+// looser than the outer `deadline` this function was itself given), using
+// the "queuePop" granularity/50-node check interval Architecture Prototype
+// Sprint v1 measured as the most responsive (lowest avg/max overshoot) of
+// the 3 candidates it compared. This is the Architecture Prototype
+// Refinement Sprint v1's own confirmed 140ms Fixed Budget Operating
+// Contract, connected here for the first time to a real production call
+// site -- no change to candidate ordering, matching logic, or search
+// behavior itself.
+export function tryFixWing(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline: number, perCallBudgetMs?: number): Move[] | null {
+  const perCallDeadline = (d: number): number | undefined =>
+    perCallBudgetMs !== undefined ? Math.min(d, Date.now() + perCallBudgetMs) : undefined;
   const p1 = posKey(w);
   const wSlot = slotKey(w);
   const trueEdge = cubies.find((c) => pieceType5(c) === "trueEdge" && slotKey(c) === wSlot);
@@ -1468,7 +1486,9 @@ export function tryFixWing(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline
         for (const match1 of matches) {
           if (Date.now() > deadline) break;
           const setup1 =
-            litePosKeyOf(match1) === p3Key ? [] : bfsMoveWingToPosition(edges, match1.id, p3Key, 6, [{ id: w.id, posKey: p1 }]);
+            litePosKeyOf(match1) === p3Key
+              ? []
+              : bfsMoveWingToPosition(edges, match1.id, p3Key, 6, [{ id: w.id, posKey: p1 }], perCallDeadline(deadline), "queuePop", 50);
           if (setup1 === null) continue;
           const edgesAfterSetup1 = setup1.reduce((acc, m) => liteApplyMove(acc, m), edges);
           for (const match2 of matchesForP3) {
@@ -1476,10 +1496,19 @@ export function tryFixWing(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline
             const setup2 =
               litePosKeyOf(match2) === p2Key
                 ? []
-                : bfsMoveWingToPosition(edgesAfterSetup1, match2.id, p2Key, 6, [
-                    { id: w.id, posKey: p1 },
-                    { id: match1.id, posKey: p3Key },
-                  ]);
+                : bfsMoveWingToPosition(
+                    edgesAfterSetup1,
+                    match2.id,
+                    p2Key,
+                    6,
+                    [
+                      { id: w.id, posKey: p1 },
+                      { id: match1.id, posKey: p3Key },
+                    ],
+                    perCallDeadline(deadline),
+                    "queuePop",
+                    50
+                  );
             if (setup2 === null) continue;
             const fullSeq = [...setup1, ...setup2, ...entry.seq];
             const clone = cloneCubies(cubies);
@@ -1499,7 +1528,9 @@ export function tryFixWing(cubies: Cubie[], w: Cubie, lib: WingLibrary, deadline
       // via instrumentation: setup always found a path, but the fixed swap
       // then acted on the wrong pieces).
       const setup =
-        litePosKeyOf(match) === p2Key ? [] : bfsMoveWingToPosition(edges, match.id, p2Key, 6, [{ id: w.id, posKey: p1 }]);
+        litePosKeyOf(match) === p2Key
+          ? []
+          : bfsMoveWingToPosition(edges, match.id, p2Key, 6, [{ id: w.id, posKey: p1 }], perCallDeadline(deadline), "queuePop", 50);
       if (setup === null) continue;
       const fullSeq = [...setup, ...entry.seq];
       const clone = cloneCubies(cubies);

@@ -67,14 +67,41 @@ function wrongWingsInSlot(cubies: Cubie[], slot: string): Cubie[] {
 // pass (PRIORITY_PASS_BUDGET_MS) for the identical reason.
 const TASK_LOCAL_BUDGET_MS = 120;
 
+// Incremental Recovery Production Integration Sprint v1: Architecture
+// Prototype Refinement Sprint v1's own confirmed Fixed Budget Operating
+// Contract (91.4% of unconstrained capability recovered, 99.29% Budget
+// Compliance, True Regression down to 1.53%, all measured on the full real
+// 335-snapshot/3801-case population). Connected here to tryFixWing's real
+// PAIR-task call site below -- the exact call site this whole research
+// arc's own Traversal Interruptibility measurements (Blueprint Sprint v1
+// through this Sprint) were grounded in. Deliberately NOT wired into
+// bestFixOverall's own internal tryFixWing call or tryEndgameMultiPly's
+// enumerateWingCandidates call (both ENDGAME-context, a different call
+// pattern this Contract wasn't separately validated against) -- disclosed
+// scope decision, see docs/INCREMENTAL_RECOVERY_PRODUCTION_INTEGRATION.md.
+const FIXED_BUDGET_MS = 140;
+
 /**
  * The ORIGINAL Architecture Spec v2.0 pipeline (BASE/FLIP -> CASE/PARITY ->
  * ENDGAME grinder), extracted unchanged out of executeTask so the Adaptive
  * Executor v2 Recovery layer (see fiveByFiveEdgeRecovery.ts) can call this
  * exact same logic again as its own Retry step (spec section 10: "Recovery
  * 후 원래 Task를 다시 시도한다") without duplicating it.
+ *
+ * `pairBudgetMs` (Incremental Recovery Production Integration Sprint v1):
+ * pass-through to tryFixWing's own `perCallBudgetMs`, defaulting to
+ * FIXED_BUDGET_MS -- the real production value. Only the Integration
+ * Benchmark passes `undefined` explicitly, to reconstruct pre-Sprint
+ * counterfactual behavior for the required Baseline-vs-Candidate
+ * comparison; product callers never do.
  */
-function runPrimaryPipeline(cubies: Cubie[], task: SolveTask, libs: ExecutorLibraries, deadline: number): Move[] {
+function runPrimaryPipeline(
+  cubies: Cubie[],
+  task: SolveTask,
+  libs: ExecutorLibraries,
+  deadline: number,
+  pairBudgetMs: number | undefined = FIXED_BUDGET_MS
+): Move[] {
   const { lib, flipLib, caseLib } = libs;
   const before = wrongWingCount5(cubies);
   const localDeadline = Math.min(deadline, Date.now() + TASK_LOCAL_BUDGET_MS);
@@ -93,7 +120,7 @@ function runPrimaryPipeline(cubies: Cubie[], task: SolveTask, libs: ExecutorLibr
     if (task.type === "PAIR") {
       for (const w of wrongWingsInSlot(cubies, slot)) {
         if (Date.now() > localDeadline) break;
-        const fix = tryFixWing(cubies, w, lib, localDeadline);
+        const fix = tryFixWing(cubies, w, lib, localDeadline, pairBudgetMs);
         if (fix && fix.length > 0) {
           applySeq(cubies, fix);
           return fix;
@@ -199,14 +226,22 @@ export function executeTask(
   // Validation Sprint v1 (STEP1): defaults to "reservedBudget", the new
   // production default -- pass "baseline"/"priorityGate" explicitly to
   // reconstruct counterfactual behavior for comparison, never product callers.
-  schedulingStrategy: SchedulingStrategy = "reservedBudget"
+  schedulingStrategy: SchedulingStrategy = "reservedBudget",
+  // Incremental Recovery Production Integration Sprint v1: pass-through to
+  // runPrimaryPipeline's own `pairBudgetMs` (in turn tryFixWing's
+  // `perCallBudgetMs`). Defaults to FIXED_BUDGET_MS -- the real production
+  // value, confirmed by Architecture Prototype Refinement Sprint v1. The
+  // Integration Benchmark passes `undefined` explicitly to reconstruct
+  // pre-Sprint counterfactual behavior for the required Baseline-vs-Candidate
+  // comparison; product callers never do.
+  pairBudgetMs: number | undefined = FIXED_BUDGET_MS
 ): Move[] {
   const recoveryEligible = allowRecovery && task.type === "ENDGAME";
   // Reserve RECOVERY_RESERVE_MS off the END of the deadline for the primary
   // pipeline's own attempt -- see RECOVERY_RESERVE_MS's comment above for
   // why this reservation is required for Recovery to ever get a turn.
   const primaryDeadline = recoveryEligible ? Math.max(Date.now(), deadline - RECOVERY_RESERVE_MS) : deadline;
-  const primary = runPrimaryPipeline(cubies, task, libs, primaryDeadline);
+  const primary = runPrimaryPipeline(cubies, task, libs, primaryDeadline, pairBudgetMs);
   if (primary.length > 0) return primary;
 
   if (!recoveryEligible || Date.now() > deadline) return [];
@@ -217,7 +252,7 @@ export function executeTask(
     libs,
     deadline,
     weights,
-    (working, taskDeadline) => runPrimaryPipeline(working, task, libs, taskDeadline),
+    (working, taskDeadline) => runPrimaryPipeline(working, task, libs, taskDeadline, pairBudgetMs),
     trace,
     includeRepair,
     shortCircuitRepair,
