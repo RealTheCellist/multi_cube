@@ -105,14 +105,15 @@ function time<T>(fn: () => T): { result: T; runtimeMs: number } {
   return { result, runtimeMs: Date.now() - start };
 }
 
-/** Byte-identical mirror of runPrimaryPipeline(), instrumented. */
+/** Byte-identical mirror of runPrimaryPipeline(), instrumented. `pairBudgetMs` defaults to FIXED_BUDGET_MS (real production value); STEP2's Budget Savings Flow passes `undefined` explicitly to reconstruct the pre-Integration-Sprint counterfactual. */
 export function mirrorRunPrimaryPipeline(
   hash: string,
   cubies: Cubie[],
   task: SolveTask,
   libs: ExecutorLibraries,
   deadline: number,
-  events: StageEvent[]
+  events: StageEvent[],
+  pairBudgetMs: number | undefined = FIXED_BUDGET_MS
 ): Move[] {
   const { lib, flipLib, caseLib } = libs;
   const before = wrongWingCount5(cubies);
@@ -144,7 +145,7 @@ export function mirrorRunPrimaryPipeline(
       let pairResult: Move[] | null = null;
       for (const w of wrongWingsInSlot(cubies, slot)) {
         if (Date.now() > localDeadline) break;
-        const { result, runtimeMs } = time(() => tryFixWing(cubies, w, lib, localDeadline, FIXED_BUDGET_MS));
+        const { result, runtimeMs } = time(() => tryFixWing(cubies, w, lib, localDeadline, pairBudgetMs));
         pairMs += runtimeMs;
         if (result && result.length > 0) {
           pairResult = result;
@@ -218,7 +219,8 @@ export function mirrorAttemptRecovery(
   libs: ExecutorLibraries,
   deadline: number,
   weights: EvaluatorWeights,
-  events: StageEvent[]
+  events: StageEvent[],
+  pairBudgetMs: number | undefined = FIXED_BUDGET_MS
 ): Move[] {
   const push = (stage: StageName, runtimeMs: number) => events.push({ hash, taskId: task.id, taskType: task.type, stage, runtimeMs });
   const visited = new Set<number>();
@@ -275,7 +277,7 @@ export function mirrorAttemptRecovery(
     }
 
     const retryDeadline = Math.min(deadline, Date.now() + RECOVERY_RETRY_BUDGET_MS);
-    const { result: retryMoves, runtimeMs: retryMs } = time(() => mirrorRunPrimaryPipeline(hash, scratch, task, libs, retryDeadline, events));
+    const { result: retryMoves, runtimeMs: retryMs } = time(() => mirrorRunPrimaryPipeline(hash, scratch, task, libs, retryDeadline, events, pairBudgetMs));
     push("RECOVERY_RETRY", retryMs);
     if (retryMoves.length > 0) {
       applied.push(...retryMoves);
@@ -298,16 +300,17 @@ export function mirrorExecuteTask(
   libs: ExecutorLibraries,
   deadline: number,
   weights: EvaluatorWeights,
-  events: StageEvent[]
+  events: StageEvent[],
+  pairBudgetMs: number | undefined = FIXED_BUDGET_MS
 ): Move[] {
   const recoveryEligible = task.type === "ENDGAME";
   const primaryDeadline = recoveryEligible ? Math.max(Date.now(), deadline - RECOVERY_RESERVE_MS) : deadline;
-  const primary = mirrorRunPrimaryPipeline(hash, cubies, task, libs, primaryDeadline, events);
+  const primary = mirrorRunPrimaryPipeline(hash, cubies, task, libs, primaryDeadline, events, pairBudgetMs);
   if (primary.length > 0) return primary;
 
   if (!recoveryEligible || Date.now() > deadline) return [];
 
-  return mirrorAttemptRecovery(hash, cubies, task, libs, deadline, weights, events);
+  return mirrorAttemptRecovery(hash, cubies, task, libs, deadline, weights, events, pairBudgetMs);
 }
 
 export interface MirrorSolveWithStagesResult {
@@ -318,8 +321,13 @@ export interface MirrorSolveWithStagesResult {
   events: StageEvent[];
 }
 
-/** Byte-identical mirror of FiveByFiveEdgeSolverEngine.solve()'s own loop, instrumented per-stage. */
-export function mirrorSolveWithStages(hash: string, cubies: Cubie[], libs: ExecutorLibraries): MirrorSolveWithStagesResult {
+/** Byte-identical mirror of FiveByFiveEdgeSolverEngine.solve()'s own loop, instrumented per-stage. `pairBudgetMs` defaults to FIXED_BUDGET_MS (real production); STEP2 passes `undefined` for the pre-Integration-Sprint counterfactual arm. */
+export function mirrorSolveWithStages(
+  hash: string,
+  cubies: Cubie[],
+  libs: ExecutorLibraries,
+  pairBudgetMs: number | undefined = FIXED_BUDGET_MS
+): MirrorSolveWithStagesResult {
   const working = cloneCubies(cubies);
   const wrongWingBefore = wrongWingCount5(working);
   const deadline = Date.now() + PLAN_TIME_BUDGET_MS;
@@ -333,7 +341,7 @@ export function mirrorSolveWithStages(hash: string, cubies: Cubie[], libs: Execu
   for (const task of tasks) {
     if (Date.now() > deadline) break;
     if (wrongWingCount5(working) === 0) break;
-    const moves = mirrorExecuteTask(hash, working, task, libs, deadline, DEFAULT_EVALUATOR_WEIGHTS, events);
+    const moves = mirrorExecuteTask(hash, working, task, libs, deadline, DEFAULT_EVALUATOR_WEIGHTS, events, pairBudgetMs);
     if (moves.length > 0) {
       moveQueue.push(...moves);
       tasksCompleted++;
