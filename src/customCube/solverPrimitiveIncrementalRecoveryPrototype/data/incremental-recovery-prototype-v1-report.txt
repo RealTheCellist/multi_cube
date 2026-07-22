@@ -1,0 +1,71 @@
+========================================
+Incremental Recovery Prototype Sprint v1 -- Report
+========================================
+
+--- 0. Sprint 성격 ---
+Incremental Recovery Blueprint Sprint v1이 확정한 Blueprint(featureBased Trigger / reservedSlice Budget / REPAIR-then-CCR Scheduling / Safety Contract)를 실제 Prototype으로 구현했다. Production Solver/Planner/Executor/Recovery/기존 Primitive/기존 Prototype 코드는 전혀 수정하지 않았다 -- 새 디렉토리 solverPrimitiveIncrementalRecoveryPrototype/만 추가했고, 기존 planEdgeTasks()/executeTask()/analyzeCcrGate()/runCCRPrototype()/runSuccessV2()를 읽기 전용으로 재사용했다. Baseline은 실제, 미수정 FiveByFiveEdgeSolverEngine.solve() 그대로다.
+
+데이터셋: 335개 snapshot
+
+--- STEP1: Incremental Trigger (featureBased, Blueprint 그대로) ---
+전체 PAIR no-progress 기록(Candidate, 개입 있음): 821건
+Trigger 발동(Gate 통과) 수: 625건 (Coverage 76.1%, 개입이 섞인 모집단 기준)
+REPAIR 대상: 286건, CCR 대상: 339건, 중복(둘 다 적합): 0건, 제외(둘 다 부적합): 196건
+
+보정 비교(동일 run, 개입 없는 counterfactual): Blueprint의 원본 analyzePairFailures()로 재측정한 결과 전체 1393건, Gate 적합 1189건(CCR 680 + REPAIR 509), Coverage 85.4% -- Blueprint Sprint v1의 기존 보고값(84.0%, n=1421)과 거의 일치한다(run-to-run 실측 변동 범위 내).
+중요 발견: Candidate의 실제 개입 있는 모집단(821건)은 개입 없는 counterfactual 모집단(1393건)의 58.9%에 불과하다 -- Incremental Recovery가 실제로 성공한 시도들이 같은 solve() 안에서 나중 PAIR 태스크들의 no-progress 발생 자체를 줄인 결과다(인과적 효과, 버그 아님 -- 이 Sprint 자체의 verify-population-diff 재확인으로 검증). 따라서 Level 1의 올바른 재현 여부 판정 기준은 fullMetrics.coverage(개입이 섞인 모집단)가 아니라 counterfactualCoverage(개입 없는, Blueprint와 동일 조건)여야 한다.
+
+--- STEP2: Budget Contract (reservedSlice, Blueprint 채택 정책 그대로) ---
+고정 상한: 40ms
+실제 시도 횟수(REPAIR/CCR 개별 호출 합): 625건
+평균 실제 사용 시간: 140.0ms (stddev 112.0ms)
+Timeout(자기 예산 끝까지 사용) 비율: 100.0%
+Budget 초과(overrun, 40ms + 허용오차를 넘긴 경우) 비율: 89.1%
+
+--- STEP3: Incremental Scheduling (PAIR no-progress -> Trigger -> REPAIR -> CCR -> PAIR 계속) ---
+전체 335개 snapshot 중 최소 1회 이상 Incremental Recovery가 시도된 snapshot: 290건
+전체 335개 snapshot 중 Candidate 루프가 deadline을 넘긴 비율: 100.0%
+주요 발견: reservedSlice의 명목 상한(40ms)이 실제로는 거의 지켜지지 않는다 -- 평균 실제 사용 시간이 140.0ms로 상한의 3.5배에 달한다. runCCRPrototype/runSuccessV2의 deadline 체크는 DFS의 매 hop 사이에서만 이루어지고 hop 내부(enumerateWingCandidates 등 후보 생성)에서는 체크하지 않으므로, 한 hop 자체가 오래 걸리면 그만큼 예산을 넘긴다 -- Blueprint Sprint v1의 STEP3 실측(reservedSlice 평균 budget 31.3ms, 평균 소요 140.7ms)에서도 동일한 패턴이 이미 있었다. 이는 이번 Sprint의 새 버그가 아니라 기존 Primitive 탐색 함수 자체의 특성이며, Blueprint의 '고정 상한' 가정이 실제로는 상한이 아니라 평균에 가깝다는 뜻이다.
+
+--- STEP5: Primitive Interaction (REPAIR vs CCR) ---
+Trigger 발동 총량: 625건
+Overlap(두 Gate 동시 적합): 0건
+Duplicate(한 attempt 안에서 REPAIR와 CCR 둘 다 시도): 0건
+Exclusive REPAIR: 286건, Exclusive CCR: 339건
+Conflict(동일 시점에 두 Gate 동시 적합): 0건
+CCR Gate(cycleLength 5-6)와 REPAIR Gate(cycleLength 2-4)는 cycleLength 구간이 서로 겹치지 않는 구조이므로, 실측에서도 두 Primitive가 같은 상태에서 동시에 적합한 경우는 발생하지 않았다 -- REPAIR-then-CCR 순서 자체가 실제로는 상호 배타적 분기로 동작한다.
+
+--- STEP4/6/7: Capability Benchmark / Safety Verification / Standard Evaluation (75-snapshot 표준 표본, N=15 시작, 최대 N=30) ---
+비용 이유로 STEP4/6/7은 전체 335개가 아닌 이 프로젝트의 기존 '75-replay' 표준 벤치마크 규모(Prototype Sprint v2/v3, Refinement Sprint v1/v2 등에서 이미 사용)를 그대로 채택했다 -- stride sampling(원본 배열 순서에서 균등 간격 추출, 무작위 아님, 재현 가능)으로 335개 중 75개를 뽑았다. STEP1-3은 전체 335개를 그대로 사용했다.
+
+--- STEP4: Capability Benchmark (마지막 run 기준 상세 + 전체 run 평균) ---
+Coverage: 77.0%, Precision: 2.2%, Recall: 1.7%
+Gap Rescue: 0건 / Baseline 실패 75건 중 (rate 0.0%)
+Regression: 0건
+평균 Runtime -- Baseline: 1114.1ms, Candidate: 1109.6ms (차이 -4.5ms)
+Deadline Miss -- Baseline: 74.7%, Candidate: 100.0%
+전체 30회 run 평균 -- Baseline Solved: 0.00건, Candidate Solved: 0.00건
+
+--- STEP6: Safety Verification (실측) ---
+Infinite Retry 위반(같은 task에 2회 이상 시도): 0건 / 30회 run 전체
+Duplicate Invocation(같은 cube state에 서로 다른 task slot에서 중복 시도): 2315건
+Scheduler Loop: 구조적 검증: IncrementalScheduler.runCandidateSolve()는 fiveByFiveEdgePlanner.ts를 전혀 import하지 않고, planEdgeTasks()는 (Production과 동일하게) 한 solve당 정확히 1회만 호출된다 -- Incremental Recovery 호출부(attemptIncrementalRecovery)는 Planner의 simulateStrategy() 미리보기 경로에 전혀 배선되지 않는다(코드상 import 자체가 없음). Production의 allowRecovery=true는 이 Scheduler의 top-level 루프에서만 전달되며, Planner 코드는 이번 Sprint에서 한 줄도 수정/재구현하지 않았다.
+Budget Overrun: 3670건 / 4057건 실제 시도 중
+Regression(누적, 전체 30회 run 합산): 0건 / Baseline 성공 0건 기회 중
+
+--- STEP7: Standard Evaluation Protocol (paired-diff 95% CI) ---
+실행 횟수: N=30 (초기 15회에서 확장)
+Baseline Solved -- 평균 0.00건, 95% CI [0.00, 0.00]
+Candidate Solved -- 평균 0.00건, 95% CI [0.00, 0.00]
+Paired-diff(Candidate - Baseline) -- 평균 0.00건, 95% CI [0.00, 0.00]
+Paired-diff CI 하한 > 0: false
+
+--- 성공 기준 판정 ---
+Level 1 (Incremental Trigger가 Blueprint Coverage를 재현): PASS -- 개입 없는 counterfactual 기준 실측 Coverage 85.4% (Blueprint 원 보고값 84.0%, 오차 1.4%p). (참고: Candidate 자체의 raw Coverage는 76.1%였지만, 이는 Incremental Recovery의 실제 성공이 모집단을 줄인 결과이므로 재현 여부 판정에는 부적절한 비교 기준이다.)
+Level 2 (Incremental Recovery가 ENDGAME Recovery보다 통계적으로 유의미하게 Capability 증가, paired-diff 95% CI 하한 > 0): FAIL -- paired-diff 평균 0.00건, CI [0.00, 0.00] (N=30).
+Level 3 (Regression 없이 Runtime 증가가 허용 범위이며 Safety Contract 만족): FAIL -- Regression 0건(허용 0건), Runtime 증가 -4.5ms(허용 <100ms), Deadline Miss율 증가(전체 run 평균) 24.0%p(허용 <10%p), Infinite Retry 위반 0건(허용 0건).
+
+--- Decision: B ---
+메커니즘은 유효하지만 Coverage 또는 Capability 부족 -> Prototype Refinement Sprint 진행.
+
+--- 총 소요 시간: 5803.6초 ---
