@@ -1,0 +1,42 @@
+Solver System Bottleneck Attribution Refinement Sprint v1 -- Report
+Generated: 2026-07-22T23:09:54.428Z
+READ-ONLY analysis Sprint -- zero Production code changes (fiveByFiveEdges.ts/Planner/Executor/Recovery/all Primitives/all Prototypes/Budget Contract all read-only this Sprint).
+
+STEP0. Population: 335 real snapshots (full dataset).
+
+STEP1. Planner Reachability Analysis (full 335-snapshot population):
+  Disclosed correction: ENDGAME is ALWAYS queued whenever wrongWingCount5>0 at plan time (planEdgeTasks' own stillNeedsParity branch) -- "PlannerSkipped" below means the real task loop's outer 1s deadline fired before reaching that queue position, not a Planner selection choice.
+  Reachable: 255 (76.1%)
+  PlannerSkipped (deadline-starved before reaching ENDGAME): 80 (23.9%)
+  AlreadySolvedBeforeEndgame (genuine success, ENDGAME not needed): 0 (0.0%)
+  StructurallyImpossible (already solved at plan time): 0 (0.0%)
+
+STEP2. Endgame Capability Ceiling (Reachable snapshots only, n=255, 5 budgets each):
+  Total probes: 1275
+
+STEP3. Counterfactual Planner Simulation (PlannerSkipped snapshots only, n=80):
+
+STEP4. Opportunity Saturation Curve (ENDGAME's own improvement vs budget):
+  Budget(ms) | n | AvgImprovement | SolvedRate | AvgRuntimeMs
+  120 | 255 | 0.259 | 0.0% | 177.1
+  250 | 255 | 0.545 | 0.0% | 314.6
+  500 | 255 | 0.694 | 0.0% | 562.4
+  1000 | 255 | 0.890 | 0.0% | 1057.7
+  5000 | 255 | 2.710 | 1.2% | 4956.5
+  ENDGAME headroom per Reachable case (largest - smallest budget): 2.451
+
+STEP5. Planner Benefit Ceiling (Maximum Recoverable Capability from PlannerSkipped snapshots):
+  n=80, avgImprovement=1.163, totalImprovement=93.00, solvedRate=0.0%, avgRuntimeMs=820.8
+
+STEP6. Final Attribution Decision:
+  ENDGAME: totalPotentialGain=625.00, contributionPct=87.0%
+  Planner: totalPotentialGain=93.00, contributionPct=13.0%
+  Priority 1: ENDGAME
+
+Level 1-3 Judgment:
+  Level1 (Planner Reachability 정량화): PASS -- Reachability quantified across 335 real snapshots: Reachable 255 (76.1%), PlannerSkipped 80 (23.9%), AlreadySolvedBeforeEndgame 0 (0.0%), StructurallyImpossible 0 (0.0%).
+  Level2 (ENDGAME Capability Ceiling 계산): PASS -- ENDGAME Capability Ceiling: avg improvement 0.259 (smallest budget) -> 2.710 (largest budget), headroom per Reachable case = 2.451.
+  Level3 (Priority 1 확정): PASS -- ENDGAME (87.0%) vs Planner (13.0%) -- decisive.
+
+DECISION: A
+  ENDGAME decisively confirmed as Priority 1 (87.0% vs Planner's 13.0%, clearing both the 1.5x ratio and 15pp absolute-difference thresholds). Proceed to ENDGAME Optimization Blueprint Sprint v1.
