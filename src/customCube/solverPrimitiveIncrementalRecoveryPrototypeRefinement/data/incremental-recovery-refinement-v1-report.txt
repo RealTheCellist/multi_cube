@@ -1,0 +1,58 @@
+========================================
+Incremental Recovery Prototype Refinement Sprint v1 -- Report
+========================================
+
+--- 0. Sprint 성격 ---
+Incremental Recovery Prototype Sprint v1(Decision B)에서 확인된 3가지 병목(Budget Overrun 89.1%, whole-cube-solved floor effect, Duplicate Invocation 2315건)을 해결 가능한 수준까지 축소하는 Refinement Sprint다. Production Solver/Planner/Executor/Recovery/기존 Primitive/기존 Prototype 코드는 전혀 수정하지 않았다 -- 새 디렉토리 solverPrimitiveIncrementalRecoveryPrototypeRefinement/만 추가했다. STEP1/2의 계측 DFS(InstrumentedSearch.ts)는 runCCRPrototype()/runSuccessV2()의 실제 구조(같은 enumerateWingCandidates/applySeq/wrongWingCount5/pairCountOf/validateDeferred 호출)를 그대로 재구현한 것이며, 두 Prototype 파일 자체는 한 줄도 수정하지 않았다.
+
+데이터셋: 335개 snapshot
+
+Gate 적합 기록: 1321건 (STEP1/2 비용 이유로 stride-sample 200건 사용, probe 가능: 200건)
+
+--- STEP2: Deadline Granularity 분석 ---
+평균 deadline 체크 간 시간(단일 enumerateWingCandidates 호출): 113.3ms
+최대 단일 hop 초과 시간: 1003.0ms
+평균 leaf당 평가 시간: 0.37ms
+평균 hop당 전체 소요(branch당 시간): 114.9ms (평균 11.2hop, 평균 12.7leaf)
+원인 분류: both -- 단일 enumerateWingCandidates() 호출(최대 1003.0ms)만으로도 명목 예산(40ms)을 넘기고(granularity 문제), 여러 hop을 거치는 전체 순회 자체도 누적으로 예산을 넘긴다(design 문제, 평균 hop당 114.9ms x 평균 11.2hop) -- 두 원인이 함께 작용한다.
+
+--- STEP1: Budget Contract Refinement ---
+실측 Overrun Factor(reservedSlice 기준, 이번 run): 4.02x
+[reservedSlice] n=200, 평균 목표 budget=32.1ms, 평균 실제 사용=128.8ms, overrun율=80.0%, timeout율=82.0%, 성공률=2.0%
+[strictDeadline] n=200, 평균 목표 budget=8.2ms, 평균 실제 사용=96.8ms, overrun율=68.0%, timeout율=82.0%, 성공률=0.0%
+[softDeadline] n=200, 평균 목표 budget=99.3ms, 평균 실제 사용=196.6ms, overrun율=78.0%, timeout율=81.0%, 성공률=5.5%
+[budgetAwareTraversal] n=200, 평균 목표 budget=32.1ms, 평균 실제 사용=96.6ms, overrun율=54.5%, timeout율=54.5%, 성공률=4.0%
+선정된 정책(overrun율 최소, 단 성공률이 reservedSlice의 절반 미만인 정책은 제외): budgetAwareTraversal (overrun율 54.5%, 성공률 4.0%, reservedSlice 대비 overrun 31.9% 감소)
+
+--- STEP4: Duplicate Invocation 제거 (Visited Registry) ---
+Registry 없음 -- Duplicate Invocation 총 129건, 평균 finalWrongWingCount 10.04, 평균 Runtime 1079.5ms
+Registry 있음 -- Duplicate Invocation 총 0건, 평균 finalWrongWingCount 9.84, 평균 Runtime 1081.9ms
+Duplicate 감소율: 100.0%
+Capability 변화(양수=개선): 0.200 wrongWingCount
+Regression(Registry 적용 후 오히려 나빠진 snapshot 수): 6건
+
+--- STEP3: Task-Level Capability Evaluation (마지막 run 기준) ---
+[Baseline] 평균 finalWrongWingCount=9.77, 평균 Runtime=1141.3ms, Deadline Miss=100.0%
+[Prototype v1 설정] Coverage=78.1%, Precision=2.7%, Recall=2.1%, 평균 finalWrongWingCount=10.27
+[Refinement] Coverage=38.0%, Precision=12.0%, Recall=4.5%, 평균 finalWrongWingCount=9.99
+[prototypeV1Config vs Baseline, whole-cube] 개선 3건, 악화 28건, 불변 44건, 평균 wrongWing 차이 -0.493, task-level 성공과의 상관계수: 0.557
+[refinement vs Baseline, whole-cube] 개선 6건, 악화 20건, 불변 49건, 평균 wrongWing 차이 -0.213, task-level 성공과의 상관계수: 0.376
+
+--- STEP5: Capability Benchmark (3-arm, N=30 평균) ---
+Coverage/Precision/Recall/Runtime/DeadlineMiss/Duplicate/Task-level/Whole-cube -- 위 STEP3/4 수치 참고 (동일 데이터, 마지막 run 스냅샷).
+
+--- STEP6: Statistical Evaluation ---
+N=30
+Paired-diff(Refinement 개선 건수 - Prototype v1 개선 건수) -- 평균 3.23, stddev 2.01, 95% CI [2.51, 3.95]
+Effect Size(Cohen's d_z): 1.607 (large), Variance: 4.047
+CI 하한 > 0: true
+
+--- 성공 기준 판정 ---
+Level 1 (Budget Overrun 89.1% ↓ 유의미하게 감소): FAIL -- reservedSlice overrun율 80.0% -> budgetAwareTraversal overrun율 54.5% (기준: 50% 이상 감소).
+Level 2 (Duplicate Invocation 2315건 ↓ 감소, Regression 0 유지): FAIL -- 129건 -> 0건 (감소율 100.0%), Regression 6건.
+Level 3 (Task-level Capability가 재현 가능한 평가 지표임을 입증): PASS -- paired-diff CI [2.51, 3.95](하한>0=true), Effect Size 1.607(large).
+
+--- Decision: C ---
+Prototype 구조 자체를 재설계해야 함.
+
+--- 총 소요 시간: 8242.9초 ---
