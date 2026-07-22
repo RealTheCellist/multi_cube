@@ -1,0 +1,66 @@
+========================================
+Recovery Architecture Review Sprint v1 -- Report
+========================================
+
+--- 0. Sprint 성격 ---
+CCR Integration Blueprint Revision Sprint v1이 발견한 'Recovery 전체가 사실상 죽어 있다'는 실측 결과의 구조적 원인을 규명하고, 대안 아키텍처를 비교한다. Production 코드는 전혀 수정하지 않는다 -- 새 디렉토리 solverPrimitiveRecoveryArchitectureReview/만 추가했다. 실제, 미수정 engine.solve()의 trace를 읽기 전용으로 파싱했을 뿐이다.
+
+데이터셋: 335개 snapshot
+
+--- STEP1: Recovery Trigger Dependency ---
+- Recovery는 오직 task.type === 'ENDGAME'일 때만 트리거될 수 있다 (recoveryEligible = allowRecovery && task.type === 'ENDGAME'). [fiveByFiveEdgeExecutor.ts executeTask()]
+- ENDGAME 태스크는 planEdgeTasks()가 생성하는 태스크 배열에서 항상 마지막 순서다 (stillNeedsParity일 때 goals 배열 끝에 LAST_TWO(PARITY)+ENDGAME이 추가됨). [fiveByFiveEdgePlanner.ts planEdgeTasks()]
+- ENDGAME 이전에는 미완성 슬롯 수만큼(최대 12개)의 PAIR/FLIP 태스크와 1개의 PARITY 태스크가 먼저 실행된다. [fiveByFiveEdgePlanner.ts buildCandidateStrategies()/planEdgeTasks()]
+- PAIR/FLIP/PARITY 태스크는 allowRecovery 여부와 무관하게 Recovery를 절대 트리거하지 않는다 -- 코드 구조상 ENDGAME 하나의 태스크에만 Recovery 진입점이 존재한다. [fiveByFiveEdgeExecutor.ts executeTask()]
+실측: ENDGAME이 항상 마지막 태스크인 비율 100.0% (구조적 사실과 일치 확인)
+평균 ENDGAME 이전 태스크 수: 9.9개
+평균 태스크 타입별 개수: PAIR 8.90, FLIP 0.01, PARITY 1.00, ENDGAME 1.00
+
+--- STEP2: Deadline Consumption Timeline (1000ms 예산 실제 소비 내역) ---
+평균 Planning: 315.9ms
+평균 PAIR/FLIP/PARITY 태스크 합계: 727.1ms
+평균 ENDGAME+Recovery: 304.7ms
+ENDGAME까지 도달조차 못한 비율(예산 소진): 84.8%
+평균 총 Runtime: 1089.5ms
+
+--- STEP3: Recovery Necessity (태스크 타입별 no-progress율) ---
+[PAIR] 시도 1797건 중 no-progress 1436건 (79.9%)
+[FLIP] 시도 5건 중 no-progress 5건 (100.0%)
+[PARITY] 시도 51건 중 no-progress 51건 (100.0%)
+[ENDGAME] 시도 51건 중 no-progress 51건 (100.0%)
+PAIR/FLIP/PARITY 태스크들도 평균 93.3%의 no-progress율을 보인다(ENDGAME 자체는 100.0%) -- Recovery가 "ENDGAME에서만 마지막에" 개입하는 현재 설계는 이 no-progress 발생 지점들을 전부 놓치고 있다. Incremental/Opportunistic Recovery가 이론적으로 다룰 수 있는 실질적 모집단이 존재한다.
+
+--- STEP4: Alternative Architectures ---
+[current] 현재 구조 (Recovery는 ENDGAME 태스크 전용, 항상 마지막)
+  설명: PAIR/FLIP/PARITY 태스크들이 먼저 순차 실행되고, 마지막 ENDGAME 태스크의 기본 파이프라인이 실패했을 때만 Recovery(DISRUPT/SETUP/REPAIR/CCR)가 시도된다.
+  근거: 실측: 평균 계획(Planning) 315.9ms, PAIR/FLIP/PARITY 태스크 합계 727.1ms(전체의 66.7%), ENDGAME+Recovery 304.7ms. Recovery는 이미 대부분(66.7%)이 소진된 뒤 남은 몫만 받는다.
+[early] Early Recovery (Recovery 자체 예산을 Plan 단계에서 미리 확보)
+  설명: Planner/Executor가 전체 1000ms 중 일정 비율(예: 200-300ms)을 Recovery 전용으로 처음부터 떼어두고, PAIR/FLIP/PARITY+ENDGAME 기본 파이프라인은 나머지 예산 내에서만 동작하도록 한다.
+  근거: Blueprint Revision Sprint v1의 counterfactual 실측(+300ms 조기 트리거 시 CCR 생성률 0%->4.1%)에 따르면, 단순히 시간을 더 주는 것만으로는 개선 폭이 작다 -- Early Recovery도 유사한 한계를 가질 가능성이 높다. 다만 그 실험은 "트리거 시점"만 당긴 것이고, Early Recovery는 "예산 자체"를 구조적으로 보장한다는 점에서 다르다.
+[incremental] Incremental Recovery (각 태스크마다 소규모 Recovery 시도)
+  설명: PAIR/FLIP/PARITY 각 태스크가 no-progress로 끝날 때마다 그 자리에서 작은 예산의 Recovery를 한 번씩 시도 -- ENDGAME까지 기다리지 않는다.
+  근거: 실측: ENDGAME 자체의 no-progress율은 100.0%. PAIR/FLIP/PARITY 태스크들에서도 no-progress가 발생하는 비율에 따라(STEP3 참고) 이 전략의 실질적 모집단 크기가 결정된다 -- 만약 그 비율이 낮다면 Incremental Recovery를 구현하는 복잡도 대비 실익이 작을 수 있다.
+[opportunistic] Opportunistic Recovery (전역 예산 여유가 있을 때만, 태스크 무관하게 기회주의적으로 시도)
+  설명: 특정 태스크 타입에 묶이지 않고, 매 태스크 완료 시점마다 '지금 남은 시간이 Recovery 한 번을 시도하기에 충분한가'를 판단해, 충분하면 즉시 시도한다.
+  근거: CCR/REPAIR 모두 이미 자기 자신의 Gate 체크가 매우 저렴하므로(analyzeMultiCycle 등), '항상 체크만 해보고 예산이 부족하면 스킵'하는 방식은 코드 복잡도 증가가 상대적으로 작다 -- 다만 어느 시점에 검사할지(매 태스크? 매 N ms?)에 대한 정책 설계가 새로 필요하다.
+
+--- STEP5: Architecture Cost ---
+[current] 구현 복잡도=low
+  Runtime 영향: 기준선(baseline) -- 이미 production에서 실측됨(CCR Production Integration Sprint v1: 평균 +3.3%, CCR 실제 기여 거의 0).
+  Primitive 활용도: REPAIR/CCR 모두 사실상 활용되지 못함(생성률 0%에 가까움) -- Primitive 자체의 잠재력 대비 실제 활용도가 매우 낮다.
+[early] 구현 복잡도=medium
+  Runtime 영향: PAIR/FLIP/PARITY/ENDGAME 기본 파이프라인의 몫이 줄어들어 그쪽 성공률이 낮아질 위험 -- 전체 Runtime 자체는 크게 늘지 않을 수 있으나(예산 총량은 동일), 기본 파이프라인의 Coverage가 희생될 수 있다.
+  Primitive 활용도: Recovery(REPAIR/CCR 포함)의 활용도는 개선되나, Blueprint Revision Sprint v1의 counterfactual 실측상 개선 폭이 제한적(+300ms에도 CCR 4.1%)이라 큰 폭의 개선은 기대하기 어렵다.
+[incremental] 구현 복잡도=high
+  Runtime 영향: PAIR/FLIP/PARITY 태스크의 no-progress 발생 시마다 소규모 Recovery를 추가하면, 그 발생 빈도(80.5%)에 비례해 Runtime이 증가한다 -- 빈도가 낮으면 영향도 작다.
+  Primitive 활용도: 이론상 Primitive 활용도가 가장 높아질 수 있다(ENDGAME 도달 전에도 기회가 생김) -- 단, PAIR/FLIP 태스크 각각에 Recovery 개념을 이식하는 설계/구현 복잡도가 상당하다.
+[opportunistic] 구현 복잡도=medium
+  Runtime 영향: 매 태스크마다 '시도할 가치가 있는가' 판단 자체의 오버헤드가 작게 추가되나(Gate 체크는 저렴), 실제 Recovery 실행 여부는 남은 예산에 의해 자연스럽게 제한된다.
+  Primitive 활용도: Incremental보다는 보수적이지만 Current보다는 개선된 활용도 -- 예산이 남는 경우에만 선택적으로 활용하므로 위험 대비 실익의 균형이 상대적으로 낫다.
+
+--- 종합 ---
+Recovery는 이미 예산의 대부분(평균 66.7% + Planning 29.0%)이 PAIR/FLIP/PARITY 태스크에서 소비된 뒤에야 ENDGAME 태스크의 일부로 시도된다. 이는 CCR만의 문제가 아니라 REPAIR를 포함한 Recovery 계층 전체가 구조적으로 실행 기회를 거의 받지 못하는 상태임을 이번 Sprint가 재확인했다.
+Incremental/Opportunistic Recovery로의 확장은 STEP3의 실측(PAIR/FLIP/PARITY 자체의 no-progress율)에 따라 실익이 갈린다 -- PAIR/FLIP/PARITY 태스크들도 평균 93.3%의 no-progress율을 보인다(ENDGAME 자체는 100.0%) -- Recovery가 "ENDGAME에서만 마지막에" 개입하는 현재 설계는 이 no-progress 발생 지점들을 전부 놓치고 있다. Incremental/Opportunistic Recovery가 이론적으로 다룰 수 있는 실질적 모집단이 존재한다.
+다음 단계는 새 Primitive 개발이 아니라, 이 4개 아키텍처 후보 중 하나를 실제로 설계/프로토타입하는 것이다 (이번 Sprint의 범위 밖).
+
+--- 총 소요 시간: 367.4초 ---
