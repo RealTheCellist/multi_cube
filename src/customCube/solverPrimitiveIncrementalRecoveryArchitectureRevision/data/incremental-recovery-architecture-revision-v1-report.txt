@@ -1,0 +1,171 @@
+========================================
+Incremental Recovery Architecture Blueprint Revision Sprint v1 -- Report
+========================================
+
+--- 0. Sprint 성격 ---
+Prototype Refinement Sprint v1(Decision C)에서 확인된 구조적 한계(Budget Granularity, Visited Registry Regression, Whole-Cube Floor Effect)를 계층별로 분리하고, Wrapper 수준에서 해결 가능한 영역과 Production 변경이 필요한 영역을 구분하는 분석/설계 전용 Sprint다. 새 Prototype 구현이나 Production 코드 수정 없음 -- 모든 수치는 Prototype Sprint v1/Prototype Refinement Sprint v1의 실측 보고서를 인용했고, STEP5의 Production 분석은 fiveByFiveEdges.ts의 실제 소스(읽기 전용)를 직접 확인해 근거를 세웠다.
+
+--- STEP1: Bottleneck Attribution (계층별 병목 분류) ---
+계층별 병목 수: Wrapper 3건, Primitive 1건, Production 1건
+
+[Primitive] Budget Overrun, layer 1 of 2 -- Primitive's own coarse per-hop deadline check
+  위치: solverPrimitiveCCRPrototype/CCRPrototype.ts's runBoundedDfs() and solverPrimitivePrototypeRefinementV2/SuccessOptimizationV2.ts's runParametrizedSearchV2() (both 기존 Primitive, protected) -- each only checks `Date.now() > deadline` ONCE PER HOP (at dfs() entry, and once more before each candidate in that hop's own for-loop), never inside a single enumerateWingCandidates() call.
+  근거: Both Primitive files' own source (read directly, unmodified): identical `if (Date.now() > deadline || leavesExplored >= MAX_LEAVES_EXPLORED)` checks at exactly 2 points per hop, structurally incapable of interrupting a single enumerateWingCandidates() call already in progress.
+  예상 영향 범위: Confined to REPAIR/CCR's own search behavior -- fixing the Primitive's OWN check frequency (e.g. checking between candidates within enumerateWingCandidates, not just between hops) would require editing the Primitive files themselves (protected this Sprint, and every Prototype Sprint since CCR Prototype Sprint v1). Would not by itself fix layer 2 below.
+
+[Production] Budget Overrun, layer 2 of 2 -- Production's enumerateWingCandidates/bfsMoveWingToPosition have NO time check at all
+  위치: fiveByFiveEdges.ts's enumerateWingCandidates() (protected this Sprint, called out separately from '기존 Primitive' in the work order's own protected-file list) calls bfsMoveWingToPosition() once per matching candidate wing inside its `for (const match of matches)` loop -- that inner loop has NO deadline check whatsoever (only `results.length >= maxResults`), and bfsMoveWingToPosition()'s own BFS loop (maxDepth<=6, MAX_TRACK_NODES=8000) checks ONLY a node-count bound (`nodesExplored > MAX_TRACK_NODES`), zero `Date.now()` calls anywhere in the function.
+  근거: Prototype Refinement Sprint v1 STEP2 (full 200-record probe): avg time between deadline checks (= one enumerateWingCandidates call, which may itself invoke multiple uninterruptible bfsMoveWingToPosition calls) 113.3ms, max single-hop time 1003.0ms, against a 40ms nominal budget -- consistent with an 8000-node BFS taking most of a second when per-node cost is ~0.1-0.15ms. Blueprint Sprint v1 STEP3 independently found the same pattern (reservedSlice: avg budget 31.3ms, avg actual 140.7ms) on a separately-drawn population, ruling out a one-off sampling fluke.
+  예상 영향 범위: enumerateWingCandidates/bfsMoveWingToPosition are shared by the ENTIRE PAIR/FLIP primary pipeline (fiveByFiveEdgeExecutor.ts's own tryFixWing path), not just Incremental Recovery -- any fix here changes real production solve() timing behavior broadly, which is exactly why it is out of scope for every Sprint below the Production layer and needs its own dedicated risk analysis (see ArchitectureImpactAnalysis.ts, STEP5).
+
+[Wrapper] Wrapper-level Budget policies cannot fully compensate for either layer above (only 31.9% overrun reduction, below the 50% target)
+  위치: solverPrimitiveIncrementalRecoveryPrototypeRefinement/BudgetRefinement.ts's allocateBudget() -- reservedSlice/strictDeadline/softDeadline/budgetAwareTraversal, all Wrapper-level deadline/node-list choices made BEFORE calling the Primitive.
+  근거: Prototype Refinement Sprint v1 STEP1 (full 200-record probe): best policy (budgetAwareTraversal, node-list truncation) reduced overrun from 80.0% to 54.5% -- a real, measured, but insufficient improvement, precisely because truncating the node list still hands each remaining hop's enumerateWingCandidates() call to a search with no internal time check.
+  예상 영향 범위: Confined to Incremental Recovery's own call sites -- genuinely a Wrapper-only concern, but its own ceiling is capped by the two Primitive/Production-layer bottlenecks above, which is why it could not be resolved from the Wrapper alone.
+
+[Wrapper] Visited Registry Regression (6 real regressions when skipping duplicate-state re-attempts)
+  위치: solverPrimitiveIncrementalRecoveryPrototypeRefinement/TaskLevelEvaluation.ts's runCandidateMirror() -- the useVisitedRegistry flag's binary skip rule.
+  근거: Prototype Refinement Sprint v1 STEP4 (75-snapshot subsample): Duplicate Invocation eliminated 129->0 (100%), but 6 snapshots showed a WORSE final wrongWingCount with the registry active than without -- an attempt on an 'already-seen' state still has a real, non-zero chance of independently succeeding due to the underlying search's own run-to-run timing variance (a Primitive-layer characteristic: the DFS is not deterministic run-to-run even on identical input, because its own internal deadline checks are wall-clock-based).
+  예상 영향 범위: The registry POLICY itself (binary skip vs. some softer rule) is purely a Wrapper-level design choice, fully fixable without touching Production or Primitive code -- see RegistryPolicyBlueprint.ts (STEP3) for softer alternatives. Listed here because its ROOT CAUSE (why re-attempts sometimes succeed at all) traces back to the same Primitive-layer timing non-determinism as the Budget Overrun bottleneck above.
+
+[Wrapper] Whole-Cube Floor Effect (0/75 solved, both arms, all 30 runs -- the binary metric cannot detect any real difference)
+  위치: The EVALUATION framework itself (Prototype Sprint v1's STEP4 Capability Benchmark), not the solver -- this is a measurement-methodology bottleneck, not a cube-solving one.
+  근거: Prototype Sprint v1 STEP4/7: Baseline Solved and Candidate Solved both averaged 0.00 across all 30 runs on the 75-snapshot standard subsample; paired-diff CI exactly [0.00, 0.00]. Prototype Refinement Sprint v1's own task-level metric (whole-cube-improved COUNT, not solved-COUNT) detected a real, statistically robust difference (paired-diff CI [2.51, 3.95]) on the SAME population and SAME underlying mechanism -- proving the floor effect was a metric-choice artifact, not evidence the mechanism does nothing.
+  예상 영향 범위: Purely an Evaluation Framework concern -- fixable entirely within analysis/benchmark code, zero Production or Primitive involvement. See EvaluationBlueprintRevision.ts (STEP4).
+
+--- STEP2: Budget Architecture Review ---
+[Reserved Slice] 이론적 상한=40ms, 실제 평균=140.7ms, 성공률=2.8%, Production 수정 필요=false
+  Granularity 영향: Overrun factor ~3.5-4.5x across every Sprint that measured it (Blueprint 31.3ms->140.7ms; Prototype Refinement 32.1-32.6ms->96.6-137.9ms) -- the SMALLEST nominal cap, so it suffers the LARGEST relative distortion: almost any single hop blows through it entirely.
+  출처: Blueprint Sprint v1 STEP3 (n=1193); Prototype Refinement Sprint v1 STEP1 (n=200)
+
+[Remaining Time] 이론적 상한=unboundedms, 실제 평균=335.8ms, 성공률=15.7%, Production 수정 필요=false
+  Granularity 영향: Best real success rate of any policy measured in this whole research arc (15.7%), precisely BECAUSE its generous, uncapped budget absorbs the granularity overrun almost for free -- the search simply gets to run close to its own natural completion. The tradeoff (never adopted for Incremental Recovery) is that it can consume the ENTIRE remaining plan budget on a single PAIR task, starving every later task -- unsafe as a per-attempt policy in a multi-task loop.
+  출처: Blueprint Sprint v1 STEP3 (n=1193)
+
+[Adaptive Budget] 이론적 상한=35.3ms, 실제 평균=155.7ms, 성공률=2.3%, Production 수정 필요=false
+  Granularity 영향: Similar small nominal cap to Reserved Slice (fair-share division of remaining time), so it inherits the same severe relative overrun (~4.4x) and the worst success rate measured (2.3%) -- fairness across tasks doesn't help if the per-task allotment is already too small to survive one hop's own granularity gap.
+  출처: Blueprint Sprint v1 STEP3 (n=1193)
+
+[Average Budget] 이론적 상한=140ms, 실제 평균=196.6ms, 성공률=5.5%, Production 수정 필요=false
+  Granularity 영향: Explicitly designed to absorb the KNOWN average overrun rather than fight it, yet STILL overran further in practice (196.6ms real vs 140ms target, a residual ~1.4x) -- confirming the overrun distribution has a heavy tail (max single-hop 1003ms observed) that no single fixed target, however well-calibrated to the mean, can fully contain.
+  출처: Prototype Refinement Sprint v1 STEP1 (n=200)
+
+[Deadline-aware Traversal] 이론적 상한=32.1ms, 실제 평균=96.6ms, 성공률=4.0%, Production 수정 필요=false
+  Granularity 영향: The only policy that attacks the PROBLEM SHAPE (how many hops are attempted) rather than just the deadline VALUE -- reduced overrun rate from 80.0% to 54.5% (a real, measured 31.9% reduction), the best of the 4 policies actually tested, but still leaves the majority of attempts overrunning because each individual hop's own enumerateWingCandidates() call still has no internal time check regardless of how few hops are attempted.
+  출처: Prototype Refinement Sprint v1 STEP1 (n=200)
+
+결론: 최선의 Wrapper-only 모델 = Deadline-aware Traversal (budgetAwareTraversal) for safety-bounded use, or Remaining Time for maximum raw success rate where an unbounded single-task budget is acceptable
+Wrapper-only 한계: No Wrapper-only model achieved BOTH a safe, bounded per-attempt cost AND a success rate close to Remaining Time's own 15.7% ceiling -- every SAFE (capped) policy tested tops out around 4-5.5% success, while the only policy reaching double-digit success rate (Remaining Time, 15.7%) is unsafe for a multi-task loop by design.
+완전한 해결에 Production 변경 필요: true
+
+--- STEP3: Registry Policy Blueprint ---
+[binarySkip] 구현 난이도=low
+  설명: CURRENT baseline (Prototype Refinement Sprint v1): first attempt on a state proceeds, every later attempt on the identical state within the same solve is skipped unconditionally.
+  예상 Duplicate 감소: 100% (measured: 129 -> 0)
+  예상 Regression 위험: 6 real regressions measured -- every skipped retry forecloses that retry's own independent chance of success, with no mechanism to tell in advance which skips would have mattered.
+  근거: Already implemented and measured this Sprint arc -- included here only as the comparison baseline for the 4 candidates below.
+
+[retryBudget] 구현 난이도=medium
+  설명: Every distinct state gets a SHARED time budget across all its attempts within one solve (e.g. the first attempt's own reservedSlice/budgetAwareTraversal allocation, then any later attempt on the same state draws from what's left of that SAME pool rather than getting a fresh allocation).
+  예상 Duplicate 감소: Estimated 40-60% reduction in wasted SEARCH TIME on duplicates (not necessarily invocation COUNT -- the invocation still happens, but with a shrinking budget each time, so later retries on a stubborn state cost less and less) -- a rough projection based on this Sprint's own Budget Architecture Review finding that success correlates more with search TIME available than with raw invocation count.
+  예상 Regression 위험: Lower than binarySkip -- every retry still gets SOME chance (unlike an outright skip), so any of the 6 regression cases that needed just one more real attempt would likely still succeed, at the cost of a smaller time slice for it.
+  근거: Directly targets binarySkip's own failure mode (an all-or-nothing gate) without touching the underlying search algorithm -- a pure Wrapper-level change (a shared counter per state hash instead of a boolean), buildable without any Production or Primitive code change.
+
+[maxAttemptN] 구현 난이도=low
+  설명: Cap retries per distinct state at a fixed N (e.g. N=2 or N=3) within one solve, instead of N=1 (binarySkip) or unbounded (no registry at all).
+  예상 Duplicate 감소: Estimated 60-80% reduction at N=2 (assuming most duplicate states are hit only 2-3 times total per solve -- consistent with this population's own real avg PAIR-task count of ~11-12 per solve and Blueprint Sprint v1's own finding that repeated failures cluster rather than spread evenly) -- a projection, not a measurement; the EXACT reduction depends on the real per-state hit-count distribution, which this Sprint did not separately capture.
+  예상 Regression 위험: Likely close to 0 at N=2, since binarySkip's own 6 regressions would need the SECOND attempt specifically to succeed (N=1 already gets the first) -- if any regression required a THIRD+ attempt, N=2 would not recover it. Cheapest, most directly falsifiable of the 4 candidates -- a real Prototype Sprint could measure exactly how many of the 6 are recovered at N=2 vs N=3.
+  근거: Simplest possible generalization of the existing Set<number> visited registry (a Map<number, number> counting hits instead of a boolean) -- lowest implementation risk of the 4 candidates, and the most directly comparable to the already-real binarySkip baseline.
+
+[confidenceScore] 구현 난이도=high
+  설명: Score each candidate re-attempt using cheap, already-available signals (e.g. remaining time budget, cycle length, whether the OTHER Gate -- REPAIR vs CCR -- has since become eligible on this state) and only retry above a threshold score.
+  예상 Duplicate 감소: Estimated 50-70%, but highly threshold-dependent and NOT independently validated this Sprint -- the biggest unknown of the 4 candidates, since choosing a good threshold requires empirical tuning this Sprint's own analysis-only scope forbids.
+  예상 Regression 위험: Potentially the LOWEST of the 4 if the scoring signal is genuinely predictive -- but also the ONLY candidate whose regression risk could be HIGHER than maxAttemptN if the score is a poor predictor (a badly-tuned threshold could reject retries binarySkip's own data shows would have succeeded).
+  근거: Requires designing and validating a new scoring function -- the closest thing to new Primitive-adjacent logic among the 4 candidates, and the hardest to validate without a dedicated Prototype Sprint of its own.
+
+[agingRegistry] 구현 난이도=medium
+  설명: A visited-state entry expires after a fixed number of subsequent PAIR tasks have been processed (e.g. 3 tasks later, the state is treated as unseen again), on the theory that enough intervening changes may have altered the surrounding context even if this exact state recurs.
+  예상 Duplicate 감소: Estimated 30-50% -- lower than maxAttemptN, since a state that recurs WITHIN the aging window is still skipped exactly as under binarySkip; only recurrences AFTER the window benefit.
+  예상 Regression 위험: Similar to maxAttemptN's own risk profile for short aging windows, converging toward binarySkip's own 6-regression risk as the window grows longer (a very long window is nearly identical to never expiring).
+  근거: Conceptually appealing (an old visit shouldn't count forever) but empirically redundant with maxAttemptN for THIS specific solve structure -- a solve has at most ~12 PAIR tasks total, so an aging window meaningfully shorter than that is nearly equivalent to a low N, while a longer window approaches never-expiring.
+
+추천 정책: maxAttemptN -- Lowest implementation difficulty of the 3 non-baseline candidates with real Wrapper-level feasibility (retryBudget and maxAttemptN both qualify; confidenceScore and agingRegistry carry higher risk or redundancy), AND the most directly falsifiable against the already-real 6-regression baseline (a real Prototype Sprint could test N=2/N=3 and report the EXACT recovered-regression count, rather than relying on this Sprint's own estimate). retryBudget is a reasonable secondary candidate if maxAttemptN's own real-measured duplicate reduction proves insufficient.
+
+--- STEP4: Evaluation Blueprint Revision (표준 평가 체계) ---
+[Primary] Whole-cube-improved count (paired-diff)
+  정의: Per independent run: count of snapshots where Candidate's finalWrongWingCount is STRICTLY LOWER than Baseline's, compared across N>=30 runs via paired-diff 95% CI (candidate_improved - baseline_improved, reusing computeStats/analyzeEffectSize).
+  이 Role인 이유: This is the metric that actually detected a real effect on this dataset (Prototype Refinement Sprint v1 STEP6) where the previous Primary metric (whole-cube-solved) was floor-effected and produced degenerate CI [0.00, 0.00] (Prototype Sprint v1 STEP7). It keeps the SAME statistical apparatus (paired-diff, Standard Evaluation Protocol, N>=30) that this whole research program has used throughout -- only the underlying quantity changes, from a binary 'reached zero' to an ordinal 'got closer to zero.'
+  근거: Prototype Refinement Sprint v1 STEP6: paired-diff mean +3.23, 95% CI [2.51, 3.95], Cohen's d_z=1.607 (large) -- a real, reproducible signal on the identical 75-snapshot/N=30 setup that produced [0.00, 0.00] under the old Primary metric.
+
+[Secondary] Whole-cube-solved count (binary)
+  정의: Per run: count of snapshots where Candidate reaches wrongWingCount===0 within the real 1000ms budget. Still reported every Sprint, but no longer the sole/primary Decision criterion.
+  이 Role인 이유: This remains the ultimate real-world goal (a fully solved cube), and should never be dropped entirely -- but demoting it to Secondary is the direct, disclosed correction for the floor effect this whole Sprint arc discovered. On a DIFFERENT (less pathologically hard) population it may show real signal on its own; keeping it as a reported Secondary metric preserves that possibility for future datasets without letting a floor effect silently mask real Primary-metric improvement, as it did in Prototype Sprint v1.
+  근거: Prototype Sprint v1 STEP4/7: Baseline Solved and Candidate Solved both averaged 0.00/75 across all 30 runs -- a floor effect specific to this curated hardest-failure-snapshot dataset, not evidence the mechanism does nothing (as Prototype Refinement Sprint v1's own Primary-metric result later confirmed).
+
+[Regression] Regression count (candidate strictly worse than baseline)
+  정의: Per run: count of snapshots where Candidate's finalWrongWingCount is STRICTLY HIGHER than Baseline's (the mirror image of the Primary metric). Must be reported alongside every Primary-metric result, never in isolation.
+  이 Role인 이유: A Primary-metric improvement is only meaningful if it isn't purchased with hidden regressions elsewhere -- this Sprint arc already found a real, non-zero regression count (6, Prototype Refinement Sprint v1 STEP4) from a design choice (the Visited Registry's binary skip) that looked purely beneficial on its OWN metric (100% Duplicate reduction). Any future integration decision needs this reported as its own line, with a hard requirement of 0 (or an explicit, justified tolerance) before Decision A is permitted.
+  근거: Prototype Refinement Sprint v1 STEP4: 6 real regressions when the Visited Registry was applied, despite eliminating 100% of measured Duplicate Invocations -- proof that a metric can look purely positive in isolation while a companion Regression metric reveals a real cost.
+
+[Capability] Task-level Coverage / Precision / Recall
+  정의: Coverage = attempted / totalPairNoProgressRecords; Precision = succeeded / attempted; Recall = succeeded / totalPairNoProgressRecords -- all already implemented in Prototype/Refinement Sprints' own TaskLevelEvaluation.ts / PrototypeBenchmark.ts, reused unmodified as the standard per-attempt Capability report.
+  이 Role인 이유: Distinct from the Primary metric: Capability describes how OFTEN the mechanism itself succeeds at the individual-attempt level, independent of whether that success ever shows up in the whole-cube outcome. Useful for diagnosing WHY a Primary-metric result looks the way it does (e.g. Prototype Refinement Sprint v1's Refinement arm showed Precision 12.0%/Recall 4.5% in its last run, materially higher than Prototype v1 config's own 2.7%/2.1% -- consistent with, and explaining, the Primary metric's own +3.23 paired-diff result).
+  근거: Prototype Refinement Sprint v1 STEP3 (last run): Prototype v1 config Precision 2.7%/Recall 2.1% vs Refinement Precision 12.0%/Recall 4.5% -- the Capability metric's own divergence foreshadows the Primary metric's own statistically significant difference.
+
+[Integration] Runtime delta + Deadline Miss rate delta (BOTH required, neither alone sufficient)
+  정의: avgCandidateMs - avgBaselineMs (raw runtime cost) AND candidateDeadlineMissRate - baselineDeadlineMissRate (fraction of solves pushed over the real 1000ms budget), reported as a PAIR, never the runtime delta alone.
+  이 Role인 이유: Prototype Sprint v1's own smoke test showed why a single number misleads: avg runtime delta was -3.7ms (Candidate looked FASTER on average) while Deadline Miss rate rose from 80.0% to 100.0% in the same run -- a modest per-attempt overhead pushed many already-borderline solves just past the real deadline without moving the AVERAGE much. Any future Sprint's Level-3-equivalent Runtime criterion must check both numbers, exactly as Prototype Sprint v1's own corrected driver logic already did after catching this.
+  근거: Prototype Sprint v1 (full run): avg runtime delta +2.0ms (looks negligible) alongside Deadline Miss rising 78.7%->100.0% (avg +24.0 percentage points across 30 runs) -- the two numbers tell materially different stories from the same data.
+
+--- STEP5: Architecture Impact Analysis (Production 변경 후보) ---
+[Priority 1] bfsMoveWingToPosition Traversal Interruptibility (risk=medium)
+  설명: Add an optional `deadline` parameter to bfsMoveWingToPosition() itself, checked every K nodes (e.g. every 100-200, alongside the existing `nodesExplored > MAX_TRACK_NODES` check) -- directly targets the root cause identified in BottleneckAttribution.ts (the single function with a real, measured single-call time up to 1003ms and ZERO internal time checks).
+  예상 효과: Directly fixes the dominant root cause -- Prototype Refinement Sprint v1's own STEP2 found this exact function's absence of a time check as the largest single contributor to Budget Overrun (max single-hop 1003ms against a 40ms nominal budget). This is the only candidate that addresses the PRIMARY bottleneck rather than a downstream symptom of it.
+  기존 코드 영향 범위: 1 function (bfsMoveWingToPosition), but with 6 internal call sites across fiveByFiveEdges.ts needing a deadline argument threaded through -- including tryFixWing (called on EVERY PAIR/FLIP task in real production, not just Incremental Recovery) and enumerateWingCandidates (22 project-wide callers). A signature change here has the WIDEST blast radius of the 4 candidates: every caller needs an explicit decision about what deadline to pass (or a safe default), and any caller that doesn't check for a new possible early-`null`-return outcome needs review.
+
+[Priority 2] enumerateWingCandidates/tryFixWing Deadline Granularity (risk=low)
+  설명: Add a `Date.now() > deadline` check inside the currently-unchecked inner loops -- enumerateWingCandidates's `for (const match of matches)` loop, and tryFixWing's innermost `for (const match2 of matchesForP3)` loop -- so the OUTER function can bail out between bfsMoveWingToPosition calls, not just between entries.
+  예상 효과: Prevents MULTIPLE uninterruptible bfsMoveWingToPosition calls from compounding within a single enumerateWingCandidates/tryFixWing invocation (currently possible whenever `matches`/`matchesForP3` has more than one candidate) -- would reduce, but NOT eliminate, overrun, since a single bfsMoveWingToPosition call can still take up to its own ~8000-node budget uninterrupted.
+  기존 코드 영향 범위: 2 functions, both in fiveByFiveEdges.ts (protected, called out separately from 기존 Primitive in this Sprint's own scope) -- a pure addition of early-exit checks inside existing loops, no change to search semantics, no change to any function signature. Affects the real production PAIR-task path (tryFixWing) as well as every Prototype built on enumerateWingCandidates (22 files).
+
+[Priority 3] Search Yield Point (resumable/incremental search state) (risk=high)
+  설명: Restructure the recursive DFS/BFS bodies into an explicit, resumable state machine (e.g. a generator function or an explicit frontier/stack object) so a caller can pause a search after any bounded slice of work and resume it later across multiple event-loop turns, rather than blocking synchronously until completion or deadline.
+  예상 효과: The only candidate that could give TRUE async yielding (letting other work interleave mid-search) rather than just a tighter synchronous deadline check -- but this is a fundamentally different execution model from every search function in this codebase today (all synchronous, recursive, deadline-terminated), and none of this Sprint arc's own real measurements point to 'the search blocks the event loop too long for OTHER reasons' as a problem -- the measured problem is specifically 'the search runs past ITS OWN deadline,' which traversalInterruptibility already solves without an execution-model change.
+  기존 코드 영향 범위: Would require rewriting bfsMoveWingToPosition, enumerateWingCandidates, tryFixWing, AND every Primitive's own dfs()/runBoundedDfs()/runParametrizedSearchV2() body -- the largest rewrite of the 4 candidates, touching Production, the search library, and every existing Primitive simultaneously, for a benefit (async yielding) this Sprint's own real data does not show a need for.
+
+[Priority 4] Budget Callback (cooperative shouldAbort() pattern) (risk=medium)
+  설명: Replace direct `Date.now() > deadline` comparisons throughout the search functions with a caller-supplied `shouldAbort(): boolean` callback -- allows composing budget policies (e.g. this Sprint's own reservedSlice/softDeadline/budgetAwareTraversal) without hardcoding a deadline value at every call site, and opens the door to non-time-based abort conditions (e.g. an external cancellation signal).
+  예상 효과: An architectural improvement to FLEXIBILITY, not a direct fix for Budget Overrun by itself -- would need to be paired with traversalInterruptibility (adding actual abort CHECKS inside bfsMoveWingToPosition) to have any measurable effect; on its own, replacing an existing working deadline check with an equivalent callback changes nothing about WHERE checks happen.
+  기존 코드 영향 범위: Touches every function that currently takes a `deadline: number` parameter (both Primitive-layer dfs() bodies and Production-layer enumerateWingCandidates/bfsMoveWingToPosition/tryFixWing) -- a signature-level refactor across the whole search call graph, even though the actual CHECK LOGIC (Date.now() comparison) barely changes. Higher churn-to-benefit ratio than traversalInterruptibility alone.
+
+--- STEP6: Architecture Decision Matrix ---
+| 변경안 | 위험 | Production 수정 | 우선순위 |
+| bfsMoveWingToPosition Traversal Interruptibility | medium | true | 1 |
+  효과: Directly fixes the dominant root cause -- Prototype Refinement Sprint v1's own STEP2 found this exact function's absence of a time check as the largest single contributor to Budget Overrun (max single-hop 1003ms against a 40ms nominal budget). This is the only candidate that addresses the PRIMARY bottleneck rather than a downstream symptom of it.
+| enumerateWingCandidates/tryFixWing Deadline Granularity | low | true | 2 |
+  효과: Prevents MULTIPLE uninterruptible bfsMoveWingToPosition calls from compounding within a single enumerateWingCandidates/tryFixWing invocation (currently possible whenever `matches`/`matchesForP3` has more than one candidate) -- would reduce, but NOT eliminate, overrun, since a single bfsMoveWingToPosition call can still take up to its own ~8000-node budget uninterrupted.
+| Search Yield Point (resumable/incremental search state) | high | true | 3 |
+  효과: The only candidate that could give TRUE async yielding (letting other work interleave mid-search) rather than just a tighter synchronous deadline check -- but this is a fundamentally different execution model from every search function in this codebase today (all synchronous, recursive, deadline-terminated), and none of this Sprint arc's own real measurements point to 'the search blocks the event loop too long for OTHER reasons' as a problem -- the measured problem is specifically 'the search runs past ITS OWN deadline,' which traversalInterruptibility already solves without an execution-model change.
+| Budget Callback (cooperative shouldAbort() pattern) | medium | true | 4 |
+  효과: An architectural improvement to FLEXIBILITY, not a direct fix for Budget Overrun by itself -- would need to be paired with traversalInterruptibility (adding actual abort CHECKS inside bfsMoveWingToPosition) to have any measurable effect; on its own, replacing an existing working deadline check with an equivalent callback changes nothing about WHERE checks happen.
+| Registry policy: maxAttemptN (Wrapper-only) | low | false | 1 |
+  효과: Recovers most of the 6 real regressions the binary Visited Registry caused, while retaining most of its 100% Duplicate-reduction benefit (estimate, not yet measured)
+| Budget policy: Deadline-aware Traversal (budgetAwareTraversal) for safety-bounded use, or Remaining Time for maximum raw success rate where an unbounded single-task budget is acceptable (Wrapper-only, ceiling capped) | low | false | 2 |
+  효과: Best available Wrapper-only Budget outcome -- real, measured, but capped by the Primitive/Production-layer bottlenecks that a Wrapper cannot reach
+
+Wrapper만으로 가능한 개선:
+  - Registry policy replacement (maxAttemptN or retryBudget) -- fully addressable inside solverPrimitiveIncrementalRecoveryPrototypeRefinement-style Wrapper code, zero Production/Primitive changes
+  - Evaluation framework revision (Primary/Secondary/Regression/Capability/Integration metrics) -- pure analysis/benchmark code, zero Production involvement
+  - Budget policy selection among reservedSlice/remainingTime/adaptiveSlice/softDeadline/budgetAwareTraversal -- all already Wrapper-level, ceiling capped but real and immediately usable
+Production 변경이 반드시 필요한 개선:
+  - Full resolution of Budget Overrun (currently 54.5% best-case overrun rate even with the best Wrapper policy) -- requires bfsMoveWingToPosition to gain its own internal deadline check (traversalInterruptibility, priority 1) and/or enumerateWingCandidates/tryFixWing's inner loops to gain a deadline check between bfsMoveWingToPosition calls (deadlineGranularity, priority 2)
+
+--- 성공 기준 판정 ---
+Level 1 (구조적 병목의 원인을 계층별로 분리): PASS -- Wrapper 3건, Primitive 1건, Production 1건, 모든 병목에 위치/근거/영향범위 명시.
+Level 2 (Wrapper 해결 가능 영역과 Production 변경 필요 영역을 명확히 구분): PASS -- Wrapper 3건, Production 1건, 모두 구체적 함수/파일명 명시.
+Level 3 (다음 Sprint에서 구현 가능한 Architecture Blueprint 확정): PASS -- 최우선 순위 Production 변경 후보(bfsMoveWingToPosition Traversal Interruptibility) 확정, risk/영향범위 명시.
+
+--- Decision: A ---
+구조적 병목이 3개 계층(Wrapper 3건, Primitive 1건, Production 1건)으로 명확히 분리되었고, Wrapper 해결 가능 영역(Registry 정책 교체, Evaluation Framework 개정, Budget 정책 선택)과 Production 변경 필요 영역(bfsMoveWingToPosition/enumerateWingCandidates/tryFixWing의 deadline 체크 granularity)이 구체적으로 구분되었으며, 최우선 순위 Production 변경 후보(traversalInterruptibility, priority 1, risk=medium)가 확정되었다 -- Architecture Blueprint 확정.
+-> Incremental Recovery Architecture Prototype Sprint v1 (Production 변경을 포함한 구조적 개선안 검증)
+
