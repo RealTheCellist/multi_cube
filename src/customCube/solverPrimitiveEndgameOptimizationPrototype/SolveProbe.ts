@@ -40,6 +40,13 @@ export interface SolveProbeResult {
   tasksCompleted: number;
   deadlineMissed: boolean;
   endgame: EndgameInstrumentation | null; // null if no ENDGAME task ran this solve()
+  // ENDGAME Optimization Prototype REFINEMENT Sprint v1: whether Recovery
+  // actually fired this solve() -- read directly from executeTask()'s own
+  // existing "recovery-triggered" trace entry (fiveByFiveEdgeExecutor.ts,
+  // unmodified this Sprint), not a new instrumentation point. Used for the
+  // Refinement Sprint's own required "Recovery Trigger" metric and its
+  // Budget Compliance derivation (1 - recoveryTriggerRate).
+  recoveryTriggered: boolean;
 }
 
 const ENDGAME_TRACE_RE =
@@ -84,5 +91,6 @@ export function solveProbe(cubies: Cubie[], endgameReserveMs?: number, recoveryR
     tasksCompleted: plan.tasks.length,
     deadlineMissed,
     endgame: parseEndgameInstrumentation(trace),
+    recoveryTriggered: trace.some((t) => t.label === "recovery-triggered"),
   };
 }
