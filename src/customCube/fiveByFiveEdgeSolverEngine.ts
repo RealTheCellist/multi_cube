@@ -152,11 +152,28 @@ export class FiveByFiveEdgeSolverEngine {
       endgameReserveMs !== undefined && hasEndgameTask ? Math.max(Date.now(), deadline - endgameReserveMs) : deadline;
 
     for (const task of tasks) {
-      const taskCeiling = task.type === "ENDGAME" ? deadline : nonEndgameCeiling;
-      if (Date.now() > taskCeiling) {
+      // The TRUE outer deadline exhausted -- nothing can proceed regardless
+      // of task type, so this is a genuine break (matches pre-Sprint
+      // behavior exactly when endgameReserveMs is undefined, since
+      // nonEndgameCeiling === deadline in that case).
+      if (Date.now() > deadline) {
         this.log("budget-exhausted", `${task.type} 태스크 도달 전 예산 소진`);
         break;
       }
+      // Reserved Slice's own ARTIFICIAL, tighter ceiling for non-ENDGAME
+      // tasks only -- exceeding THIS must skip just this one task (continue
+      // to the next, which may be the protected ENDGAME task itself), never
+      // break the whole loop: breaking here would discard the very ENDGAME
+      // task Reserved Slice exists to protect (a real bug this Sprint's own
+      // smoke test caught -- see docs/ENDGAME_OPTIMIZATION_PROTOTYPE.md).
+      // Logged under a DIFFERENT label than "budget-exhausted" so it doesn't
+      // pollute the Deadline Miss metric, which must keep meaning "the real
+      // outer deadline was exceeded" identically across every arm.
+      if (task.type !== "ENDGAME" && Date.now() > nonEndgameCeiling) {
+        this.log("reserved-slice-skip", `${task.type} 태스크 건너뜀 -- Reserved Slice 활성, non-ENDGAME 예산 소진`);
+        continue;
+      }
+      const taskCeiling = task.type === "ENDGAME" ? deadline : nonEndgameCeiling;
       if (wrongWingCount5(working) === 0) {
         this.log("already-solved", "더 남은 태스크 없음");
         break;
