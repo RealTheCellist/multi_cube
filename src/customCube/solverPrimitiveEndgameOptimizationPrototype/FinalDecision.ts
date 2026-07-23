@@ -65,13 +65,26 @@ function evaluateArm(
   const level2Pass = armEval.primary.stats.mean > 0 && armEval.primary.stats.ciLower > 0;
   const level2Detail = `Primary (whole-cube-improved diff, N=${armEval.primary.stats.n} trials): mean=${armEval.primary.stats.mean.toFixed(3)}, 95% CI=[${armEval.primary.stats.ciLower.toFixed(3)}, ${armEval.primary.stats.ciUpper.toFixed(3)}], Cohen's d_z=${armEval.primary.effectSize.cohensD.toFixed(3)} (${armEval.primary.effectSize.magnitude}).`;
 
-  // Level3: Runtime Contract maintained -- no Deadline Miss increase,
-  // Runtime within the Blueprint's own expected-max bar, zero Regression increase.
+  // Level3: Runtime Contract maintained -- no Deadline Miss increase, no
+  // Runtime increase RELATIVE TO BASELINE, zero Regression increase.
+  //
+  // Runtime must be checked as a paired-diff against Baseline (like Deadline
+  // Miss and Regression already are), NOT against the Blueprint Sprint's
+  // own FINAL_CONTRACT_RUNTIME_MS=562.4ms figure -- that number was measured
+  // on ENDGAME's ISOLATED runtime alone (Bottleneck Attribution Refinement
+  // Sprint v1's own Saturation Curve at the 500ms budget point), not a whole
+  // solve() call that also includes PAIR/FLIP/PARITY. Using it as an
+  // absolute ceiling on whole-solve avgRuntimeMs is an apples-to-oranges
+  // comparison this Sprint's own full run caught: even Baseline's own
+  // unmodified avgRuntimeMs (1050.8ms, STEP3) would fail that bar, which is
+  // the tell that the check itself was miscalibrated, not that a candidate
+  // is slow (self-caught before finalizing -- see
+  // docs/ENDGAME_OPTIMIZATION_PROTOTYPE.md).
   const deadlineMissOk = armEval.deadlineMiss.stats.ciUpper <= 0 || armEval.deadlineMiss.stats.mean <= 0;
-  const runtimeOk = armRuntimeRow.avgRuntimeMs <= FINAL_CONTRACT_RUNTIME_MS;
+  const runtimeOk = armEval.runtime.stats.ciUpper <= 0 || armEval.runtime.stats.mean <= 0;
   const noRegressionIncrease = regression.trueRegressionRate <= 0.05; // matches this arc's own >=95%-compliance-style bar, applied here as <=5% True Regression allowance
   const level3Pass = deadlineMissOk && runtimeOk && noRegressionIncrease;
-  const level3Detail = `Deadline Miss diff: mean=${armEval.deadlineMiss.stats.mean.toFixed(2)}pp, 95% CI=[${armEval.deadlineMiss.stats.ciLower.toFixed(2)}, ${armEval.deadlineMiss.stats.ciUpper.toFixed(2)}] (${deadlineMissOk ? "no increase" : "INCREASED"}). Avg Runtime=${armRuntimeRow.avgRuntimeMs.toFixed(1)}ms vs Contract max ${FINAL_CONTRACT_RUNTIME_MS}ms (${runtimeOk ? "within" : "EXCEEDS"}). True Regression rate=${(regression.trueRegressionRate * 100).toFixed(2)}% (${noRegressionIncrease ? "within 5% allowance" : "EXCEEDS 5% allowance"}).`;
+  const level3Detail = `Deadline Miss diff: mean=${armEval.deadlineMiss.stats.mean.toFixed(2)}pp, 95% CI=[${armEval.deadlineMiss.stats.ciLower.toFixed(2)}, ${armEval.deadlineMiss.stats.ciUpper.toFixed(2)}] (${deadlineMissOk ? "no increase" : "INCREASED"}). Runtime diff vs Baseline: mean=${armEval.runtime.stats.mean.toFixed(2)}ms, 95% CI=[${armEval.runtime.stats.ciLower.toFixed(2)}, ${armEval.runtime.stats.ciUpper.toFixed(2)}] (${runtimeOk ? "no increase" : "INCREASED"}). [Informational, not a gate: whole-solve avgRuntimeMs=${armRuntimeRow.avgRuntimeMs.toFixed(1)}ms vs the Blueprint's own ENDGAME-ISOLATED reference figure ${FINAL_CONTRACT_RUNTIME_MS}ms -- not directly comparable, see file header.] True Regression rate=${(regression.trueRegressionRate * 100).toFixed(2)}% (${noRegressionIncrease ? "within 5% allowance" : "EXCEEDS 5% allowance"}).`;
 
   let decision: "A" | "B" | "C";
   let decisionRationale: string;
