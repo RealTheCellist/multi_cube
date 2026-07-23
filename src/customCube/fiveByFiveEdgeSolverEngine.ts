@@ -29,6 +29,18 @@ import type { EvaluatorWeights } from "./fiveByFiveEdgeEvaluator";
 
 export const PLAN_TIME_BUDGET_MS = 1000;
 
+// ENDGAME Optimization Prototype Sprint v1 (Blueprint Sprint v1's Final
+// Operating Contract, STEP6): the real Saturation Curve's 500ms operating
+// point (0.694 avg improvement, 562.4ms avg runtime -- Solver System
+// Bottleneck Attribution Refinement Sprint v1's own measurement). Reserved
+// off the OUTER solve() loop so ENDGAME's own primary attempt gets a
+// guaranteed floor, protected from being consumed by earlier PAIR/FLIP/
+// PARITY tasks -- the Reserved Slice budget policy variant. Not applied by
+// default (existing behavior unchanged for every caller that doesn't pass
+// `endgameReserveMs` explicitly); only this Sprint's own A/B benchmark
+// exercises it.
+export const ENDGAME_RESERVE_MS = 500;
+
 /**
  * Pre-builds the wing/flip/case libraries (buildWingLibrary/buildFlipLibrary/
  * buildCaseLibrary are each cached at the module level in fiveByFiveEdges.ts,
@@ -78,7 +90,25 @@ export class FiveByFiveEdgeSolverEngine {
    * finishes, the plan simply contains however many moves were actually
    * found, with `score` reflecting the real remaining wrongWingCount.
    */
-  solve(cubies: Cubie[], weights?: EvaluatorWeights): SolvePlan {
+  solve(
+    cubies: Cubie[],
+    weights?: EvaluatorWeights,
+    // ENDGAME Optimization Prototype Sprint v1 -- Reserved Slice budget
+    // policy variant. `undefined` (default) preserves exact current
+    // behavior for every existing caller. When set, non-ENDGAME tasks
+    // (PAIR/FLIP/PARITY) are capped to `deadline - endgameReserveMs`
+    // instead of the full outer `deadline`, guaranteeing ENDGAME's own
+    // primary attempt (queued last, per fiveByFiveEdgePlanner.ts) a
+    // protected floor of real wall-clock time -- ONLY when an ENDGAME task
+    // actually exists in this solve's own task list (no wasted reservation
+    // on a plan that never reaches ENDGAME).
+    endgameReserveMs?: number,
+    // ENDGAME Optimization Prototype Sprint v1 -- Absorb budget policy
+    // variant, threaded straight through to executeTask's own
+    // recoveryReserveMsOverride. `undefined` (default) preserves exact
+    // current behavior (RECOVERY_RESERVE_MS).
+    recoveryReserveMsOverride?: number
+  ): SolvePlan {
     this.trace = [];
     const startHash = computeEdgeSolverStateHash(cubies);
 
@@ -112,8 +142,18 @@ export class FiveByFiveEdgeSolverEngine {
     const moveQueue: Move[] = [];
     const completedTasks: SolveTask[] = [];
 
+    // Reserved Slice (ENDGAME Optimization Prototype Sprint v1, STEP1):
+    // computed ONCE, before the loop, since whether an ENDGAME task exists
+    // is already knowable from the planned `tasks` array. Non-ENDGAME tasks
+    // are capped to this tighter ceiling; the ENDGAME task itself always
+    // gets the full, unrestricted `deadline`, below.
+    const hasEndgameTask = tasks.some((t) => t.type === "ENDGAME");
+    const nonEndgameCeiling =
+      endgameReserveMs !== undefined && hasEndgameTask ? Math.max(Date.now(), deadline - endgameReserveMs) : deadline;
+
     for (const task of tasks) {
-      if (Date.now() > deadline) {
+      const taskCeiling = task.type === "ENDGAME" ? deadline : nonEndgameCeiling;
+      if (Date.now() > taskCeiling) {
         this.log("budget-exhausted", `${task.type} 태스크 도달 전 예산 소진`);
         break;
       }
@@ -127,8 +167,17 @@ export class FiveByFiveEdgeSolverEngine {
       // preserve the Planner v2 determinism guarantee (see executeTask's
       // own comment in fiveByFiveEdgeExecutor.ts for why).
       const before = wrongWingCount5(working);
-      const moves = executeTask(working, task, libs, deadline, this.trace, true);
+      const taskStart = Date.now();
+      const remainingAtStart = deadline - taskStart;
+      const moves = executeTask(working, task, libs, taskCeiling, this.trace, true, undefined, true, true, undefined, undefined, recoveryReserveMsOverride);
+      const taskRuntimeMs = Date.now() - taskStart;
       const after = wrongWingCount5(working);
+      if (task.type === "ENDGAME") {
+        this.log(
+          "endgame-instrumentation",
+          `runtimeMs=${taskRuntimeMs}, remainingBudgetAtStart=${remainingAtStart}, reservedSliceActive=${endgameReserveMs !== undefined}, improved=${after < before}, wrongWingCount ${before} -> ${after}`
+        );
+      }
       if (moves.length > 0) {
         moveQueue.push(...moves);
         completedTasks.push(task);

@@ -39,7 +39,12 @@ import { DEFAULT_EVALUATOR_WEIGHTS, type EvaluatorWeights } from "./fiveByFiveEd
 // fiveByFiveEdgeRecovery.ts -- guarantees Recovery actually gets a turn
 // whenever the ordinary pipeline stalls, mirroring the same
 // deadline-splitting pattern PAIR/FLIP already use via TASK_LOCAL_BUDGET_MS.
-const RECOVERY_RESERVE_MS = RECOVERY_GEN_BUDGET_MS + MAX_RECOVERY_RETRIES * RECOVERY_RETRY_BUDGET_MS;
+// Exported (ENDGAME Optimization Prototype Sprint v1): the Absorb budget
+// policy variant needs to both READ this real production value (as its
+// default) and pass an override that trades part of it back to ENDGAME's
+// own primary attempt -- pure visibility change, the constant's value and
+// every existing caller's behavior are unchanged.
+export const RECOVERY_RESERVE_MS = RECOVERY_GEN_BUDGET_MS + MAX_RECOVERY_RETRIES * RECOVERY_RETRY_BUDGET_MS;
 
 export interface ExecutorLibraries {
   lib: WingLibrary;
@@ -234,13 +239,23 @@ export function executeTask(
   // Integration Benchmark passes `undefined` explicitly to reconstruct
   // pre-Sprint counterfactual behavior for the required Baseline-vs-Candidate
   // comparison; product callers never do.
-  pairBudgetMs: number | undefined = FIXED_BUDGET_MS
+  pairBudgetMs: number | undefined = FIXED_BUDGET_MS,
+  // ENDGAME Optimization Prototype Sprint v1 (Absorb budget policy variant):
+  // overrides RECOVERY_RESERVE_MS in the primaryDeadline computation below.
+  // Defaults to the real production constant -- every existing caller keeps
+  // exact current behavior. Only the Sprint's own A/B benchmark passes a
+  // smaller value (e.g. 300) to redistribute part of Recovery's reservation
+  // back to ENDGAME's own primary attempt ("Absorb"), without touching
+  // Recovery's own internal budget constants at all (Recovery's own budgets
+  // already self-clamp against whatever outer deadline they're given).
+  recoveryReserveMsOverride: number = RECOVERY_RESERVE_MS
 ): Move[] {
   const recoveryEligible = allowRecovery && task.type === "ENDGAME";
-  // Reserve RECOVERY_RESERVE_MS off the END of the deadline for the primary
-  // pipeline's own attempt -- see RECOVERY_RESERVE_MS's comment above for
-  // why this reservation is required for Recovery to ever get a turn.
-  const primaryDeadline = recoveryEligible ? Math.max(Date.now(), deadline - RECOVERY_RESERVE_MS) : deadline;
+  // Reserve recoveryReserveMsOverride off the END of the deadline for the
+  // primary pipeline's own attempt -- see RECOVERY_RESERVE_MS's comment
+  // above for why this reservation is required for Recovery to ever get a
+  // turn.
+  const primaryDeadline = recoveryEligible ? Math.max(Date.now(), deadline - recoveryReserveMsOverride) : deadline;
   const primary = runPrimaryPipeline(cubies, task, libs, primaryDeadline, pairBudgetMs);
   if (primary.length > 0) return primary;
 
