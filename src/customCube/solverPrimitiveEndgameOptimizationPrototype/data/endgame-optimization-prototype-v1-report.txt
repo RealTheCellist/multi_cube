@@ -1,0 +1,52 @@
+ENDGAME Optimization Prototype Sprint v1 -- Report
+Generated: 2026-07-23T01:06:21.857Z
+
+STEP0. Population: 335 real snapshots total; 5-snapshot stride-sample used for the N=2-trial A/B/Baseline comparison (project-standard cost-driven subsample).
+STEP1. Executor Integration: ENDGAME_RESERVE_MS=500 (Reserved Slice, per Blueprint Sprint v1's Final Operating Contract) wired into fiveByFiveEdgeSolverEngine.ts's solve() task loop as a new optional trailing param (endgameReserveMs), guaranteeing non-ENDGAME tasks a tighter ceiling so ENDGAME's own primary attempt gets a protected floor. Absorb variant (recoveryReserveMsOverride=300, redistributing 150ms of the existing 450ms RECOVERY_RESERVE_MS) wired into fiveByFiveEdgeExecutor.ts's executeTask() as a new optional trailing param, replacing the hardcoded RECOVERY_RESERVE_MS reference in the primaryDeadline computation. Both default to undefined/RECOVERY_RESERVE_MS respectively, preserving exact Baseline behavior for every existing caller. Verified via git-stash full-project type-check comparison: 205 errors both before and after (zero new).
+
+STEP2. Budget Policy A/B/Baseline (avg across 2 trials, 5 snapshots each):
+  Baseline: avgImproved=3.00/5, avgSolved=0.00/5, avgWallMs=1078.0, avgDeadlineMissRate=40.00%, avgEndgameInvoked=3.00, avgEndgameRuntimeMs=416.8, avgEndgameRemainingBudgetAtStartMs=290.7
+  ReservedSlice: avgImproved=3.00/5, avgSolved=0.00/5, avgWallMs=902.0, avgDeadlineMissRate=0.00%, avgEndgameInvoked=5.00, avgEndgameRuntimeMs=398.8, avgEndgameRemainingBudgetAtStartMs=498.4
+  Absorb: avgImproved=3.00/5, avgSolved=0.00/5, avgWallMs=984.0, avgDeadlineMissRate=40.00%, avgEndgameInvoked=3.00, avgEndgameRuntimeMs=232.5, avgEndgameRemainingBudgetAtStartMs=262.2
+
+STEP4. Regression + Gap Rescue Analysis (avg across 2 trials):
+  ReservedSlice vs Baseline: True Regression rate=20.00%, Duplicate Success rate=30.00%, Gap Rescue rate=10.00%
+  Absorb vs Baseline: True Regression rate=10.00%, Duplicate Success rate=30.00%, Gap Rescue rate=20.00%
+
+STEP3. Runtime Contract (full 335-snapshot population, single real solve() pass per arm):
+  Baseline: avgRuntimeMs=1057.4, deadlineMissRate=40.30%, endgameInvocationCount=200/335, avgEndgameRuntimeMs=323.1, withinRuntimeContract(<=562.4ms)=false
+  ReservedSlice: avgRuntimeMs=990.2, deadlineMissRate=0.00%, endgameInvocationCount=335/335, avgEndgameRuntimeMs=492.6, withinRuntimeContract(<=562.4ms)=false
+  Absorb: avgRuntimeMs=1068.7, deadlineMissRate=40.00%, endgameInvocationCount=201/335, avgEndgameRuntimeMs=339.4, withinRuntimeContract(<=562.4ms)=false
+
+STEP5. Budget Efficiency (full population):
+  Baseline: endgameInvocationCount=200, avgEndgameRuntimeMs=323.1, avgRemainingBudgetAtStartMs=230.3, usageRate=140.3%, flaggedLowUsage=false
+  ReservedSlice: endgameInvocationCount=335, avgEndgameRuntimeMs=492.6, avgRemainingBudgetAtStartMs=503.6, usageRate=97.8%, flaggedLowUsage=false
+  Absorb: endgameInvocationCount=201, avgEndgameRuntimeMs=339.4, avgRemainingBudgetAtStartMs=228.3, usageRate=148.7%, flaggedLowUsage=false
+
+STEP6. Statistical Validation (paired-diff across N=2 trials):
+  ReservedSlice vs Baseline:
+    Primary (improved count diff): mean=0.000, 95% CI=[0.000, 0.000], Cohen's d_z=0.000 (negligible)
+    Secondary (solved count diff): mean=0.000, 95% CI=[0.000, 0.000]
+    Runtime (avg wall ms diff): mean=-176.00, 95% CI=[-230.49, -121.51]
+    Deadline Miss (rate diff, pp): mean=-40.00, 95% CI=[-40.00, -40.00]
+  Absorb vs Baseline:
+    Primary (improved count diff): mean=0.000, 95% CI=[0.000, 0.000], Cohen's d_z=0.000 (negligible)
+    Secondary (solved count diff): mean=0.000, 95% CI=[0.000, 0.000]
+    Runtime (avg wall ms diff): mean=-94.00, 95% CI=[-104.19, -83.81]
+    Deadline Miss (rate diff, pp): mean=0.00, 95% CI=[0.00, 0.00]
+
+Level 1-3 Judgment + Decision, per arm:
+  [ReservedSlice]
+    Level1 (Reserved/Absorb 정책이 실제 ENDGAME 호출 지점에 적용됨): PASS -- ENDGAME invoked 335/335 real solves. Avg real remaining budget at ENDGAME's own invocation: Baseline=230.3ms vs ReservedSlice=503.6ms (MORE). Avg ENDGAME own measured runtime: Baseline=323.1ms vs ReservedSlice=492.6ms (MORE) -- both metrics apply for Reserved Slice, checked independently of whether Capability improved.
+    Level2 (Capability 증가, 95% CI가 0을 배제): FAIL -- Primary (whole-cube-improved diff, N=2 trials): mean=0.000, 95% CI=[0.000, 0.000], Cohen's d_z=0.000 (negligible).
+    Level3 (Runtime Contract 유지): FAIL -- Deadline Miss diff: mean=-40.00pp, 95% CI=[-40.00, -40.00] (no increase). Avg Runtime=990.2ms vs Contract max 562.4ms (EXCEEDS). True Regression rate=20.00% (EXCEEDS 5% allowance).
+    Decision: B -- Level1 PASS but Level3 FAIL for ReservedSlice: the policy is confirmed delivered, but the Runtime Contract (Deadline Miss / Runtime / Regression) was not maintained -- needs Prototype Refinement (budget value tuning) before this variant can be a Production candidate.
+
+  [Absorb]
+    Level1 (Reserved/Absorb 정책이 실제 ENDGAME 호출 지점에 적용됨): PASS -- ENDGAME invoked 201/335 real solves. Avg real remaining budget at ENDGAME's own invocation: Baseline=230.3ms vs Absorb=228.3ms (not more). Avg ENDGAME own measured runtime: Baseline=323.1ms vs Absorb=339.4ms (MORE) -- the mechanism-appropriate metric for Absorb (which extends ENDGAME's OWN primaryDeadline, not when it starts), checked independently of whether Capability improved.
+    Level2 (Capability 증가, 95% CI가 0을 배제): FAIL -- Primary (whole-cube-improved diff, N=2 trials): mean=0.000, 95% CI=[0.000, 0.000], Cohen's d_z=0.000 (negligible).
+    Level3 (Runtime Contract 유지): FAIL -- Deadline Miss diff: mean=0.00pp, 95% CI=[0.00, 0.00] (no increase). Avg Runtime=1068.7ms vs Contract max 562.4ms (EXCEEDS). True Regression rate=10.00% (EXCEEDS 5% allowance).
+    Decision: B -- Level1 PASS but Level3 FAIL for Absorb: the policy is confirmed delivered, but the Runtime Contract (Deadline Miss / Runtime / Regression) was not maintained -- needs Prototype Refinement (budget value tuning) before this variant can be a Production candidate.
+
+OVERALL DECISION: B
+  Neither variant clears Level1/2/3 outright, but at least one policy's mechanism is instrumentation-CONFIRMED delivered (Level1 PASS) -- Prototype Refinement (budget value tuning) is warranted, not an Architecture Revision, since this Sprint's central verification question (did Reserved Slice/Absorb actually reach ENDGAME) is answered YES for that variant.
