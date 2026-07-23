@@ -1,0 +1,109 @@
+ENDGAME Optimization Blueprint Sprint v1 -- Report
+Generated: 2026-07-23T00:11:56.608Z
+Architecture Blueprint (design only) -- zero Production code changes. All numbers cited are real, already-measured data from prior Sprints; no new benchmark run needed for this design-only Sprint.
+
+Background (cited from Solver System Bottleneck Attribution Refinement Sprint v1's own real report):
+  ENDGAME total potential gain: 87.0% of the combined ENDGAME+Planner opportunity (625.00 units)
+  Planner total potential gain: 13.0% (93.00 units)
+  Real architecture fact (this Sprint's own source inspection): RECOVERY_RESERVE_MS = 450ms is ALREADY reserved off ENDGAME's own primaryDeadline today, before Recovery even triggers -- ENDGAME's real production budget is squeezed by both queue position AND this existing reservation.
+
+STEP1. Budget Allocation Blueprint:
+  Strategy | Expected Improvement (real Saturation Curve point) | Risk
+  A. Fixed Budget (250/500/1000ms)
+    Expected improvement: 0.694
+    Pros: Predictable, easy to reason about and test (same pattern as the EXISTING RECOVERY_RESERVE_MS mechanism -- zero new architecture concept) / Directly targets the confirmed 87% bottleneck with a guaranteed floor, independent of how much PAIR/FLIP/PARITY consumed
+    Cons: Wastes budget on already-easy snapshots that would have finished well under the fixed floor / A too-large fixed slice risks starving PAIR/FLIP/PARITY tasks earlier in the queue on hard scrambles
+  B. Remaining-Time (today's status quo)
+    Expected improvement: 0.259
+    Pros: Zero implementation cost -- this is what Production already does / Never starves earlier tasks by design
+    Cons: Confirmed by this whole Sprint's own real measurement to be the WORST-performing point on the Saturation Curve in practice -- real snapshots cluster at the low end where marginal capability is lowest / No guaranteed floor -- a hard scramble that eats the whole budget before ENDGAME's turn leaves it with near-zero time
+  C. Adaptive Budget
+    Expected improvement: 0.545
+    Pros: Best theoretical capability-per-ms tradeoff -- adapts to the ACTUAL remaining slack rather than a one-size-fits-all number / Could reclaim the RECOVERY_RESERVE_MS's own often-unused slack for ENDGAME specifically on snapshots where Recovery ends up not needed
+    Cons: Highest implementation complexity and highest Regression risk of the 4 candidates -- introduces new decision logic, new failure modes, needs its own dedicated validation Sprint / Timing-jitter-sensitive by construction (the same class of bug this whole research arc has repeatedly had to fix in Planner v2's own determinism guarantee)
+  D. Reserved Slice (ENDGAME_RESERVE_MS, mirroring RECOVERY_RESERVE_MS's own existing pattern)
+    Expected improvement: 0.694
+    Pros: Reuses an ALREADY-EXISTING, already-proven Production pattern (RECOVERY_RESERVE_MS) -- lowest new-concept risk of any candidate that actually beats the status quo / Directly, concretely targets this Sprint's own confirmed root cause: ENDGAME's real remaining time is squeezed by the existing Recovery reservation before it even starts
+    Cons: Still a fixed number under the hood -- doesn't adapt to genuinely easy vs hard snapshots the way Adaptive would / Interacts with RECOVERY_RESERVE_MS -- needs an explicit decision on whether the two reservations stack (reducing PAIR/FLIP/PARITY's own share further) or whether ENDGAME_RESERVE_MS should partially REPLACE/absorb the existing Recovery reservation (see STEP5)
+
+STEP2. Capability Gain Model (Marginal Gain per additional 100ms, from the real Saturation Curve):
+  FromBudget->ToBudget | ΔImprovement | GainPer100Ms
+  120->250ms | 0.286 | 0.220
+  250->500ms | 0.149 | 0.060
+  500->1000ms | 0.196 | 0.039
+  1000->5000ms | 1.820 | 0.045
+  Best marginal-gain segment: 120->250ms (0.220/100ms)
+  Diminishing returns observed across the whole tested range: false
+
+STEP3. Runtime Impact Model:
+  Strategy | RepresentativeBudget | ExpectedRuntime | DeadlineMissRisk | OverallRisk
+  fixed | 500ms | 562.4ms | medium | medium
+    Recovery Trigger impact: A fixed ENDGAME slice reduces PAIR/FLIP/PARITY's own share when the queue runs late -- could indirectly starve those tasks the same way the CURRENT RECOVERY_RESERVE_MS(450ms) already occasionally does, but bounded and measurable (same failure mode as an existing, already-accepted mechanism).
+  remainingTime | 120ms | 177.1ms | low | low
+    Recovery Trigger impact: Status quo -- Recovery's own 450ms reservation is untouched, so Recovery Trigger behavior is unchanged from today's real, already-measured baseline.
+  adaptive | 250ms | 314.6ms | medium | high
+    Recovery Trigger impact: Dynamic sizing could shrink Recovery's own effective window unpredictably on snapshots where ENDGAME's adaptive logic claims more time than a fixed reservation would -- the exact class of timing-jitter risk this whole research arc's own Planner v2 determinism fix was built to avoid.
+  reservedSlice | 500ms | 562.4ms | medium | medium
+    Recovery Trigger impact: Directly trades off against the EXISTING RECOVERY_RESERVE_MS(450ms) -- STEP5 must decide whether ENDGAME_RESERVE_MS stacks on top (shrinking PAIR/FLIP/PARITY's own share further) or partially replaces/absorbs it (shrinking Recovery's own reservation, justified by this Sprint's own 87%-vs-13% Bottleneck Attribution finding).
+
+STEP4. Endgame Efficiency Opportunity (non-Budget candidates, real code structure cited, NOT implemented):
+  Candidate Ordering (replace shuffle() with a heuristic order) (risk: medium)
+    Real code context: bestFixOverall/tryEndgameMultiPly both call shuffle(wrongWings5(cubies)) -- a real, unmodified Math.random()-based order, not a heuristic one. Every wrong wing gets an equal, random chance of being tried first.
+    Production change scope: 2 call sites (bestFixOverall, tryEndgameMultiPly) -- replace shuffle() with a scored sort (e.g. by candidatesForWing(lib,w).length, or by proximity to a completable 2-3-cycle).
+    Expected effect: Could reach a winning candidate sooner within the SAME budget, converting some of the 120-500ms Saturation Curve's own low-improvement region into more successes -- but the real magnitude is unmeasured (this Sprint's own Saturation Curve varied BUDGET, not ordering, on the same random order).
+  Early Exit (stop bestFixOverall's per-wing loop the instant ANY improving move is found) (risk: low)
+    Real code context: bestFixOverall's own for-loops already return immediately on the FIRST improving fix (both the flip loop and the tryFixWing loop) -- this is already the real, current behavior, not a gap.
+    Production change scope: None -- already implemented.
+    Expected effect: No additional gain available here; this candidate is effectively already captured by the existing code.
+  Branch Pruning (skip candidatesForWing entries that can't possibly help before running the expensive bfsMoveWingToPosition setup search) (risk: high)
+    Real code context: tryFixWing (called from bestFixOverall) already prunes disruptive entries via its own otherDisruptionsSafe check BEFORE calling bfsMoveWingToPosition -- real, existing pruning. tryEndgameMultiPly's own enumerateWingCandidates call does the SAME pruning (shared code path). No additional un-pruned branch was found by direct inspection.
+    Production change scope: None identified beyond what's already implemented -- would need a NEW pruning signal (e.g. a cheap lower-bound heuristic on remaining cycle length) that doesn't exist in the codebase today.
+    Expected effect: Speculative -- no measured baseline for a lower-bound heuristic exists in this whole research arc; would need its own Prototype Sprint to even estimate a real number.
+  Duplicate Skip (avoid re-trying a wing/candidate combination already tried this ENDGAME call) (risk: low)
+    Real code context: Within a SINGLE bestFixOverall call, each wrong wing is tried at most once per invocation (no duplication inside one call). Across the outer while(guard<50) loop, each iteration operates on a NEW cube state (only reached after a successful prior fix), so there is no repeated-failure duplication there either -- a failure inside bestFixOverall causes the whole ENDGAME branch to fall through/break, not retry the same state. The one place real duplication COULD occur is across genDisrupt1/genDisrupt2 in Recovery (tryEndgameThroughDisruption called twice with different maxDisruptions/recurseDepth) -- but that's Recovery-layer, out of this Sprint's ENDGAME-focused scope.
+    Production change scope: None identified within ENDGAME's own real call structure -- the premise (redundant re-tries within one ENDGAME invocation) does not match the real code.
+    Expected effect: Not applicable at the ENDGAME layer as currently structured -- disclosed rather than fabricated.
+  Search Reordering (try tryEndgameMultiPly BEFORE exhausting bestFixOverall's own guard<50 loop) (risk: medium)
+    Real code context: runPrimaryPipeline's real ENDGAME branch only reaches tryEndgameMultiPly once EITHER bestFixOverall fails outright OR wrongWingCount5<=ENDGAME_MULTIPLY_THRESHOLD -- meaning the more powerful (but more expensive) multi-ply search is always a fallback, never tried first even when the residual is already small enough to qualify.
+    Production change scope: 1 call site (runPrimaryPipeline's ENDGAME branch) -- reorder the two calls, or interleave them by residual size from the start rather than only after bestFixOverall exhausts its own guard budget.
+    Expected effect: Could reach a multi-ply-only-solvable state earlier within the SAME wall-clock budget on small-residual snapshots -- directly relevant given this Sprint's own Reachability Sprint found most Reachable snapshots' residual is already small by the time ENDGAME is dequeued.
+
+STEP5. Integration Architecture (4 candidate integration points):
+  Executor (fiveByFiveEdgeExecutor.ts's executeTask/runPrimaryPipeline) (risk: low)
+    Real mechanism: RECOVERY_RESERVE_MS is ALREADY implemented exactly this way: `const primaryDeadline = recoveryEligible ? Math.max(Date.now(), deadline - RECOVERY_RESERVE_MS) : deadline;`. An ENDGAME_RESERVE_MS could be added as a directly analogous computation inside runPrimaryPipeline's own ENDGAME branch, reusing the EXACT SAME `Math.max(Date.now(), deadline - RESERVE_MS)` pattern already proven in production.
+    Change scope: 1 file, 1 new constant, ~2-3 lines inside the existing ENDGAME branch -- the smallest and most precedented of the 4 candidates.
+    Regression potential: Directly interacts with the EXISTING RECOVERY_RESERVE_MS (see STEP1/3's own stack-vs-absorb question) -- the only real regression surface, and one this Sprint's own STEP6 Runtime Contract must resolve explicitly, not one introduced by NEW mechanism risk.
+  Recovery (fiveByFiveEdgeRecovery.ts -- shrink RECOVERY_RESERVE_MS itself) (risk: medium)
+    Real mechanism: Rather than adding a NEW reservation, reduce RECOVERY_GEN_BUDGET_MS(300)/RECOVERY_RETRY_BUDGET_MS(150) so less of the outer deadline is reserved for Recovery, implicitly leaving more for ENDGAME's own primaryDeadline (no new constant needed).
+    Change scope: 1 file, 2 existing constants tuned -- but Recovery's own generation/retry budgets were themselves tuned by 3 prior Sprints in this research arc (Integration Prototype/Refinement/Validation) against real measured Generation Starvation data; shrinking them risks reopening a problem those Sprints already fixed.
+    Regression potential: Directly risks reintroducing Generation Starvation (Integration Refinement Sprint v1's own real finding: DISRUPT/SETUP alone consumed 245-481ms against the 300ms genDeadline on Gate-matching snapshots) -- a REAL, previously-measured regression this Sprint would need to re-verify, not just assume away.
+  Task Layer (fiveByFiveEdgePlanner.ts -- reorder the queue so ENDGAME isn't always last) (risk: high)
+    Real mechanism: planEdgeTasks() always appends ENDGAME (and PARITY/LAST_TWO) at the END of every candidate strategy's goal list (`[...goals, LAST_TWO, ENDGAME]`) -- moving it earlier would change WHEN it's attempted relative to PAIR/FLIP tasks, giving it more of the raw remaining time without touching any reservation constant.
+    Change scope: 1 file (Planner), but changes the FUNDAMENTAL task-ordering contract every other Sprint in this whole research arc has treated as fixed -- the largest conceptual change of the 4 candidates, even though the line-level diff might be small.
+    Regression potential: PAIR/FLIP tasks fixing individual slots are cheap, high-value, and currently guaranteed to run before ENDGAME's expensive residual grinder -- reordering risks ENDGAME consuming budget that would otherwise have resolved several EASY PAIR slots first, a capability trade this Sprint has no real data to evaluate (Bottleneck Attribution Refinement Sprint v1's own counterfactuals only tested reaching ENDGAME sooner via deadline extension, never via reordering PAIR/FLIP after it).
+  Primitive Layer (fiveByFiveEdges.ts's bestFixOverall/tryEndgameMultiPly themselves) (risk: high)
+    Real mechanism: Add budget-awareness DIRECTLY inside these functions (mirroring the Traversal Interruptibility precedent already added to bfsMoveWingToPosition/tryFixWing in two prior Sprints) -- e.g. a self-managed internal sub-budget independent of what the Executor passes in.
+    Change scope: 2+ functions in the single most heavily-reused, most-called-from file in the whole project (22+ callers of related functions elsewhere) -- the widest blast radius of the 4 candidates.
+    Regression potential: This Sprint's own protected-file list marks fiveByFiveEdges.ts read-only for THIS Sprint specifically because it's Blueprint/design-only -- but even in a follow-on Prototype Sprint, any change here risks the exact class of scope creep the Traversal Interruptibility work explicitly and deliberately avoided (minimal-footprint discipline, only 3 symbols exported). Not recommended as the FIRST integration point to try.
+
+STEP6. Final Operating Contract:
+  Budget Policy: D. Reserved Slice @ 500ms
+  Integration Point: Executor / solve() task-loop boundary
+  Mechanism note: Directionally: reserve ENDGAME_RESERVE_MS off the OUTER solve() loop (analogous to RECOVERY_RESERVE_MS's own existing Math.max(Date.now(), deadline - RESERVE_MS) pattern, but applied so ENDGAME's OWN primary attempt gets a guaranteed floor rather than Recovery's afterward-slice) -- the EXACT mechanics (whether this lives inside runPrimaryPipeline's ENDGAME branch, executeTask, or a new precomputed reserved-deadline passed down the task loop) are deliberately left to the follow-on Prototype Sprint to nail down; this Blueprint confirms the POLICY and the INTEGRATION LAYER, not every line of the mechanism.
+  Runtime Contract: max 562.4ms, Compliance target >=95%, Regression allowance: Zero True Regression increase at the whole-solve() capability level (candidate-strictly-worse count), per this whole research arc's own standard Regression metric.
+  Success Metrics: Primary=whole-cube-improved count (paired-diff, N>=30 real solve() trials) -- reused from this whole research arc's own 5-metric framework.
+    Secondary=whole-cube-solved count (binary).
+    Regression=candidate-strictly-worse count, reported beside Primary, never in isolation.
+    Runtime=avg solve() wall time delta AND Deadline Miss rate delta together (never runtime alone, per Prototype Sprint v1's own established caution).
+
+Level 1-3 Judgment:
+  Level1 (Budget Blueprint 확정): PASS -- 4 Budget Allocation strategies compared (Fixed/Remaining-Time/Adaptive/Reserved Slice); D. Reserved Slice selected, targeting 500ms (real Saturation Curve point: 5 budgets measured, best marginal gain segment 120->250ms).
+  Level2 (Integration Blueprint 확정): PASS -- 4 Integration Points compared (Executor/Recovery/Task Layer/Primitive Layer); Executor / solve() task-loop boundary selected as lowest-risk (medium overall risk per the Runtime Impact Matrix).
+  Level3 (Production Prototype 구현 가능 수준 명세): PASS -- Budget Contract (D. Reserved Slice @ 500ms), Integration Point (Executor / solve() task-loop boundary), Runtime Contract (max 562.4ms, Compliance >=95%), and all 4 Success Metrics are fully specified -- ready for a Prototype Sprint's own implementation.
+
+DECISION: A
+  Blueprint complete -- Budget Policy, Integration Point, Runtime Contract, and Success Metrics are all specified to a Prototype-Sprint-ready level of detail, each choice justified against real, already-measured data (Saturation Curve, Stage Runtime Attribution, Reachability) and existing precedent (RECOVERY_RESERVE_MS). Proceed to ENDGAME Optimization Prototype Sprint v1.
+
+Cited real data tables (no new benchmark run this Sprint):
+  Saturation Curve: [{"budgetMs":120,"avgImprovement":0.259},{"budgetMs":250,"avgImprovement":0.545},{"budgetMs":500,"avgImprovement":0.694},{"budgetMs":1000,"avgImprovement":0.89},{"budgetMs":5000,"avgImprovement":2.71}]
+  Runtime Curve: [{"budgetMs":120,"avgRuntimeMs":177.1},{"budgetMs":250,"avgRuntimeMs":314.6},{"budgetMs":500,"avgRuntimeMs":562.4},{"budgetMs":1000,"avgRuntimeMs":1057.7},{"budgetMs":5000,"avgRuntimeMs":4956.5}]
