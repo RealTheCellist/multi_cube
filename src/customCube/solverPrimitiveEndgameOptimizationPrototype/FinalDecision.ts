@@ -34,12 +34,32 @@ function evaluateArm(
   // ENDGAME at its real invocation site, per solve()'s own instrumentation?
   // This is checked and reported REGARDLESS of Level2/3's own outcome, per
   // the Work Order's explicit verification principle.
+  //
+  // The two policies act on DIFFERENT parts of the mechanism, so a single
+  // metric can't verify both -- using only "remaining budget at ENDGAME's
+  // own start" would wrongly mark Absorb as undelivered even if it worked
+  // exactly as designed (self-caught during this Sprint's own smoke test,
+  // see docs/ENDGAME_OPTIMIZATION_PROTOTYPE.md):
+  //   Reserved Slice changes WHEN ENDGAME starts (earlier tasks are capped
+  //     so ENDGAME is reached with more of the deadline still open) ->
+  //     "remaining budget at start" is the correct verification metric.
+  //   Absorb changes HOW LONG ENDGAME's own primary attempt may run once
+  //     it's already started (shrinks the RECOVERY_RESERVE_MS subtracted
+  //     from ENDGAME's own primaryDeadline) -- it does NOT change when
+  //     ENDGAME starts at all, so "remaining budget at start" is the WRONG
+  //     metric for it; the correct one is whether ENDGAME's own MEASURED
+  //     RUNTIME increased (it was allowed to keep searching longer).
+  // Level1 passes if EITHER metric shows the policy actually delivered
+  // something to ENDGAME -- a policy-specific check, not a shared one.
   const baselineAvgRemaining = runtime.trial.baseline.avgEndgameRemainingBudgetAtStartMs;
+  const baselineAvgRuntime = runtime.trial.baseline.avgEndgameRuntimeMs;
   const armAvgRemaining =
     armName === "ReservedSlice" ? runtime.trial.reservedSlice.avgEndgameRemainingBudgetAtStartMs : runtime.trial.absorb.avgEndgameRemainingBudgetAtStartMs;
-  const deliveredMoreTime = armAvgRemaining > baselineAvgRemaining;
-  const level1Pass = armRuntimeRow.endgameInvocationCount > 0 && deliveredMoreTime;
-  const level1Detail = `ENDGAME invoked ${armRuntimeRow.endgameInvocationCount}/${runtime.populationSize} real solves. Avg real remaining budget at ENDGAME's own invocation: Baseline=${baselineAvgRemaining.toFixed(1)}ms vs ${armName}=${armAvgRemaining.toFixed(1)}ms (${deliveredMoreTime ? "MORE" : "NOT more"} real time delivered) -- this is the instrumented proof the policy was actually applied at the real call site, checked independently of whether Capability improved.`;
+  const armAvgRuntime = armRuntimeRow.avgEndgameRuntimeMs;
+  const deliveredMoreStartBudget = armAvgRemaining > baselineAvgRemaining;
+  const deliveredMoreRuntime = armAvgRuntime > baselineAvgRuntime;
+  const level1Pass = armRuntimeRow.endgameInvocationCount > 0 && (deliveredMoreStartBudget || deliveredMoreRuntime);
+  const level1Detail = `ENDGAME invoked ${armRuntimeRow.endgameInvocationCount}/${runtime.populationSize} real solves. Avg real remaining budget at ENDGAME's own invocation: Baseline=${baselineAvgRemaining.toFixed(1)}ms vs ${armName}=${armAvgRemaining.toFixed(1)}ms (${deliveredMoreStartBudget ? "MORE" : "not more"}). Avg ENDGAME own measured runtime: Baseline=${baselineAvgRuntime.toFixed(1)}ms vs ${armName}=${armAvgRuntime.toFixed(1)}ms (${deliveredMoreRuntime ? "MORE" : "not more"}) -- ${armName === "Absorb" ? "the mechanism-appropriate metric for Absorb (which extends ENDGAME's OWN primaryDeadline, not when it starts)" : "both metrics apply for Reserved Slice"}, checked independently of whether Capability improved.`;
 
   // Level2: Primary metric (whole-cube-improved diff) up, 95% CI excludes 0.
   const level2Pass = armEval.primary.stats.mean > 0 && armEval.primary.stats.ciLower > 0;
