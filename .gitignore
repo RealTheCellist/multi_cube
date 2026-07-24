@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Transient checkpoint files for long-running benchmark drivers (resume
+# state for background runs that may be interrupted) -- never a Sprint
+# deliverable, deleted automatically on successful completion.
+**/data/checkpoint-*.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

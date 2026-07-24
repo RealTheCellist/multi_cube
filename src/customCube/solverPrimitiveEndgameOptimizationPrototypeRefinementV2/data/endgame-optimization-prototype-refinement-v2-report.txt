@@ -1,76 +1,77 @@
 ENDGAME Optimization Prototype Refinement Sprint v2 -- Report
-Generated: 2026-07-23T10:58:47.676Z
+Generated: 2026-07-24T01:22:55.100Z
 
-STEP0. Population: 335 real snapshots total; 5-snapshot stride-sample used (same stride formula as v1, project-standard cost-driven subsample), N=2 trials per budget.
+STEP0. Population: 335 real snapshots total; 5-snapshot stride-sample used (same stride formula as v1, project-standard cost-driven subsample), N=4 trials per budget.
 Budgets swept fresh this Sprint (recoveryReserveMsOverride): 450, 250, 225, 200, 175, 150, 125, 100, 75, 50ms. 450ms (original Baseline) and 250ms (v1's own selected Operating Contract) are RE-MEASURED fresh, in the SAME trial loop as the 8 new budgets, so adjacent-pair paired-diff comparisons (STEP4) are valid. v1's own cited real data for 400/375/350/325/300/275ms is reused (not re-measured) for the combined Pareto Frontier (STEP3) only.
 Zero new Production changes this Sprint -- only the budget VALUE passed to the existing executeTask() parameter varies. No interpolation, no estimation -- every number below is a real solve() measurement.
 
-STEP1. Budget Sweep results (avg across 2 trials, 5 snapshots each) -- Capability / Runtime / Regression Curves:
+(Resumed from checkpoint at trial 1/4 -- this run's process was restarted after an earlier interruption; no trials were re-run or lost.)
+STEP1. Budget Sweep results (avg across 4 trials, 5 snapshots each) -- Capability / Runtime / Regression Curves:
   Budget | avgImproved | avgWallMs | DeadlineMissRate | EndgameInvoked | avgEndgameRuntimeMs | RecoveryTriggerRate | TrueRegressionRate(vs 450ms) | SuccessRate(solved)
-  450ms | 3.00/5 | 1055.3 | 20.00% | 4.00 | 373.3 | 80.00% | 0.00% | 0.00/5
-  250ms | 3.50/5 | 1160.3 | 40.00% | 3.00 | 464.0 | 50.00% | 30.00% | 0.00/5
-  225ms | 3.50/5 | 1011.3 | 20.00% | 4.00 | 308.6 | 60.00% | 10.00% | 0.00/5
-  200ms | 3.00/5 | 1037.3 | 30.00% | 3.50 | 370.8 | 50.00% | 10.00% | 0.00/5
-  175ms | 4.00/5 | 988.8 | 20.00% | 4.00 | 287.1 | 50.00% | 10.00% | 0.00/5
-  150ms | 3.00/5 | 1021.9 | 20.00% | 4.00 | 328.4 | 40.00% | 0.00% | 0.00/5
-  125ms | 3.50/5 | 1024.5 | 20.00% | 4.00 | 303.8 | 60.00% | 20.00% | 0.00/5
-  100ms | 3.00/5 | 1059.5 | 20.00% | 4.00 | 361.5 | 70.00% | 10.00% | 0.00/5
-  75ms | 3.00/5 | 1052.1 | 20.00% | 4.00 | 364.3 | 50.00% | 0.00% | 0.00/5
-  50ms | 3.50/5 | 1045.4 | 20.00% | 4.00 | 357.3 | 30.00% | 10.00% | 0.00/5
+  450ms | 3.00/5 | 1065.8 | 20.00% | 4.00 | 376.5 | 80.00% | 0.00% | 0.00/5
+  250ms | 3.25/5 | 1064.1 | 20.00% | 4.00 | 384.4 | 65.00% | 5.00% | 0.00/5
+  225ms | 3.00/5 | 1019.1 | 20.00% | 4.00 | 324.4 | 50.00% | 0.00% | 0.00/5
+  200ms | 3.00/5 | 1014.2 | 20.00% | 4.00 | 323.9 | 55.00% | 0.00% | 0.00/5
+  175ms | 3.75/5 | 1043.3 | 20.00% | 4.00 | 346.2 | 50.00% | 5.00% | 0.00/5
+  150ms | 3.50/5 | 1031.4 | 20.00% | 4.00 | 332.0 | 45.00% | 0.00% | 0.00/5
+  125ms | 3.25/5 | 1019.1 | 25.00% | 3.75 | 326.3 | 35.00% | 10.00% | 0.00/5
+  100ms | 3.00/5 | 1053.2 | 20.00% | 4.00 | 358.3 | 60.00% | 5.00% | 0.00/5
+  75ms | 3.75/5 | 1065.6 | 20.00% | 4.00 | 379.4 | 40.00% | 5.00% | 0.00/5
+  50ms | 3.25/5 | 1046.0 | 20.00% | 4.00 | 356.1 | 40.00% | 5.00% | 0.00/5
 
-STEP4. Adjacent-Pair Sensitivity Analysis (paired-diff across N=2 trials, NOT a simple average comparison):
+STEP4. Adjacent-Pair Sensitivity Analysis (paired-diff across N=4 trials, NOT a simple average comparison):
   LargerBudget vs SmallerBudget | Primary(improved diff) mean [95% CI] d_z | Runtime diff mean [95% CI] | Distinguishable(95% CI excludes 0)
-  250ms vs 225ms | 0.000 [-1.960, 1.960] d_z=0.000 (negligible) | -149.00 [-381.06, 83.06] | false
-  225ms vs 200ms | -0.500 [-1.480, 0.480] d_z=-0.707 (medium) | 26.00 [18.55, 33.45] | false
-  200ms vs 175ms | 1.000 [1.000, 1.000] d_z=0.000 (negligible) | -48.50 [-134.94, 37.94] | true
-  175ms vs 150ms | -1.000 [-1.000, -1.000] d_z=0.000 (negligible) | 33.10 [20.75, 45.45] | true
-  150ms vs 125ms | 0.500 [-0.480, 1.480] d_z=0.707 (medium) | 2.60 [-0.14, 5.34] | false
-  125ms vs 100ms | -0.500 [-1.480, 0.480] d_z=-0.707 (medium) | 35.00 [17.36, 52.64] | false
-  100ms vs 75ms | 0.000 [0.000, 0.000] d_z=0.000 (negligible) | -7.40 [-59.93, 45.13] | false
-  75ms vs 50ms | 0.500 [-0.480, 1.480] d_z=0.707 (medium) | -6.70 [-102.54, 89.14] | false
+  250ms vs 225ms | -0.250 [-0.740, 0.240] d_z=-0.500 (medium) | -44.95 [-74.24, -15.66] | false
+  225ms vs 200ms | 0.000 [0.000, 0.000] d_z=0.000 (negligible) | -4.90 [-70.99, 61.19] | false
+  200ms vs 175ms | 0.750 [0.260, 1.240] d_z=1.500 (large) | 29.05 [-42.82, 100.92] | true
+  175ms vs 150ms | -0.250 [-1.188, 0.688] d_z=-0.261 (small) | -11.90 [-69.53, 45.73] | false
+  150ms vs 125ms | -0.250 [-0.740, 0.240] d_z=-0.500 (medium) | -12.25 [-40.78, 16.28] | false
+  125ms vs 100ms | -0.250 [-0.740, 0.240] d_z=-0.500 (medium) | 34.10 [4.94, 63.26] | false
+  100ms vs 75ms | 0.750 [0.260, 1.240] d_z=1.500 (large) | 12.40 [-28.32, 53.12] | true
+  75ms vs 50ms | -0.500 [-1.066, 0.066] d_z=-0.866 (large) | -19.60 [-74.38, 35.18] | false
 
 STEP2. Dose-Response Curve Verification (Turning Point):
   250ms -> 225ms: plateau
   225ms -> 200ms: plateau
   200ms -> 175ms: increasing
-  175ms -> 150ms: decreasing
+  175ms -> 150ms: plateau
   150ms -> 125ms: plateau
   125ms -> 100ms: plateau
-  100ms -> 75ms: plateau
+  100ms -> 75ms: increasing
   75ms -> 50ms: plateau
   Overall: Capability PLATEAUS starting at the 250ms -> 225ms step (95% CI includes 0, statistically indistinguishable) -- 250ms is the point past which further budget reduction stops helping, within measurement precision.
 
 STEP3. Pareto Frontier Revision (16-point combined: 10 fresh this Sprint + 6 cited from v1's own real data):
-  450ms: avgImproved=3.00, avgWallMs=1055.3, avgTrueRegressionRate=0.00% -- DOMINATED by [150, 75]ms
+  450ms: avgImproved=3.00, avgWallMs=1065.8, avgTrueRegressionRate=0.00% -- DOMINATED by [225, 200, 150]ms
   400ms: avgImproved=57.20, avgWallMs=1053.5, avgTrueRegressionRate=3.24% -- DOMINATED by [350, 325, 300, 275]ms
   375ms: avgImproved=57.33, avgWallMs=1055.5, avgTrueRegressionRate=3.24% -- DOMINATED by [350, 325, 300, 275]ms
   350ms: avgImproved=57.33, avgWallMs=1053.1, avgTrueRegressionRate=2.84% -- PARETO-EFFICIENT
   325ms: avgImproved=57.67, avgWallMs=1049.2, avgTrueRegressionRate=3.20% -- DOMINATED by [300, 275]ms
   300ms: avgImproved=58.07, avgWallMs=1046.2, avgTrueRegressionRate=3.16% -- DOMINATED by [275]ms
   275ms: avgImproved=58.23, avgWallMs=1045.4, avgTrueRegressionRate=2.93% -- PARETO-EFFICIENT
-  250ms: avgImproved=3.50, avgWallMs=1160.3, avgTrueRegressionRate=30.00% -- DOMINATED by [225, 175, 125, 50, 400, 375, 350, 325, 300, 275]ms
-  225ms: avgImproved=3.50, avgWallMs=1011.3, avgTrueRegressionRate=10.00% -- DOMINATED by [175]ms
-  200ms: avgImproved=3.00, avgWallMs=1037.3, avgTrueRegressionRate=10.00% -- DOMINATED by [225, 175, 150]ms
-  175ms: avgImproved=4.00, avgWallMs=988.8, avgTrueRegressionRate=10.00% -- PARETO-EFFICIENT
-  150ms: avgImproved=3.00, avgWallMs=1021.9, avgTrueRegressionRate=0.00% -- PARETO-EFFICIENT
-  125ms: avgImproved=3.50, avgWallMs=1024.5, avgTrueRegressionRate=20.00% -- DOMINATED by [225, 175]ms
-  100ms: avgImproved=3.00, avgWallMs=1059.5, avgTrueRegressionRate=10.00% -- DOMINATED by [450, 225, 200, 175, 150, 75, 50, 400, 375, 350, 325, 300, 275]ms
-  75ms: avgImproved=3.00, avgWallMs=1052.1, avgTrueRegressionRate=0.00% -- DOMINATED by [150]ms
-  50ms: avgImproved=3.50, avgWallMs=1045.4, avgTrueRegressionRate=10.00% -- DOMINATED by [225, 175, 275]ms
-  Pareto-efficient set: [350, 275, 175, 150]ms
+  250ms: avgImproved=3.25, avgWallMs=1064.1, avgTrueRegressionRate=5.00% -- DOMINATED by [175, 150, 50, 400, 375, 350, 325, 300, 275]ms
+  225ms: avgImproved=3.00, avgWallMs=1019.1, avgTrueRegressionRate=0.00% -- DOMINATED by [200]ms
+  200ms: avgImproved=3.00, avgWallMs=1014.2, avgTrueRegressionRate=0.00% -- PARETO-EFFICIENT
+  175ms: avgImproved=3.75, avgWallMs=1043.3, avgTrueRegressionRate=5.00% -- PARETO-EFFICIENT
+  150ms: avgImproved=3.50, avgWallMs=1031.4, avgTrueRegressionRate=0.00% -- PARETO-EFFICIENT
+  125ms: avgImproved=3.25, avgWallMs=1019.1, avgTrueRegressionRate=10.00% -- PARETO-EFFICIENT
+  100ms: avgImproved=3.00, avgWallMs=1053.2, avgTrueRegressionRate=5.00% -- DOMINATED by [225, 200, 175, 150, 50, 350, 325, 300, 275]ms
+  75ms: avgImproved=3.75, avgWallMs=1065.6, avgTrueRegressionRate=5.00% -- DOMINATED by [175, 400, 375, 350, 325, 300, 275]ms
+  50ms: avgImproved=3.25, avgWallMs=1046.0, avgTrueRegressionRate=5.00% -- DOMINATED by [175, 150, 275]ms
+  Pareto-efficient set: [350, 275, 200, 175, 150, 125]ms
 
 STEP5. Final Operating Contract:
   Selected recoveryReserveMsOverride: 250ms
   Rationale: 250ms -> 225ms is a statistical plateau (95% CI includes 0) -- per the established tie-breaking preference for the simpler/larger value, stopped advancing past 250ms.
-  Expected Runtime: 1160.3ms
-  Expected Capability (improved-count diff vs 450ms Baseline): 0.500
-  Expected Regression (True Regression rate vs 450ms): 30.00%
-  Budget Compliance (1 - Recovery Trigger rate): 50.00%
+  Expected Runtime: 1064.1ms
+  Expected Capability (improved-count diff vs 450ms Baseline): 0.250
+  Expected Regression (True Regression rate vs 450ms): 5.00%
+  Budget Compliance (1 - Recovery Trigger rate): 35.00%
 
 Level 1-3 Judgment:
-  Level1 (250ms 이하 Budget Sweep 완료): PASS -- 8/8 new budgets (225, 200, 175, 150, 125, 100, 75, 50ms) measured, each with real solve() calls across N=2 trials (no estimation, no interpolation).
+  Level1 (250ms 이하 Budget Sweep 완료): PASS -- 8/8 new budgets (225, 200, 175, 150, 125, 100, 75, 50ms) measured, each with real solve() calls across N=4 trials (no estimation, no interpolation).
   Level2 (Capability Curve Turning Point 확인): PASS -- Capability PLATEAUS starting at the 250ms -> 225ms step (95% CI includes 0, statistically indistinguishable) -- 250ms is the point past which further budget reduction stops helping, within measurement precision.
-  Level3 (ENDGAME 최종 Operating Contract 확정): FAIL -- Selected budget 250ms: Pareto-efficient=false, Regression=30.00% (EXCEEDS 5% allowance), Runtime=1160.3ms vs original 450ms Baseline 1055.3ms (EXCEEDS allowance).
+  Level3 (ENDGAME 최종 Operating Contract 확정): FAIL -- Selected budget 250ms: Pareto-efficient=false, Regression=5.00% (within 5% allowance), Runtime=1064.1ms vs original 450ms Baseline 1065.8ms (within allowance).
 
 DECISION: B
   250ms remains the selected Operating Contract -- the very first step below it (250ms -> 225ms) is a statistical plateau, confirming 250ms with STRONGER evidence than v1's own Sprint (which only compared 250ms against its own immediate 275ms/300ms neighbors, not against the full range down to 50ms).

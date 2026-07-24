@@ -7,7 +7,7 @@
 // Optimization Prototype Sprint v1 and left UNMODIFIED since. Reuses
 // SolveProbe.ts (unmodified) and Refinement Sprint v1's own
 // RegressionAnalysis.ts (unmodified) directly.
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { loadDatabase, allSnapshots } from "./failureAnalysis/failureDatabase";
 import type { FailureSnapshot } from "./failureAnalysis/failureTypes";
@@ -24,6 +24,38 @@ const N_TRIALS = Number(process.argv[3] ?? 30);
 const SUBSAMPLE_SIZE = Number(process.argv[4] ?? 75);
 
 const reportPath = "src/customCube/solverPrimitiveEndgameOptimizationPrototypeRefinementV2/data/endgame-optimization-prototype-refinement-v2-report.txt";
+const checkpointPath = "src/customCube/solverPrimitiveEndgameOptimizationPrototypeRefinementV2/data/checkpoint-v2.json";
+
+// Checkpoint/resume: this environment's background processes have been
+// observed to die silently during long idle gaps between conversation
+// turns (twice during this Sprint's own full run). Since a full N=30/75/
+// 10-budget sweep takes hours, losing ALL progress on every death is too
+// costly -- so the accumulated per-trial results are saved to disk after
+// EVERY trial, and reloaded on startup if a matching checkpoint exists (same
+// dbPath/nTrials/subsampleSize), resuming from the next incomplete trial
+// instead of restarting from trial 0.
+interface CheckpointDataV2 {
+  dbPath: string;
+  nTrials: number;
+  subsampleSize: number;
+  completedTrials: number;
+  trialsByBudget: Record<string, BudgetTrialAggregate[]>;
+  regressionRatesVs450ByBudget: Record<string, number[]>;
+}
+
+function loadCheckpoint(): CheckpointDataV2 | null {
+  if (!existsSync(checkpointPath)) return null;
+  try {
+    return JSON.parse(readFileSync(checkpointPath, "utf-8")) as CheckpointDataV2;
+  } catch {
+    return null;
+  }
+}
+
+function saveCheckpoint(data: CheckpointDataV2): void {
+  mkdirSync(dirname(checkpointPath), { recursive: true });
+  writeFileSync(checkpointPath, JSON.stringify(data), "utf-8");
+}
 
 function strideSample(items: readonly FailureSnapshot[], size: number): FailureSnapshot[] {
   if (items.length <= size) return [...items];
@@ -55,8 +87,20 @@ for (const b of BUDGET_VALUES_MS) trialsByBudget.set(b, []);
 const regressionRatesVs450ByBudget = new Map<number, number[]>();
 for (const b of BUDGET_VALUES_MS) if (b !== BASELINE_BUDGET_MS) regressionRatesVs450ByBudget.set(b, []);
 
+let startTrial = 0;
+const checkpoint = loadCheckpoint();
+if (checkpoint && checkpoint.dbPath === dbPath && checkpoint.nTrials === N_TRIALS && checkpoint.subsampleSize === SUBSAMPLE_SIZE) {
+  startTrial = checkpoint.completedTrials;
+  for (const b of BUDGET_VALUES_MS) trialsByBudget.set(b, checkpoint.trialsByBudget[String(b)] ?? []);
+  for (const b of BUDGET_VALUES_MS) if (b !== BASELINE_BUDGET_MS) regressionRatesVs450ByBudget.set(b, checkpoint.regressionRatesVs450ByBudget[String(b)] ?? []);
+  log(`Resuming from checkpoint: ${startTrial}/${N_TRIALS} trials already completed.`);
+  push(`(Resumed from checkpoint at trial ${startTrial}/${N_TRIALS} -- this run's process was restarted after an earlier interruption; no trials were re-run or lost.)`);
+} else if (checkpoint) {
+  log(`Found checkpoint but dbPath/nTrials/subsampleSize differ from this run's own args -- starting fresh.`);
+}
+
 log(`STEP1: sweeping ${BUDGET_VALUES_MS.length} budgets x N=${N_TRIALS} trials x ${subsample.length} snapshots...`);
-for (let trial = 0; trial < N_TRIALS; trial++) {
+for (let trial = startTrial; trial < N_TRIALS; trial++) {
   log(`  trial ${trial + 1}/${N_TRIALS}...`);
   const resultsByBudget = runOneTrialAllBudgets(subsample, BUDGET_VALUES_MS);
   const baselineResults = resultsByBudget.get(BASELINE_BUDGET_MS)!;
@@ -67,6 +111,19 @@ for (let trial = 0; trial < N_TRIALS; trial++) {
       regressionRatesVs450ByBudget.get(budgetMs)!.push(classification.trueRegressionRate);
     }
   }
+
+  const serializedTrials: Record<string, BudgetTrialAggregate[]> = {};
+  for (const [b, arr] of trialsByBudget) serializedTrials[String(b)] = arr;
+  const serializedRegRates: Record<string, number[]> = {};
+  for (const [b, arr] of regressionRatesVs450ByBudget) serializedRegRates[String(b)] = arr;
+  saveCheckpoint({
+    dbPath,
+    nTrials: N_TRIALS,
+    subsampleSize: SUBSAMPLE_SIZE,
+    completedTrials: trial + 1,
+    trialsByBudget: serializedTrials,
+    regressionRatesVs450ByBudget: serializedRegRates,
+  });
 }
 
 push(`STEP1. Budget Sweep results (avg across ${N_TRIALS} trials, ${subsample.length} snapshots each) -- Capability / Runtime / Regression Curves:`);
@@ -167,5 +224,6 @@ push(
 
 mkdirSync(dirname(reportPath), { recursive: true });
 writeFileSync(reportPath, lines.join("\n") + "\n", "utf-8");
+if (existsSync(checkpointPath)) unlinkSync(checkpointPath); // run completed successfully -- checkpoint no longer needed
 log(`Report written to ${reportPath}`);
 log(`DECISION: ${judgment.decision}`);
