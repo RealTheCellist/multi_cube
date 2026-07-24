@@ -46,6 +46,15 @@ import { DEFAULT_EVALUATOR_WEIGHTS, type EvaluatorWeights } from "./fiveByFiveEd
 // every existing caller's behavior are unchanged.
 export const RECOVERY_RESERVE_MS = RECOVERY_GEN_BUDGET_MS + MAX_RECOVERY_RETRIES * RECOVERY_RETRY_BUDGET_MS;
 
+// Production Integration Finalization Sprint v1: the confirmed ENDGAME
+// Operating Contract (ENDGAME Optimization Prototype Refinement Sprint v2's
+// own Decision B -- 250ms confirmed as the global optimum across the full
+// 450ms-50ms swept range, cross-Sprint-consistency-checked and
+// Pareto-confirmed). Replaces RECOVERY_RESERVE_MS (450ms, still a true,
+// unrelated structural fact about Recovery's OWN internal budget sum -- see
+// its own comment above) as executeTask's real production default below.
+export const PRODUCTION_ENDGAME_RECOVERY_RESERVE_MS = 250;
+
 export interface ExecutorLibraries {
   lib: WingLibrary;
   flipLib: Map<string, Move[]>;
@@ -240,15 +249,16 @@ export function executeTask(
   // pre-Sprint counterfactual behavior for the required Baseline-vs-Candidate
   // comparison; product callers never do.
   pairBudgetMs: number | undefined = FIXED_BUDGET_MS,
-  // ENDGAME Optimization Prototype Sprint v1 (Absorb budget policy variant):
-  // overrides RECOVERY_RESERVE_MS in the primaryDeadline computation below.
-  // Defaults to the real production constant -- every existing caller keeps
-  // exact current behavior. Only the Sprint's own A/B benchmark passes a
-  // smaller value (e.g. 300) to redistribute part of Recovery's reservation
-  // back to ENDGAME's own primary attempt ("Absorb"), without touching
-  // Recovery's own internal budget constants at all (Recovery's own budgets
-  // already self-clamp against whatever outer deadline they're given).
-  recoveryReserveMsOverride: number = RECOVERY_RESERVE_MS
+  // ENDGAME Optimization Prototype Sprint v1 (Absorb budget policy variant),
+  // finalized as the real production default by Production Integration
+  // Finalization Sprint v1: overrides RECOVERY_RESERVE_MS in the
+  // primaryDeadline computation below. Defaults to
+  // PRODUCTION_ENDGAME_RECOVERY_RESERVE_MS (250ms) -- the confirmed
+  // Operating Contract; every existing caller that doesn't pass this
+  // parameter now gets the finalized production behavior automatically.
+  // Only a Regression Test / Baseline reconstruction passes the old 450ms
+  // value explicitly, to measure the before/after difference.
+  recoveryReserveMsOverride: number = PRODUCTION_ENDGAME_RECOVERY_RESERVE_MS
 ): Move[] {
   const recoveryEligible = allowRecovery && task.type === "ENDGAME";
   // Reserve recoveryReserveMsOverride off the END of the deadline for the
