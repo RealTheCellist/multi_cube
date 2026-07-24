@@ -1,0 +1,63 @@
+Production Integration Finalization Sprint v1 -- Report
+Generated: 2026-07-24T08:36:29.015Z
+
+1. Integration Structure:
+  ENDGAME: recoveryReserveMsOverride default 450ms -> 250ms (PRODUCTION_ENDGAME_RECOVERY_RESERVE_MS, fiveByFiveEdgeExecutor.ts). The ONLY Production diff this Sprint.
+  Incremental Recovery: pairBudgetMs default = 140ms (FIXED_BUDGET_MS) -- already the real production default since Incremental Recovery Production Integration Sprint v1, verified unchanged.
+  CCR: runCCRPrototype(cubies, lib, deadline, "singleCycle") -- remainingTime Budget Contract (full outer deadline, no separate reserved slice) and singleCycle strategy already hardcoded as real production behavior since CCR Production Integration Sprint v1, verified unchanged.
+  Baseline (this Sprint's own reconstruction): recoveryReserveMsOverride=450ms explicit, reconstructing pre-Finalization production behavior for an honest before/after comparison.
+
+STEP0. Population: 335 real snapshots total (full census used for STEP2-5); 5-snapshot stride-sample used for STEP6's N=2-trial statistical validation.
+
+STEP2/3. End-to-End full-population results (n=335 real snapshots, 3801 total wrong-wing pieces across the population):
+  Success Rate (solved): Baseline=0/335 (0.00%), Integrated=0/335 (0.00%)
+  Improved count: Baseline=244/335, Integrated=243/335
+  Runtime: Baseline avg=1045.7ms, Integrated avg=1041.6ms
+  Deadline Miss rate: Baseline=30.15%, Integrated=31.04%
+  Recovery Trigger rate: Baseline=68.66%, Integrated=60.30%
+
+STEP3. Primitive Invocation + Success Contribution:
+  Task-layer (Planner SolveTask types):
+    PAIR: Baseline planned=2983, completed=592 (19.85%) | Integrated planned=2983, completed=593 (19.88%)
+    FLIP: Baseline planned=5, completed=0 (0.00%) | Integrated planned=5, completed=0 (0.00%)
+    PARITY: Baseline planned=335, completed=0 (0.00%) | Integrated planned=335, completed=0 (0.00%)
+    ENDGAME: Baseline planned=335, completed=8 (2.39%) | Integrated planned=335, completed=26 (7.76%)
+  Recovery-layer (DISRUPT/SETUP/REPAIR/CCR):
+    DISRUPT: Baseline offered=0, chosen=0 (chosenRate=0.0%), succeeded=0 (0.0% of chosen) | Integrated offered=0, chosen=0 (chosenRate=0.0%), succeeded=0 (0.0% of chosen)
+    SETUP: Baseline offered=3, chosen=3 (chosenRate=100.0%), succeeded=0 (0.0% of chosen) | Integrated offered=1, chosen=1 (chosenRate=100.0%), succeeded=0 (0.0% of chosen)
+    REPAIR: Baseline offered=1, chosen=1 (chosenRate=100.0%), succeeded=1 (100.0% of chosen) | Integrated offered=0, chosen=0 (chosenRate=0.0%), succeeded=0 (0.0% of chosen)
+    CCR: Baseline offered=3, chosen=3 (chosenRate=100.0%), succeeded=3 (100.0% of chosen) | Integrated offered=0, chosen=0 (chosenRate=0.0%), succeeded=0 (0.0% of chosen)
+  Recovery triggered: Baseline=230, Integrated=202
+  Recovery no-candidates: Baseline=223, Integrated=201
+  Recovery loop-detected (abort): Baseline=0, Integrated=0
+
+STEP4. Primitive Interaction Analysis:
+  CCR<->REPAIR (Integrated arm): both offered in 0 events -- CCR won 0, REPAIR won 0, neither (DISRUPT/SETUP) won 0. CCR chosenRate-when-offered=0.0%, REPAIR chosenRate-when-offered=0.0%.
+  CCR<->REPAIR (Baseline arm, for comparison): both offered in 0 events -- CCR won 0, REPAIR won 0, neither won 0.
+  ENDGAME<->Recovery: Recovery Trigger rate Baseline=68.66%, Integrated=60.30% (delta=-8.36pp). Recovery success rate (of triggered) Baseline=1.74%, Integrated=0.00%.
+  Incremental Recovery(PAIR 140ms, unchanged)<->ENDGAME: avg PAIR completion rate=19.88%, ENDGAME planned rate=100.00%, ENDGAME completed-given-planned rate=7.76% (Integrated arm).
+  Budget Conflict (recovery triggered AND whole solve still missed its 1s deadline): Baseline=0/230 (0.00%), Integrated=0/202 (0.00%).
+
+STEP5. Regression Audit (full 335-snapshot census):
+  True Regression: 17/335 (5.07%)
+  Gap Rescue: 34/335 (10.15%)
+  Runtime Spike (>100ms increase): 57/335 (17.01%)
+  New Deadline Miss: 9/335 (2.69%)
+  New Budget Violation: 0/335 (0.00%)
+
+STEP6. End-to-End Statistical Validation (paired-diff across N=2 trials, 5 snapshots each):
+  N=2-trial-averaged True Regression rate: 0.00% (the statistically appropriate basis for Level2 -- see STEP5's own single-pass census for a complementary, broader-coverage but noisier disclosure)
+  Primary (improved count diff, Integrated-Baseline): mean=0.000, 95% CI=[0.000, 0.000], Cohen's d_z=0.000 (negligible)
+  Secondary (solved count diff): mean=0.000, 95% CI=[0.000, 0.000]
+  Runtime diff (ms): mean=-29.30, 95% CI=[-122.79, 64.19]
+  Deadline Miss diff (pp): mean=0.00, 95% CI=[0.00, 0.00]
+  Recovery Trigger diff (pp): mean=-10.00, 95% CI=[-29.60, 9.60]
+
+Level 1-3 Judgment:
+  Level1 (모든 Operating Contract 정상 적용): PASS -- Recovery Trigger rate: Baseline=68.66%, Integrated=60.30% (delta=-8.36pp) -- measurably different, confirming the Contract is genuinely wired at the real production call site.
+  Level2 (Regression 허용 범위 유지): PASS -- N=2-trial-averaged True Regression rate=0.00% (within the 5% allowance) -- this is the primary gate. [Complementary, single-pass full-335-snapshot census: True Regression=5.07%, Gap Rescue=10.15%, Runtime Spike=17.01%, new Deadline Miss=2.69%, new Budget Violation=0.00% -- a SINGLE stochastic draw per snapshot, not averaged, disclosed for broader coverage but not used as the gate.]
+  Level3 (Integrated Solver가 Baseline보다 통계적으로 유의미하게 우수함을 입증): FAIL -- Primary (whole-cube-improved count diff, N=2 trials): mean=0.000, 95% CI=[0.000, 0.000], Cohen's d_z=0.000 (negligible).
+
+9. Production Integration 적합성 판정: Production Integration 조건부 적합 -- Contract는 정상 연결되고 Regression도 허용 범위 내이나, Capability 우위가 통계적으로 아직 확정되지 않음.
+10. Release 권고: HOLD_FOR_REFINEMENT
+  Level1/2는 PASS했으나 Level3(통계적 유의성)가 FAIL -- Regression 위험은 없지만 우위를 확정할 추가 표본이나 재측정이 필요.

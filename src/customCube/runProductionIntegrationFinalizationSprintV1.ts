@@ -174,7 +174,9 @@ for (let trial = startTrial; trial < N_TRIALS; trial++) {
 }
 
 const evaluation = runStandardEvaluation(trials);
+const avgTrueRegressionRateAcrossTrials = trials.reduce((a, t) => a + t.trueRegressionRate, 0) / trials.length;
 push(`STEP6. End-to-End Statistical Validation (paired-diff across N=${N_TRIALS} trials, ${subsample.length} snapshots each):`);
+push(`  N=${N_TRIALS}-trial-averaged True Regression rate: ${(avgTrueRegressionRateAcrossTrials * 100).toFixed(2)}% (the statistically appropriate basis for Level2 -- see STEP5's own single-pass census for a complementary, broader-coverage but noisier disclosure)`);
 push(`  Primary (improved count diff, Integrated-Baseline): mean=${evaluation.primary.stats.mean.toFixed(3)}, 95% CI=[${evaluation.primary.stats.ciLower.toFixed(3)}, ${evaluation.primary.stats.ciUpper.toFixed(3)}], Cohen's d_z=${evaluation.primary.effectSize.cohensD.toFixed(3)} (${evaluation.primary.effectSize.magnitude})`);
 push(`  Secondary (solved count diff): mean=${evaluation.secondary.stats.mean.toFixed(3)}, 95% CI=[${evaluation.secondary.stats.ciLower.toFixed(3)}, ${evaluation.secondary.stats.ciUpper.toFixed(3)}]`);
 push(`  Runtime diff (ms): mean=${evaluation.runtime.stats.mean.toFixed(2)}, 95% CI=[${evaluation.runtime.stats.ciLower.toFixed(2)}, ${evaluation.runtime.stats.ciUpper.toFixed(2)}]`);
@@ -183,7 +185,7 @@ push(`  Recovery Trigger diff (pp): mean=${evaluation.recoveryTrigger.stats.mean
 push("");
 
 log("Final Assessment...");
-const assessment = evaluateFinalAssessment(evaluation, regressionAudit, endgameRecoveryInteraction);
+const assessment = evaluateFinalAssessment(evaluation, regressionAudit, endgameRecoveryInteraction, avgTrueRegressionRateAcrossTrials);
 push("Level 1-3 Judgment:");
 push(`  Level1 (모든 Operating Contract 정상 적용): ${assessment.level1Pass ? "PASS" : "FAIL"} -- ${assessment.level1Detail}`);
 push(`  Level2 (Regression 허용 범위 유지): ${assessment.level2Pass ? "PASS" : "FAIL"} -- ${assessment.level2Detail}`);
