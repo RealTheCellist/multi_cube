@@ -55,8 +55,14 @@ function saveCheckpoint(data: CheckpointData): void {
 const checkpoint2Path = "src/customCube/solverCompletenessVerification/data/checkpoint-v1-step2.json";
 interface Checkpoint2Data {
   configKey: string;
-  completedTrials: number;
-  results: FullPipelineResult[][];
+  completedTrials: number; // fully-finished trials only
+  results: FullPipelineResult[][]; // one array per fully-finished trial
+  // Per-case progress within the trial CURRENTLY in flight, so a death
+  // mid-trial resumes from the next unfinished case instead of restarting
+  // the whole ~50-55min trial from case 1 (this Sprint's own earlier
+  // per-trial-only checkpointing wasted up to a full trial's worth of
+  // work per interruption -- fixed here at the user's request).
+  currentTrialResults: FullPipelineResult[];
 }
 function loadCheckpoint2(): Checkpoint2Data | null {
   if (!existsSync(checkpoint2Path)) return null;
@@ -171,18 +177,25 @@ async function main(): Promise<void> {
   log("step2", `STEP2: Worst Case Library 재현성 재확인 (N=${REPEATABILITY_TRIALS})...`);
   const step2ConfigKey = `${configKey}|${worstCase.length}|${REPEATABILITY_TRIALS}`;
   const checkpoint2 = loadCheckpoint2();
-  const repeatabilityResults: FullPipelineResult[][] =
-    checkpoint2 && checkpoint2.configKey === step2ConfigKey ? checkpoint2.results : [];
+  const sameConfig2 = checkpoint2 && checkpoint2.configKey === step2ConfigKey;
+  const repeatabilityResults: FullPipelineResult[][] = sameConfig2 ? checkpoint2.results : [];
   let step2Start = repeatabilityResults.length;
-  if (step2Start > 0) log("step2", `체크포인트에서 재개: ${step2Start}/${REPEATABILITY_TRIALS} trial 완료.`);
+  let resumedTrialResults: FullPipelineResult[] = (sameConfig2 && checkpoint2.currentTrialResults) || [];
+  if (step2Start > 0 || resumedTrialResults.length > 0) {
+    log("step2", `체크포인트에서 재개: ${step2Start}/${REPEATABILITY_TRIALS} trial 완료, 현재 trial ${resumedTrialResults.length}/${worstCase.length}건 진행됨.`);
+  }
   for (let t = step2Start; t < REPEATABILITY_TRIALS; t++) {
-    const trialResults: FullPipelineResult[] = [];
-    for (const c of worstCase) {
+    const trialResults: FullPipelineResult[] = resumedTrialResults;
+    resumedTrialResults = []; // only the first resumed trial reuses partial progress
+    const caseStart = trialResults.length;
+    for (let ci = caseStart; ci < worstCase.length; ci++) {
+      const c = worstCase[ci];
       trialResults.push(await runFullPipeline(cloneCubies(c.cubies), `${c.label}:trial${t}`));
+      saveCheckpoint2({ configKey: step2ConfigKey, completedTrials: t, results: repeatabilityResults, currentTrialResults: trialResults });
     }
     repeatabilityResults.push(trialResults);
     log("step2", `  trial ${t + 1}/${REPEATABILITY_TRIALS}...`);
-    saveCheckpoint2({ configKey: step2ConfigKey, completedTrials: t + 1, results: repeatabilityResults });
+    saveCheckpoint2({ configKey: step2ConfigKey, completedTrials: t + 1, results: repeatabilityResults, currentTrialResults: [] });
   }
   const repeatabilityFlat = repeatabilityResults.flat();
   const repeatabilityCensus = summarizeCategory("worstCase-repeatability", repeatabilityFlat);
