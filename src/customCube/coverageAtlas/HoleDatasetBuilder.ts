@@ -48,6 +48,9 @@ export interface HoleCase {
   wrongWingCount: number;
   wingPairingIterations: number;
   wingPairingNoProgressStreak: number; // longest consecutive run of empty moveQueue within the 50-iteration loop that produced this hole
+  wingPairingRecoveryTriggeredCount: number; // how many of the 50 real iterations triggered the production Recovery layer at all -- 0 means Recovery was NEVER invoked for this case
+  wingPairingBudgetViolations: number; // iterations where recovery triggered AND that call's own deadline was still missed
+  wingPairingDeadlineMisses: number; // iterations where the outer 1s per-call deadline was exceeded
   totalWallMs: number;
   capabilityResults: PrimitiveTestResult[];
   anyPrimitiveApplicable: boolean; // true iff >=1 of BASE/FLIP/CASE/PARITY/RECOVERY succeeded on an isolated scratch-clone test
@@ -98,6 +101,9 @@ export async function buildHoleCase(datasetCase: DatasetCase, libs: ExecutorLibr
     wrongWingCount: wrongWingCount5(cubies),
     wingPairingIterations: result.wingPairingIterations,
     wingPairingNoProgressStreak: result.wingPairingNoProgressStreak,
+    wingPairingRecoveryTriggeredCount: result.wingPairingRecoveryTriggeredCount,
+    wingPairingBudgetViolations: result.wingPairingBudgetViolations,
+    wingPairingDeadlineMisses: result.wingPairingDeadlineMisses,
     totalWallMs: result.totalWallMs,
     capabilityResults,
     anyPrimitiveApplicable: capabilityResults.some((r) => r.succeeded),
