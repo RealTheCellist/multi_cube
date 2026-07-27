@@ -25,6 +25,7 @@ const STEP1_CHECKPOINT = path.join(DATA_DIR, "checkpoint-step1-holes.json");
 const STEP3_CHECKPOINT = path.join(DATA_DIR, "checkpoint-step3-zeromoveloop.json");
 const REPORT_PATH = path.join(DATA_DIR, "coverage-hole-discovery-v1-report.txt");
 const RESULT_JSON_PATH = path.join(DATA_DIR, "coverage-hole-discovery-v1-result.json");
+const RAW_DATASET_PATH = path.join(DATA_DIR, "raw-dataset-v1-holes.json");
 
 function log(step: string, msg: string) {
   console.log(`[${new Date().toISOString()}] ${step}: ${msg}`);
@@ -153,7 +154,15 @@ async function main() {
   fs.mkdirSync(DATA_DIR, { recursive: true });
   fs.writeFileSync(REPORT_PATH, report, "utf-8");
   fs.writeFileSync(RESULT_JSON_PATH, JSON.stringify(result, null, 2), "utf-8");
-  log("done", `Report written to ${REPORT_PATH}`);
+
+  // Persist the full Hole Dataset (actual final stuck Cubie[] states, not
+  // just the aggregate stats above) as a real artifact for follow-up
+  // phases -- this is NOT a checkpoint (checkpoints exist only to survive
+  // interruption and are deleted below). Gitignored via raw-dataset-*.json
+  // since it's large (~5MB) and reproducible on demand, but deliberately
+  // NOT auto-deleted the way checkpoints are.
+  fs.writeFileSync(RAW_DATASET_PATH, JSON.stringify(holes.map(toSerializedHoleCase)), "utf-8");
+  log("done", `Report written to ${REPORT_PATH}; raw Hole Dataset written to ${RAW_DATASET_PATH}`);
   console.log(report);
 
   // Clean up checkpoints on clean completion, matching this research arc's
