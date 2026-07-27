@@ -1,0 +1,98 @@
+CCR Completeness Validation Sprint v1 -- Report
+Generated: 2026-07-27T23:16:52.539Z
+
+0. Fidelity Check (shadow reimplementation vs real runCCRPrototype)
+  Gate-eligible cases checked: 60, mismatches: 0
+
+1. CCR Search Funnel (Gate -> DFS Start -> Leaf Expansion -> Termination -> Solved)
+  Gate Passed: 60
+  DFS Started: 60
+  Leaf Expansion Occurred: 60
+  Termination Recorded: 60
+  Solved: 11
+
+2. Termination Classification
+  SOLUTION_FOUND: 11/60 (18.3%)
+  LEAF_CAP_REACHED: 2/60 (3.3%)
+  BUDGET_EXPIRED: 0/60 (0.0%)
+  SEARCH_EXHAUSTED: 47/60 (78.3%)
+  (0 case(s) got an extended 60000ms retest before this final tally)
+
+3. Completeness Matrix
+  Gate Passed: 60
+  Search Complete (SOLUTION_FOUND or SEARCH_EXHAUSTED): 58 (96.7%)
+  Search Incomplete (LEAF_CAP_REACHED or BUDGET_EXPIRED): 2
+
+4. Search Space Estimation (avgBranchingFactor ^ cycleLength vs MAX_LEAVES_EXPLORED)
+  worstCase:45959141: cycleLength=5, avgBranchingFactor=0.00, estimatedSearchTree=0.0, maxLeavesExplored=64, ratioToLeafCap=0.00
+  worstCase:46086463: cycleLength=5, avgBranchingFactor=1.67, estimatedSearchTree=12.9, maxLeavesExplored=64, ratioToLeafCap=0.20
+  worstCase:84976575: cycleLength=6, avgBranchingFactor=1.82, estimatedSearchTree=36.5, maxLeavesExplored=64, ratioToLeafCap=0.57
+  worstCase:f17d7eb9: cycleLength=5, avgBranchingFactor=1.97, estimatedSearchTree=29.7, maxLeavesExplored=64, ratioToLeafCap=0.46
+  worstCase:7541612b: cycleLength=6, avgBranchingFactor=1.95, estimatedSearchTree=55.4, maxLeavesExplored=64, ratioToLeafCap=0.87
+  worstCase:b714481: cycleLength=6, avgBranchingFactor=1.50, estimatedSearchTree=11.4, maxLeavesExplored=64, ratioToLeafCap=0.18
+  worstCase:beb967ad: cycleLength=6, avgBranchingFactor=0.00, estimatedSearchTree=0.0, maxLeavesExplored=64, ratioToLeafCap=0.00
+  worstCase:1e928fb1: cycleLength=6, avgBranchingFactor=1.83, estimatedSearchTree=38.0, maxLeavesExplored=64, ratioToLeafCap=0.59
+  worstCase:1513fcff: cycleLength=6, avgBranchingFactor=2.48, estimatedSearchTree=231.7, maxLeavesExplored=64, ratioToLeafCap=3.62
+  worstCase:120fc3af: cycleLength=5, avgBranchingFactor=2.25, estimatedSearchTree=57.7, maxLeavesExplored=64, ratioToLeafCap=0.90
+  worstCase:dd4d94fd: cycleLength=6, avgBranchingFactor=1.69, estimatedSearchTree=23.5, maxLeavesExplored=64, ratioToLeafCap=0.37
+  worstCase:e7a801fb: cycleLength=6, avgBranchingFactor=2.14, estimatedSearchTree=96.1, maxLeavesExplored=64, ratioToLeafCap=1.50
+  worstCase:e5101f85: cycleLength=6, avgBranchingFactor=1.84, estimatedSearchTree=38.8, maxLeavesExplored=64, ratioToLeafCap=0.61
+  worstCase:d27df773: cycleLength=6, avgBranchingFactor=1.70, estimatedSearchTree=24.1, maxLeavesExplored=64, ratioToLeafCap=0.38
+  worstCase:b2c9ceb9: cycleLength=6, avgBranchingFactor=2.13, estimatedSearchTree=92.9, maxLeavesExplored=64, ratioToLeafCap=1.45
+  worstCase:589b0a25: cycleLength=6, avgBranchingFactor=1.67, estimatedSearchTree=21.4, maxLeavesExplored=64, ratioToLeafCap=0.33
+  worstCase:cee673eb: cycleLength=6, avgBranchingFactor=2.17, estimatedSearchTree=103.5, maxLeavesExplored=64, ratioToLeafCap=1.62
+  worstCase:e9009e73: cycleLength=6, avgBranchingFactor=2.36, estimatedSearchTree=172.8, maxLeavesExplored=64, ratioToLeafCap=2.70
+  worstCase:f776edb1: cycleLength=5, avgBranchingFactor=1.92, estimatedSearchTree=25.9, maxLeavesExplored=64, ratioToLeafCap=0.40
+  worstCase:de8abca9: cycleLength=6, avgBranchingFactor=0.86, estimatedSearchTree=0.4, maxLeavesExplored=64, ratioToLeafCap=0.01
+  worstCase:849509c9: cycleLength=6, avgBranchingFactor=0.00, estimatedSearchTree=0.0, maxLeavesExplored=64, ratioToLeafCap=0.00
+  worstCase:224f6f8b: cycleLength=5, avgBranchingFactor=1.77, estimatedSearchTree=17.2, maxLeavesExplored=64, ratioToLeafCap=0.27
+  worstCase:5d189c1: cycleLength=5, avgBranchingFactor=2.00, estimatedSearchTree=32.0, maxLeavesExplored=64, ratioToLeafCap=0.50
+  worstCase:42c89b9: cycleLength=5, avgBranchingFactor=2.52, estimatedSearchTree=101.6, maxLeavesExplored=64, ratioToLeafCap=1.59
+  snapshot335:45959141: cycleLength=6, avgBranchingFactor=1.98, estimatedSearchTree=60.9, maxLeavesExplored=64, ratioToLeafCap=0.95
+  snapshot335:46086463: cycleLength=5, avgBranchingFactor=1.67, estimatedSearchTree=12.9, maxLeavesExplored=64, ratioToLeafCap=0.20
+  snapshot335:84976575: cycleLength=6, avgBranchingFactor=2.00, estimatedSearchTree=64.0, maxLeavesExplored=64, ratioToLeafCap=1.00
+  snapshot335:7541612b: cycleLength=6, avgBranchingFactor=1.94, estimatedSearchTree=52.9, maxLeavesExplored=64, ratioToLeafCap=0.83
+  snapshot335:b714481: cycleLength=6, avgBranchingFactor=1.80, estimatedSearchTree=34.0, maxLeavesExplored=64, ratioToLeafCap=0.53
+  snapshot335:beb967ad: cycleLength=6, avgBranchingFactor=0.00, estimatedSearchTree=0.0, maxLeavesExplored=64, ratioToLeafCap=0.00
+  snapshot335:4549b041: cycleLength=6, avgBranchingFactor=0.00, estimatedSearchTree=0.0, maxLeavesExplored=64, ratioToLeafCap=0.00
+  snapshot335:120fc3af: cycleLength=5, avgBranchingFactor=1.57, estimatedSearchTree=9.6, maxLeavesExplored=64, ratioToLeafCap=0.15
+  snapshot335:dd4d94fd: cycleLength=6, avgBranchingFactor=1.77, estimatedSearchTree=30.7, maxLeavesExplored=64, ratioToLeafCap=0.48
+  snapshot335:36336c1: cycleLength=6, avgBranchingFactor=1.67, estimatedSearchTree=21.4, maxLeavesExplored=64, ratioToLeafCap=0.33
+  scrambleDepth10:0: cycleLength=5, avgBranchingFactor=2.00, estimatedSearchTree=32.0, maxLeavesExplored=64, ratioToLeafCap=0.50
+  scrambleDepth10:4: cycleLength=5, avgBranchingFactor=2.14, estimatedSearchTree=45.2, maxLeavesExplored=64, ratioToLeafCap=0.71
+  scrambleDepth10:8: cycleLength=6, avgBranchingFactor=1.68, estimatedSearchTree=22.6, maxLeavesExplored=64, ratioToLeafCap=0.35
+  scrambleDepth20:1: cycleLength=6, avgBranchingFactor=0.67, estimatedSearchTree=0.1, maxLeavesExplored=64, ratioToLeafCap=0.00
+  scrambleDepth20:5: cycleLength=5, avgBranchingFactor=1.58, estimatedSearchTree=10.0, maxLeavesExplored=64, ratioToLeafCap=0.16
+  scrambleDepth20:6: cycleLength=5, avgBranchingFactor=1.67, estimatedSearchTree=12.9, maxLeavesExplored=64, ratioToLeafCap=0.20
+  scrambleDepth20:8: cycleLength=6, avgBranchingFactor=1.00, estimatedSearchTree=1.0, maxLeavesExplored=64, ratioToLeafCap=0.02
+  scrambleDepth30:3: cycleLength=6, avgBranchingFactor=1.00, estimatedSearchTree=1.0, maxLeavesExplored=64, ratioToLeafCap=0.02
+  scrambleDepth30:4: cycleLength=5, avgBranchingFactor=1.50, estimatedSearchTree=7.6, maxLeavesExplored=64, ratioToLeafCap=0.12
+  scrambleDepth40:0: cycleLength=6, avgBranchingFactor=0.00, estimatedSearchTree=0.0, maxLeavesExplored=64, ratioToLeafCap=0.00
+  scrambleDepth40:1: cycleLength=6, avgBranchingFactor=1.86, estimatedSearchTree=41.0, maxLeavesExplored=64, ratioToLeafCap=0.64
+  scrambleDepth40:2: cycleLength=6, avgBranchingFactor=0.50, estimatedSearchTree=0.0, maxLeavesExplored=64, ratioToLeafCap=0.00
+  scrambleDepth40:6: cycleLength=5, avgBranchingFactor=0.00, estimatedSearchTree=0.0, maxLeavesExplored=64, ratioToLeafCap=0.00
+  scrambleDepth40:7: cycleLength=5, avgBranchingFactor=2.00, estimatedSearchTree=32.0, maxLeavesExplored=64, ratioToLeafCap=0.50
+  scrambleDepth50:1: cycleLength=5, avgBranchingFactor=2.45, estimatedSearchTree=89.1, maxLeavesExplored=64, ratioToLeafCap=1.39
+  scrambleDepth50:2: cycleLength=6, avgBranchingFactor=1.75, estimatedSearchTree=28.7, maxLeavesExplored=64, ratioToLeafCap=0.45
+  scrambleDepth50:4: cycleLength=6, avgBranchingFactor=1.60, estimatedSearchTree=16.8, maxLeavesExplored=64, ratioToLeafCap=0.26
+  scrambleDepth50:5: cycleLength=5, avgBranchingFactor=1.36, estimatedSearchTree=4.7, maxLeavesExplored=64, ratioToLeafCap=0.07
+  scrambleDepth50:7: cycleLength=6, avgBranchingFactor=2.24, estimatedSearchTree=127.1, maxLeavesExplored=64, ratioToLeafCap=1.99
+  scrambleDepth50:8: cycleLength=6, avgBranchingFactor=2.11, estimatedSearchTree=88.5, maxLeavesExplored=64, ratioToLeafCap=1.38
+  scrambleDepth100:0: cycleLength=5, avgBranchingFactor=2.21, estimatedSearchTree=52.1, maxLeavesExplored=64, ratioToLeafCap=0.81
+  scrambleDepth100:1: cycleLength=5, avgBranchingFactor=0.67, estimatedSearchTree=0.1, maxLeavesExplored=64, ratioToLeafCap=0.00
+  scrambleDepth100:2: cycleLength=5, avgBranchingFactor=2.14, estimatedSearchTree=45.2, maxLeavesExplored=64, ratioToLeafCap=0.71
+  scrambleDepth100:4: cycleLength=6, avgBranchingFactor=2.12, estimatedSearchTree=89.6, maxLeavesExplored=64, ratioToLeafCap=1.40
+  scrambleDepth100:8: cycleLength=5, avgBranchingFactor=0.00, estimatedSearchTree=0.0, maxLeavesExplored=64, ratioToLeafCap=0.00
+  scrambleDepth100:9: cycleLength=6, avgBranchingFactor=2.17, estimatedSearchTree=104.4, maxLeavesExplored=64, ratioToLeafCap=1.63
+
+5. Leaf Cap Impact Analysis
+  Affected (LEAF_CAP_REACHED): 2/60 (3.3%)
+  Affected avg ratioToLeafCap: 2.29 (unaffected: 0.56)
+  Affected avg cycleLength: 6.00, avg branchingFactor: 2.23
+  Affected labels: worstCase:1513fcff, snapshot335:45959141
+
+6. Completeness Assessment + Recommendation
+  conclusion: A_SUFFICIENTLY_COMPLETE
+  conclusionLabel: Conclusion A -- CCR은 현재 구조에서 충분히 Complete하다
+  recommendation: MAINTAIN
+  rationale: Gate 통과 60건 중 LEAF_CAP_REACHED 3.3%, BUDGET_EXPIRED 0.0% -- 둘 다 유의미한 임계치(5%) 미만. 대부분의 케이스가 SOLUTION_FOUND 또는 SEARCH_EXHAUSTED로 정상 종료됨.
