@@ -1,0 +1,38 @@
+Solver Primitive Set Completeness Validation Sprint v1 -- Report
+Generated: 2026-07-27T23:50:43.686Z
+
+1. Primitive Coverage Report
+  Total cases: 142
+  BASE: 64/142 (45.1%)
+  FLIP: 0/142 (0.0%)
+  CASE: 0/142 (0.0%)
+  PARITY: 85/142 (59.9%)
+  CCR: 12/142 (8.5%)
+  Union Covered (any of the 5): 89/142 (62.7%)
+  Residual (none succeed): 53/142 (37.3%)
+
+2. Union Capability Analysis (stepwise coverage gain)
+  BASE: cumulative=64/142 (45.1%), incrementalGain=+64
+  BASE+FLIP: cumulative=64/142 (45.1%), incrementalGain=+0
+  BASE+FLIP+CASE: cumulative=64/142 (45.1%), incrementalGain=+0
+  BASE+FLIP+CASE+PARITY: cumulative=86/142 (60.6%), incrementalGain=+22
+  BASE+FLIP+CASE+PARITY+CCR: cumulative=89/142 (62.7%), incrementalGain=+3
+
+3. Residual Failure Taxonomy
+  BRIDGE_MISSING: n=12, avgCycleLength=4.33, avgComponentCount=2.08, avgConflictEdgeCount=0.00, avgDependencyDepth=4.33, avgBranchingFactor=0.78, parityRate=33.3%
+    labels: worstCase:45959141, worstCase:46086463, worstCase:f17d7eb9, worstCase:710de4d1, snapshot335:46086463, snapshot335:f17d7eb9, scrambleDepth10:5, scrambleDepth20:7, scrambleDepth30:7, scrambleDepth40:6, scrambleDepth50:6, scrambleDepth100:5
+  PURE_CYCLE_ISOLATION: n=28, avgCycleLength=5.00, avgComponentCount=1.00, avgConflictEdgeCount=0.00, avgDependencyDepth=5.00, avgBranchingFactor=0.95, parityRate=10.7%
+    labels: worstCase:84976575, worstCase:7541612b, worstCase:4549b041, worstCase:36336c1, worstCase:1af658ab, worstCase:589b0a25, worstCase:f776edb1, worstCase:de8abca9, snapshot335:45959141, snapshot335:1af658ab, snapshot335:56a8b82d, snapshot335:b714481, snapshot335:4549b041, snapshot335:1513fcff, snapshot335:120fc3af, snapshot335:36336c1, scrambleDepth10:0, scrambleDepth10:2, scrambleDepth10:3, scrambleDepth10:4, scrambleDepth20:5, scrambleDepth20:6, scrambleDepth20:8, scrambleDepth30:4, scrambleDepth40:0, scrambleDepth40:1, scrambleDepth100:2, scrambleDepth100:8
+  CONFLICT_DEEP_DEPENDENCY: n=13, avgCycleLength=0.00, avgComponentCount=1.00, avgConflictEdgeCount=7.69, avgDependencyDepth=7.69, avgBranchingFactor=0.48, parityRate=46.2%
+    labels: worstCase:56a8b82d, worstCase:d37ca819, worstCase:44b9b619, snapshot335:27053491, snapshot335:4e27e5a1, snapshot335:d37ca819, snapshot335:5e5b20b, snapshot335:ae3d218b, scrambleDepth10:7, scrambleDepth30:6, scrambleDepth40:4, scrambleDepth40:8, scrambleDepth50:3
+
+4. Primitive Set Boundary Specification
+  representable: Union Coverage 89/142 (62.7%) -- BASE/FLIP/CASE/PARITY의 메인 파이프라인 pass 하나로 해결되는 대다수 상태, 그리고 CCR(Gate: cycleLength 5~6, conflictEdgeCount=0, componentCount=1)이 추가로 해결하는 단일-컴포넌트 고립 cycle 일부.
+  nonRepresentable: 53/142건은 5개 Primitive(BASE/FLIP/CASE/PARITY/CCR) 중 어느 것도 5000ms 확장 예산에서도 해결하지 못함. 지배적 잔여 구조: PURE_CYCLE_ISOLATION (28건).
+  boundaryCondition: 경계는 componentCount(단일/다중 컴포넌트), conflictEdgeCount(존재 여부), cycleCount(존재 여부)의 조합으로 그어진다 -- 현재 Primitive Set은 '단일 컴포넌트 + conflict 없음 + cycle 있음(길이 5~6)' 형태(CCR Gate)만 명시적으로 다루며, 그 밖의 조합(다중 컴포넌트, conflict 존재, Gate 범위 밖 cycle 길이)은 어떤 기존 Primitive의 대상 조건에도 명시적으로 포함되지 않는다.
+  representativeUnsolvedLabels: worstCase:45959141, worstCase:46086463, worstCase:f17d7eb9, worstCase:710de4d1, snapshot335:46086463, snapshot335:f17d7eb9, scrambleDepth10:5, scrambleDepth20:7
+
+5. Research Recommendation
+  conclusion: C_NEW_PRIMITIVE_FAMILY_NEEDED
+  conclusionLabel: Conclusion C -- 현재 Primitive Set으로는 설명 불가능한 독립적인 Failure Class가 존재한다
+  rationale: 잔여 53건(37.3%)이 3개의 서로 다른 구조 클래스로 나뉘며, 어느 하나도 지배적이지 않다(최대 클래스 PURE_CYCLE_ISOLATION 비중 52.8%, 임계치 60% 미만) -- 미해결 Population이 구조적으로 여러 독립 구조(RQ-3)로 구성되어, 단일 Primitive 확장으로는 전체를 포괄할 수 없다.
