@@ -1,0 +1,37 @@
+Planner Scheduling Investigation Sprint v1 -- Report
+Generated: 2026-07-27T08:58:04.335Z
+Reachable-but-Unexploited population: 28/142
+
+Failure Mode breakdown:
+  MAIN_PIPELINE_PROBLEM: 28/28
+    -> Task 우선순위/스코어링 재검토 -- BASE/FLIP/CASE/PARITY 중 하나가 이미 이 상태를 풀 수 있는데, Planner의 정상 task 생성/스코어링이 50회 반복 동안 그 task를 한 번도 최우선으로 선택하지 않았다. Evaluator의 Weight Table 재검토 대상.
+
+Per-case detail:
+  worstCase:64369533: mode=MAIN_PIPELINE_PROBLEM, succeeded=[PARITY], recoveryTriggered=2/50, budgetViolations=0
+  worstCase:1513fcff: mode=MAIN_PIPELINE_PROBLEM, succeeded=[PARITY], recoveryTriggered=2/50, budgetViolations=0
+  worstCase:dd4d94fd: mode=MAIN_PIPELINE_PROBLEM, succeeded=[BASE,PARITY], recoveryTriggered=11/50, budgetViolations=0
+  worstCase:e7a801fb: mode=MAIN_PIPELINE_PROBLEM, succeeded=[PARITY], recoveryTriggered=1/50, budgetViolations=0
+  worstCase:93b485f7: mode=MAIN_PIPELINE_PROBLEM, succeeded=[BASE], recoveryTriggered=2/50, budgetViolations=0
+  worstCase:b2c9ceb9: mode=MAIN_PIPELINE_PROBLEM, succeeded=[BASE], recoveryTriggered=1/50, budgetViolations=0
+  worstCase:e9009e73: mode=MAIN_PIPELINE_PROBLEM, succeeded=[PARITY], recoveryTriggered=1/50, budgetViolations=0
+  worstCase:14f5293f: mode=MAIN_PIPELINE_PROBLEM, succeeded=[BASE], recoveryTriggered=0/50, budgetViolations=0
+  worstCase:c0277d5d: mode=MAIN_PIPELINE_PROBLEM, succeeded=[BASE], recoveryTriggered=1/50, budgetViolations=0
+  snapshot335:64369533: mode=MAIN_PIPELINE_PROBLEM, succeeded=[PARITY], recoveryTriggered=2/50, budgetViolations=0
+  snapshot335:84976575: mode=MAIN_PIPELINE_PROBLEM, succeeded=[PARITY], recoveryTriggered=42/50, budgetViolations=0
+  snapshot335:e7a801fb: mode=MAIN_PIPELINE_PROBLEM, succeeded=[BASE], recoveryTriggered=49/50, budgetViolations=0
+  snapshot335:60b5c3b1: mode=MAIN_PIPELINE_PROBLEM, succeeded=[BASE], recoveryTriggered=2/50, budgetViolations=0
+  snapshot335:1e928fb1: mode=MAIN_PIPELINE_PROBLEM, succeeded=[BASE], recoveryTriggered=2/50, budgetViolations=0
+  snapshot335:93b485f7: mode=MAIN_PIPELINE_PROBLEM, succeeded=[BASE], recoveryTriggered=2/50, budgetViolations=0
+  snapshot335:dd4d94fd: mode=MAIN_PIPELINE_PROBLEM, succeeded=[BASE,PARITY], recoveryTriggered=25/50, budgetViolations=0
+  scrambleDepth10:6: mode=MAIN_PIPELINE_PROBLEM, succeeded=[BASE], recoveryTriggered=3/50, budgetViolations=0
+  scrambleDepth20:1: mode=MAIN_PIPELINE_PROBLEM, succeeded=[BASE,PARITY], recoveryTriggered=50/50, budgetViolations=0
+  scrambleDepth30:2: mode=MAIN_PIPELINE_PROBLEM, succeeded=[BASE,PARITY], recoveryTriggered=1/50, budgetViolations=0
+  scrambleDepth30:8: mode=MAIN_PIPELINE_PROBLEM, succeeded=[PARITY], recoveryTriggered=49/50, budgetViolations=0
+  scrambleDepth30:9: mode=MAIN_PIPELINE_PROBLEM, succeeded=[BASE,PARITY], recoveryTriggered=49/50, budgetViolations=0
+  scrambleDepth40:2: mode=MAIN_PIPELINE_PROBLEM, succeeded=[BASE], recoveryTriggered=2/50, budgetViolations=0
+  scrambleDepth50:0: mode=MAIN_PIPELINE_PROBLEM, succeeded=[PARITY], recoveryTriggered=48/50, budgetViolations=0
+  scrambleDepth50:2: mode=MAIN_PIPELINE_PROBLEM, succeeded=[BASE], recoveryTriggered=50/50, budgetViolations=0
+  scrambleDepth50:5: mode=MAIN_PIPELINE_PROBLEM, succeeded=[PARITY], recoveryTriggered=50/50, budgetViolations=0
+  scrambleDepth100:1: mode=MAIN_PIPELINE_PROBLEM, succeeded=[BASE], recoveryTriggered=2/50, budgetViolations=0
+  scrambleDepth100:4: mode=MAIN_PIPELINE_PROBLEM, succeeded=[BASE,PARITY], recoveryTriggered=50/50, budgetViolations=0
+  scrambleDepth100:6: mode=MAIN_PIPELINE_PROBLEM, succeeded=[BASE,PARITY], recoveryTriggered=49/50, budgetViolations=0

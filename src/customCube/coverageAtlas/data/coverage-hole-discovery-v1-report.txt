@@ -1,5 +1,5 @@
 Coverage Hole Discovery Sprint v1 -- Coverage Atlas Report
-Generated: 2026-07-27T05:40:59.148Z
+Generated: 2026-07-27T08:53:47.942Z
 
 1. Hole Dataset (STEP1)
   Input cases: 142 (Worst Case Library 52 + snapshot335 subsample 30 + scrambleDepth stratified subsample 60)
@@ -8,41 +8,39 @@ Generated: 2026-07-27T05:40:59.148Z
   Reachable-but-Unexploited (>=1 primitive succeeds in isolation, but production loop still stuck): 28/142 (19.72%)
 
 2. Dead State Clusters (STEP2, by structural mechanism)
-  [25 cases, 17.6%] Parity + long(5+) cycle -- key=parity|cycle=long(5+)|no-conflict|wrongWing=9+, avgWrongWing=10.4, avgConflict=0.0, anyPrimitiveApplicable=11/25
-  [21 cases, 14.8%] Long multi-piece cycle, no parity -- key=no-parity|cycle=long(5+)|no-conflict|wrongWing=5-8, avgWrongWing=6.3, avgConflict=0.0, anyPrimitiveApplicable=1/21
-  [15 cases, 10.6%] Conflict-only (one-sided WANTS dependency, no cycle to resolve it) -- key=no-parity|cycle=none|conflict|wrongWing=5-8, avgWrongWing=7.1, avgConflict=7.1, anyPrimitiveApplicable=0/15
-  [12 cases, 8.5%] short(3-4) cycle, no parity -- key=no-parity|cycle=short(3-4)|no-conflict|wrongWing=5-8, avgWrongWing=6.6, avgConflict=0.0, anyPrimitiveApplicable=0/12
-  [9 cases, 6.3%] Conflict-only (one-sided WANTS dependency, no cycle to resolve it) -- key=no-parity|cycle=none|conflict|wrongWing=9+, avgWrongWing=9.1, avgConflict=9.1, anyPrimitiveApplicable=2/9
-  [8 cases, 5.6%] Long multi-piece cycle, no parity -- key=no-parity|cycle=long(5+)|no-conflict|wrongWing=9+, avgWrongWing=9.8, avgConflict=0.0, anyPrimitiveApplicable=1/8
-  [8 cases, 5.6%] Parity + long(5+) cycle -- key=parity|cycle=long(5+)|no-conflict|wrongWing=5-8, avgWrongWing=7.5, avgConflict=0.0, anyPrimitiveApplicable=0/8
-  [6 cases, 4.2%] Parity without a resolvable cycle (parity flag set, but no cyclic wing dependency detected) -- key=parity|cycle=none|conflict|wrongWing=9+, avgWrongWing=9.8, avgConflict=8.7, anyPrimitiveApplicable=2/6
-  [6 cases, 4.2%] short(3-4) cycle, no parity -- key=no-parity|cycle=short(3-4)|no-conflict|wrongWing=3-4, avgWrongWing=3.5, avgConflict=0.0, anyPrimitiveApplicable=0/6
-  [6 cases, 4.2%] Parity + short(3-4) cycle -- key=parity|cycle=short(3-4)|no-conflict|wrongWing=5-8, avgWrongWing=6.3, avgConflict=0.0, anyPrimitiveApplicable=3/6
-  [5 cases, 3.5%] Parity + short(3-4) cycle -- key=parity|cycle=short(3-4)|conflict|wrongWing=9+, avgWrongWing=11.0, avgConflict=7.2, anyPrimitiveApplicable=1/5
-  [5 cases, 3.5%] Parity + short(3-4) cycle -- key=parity|cycle=short(3-4)|no-conflict|wrongWing=9+, avgWrongWing=9.6, avgConflict=0.0, anyPrimitiveApplicable=1/5
-  [4 cases, 2.8%] Parity + swap(2) cycle -- key=parity|cycle=swap(2)|conflict|wrongWing=9+, avgWrongWing=10.5, avgConflict=7.5, anyPrimitiveApplicable=2/4
-  [3 cases, 2.1%] short(3-4) cycle, no parity -- key=no-parity|cycle=short(3-4)|no-conflict|wrongWing=9+, avgWrongWing=9.7, avgConflict=0.0, anyPrimitiveApplicable=1/3
-  [3 cases, 2.1%] Parity without a resolvable cycle (parity flag set, but no cyclic wing dependency detected) -- key=parity|cycle=none|conflict|wrongWing=5-8, avgWrongWing=8.0, avgConflict=7.0, anyPrimitiveApplicable=0/3
-  [2 cases, 1.4%] Parity + long(5+) cycle -- key=parity|cycle=long(5+)|conflict|wrongWing=9+, avgWrongWing=13.0, avgConflict=6.0, anyPrimitiveApplicable=2/2
-  [1 cases, 0.7%] Locked Pair (2-cycle mutual lock, no parity) -- key=no-parity|cycle=swap(2)|no-conflict|wrongWing=5-8, avgWrongWing=6.0, avgConflict=0.0, anyPrimitiveApplicable=0/1
-  [1 cases, 0.7%] Locked Pair (2-cycle mutual lock, no parity) -- key=no-parity|cycle=swap(2)|conflict|wrongWing=9+, avgWrongWing=9.0, avgConflict=7.0, anyPrimitiveApplicable=1/1
-  [1 cases, 0.7%] Locked Pair (2-cycle mutual lock, no parity) -- key=no-parity|cycle=swap(2)|no-conflict|wrongWing=1-2, avgWrongWing=2.0, avgConflict=0.0, anyPrimitiveApplicable=0/1
+  [29 cases, 20.4%] Long multi-piece cycle, no parity -- key=no-parity|cycle=long(5+)|no-conflict|wrongWing=5-8, avgWrongWing=6.0, avgConflict=0.0, anyPrimitiveApplicable=1/29
+  [20 cases, 14.1%] Parity + long(5+) cycle -- key=parity|cycle=long(5+)|no-conflict|wrongWing=9+, avgWrongWing=10.3, avgConflict=0.0, anyPrimitiveApplicable=9/20
+  [18 cases, 12.7%] Conflict-only (one-sided WANTS dependency, no cycle to resolve it) -- key=no-parity|cycle=none|conflict|wrongWing=5-8, avgWrongWing=7.2, avgConflict=7.2, anyPrimitiveApplicable=1/18
+  [11 cases, 7.7%] short(3-4) cycle, no parity -- key=no-parity|cycle=short(3-4)|no-conflict|wrongWing=5-8, avgWrongWing=6.4, avgConflict=0.0, anyPrimitiveApplicable=0/11
+  [9 cases, 6.3%] Parity + short(3-4) cycle -- key=parity|cycle=short(3-4)|no-conflict|wrongWing=5-8, avgWrongWing=7.4, avgConflict=0.0, anyPrimitiveApplicable=4/9
+  [8 cases, 5.6%] Parity without a resolvable cycle (parity flag set, but no cyclic wing dependency detected) -- key=parity|cycle=none|conflict|wrongWing=9+, avgWrongWing=10.3, avgConflict=8.8, anyPrimitiveApplicable=1/8
+  [7 cases, 4.9%] short(3-4) cycle, no parity -- key=no-parity|cycle=short(3-4)|no-conflict|wrongWing=3-4, avgWrongWing=3.7, avgConflict=0.0, anyPrimitiveApplicable=0/7
+  [6 cases, 4.2%] Parity + long(5+) cycle -- key=parity|cycle=long(5+)|no-conflict|wrongWing=5-8, avgWrongWing=7.5, avgConflict=0.0, anyPrimitiveApplicable=3/6
+  [6 cases, 4.2%] Parity + short(3-4) cycle -- key=parity|cycle=short(3-4)|no-conflict|wrongWing=9+, avgWrongWing=10.0, avgConflict=0.0, anyPrimitiveApplicable=2/6
+  [5 cases, 3.5%] Long multi-piece cycle, no parity -- key=no-parity|cycle=long(5+)|no-conflict|wrongWing=9+, avgWrongWing=10.4, avgConflict=0.0, anyPrimitiveApplicable=0/5
+  [5 cases, 3.5%] Parity + short(3-4) cycle -- key=parity|cycle=short(3-4)|conflict|wrongWing=9+, avgWrongWing=10.8, avgConflict=7.4, anyPrimitiveApplicable=1/5
+  [4 cases, 2.8%] short(3-4) cycle, no parity -- key=no-parity|cycle=short(3-4)|no-conflict|wrongWing=9+, avgWrongWing=9.8, avgConflict=0.0, anyPrimitiveApplicable=2/4
+  [4 cases, 2.8%] Parity without a resolvable cycle (parity flag set, but no cyclic wing dependency detected) -- key=parity|cycle=none|conflict|wrongWing=5-8, avgWrongWing=8.0, avgConflict=7.0, anyPrimitiveApplicable=0/4
+  [4 cases, 2.8%] Conflict-only (one-sided WANTS dependency, no cycle to resolve it) -- key=no-parity|cycle=none|conflict|wrongWing=9+, avgWrongWing=9.0, avgConflict=8.5, anyPrimitiveApplicable=2/4
+  [3 cases, 2.1%] Parity + long(5+) cycle -- key=parity|cycle=long(5+)|conflict|wrongWing=9+, avgWrongWing=13.0, avgConflict=6.7, anyPrimitiveApplicable=2/3
+  [1 cases, 0.7%] Parity + short(3-4) cycle -- key=parity|cycle=short(3-4)|no-conflict|wrongWing=3-4, avgWrongWing=4.0, avgConflict=0.0, anyPrimitiveApplicable=0/1
+  [1 cases, 0.7%] Locked Pair (2-cycle mutual lock, no parity) -- key=no-parity|cycle=swap(2)|conflict|wrongWing=9+, avgWrongWing=9.0, avgConflict=7.0, anyPrimitiveApplicable=0/1
   [1 cases, 0.7%] Parity + swap(2) cycle -- key=parity|cycle=swap(2)|no-conflict|wrongWing=5-8, avgWrongWing=5.0, avgConflict=0.0, anyPrimitiveApplicable=0/1
 
 3. Zero-Move Loop confirmation (STEP3, N=10 repeat-solve per case)
-  Confirmed genuine zero-move loop (10/10 empty): 142/142 (100.00%)
-  Partially stochastic (>=1/10 non-empty, but not all): 0
-  Average empty-moveQueue rate across all cases: 100.00%
+  Confirmed genuine zero-move loop (10/10 empty): 141/142 (99.30%)
+  Partially stochastic (>=1/10 non-empty, but not all): 1
+  Average empty-moveQueue rate across all cases: 99.30%
 
 4. Conflict Analysis (STEP4)
-  Cases with >=1 structural CONFLICT edge: 45/142 (31.69%)
+  Cases with >=1 structural CONFLICT edge: 43/142 (30.28%)
   Cases where a conflict targets an already-SolvedPair slot: 0
-  Avg conflict edges per case: 2.44
-  Among cases with NO applicable primitive: conflict present in 35, conflict absent in 79
+  Avg conflict edges per case: 2.30
+  Among cases with NO applicable primitive: conflict present in 36, conflict absent in 78
 
 5. State Graph Atlas (STEP5, aggregate node/edge type counts across all Hole cases)
-  Node types: SolvedPair=638, WingPair=970, BrokenPair=96
-  Edge types: SWAP=82, CYCLE=718, CONFLICT=347
+  Node types: SolvedPair=664, WingPair=956, BrokenPair=84
+  Edge types: SWAP=54, CYCLE=707, CONFLICT=326
 
 6. Phase 1 Conclusion
   Mixed population: 114 True Coverage Hole cases need new Primitive capability (Goal 1/3), 28 Reachable-but-Unexploited cases need scheduling/Planner investigation (Goal 2) instead. Both tracks are real and distinct.

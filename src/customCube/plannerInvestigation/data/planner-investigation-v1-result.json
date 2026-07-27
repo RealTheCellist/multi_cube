@@ -1,0 +1,329 @@
+{
+  "generatedAt": "2026-07-27T08:58:04.335Z",
+  "summary": {
+    "totalCases": 28,
+    "failureModeCounts": {
+      "TRIGGER_PROBLEM": 0,
+      "BUDGET_PROBLEM": 0,
+      "MAIN_PIPELINE_PROBLEM": 28,
+      "UNEXPLAINED": 0
+    }
+  },
+  "analyses": [
+    {
+      "label": "worstCase:64369533",
+      "succeededPrimitives": [
+        "PARITY"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 2,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "worstCase:1513fcff",
+      "succeededPrimitives": [
+        "PARITY"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 2,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "worstCase:dd4d94fd",
+      "succeededPrimitives": [
+        "BASE",
+        "PARITY"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 11,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "worstCase:e7a801fb",
+      "succeededPrimitives": [
+        "PARITY"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 1,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "worstCase:93b485f7",
+      "succeededPrimitives": [
+        "BASE"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 2,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "worstCase:b2c9ceb9",
+      "succeededPrimitives": [
+        "BASE"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 1,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "worstCase:e9009e73",
+      "succeededPrimitives": [
+        "PARITY"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 1,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "worstCase:14f5293f",
+      "succeededPrimitives": [
+        "BASE"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 0,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "worstCase:c0277d5d",
+      "succeededPrimitives": [
+        "BASE"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 1,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "snapshot335:64369533",
+      "succeededPrimitives": [
+        "PARITY"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 2,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "snapshot335:84976575",
+      "succeededPrimitives": [
+        "PARITY"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 42,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "snapshot335:e7a801fb",
+      "succeededPrimitives": [
+        "BASE"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 49,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "succeededPrimitives": [
+        "BASE"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 2,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "snapshot335:1e928fb1",
+      "succeededPrimitives": [
+        "BASE"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 2,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "snapshot335:93b485f7",
+      "succeededPrimitives": [
+        "BASE"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 2,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "snapshot335:dd4d94fd",
+      "succeededPrimitives": [
+        "BASE",
+        "PARITY"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 25,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "scrambleDepth10:6",
+      "succeededPrimitives": [
+        "BASE"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 3,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "scrambleDepth20:1",
+      "succeededPrimitives": [
+        "BASE",
+        "PARITY"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 50,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "scrambleDepth30:2",
+      "succeededPrimitives": [
+        "BASE",
+        "PARITY"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 1,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "scrambleDepth30:8",
+      "succeededPrimitives": [
+        "PARITY"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 49,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "scrambleDepth30:9",
+      "succeededPrimitives": [
+        "BASE",
+        "PARITY"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 49,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "scrambleDepth40:2",
+      "succeededPrimitives": [
+        "BASE"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 2,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "scrambleDepth50:0",
+      "succeededPrimitives": [
+        "PARITY"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 48,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "scrambleDepth50:2",
+      "succeededPrimitives": [
+        "BASE"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 50,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "scrambleDepth50:5",
+      "succeededPrimitives": [
+        "PARITY"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 50,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "scrambleDepth100:1",
+      "succeededPrimitives": [
+        "BASE"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 2,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "scrambleDepth100:4",
+      "succeededPrimitives": [
+        "BASE",
+        "PARITY"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 50,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    },
+    {
+      "label": "scrambleDepth100:6",
+      "succeededPrimitives": [
+        "BASE",
+        "PARITY"
+      ],
+      "recoverySucceededInIsolation": false,
+      "wingPairingRecoveryTriggeredCount": 49,
+      "wingPairingBudgetViolations": 0,
+      "wingPairingIterations": 50,
+      "failureMode": "MAIN_PIPELINE_PROBLEM"
+    }
+  ]
+}
