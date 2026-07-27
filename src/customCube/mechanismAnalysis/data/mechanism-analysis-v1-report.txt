@@ -1,0 +1,37 @@
+State Taxonomy Sprint v2 -- Structural Mechanism Analysis Report
+Generated: 2026-07-27T09:05:43.352Z
+
+1. Cycle Isolation Subtypes (STEP1)
+  Total: 56
+  BRIDGE_MISSING: 9 -- Bridge 생성 불가 -- WANTS-그래프가 2개 이상의 분리된 컴포넌트로 나뉘어 있어, 하나의 조각이 두 컴포넌트를 연결(bridge)하지 못하면 cycle을 완성할 수 없다. Directive의 'Bridge Missing' 카테고리가 실제로 이 데이터셋에 존재함을 확인.
+  BUDGET_RECOVERABLE: 7 -- 탐색 예산 부족(DFS cutoff) -- 기존 Primitive가 구조적으로는 도달 가능하지만 400ms 기준 예산 내에서는 못 찾고 5000ms에서는 찾는다. 새 Primitive이 아니라 예산/우선순위 조정으로 해결 가능.
+  PURE_STRUCTURAL_ISOLATION: 24 -- 순수 구조적 고립 -- 단일 컴포넌트, 예산을 늘려도 안 풀림. 기존 Primitive의 탐색 전략 자체가 이 cycle 형태에 도달하지 못하는 구조적 한계. 새 Capability 필요.
+  BRIDGE_MISSING_AND_BUDGET_RECOVERABLE: 16 -- Bridge Missing이면서 동시에 예산을 늘리면 풀리는 케이스 -- 컴포넌트가 분리되어 있지만 5000ms 내에서 우연히 발견됨. 드문 조합으로, 개별 검토 필요.
+  Cycle length distribution: {"3":7,"4":15,"5":15,"6":19}
+
+2. Conflict Dominant Cause-vs-Effect (STEP2)
+  Total: 34
+  BYPRODUCT: 5 -- Pipeline이 스스로 만든 Conflict -- 원래 상태엔 없던 관계를 centers/wing-pairing 단계의 이동 자체가 만들어냄. Task 순서/우선순위 조정만으로 애초에 conflict가 생기지 않게 예방할 수 있는 가능성 -- 새 Primitive보다 Planner 개선을 먼저 검토해야 함.
+  MIXED: 29 -- 혼합 -- 일부 conflict edge는 원래 있었고 일부는 pipeline 자체가 만들어냄. 두 메커니즘이 같은 케이스에 공존.
+
+3. Parity-Gated Cycle Planner-fixable vs Primitive-needed Split (STEP3)
+  Total: 51
+  BASE_PIPELINE_RECOVERABLE: 21 -- 메인 파이프라인 Primitive(BASE/FLIP/CASE/PARITY)가 이미 풀 수 있음 -- 순서/우선순위 문제로 50회 반복 안에 못 찾음. 새 Primitive 불필요.
+  BUDGET_RECOVERABLE: 24 -- 예산 확장 시 해결 -- 새 Primitive 불필요, 탐색 시간만 늘리면 됨.
+  TRUE_GAP: 6 -- 진짜 Coverage Hole -- Parity + Cycle 조합에 특화된 새 Primitive Capability가 필요함.
+
+4. Primitive Opportunity Map (STEP5, true-gap subtypes only)
+  [Primitive-Candidate-A] Target: Cycle Isolation / Pure Structural Isolation (24 cases)
+    Expected Mechanism: Deep Cycle Resolver -- 단일 컴포넌트 내 고립된 3+ cycle을 기존 primitive보다 더 깊은/다른 탐색 전략으로 직접 공략. 예산 확장으로는 안 풀리므로 새로운 탐색 알고리즘(단순 BFS 확장이 아닌 구조 자체가 다른 접근)이 필요.
+    Prior Art: solverV2Prototype/BoundedResolver.ts (BP-1)의 bounded multi-cycle DFS 접근을 재검토할 가치가 있음 -- 단, BP-1은 production에 통합되지 않은 상태.
+  [Primitive-Candidate-B] Target: Cycle Isolation / Bridge Missing (25 cases)
+    Expected Mechanism: Bridge Injection -- WANTS-그래프의 분리된 두 컴포넌트를 연결할 조각이 없을 때, 두 컴포넌트 중 하나를 일부러 깨서(sacrifice) 다른 컴포넌트와 연결되는 새 WANTS 관계를 만드는 setup move.
+    Prior Art: solverPrimitivePrototype/MultiHopBridgePrototype.ts (Primitive Prototype Sprint v2)가 이미 'Multi-Hop Bridge'라는 이름으로 유사한 아이디어를 프로토타입했음 -- 재검토/재사용 우선 검토.
+  [Primitive-Candidate-D] Target: Parity-Gated Cycle / True Gap (6 cases)
+    Expected Mechanism: Parity-Cycle Specialist -- PARITY_ALG를 다양한 setup move로 conjugate해 특정 cycle 형태에 맞춰 적용하는, parity와 cycle 구조를 동시에 고려하는 전용 primitive.
+    Prior Art: solverV2PrototypeBP2/ParityAwareResolver.ts (BP-2)가 이미 이 접근(48개 atomic fragment로 conjugate)을 프로토타입했음 -- 이 Sprint가 식별한 True Gap 집합에 대해 재벤치마크 우선 검토.
+
+5. Non-Primitive Recommendations (route to Planner Scheduling Investigation instead)
+  Cycle Isolation / Budget Recoverable (7 cases): 새 Primitive 불필요 -- 해당 케이스들에 한해 탐색 예산/우선순위 조정만으로 해결 가능. Budget Contract 재검토 대상.
+  Conflict Dominant / Byproduct (5 cases): 새 Primitive 불필요 -- Pipeline 자체가 conflict를 만들어내는 것이므로 Task 순서/우선순위 조정(Planner 개선)으로 애초에 예방 가능할 수 있음. Planner Scheduling Investigation Sprint로 이관.
+  Parity-Gated Cycle / Scheduling-fixable (45 cases): 새 Primitive 불필요 -- Recovery layer 트리거 문제(0건), 메인 파이프라인 순서 문제(21건), 예산 문제(24건)로 구성. Planner Scheduling Investigation Sprint의 핵심 대상.
