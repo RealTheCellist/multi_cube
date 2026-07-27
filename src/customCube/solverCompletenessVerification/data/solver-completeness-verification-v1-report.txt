@@ -1,49 +1,66 @@
 Solver Completeness Verification Sprint v1 -- Report
-Generated: 2026-07-24T13:17:23.441Z
+Generated: 2026-07-26T23:58:08.427Z
 
 1. Completeness 정의: 정의된 입력 도메인 내의 모든 합법적 상태에 대해 solve()가 (a) 정상 종료(Crash/Exception/Infinite Loop/Deadlock/Timeout 없음), (b) Solved 또는 허용된 정상 종료 상태에 도달, (c) Operating Contract(ENDGAME/Incremental Recovery/CCR)를 위반하지 않는 성질.
 
-Dataset 구성: 335 Snapshot(전수) + Replay Pool 2건(신규 생성, depth=40) + Scramble Depth[10,20,30,40,50,100] x 1건 + Worst Case Library 3건(기존 335 population에서 parity/recovery-failed/high-wrongWingCount 태그로 파생).
-반복 상한: Wing-pairing 반복 호출 50회 (수렴 실패 시 Gate2 위반 후보). Repeatability 재확인: Worst Case Library에 대해 N=1회 재실행. Regression 재확인(Goal D): N=1-trial paired 비교.
+Dataset 구성: 335 Snapshot(전수) + Replay Pool 150건(신규 생성, depth=40) + Scramble Depth[10,20,30,40,50,100] x 30건 + Worst Case Library 52건(기존 335 population에서 parity/recovery-failed/high-wrongWingCount 태그로 파생).
+반복 상한: Wing-pairing 반복 호출 50회 (수렴 실패 시 Gate2 위반 후보). Repeatability 재확인: Worst Case Library에 대해 N=10회 재실행. Regression 재확인(Goal D): N=30-trial paired 비교.
 
 STEP1. 전수 census 결과 (카테고리별):
-  snapshot335: n=3, Success=0/3 (0.00%), Crash=0, 수렴실패=3, BudgetViolation=0, UnknownState=0, avgWallMs=65369.3, avgWingPairingIterations=50.00
-  replay150: n=2, Success=0/2 (0.00%), Crash=0, 수렴실패=2, BudgetViolation=0, UnknownState=0, avgWallMs=61020.0, avgWingPairingIterations=50.00
-  scrambleDepth10: n=1, Success=0/1 (0.00%), Crash=0, 수렴실패=1, BudgetViolation=0, UnknownState=0, avgWallMs=65548.0, avgWingPairingIterations=50.00
-  scrambleDepth20: n=1, Success=0/1 (0.00%), Crash=0, 수렴실패=1, BudgetViolation=0, UnknownState=0, avgWallMs=58269.0, avgWingPairingIterations=50.00
-  scrambleDepth30: n=1, Success=0/1 (0.00%), Crash=0, 수렴실패=1, BudgetViolation=0, UnknownState=0, avgWallMs=63694.0, avgWingPairingIterations=50.00
-  scrambleDepth40: n=1, Success=0/1 (0.00%), Crash=0, 수렴실패=1, BudgetViolation=0, UnknownState=0, avgWallMs=66323.0, avgWingPairingIterations=50.00
-  scrambleDepth50: n=1, Success=0/1 (0.00%), Crash=0, 수렴실패=1, BudgetViolation=0, UnknownState=0, avgWallMs=55677.0, avgWingPairingIterations=50.00
-  scrambleDepth100: n=1, Success=0/1 (0.00%), Crash=0, 수렴실패=1, BudgetViolation=0, UnknownState=0, avgWallMs=65471.0, avgWingPairingIterations=50.00
-  worstCase: n=3, Success=0/3 (0.00%), Crash=0, 수렴실패=3, BudgetViolation=0, UnknownState=0, avgWallMs=59878.7, avgWingPairingIterations=50.00
+  snapshot335: n=335, Success=0/335 (0.00%), Crash=0, 수렴실패=335, BudgetViolation=0, UnknownState=0, avgWallMs=62017.8, avgWingPairingIterations=50.00
+  replay150: n=150, Success=0/150 (0.00%), Crash=0, 수렴실패=150, BudgetViolation=0, UnknownState=0, avgWallMs=59817.4, avgWingPairingIterations=50.00
+  scrambleDepth10: n=30, Success=0/30 (0.00%), Crash=0, 수렴실패=30, BudgetViolation=0, UnknownState=0, avgWallMs=56221.1, avgWingPairingIterations=50.00
+  scrambleDepth20: n=30, Success=0/30 (0.00%), Crash=0, 수렴실패=30, BudgetViolation=0, UnknownState=0, avgWallMs=58434.4, avgWingPairingIterations=50.00
+  scrambleDepth30: n=30, Success=0/30 (0.00%), Crash=0, 수렴실패=30, BudgetViolation=0, UnknownState=0, avgWallMs=59182.7, avgWingPairingIterations=50.00
+  scrambleDepth40: n=30, Success=0/30 (0.00%), Crash=0, 수렴실패=30, BudgetViolation=0, UnknownState=0, avgWallMs=59919.8, avgWingPairingIterations=50.00
+  scrambleDepth50: n=30, Success=0/30 (0.00%), Crash=0, 수렴실패=30, BudgetViolation=0, UnknownState=0, avgWallMs=59381.1, avgWingPairingIterations=50.00
+  scrambleDepth100: n=30, Success=0/30 (0.00%), Crash=0, 수렴실패=30, BudgetViolation=0, UnknownState=0, avgWallMs=59860.0, avgWingPairingIterations=50.00
+  worstCase: n=52, Success=0/52 (0.00%), Crash=0, 수렴실패=52, BudgetViolation=0, UnknownState=0, avgWallMs=58820.3, avgWingPairingIterations=50.00
 
-STEP1. 실패/미수렴/UnknownState 상세 (14건):
+STEP1. 실패/미수렴/UnknownState 상세 (717건):
   snapshot335:12022029: anyException=false(-), converged=false, iterations=50, unknownState=false
   snapshot335:27053491: anyException=false(-), converged=false, iterations=50, unknownState=false
   snapshot335:45959141: anyException=false(-), converged=false, iterations=50, unknownState=false
-  replay150:0: anyException=false(-), converged=false, iterations=50, unknownState=false
-  replay150:1: anyException=false(-), converged=false, iterations=50, unknownState=false
-  scrambleDepth10:0: anyException=false(-), converged=false, iterations=50, unknownState=false
-  scrambleDepth20:0: anyException=false(-), converged=false, iterations=50, unknownState=false
-  scrambleDepth30:0: anyException=false(-), converged=false, iterations=50, unknownState=false
-  scrambleDepth40:0: anyException=false(-), converged=false, iterations=50, unknownState=false
-  scrambleDepth50:0: anyException=false(-), converged=false, iterations=50, unknownState=false
-  scrambleDepth100:0: anyException=false(-), converged=false, iterations=50, unknownState=false
-  worstCase:45959141: anyException=false(-), converged=false, iterations=50, unknownState=false
-  worstCase:46086463: anyException=false(-), converged=false, iterations=50, unknownState=false
-  worstCase:64369533: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:46086463: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:64369533: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:68977335: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:84976575: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:f17d7eb9: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:a061555d: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:dda1453f: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:e7a801fb: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:1af658ab: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:70a5020b: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:56a8b82d: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:60b5c3b1: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:7541612b: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:b714481: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:beb967ad: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:1e928fb1: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:4549b041: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:1513fcff: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:4e27e5a1: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:d37ca819: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:93b485f7: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:5e5b20b: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:ae3d218b: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:120fc3af: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:dd4d94fd: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:36336c1: anyException=false(-), converged=false, iterations=50, unknownState=false
+  snapshot335:ad12c377: anyException=false(-), converged=false, iterations=50, unknownState=false
+  ... 외 687건 (전체 상세는 STEP1 census 원본 참조)
 
-STEP2. Worst Case Library 재현성 (N=1 x 3건=3회): Success=0/3 (0.00%), Crash=0, 수렴실패=3, BudgetViolation=0
+STEP2. Worst Case Library 재현성 (N=10 x 52건=520회): Success=0/520 (0.00%), Crash=0, 수렴실패=520, BudgetViolation=0
 
-STEP3. Regression 재확인 (Goal D, wing-pairing 범위, N=1 trial, 14건 전체 population): N-trial 평균 True Regression rate=7.14% (허용 범위 초과). Primary(improved diff) mean=0.000, 95% CI=[0.000, 0.000], Cohen's d_z=0.000 (negligible).
-  [단일-pass 전체 census, 참고용]: True Regression=7.14%, Gap Rescue=21.43%, new Deadline Miss=0.00%, new Budget Violation=0.00%
+STEP3. Regression 재확인 (Goal D, wing-pairing 범위, N=30 trial, 75건 전체 population): N-trial 평균 True Regression rate=7.96% (허용 범위 초과). Primary(improved diff) mean=0.233, 95% CI=[-0.059, 0.526], Cohen's d_z=0.286 (small).
+  [단일-pass 전체 census, 참고용]: True Regression=6.67%, Gap Rescue=12.00%, new Deadline Miss=8.00%, new Budget Violation=0.00%
 
 Completeness Gate 판정:
-  Gate1 (Crash 0): PASS -- 전체 14건 중 Crash/Exception 0건.
-  Gate2 (Infinite Loop 0): FAIL -- 전체 14건 중 50회 반복 상한 내 wrongWingCount5==0에 도달하지 못한(수렴 실패) 건 14건.
+  Gate1 (Crash 0): PASS -- 전체 717건 중 Crash/Exception 0건.
+  Gate2 (Infinite Loop 0): FAIL -- 전체 717건 중 50회 반복 상한 내 wrongWingCount5==0에 도달하지 못한(수렴 실패) 건 717건.
   Gate3 (Budget Violation 0): PASS -- Wing-pairing 반복 호출 중 Recovery Trigger AND 해당 호출 자체의 Deadline Miss가 동시 발생한 Budget Violation 0건.
   Gate4 (Unknown State 0): PASS -- fullySolved===false이면서 Crash/수렴실패로 설명되지 않는 Unknown State 0건.
-  Gate5 (모든 Dataset Solve Success 100%): FAIL -- 전체 Success Rate=0.00% (0/14). 100% 미달 카테고리: snapshot335(0.00%), replay150(0.00%), scrambleDepth10(0.00%), scrambleDepth20(0.00%), scrambleDepth30(0.00%), scrambleDepth40(0.00%), scrambleDepth50(0.00%), scrambleDepth100(0.00%), worstCase(0.00%).
-  Gate6 (Regression 기존 Release Contract 유지): FAIL -- N=1-trial 평균 True Regression rate=7.14% (허용 5% 초과).
+  Gate5 (모든 Dataset Solve Success 100%): FAIL -- 전체 Success Rate=0.00% (0/717). 100% 미달 카테고리: snapshot335(0.00%), replay150(0.00%), scrambleDepth10(0.00%), scrambleDepth20(0.00%), scrambleDepth30(0.00%), scrambleDepth40(0.00%), scrambleDepth50(0.00%), scrambleDepth100(0.00%), worstCase(0.00%).
+  Gate6 (Regression 기존 Release Contract 유지): FAIL -- N=30-trial 평균 True Regression rate=7.96% (허용 5% 초과).
 
 Final Completeness Declaration: Completeness NOT Verified
