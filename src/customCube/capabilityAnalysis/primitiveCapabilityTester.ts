@@ -37,7 +37,7 @@ import type { CapabilityPrimitiveName, PrimitiveTestResult } from "./capabilityT
 // v2 findings) -- a capability TEST should give each primitive a fair
 // chance to prove what it CAN do, not reproduce production's own time
 // starvation.
-const TEST_DEADLINE_MS = 400;
+export const TEST_DEADLINE_MS = 400;
 
 // Mutates `clone` in place and returns the applied moves (matching the
 // same contract every existing pipeline function in this codebase uses --
@@ -59,13 +59,14 @@ function tryBaseApplied(clone: Cubie[], lib: ExecutorLibraries["lib"], deadline:
 export function testPrimitiveCapability(
   cubies: readonly Cubie[],
   primitive: CapabilityPrimitiveName,
-  libs: ExecutorLibraries
+  libs: ExecutorLibraries,
+  deadlineMs: number = TEST_DEADLINE_MS
 ): PrimitiveTestResult {
   const wrongWingBefore = wrongWingCount5(cubies as Cubie[]);
   const graphBefore = analyzeConstraints(buildStateGraph(cubies as Cubie[]));
 
   const clone = cloneCubies(cubies as Cubie[]);
-  const deadline = Date.now() + TEST_DEADLINE_MS;
+  const deadline = Date.now() + deadlineMs;
   const wrongCountAtStart = wrongWings5(clone).length;
   let applicable = wrongCountAtStart > 0;
   // Two different contracts converge here: BASE/RECOVERY already mutate
@@ -125,6 +126,10 @@ export function testPrimitiveCapability(
 
 const ALL_PRIMITIVES: CapabilityPrimitiveName[] = ["BASE", "FLIP", "CASE", "PARITY", "RECOVERY"];
 
-export function testAllCapabilities(cubies: readonly Cubie[], libs: ExecutorLibraries): PrimitiveTestResult[] {
-  return ALL_PRIMITIVES.map((p) => testPrimitiveCapability(cubies, p, libs));
+export function testAllCapabilities(
+  cubies: readonly Cubie[],
+  libs: ExecutorLibraries,
+  deadlineMs: number = TEST_DEADLINE_MS
+): PrimitiveTestResult[] {
+  return ALL_PRIMITIVES.map((p) => testPrimitiveCapability(cubies, p, libs, deadlineMs));
 }

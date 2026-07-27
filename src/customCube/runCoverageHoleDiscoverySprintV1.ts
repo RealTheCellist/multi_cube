@@ -31,18 +31,19 @@ function log(step: string, msg: string) {
   console.log(`[${new Date().toISOString()}] ${step}: ${msg}`);
 }
 
-interface SerializedHoleCase extends Omit<HoleCase, "cubies"> {
+interface SerializedHoleCase extends Omit<HoleCase, "cubies" | "originalCubies"> {
   cubiesJson: string;
+  originalCubiesJson: string;
 }
 
 function toSerializedHoleCase(hole: HoleCase): SerializedHoleCase {
-  const { cubies, ...rest } = hole;
-  return { ...rest, cubiesJson: serializeCube(cubies) };
+  const { cubies, originalCubies, ...rest } = hole;
+  return { ...rest, cubiesJson: serializeCube(cubies), originalCubiesJson: serializeCube(originalCubies) };
 }
 
 function fromSerializedHoleCase(serialized: SerializedHoleCase): HoleCase {
-  const { cubiesJson, ...rest } = serialized;
-  return { ...rest, cubies: deserializeCube(cubiesJson) };
+  const { cubiesJson, originalCubiesJson, ...rest } = serialized;
+  return { ...rest, cubies: deserializeCube(cubiesJson), originalCubies: deserializeCube(originalCubiesJson) };
 }
 
 function saveStep1Checkpoint(completedLabels: string[], holes: SerializedHoleCase[]) {

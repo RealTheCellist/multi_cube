@@ -43,6 +43,7 @@ export interface HoleCase {
   label: string;
   category: DatasetCase["category"];
   worstCaseTags?: string[];
+  originalCubies: Cubie[]; // state BEFORE centers/wing-pairing ran (the raw dataset case input) -- needed to distinguish a pre-existing structural feature from one created as a byproduct of the pipeline itself
   cubies: Cubie[]; // final stuck state
   wrongWingCount: number;
   wingPairingIterations: number;
@@ -92,6 +93,7 @@ export async function buildHoleCase(datasetCase: DatasetCase, libs: ExecutorLibr
     label: datasetCase.label,
     category: datasetCase.category,
     worstCaseTags: datasetCase.worstCaseTags,
+    originalCubies: cloneCubies(datasetCase.cubies),
     cubies: cloneCubies(cubies),
     wrongWingCount: wrongWingCount5(cubies),
     wingPairingIterations: result.wingPairingIterations,
