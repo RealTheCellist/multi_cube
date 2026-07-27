@@ -1,0 +1,222 @@
+{
+  "assignments": [
+    {
+      "clusterKey": "parity|cycle=long(5+)|no-conflict|wrongWing=9+",
+      "mechanismLabel": "Parity + long(5+) cycle",
+      "taxonomyClass": "PARITY_GATED_CYCLE",
+      "size": 25,
+      "anyPrimitiveApplicableCount": 11,
+      "avgWrongWingCount": 10.44,
+      "avgConflictCount": 0
+    },
+    {
+      "clusterKey": "no-parity|cycle=long(5+)|no-conflict|wrongWing=5-8",
+      "mechanismLabel": "Long multi-piece cycle, no parity",
+      "taxonomyClass": "CYCLE_ISOLATION",
+      "size": 21,
+      "anyPrimitiveApplicableCount": 1,
+      "avgWrongWingCount": 6.285714285714286,
+      "avgConflictCount": 0
+    },
+    {
+      "clusterKey": "no-parity|cycle=none|conflict|wrongWing=5-8",
+      "mechanismLabel": "Conflict-only (one-sided WANTS dependency, no cycle to resolve it)",
+      "taxonomyClass": "CONFLICT_DOMINANT",
+      "size": 15,
+      "anyPrimitiveApplicableCount": 0,
+      "avgWrongWingCount": 7.133333333333334,
+      "avgConflictCount": 7.133333333333334
+    },
+    {
+      "clusterKey": "no-parity|cycle=short(3-4)|no-conflict|wrongWing=5-8",
+      "mechanismLabel": "short(3-4) cycle, no parity",
+      "taxonomyClass": "CYCLE_ISOLATION",
+      "size": 12,
+      "anyPrimitiveApplicableCount": 0,
+      "avgWrongWingCount": 6.583333333333333,
+      "avgConflictCount": 0
+    },
+    {
+      "clusterKey": "no-parity|cycle=none|conflict|wrongWing=9+",
+      "mechanismLabel": "Conflict-only (one-sided WANTS dependency, no cycle to resolve it)",
+      "taxonomyClass": "CONFLICT_DOMINANT",
+      "size": 9,
+      "anyPrimitiveApplicableCount": 2,
+      "avgWrongWingCount": 9.11111111111111,
+      "avgConflictCount": 9.11111111111111
+    },
+    {
+      "clusterKey": "no-parity|cycle=long(5+)|no-conflict|wrongWing=9+",
+      "mechanismLabel": "Long multi-piece cycle, no parity",
+      "taxonomyClass": "CYCLE_ISOLATION",
+      "size": 8,
+      "anyPrimitiveApplicableCount": 1,
+      "avgWrongWingCount": 9.75,
+      "avgConflictCount": 0
+    },
+    {
+      "clusterKey": "parity|cycle=long(5+)|no-conflict|wrongWing=5-8",
+      "mechanismLabel": "Parity + long(5+) cycle",
+      "taxonomyClass": "PARITY_GATED_CYCLE",
+      "size": 8,
+      "anyPrimitiveApplicableCount": 0,
+      "avgWrongWingCount": 7.5,
+      "avgConflictCount": 0
+    },
+    {
+      "clusterKey": "parity|cycle=none|conflict|wrongWing=9+",
+      "mechanismLabel": "Parity without a resolvable cycle (parity flag set, but no cyclic wing dependency detected)",
+      "taxonomyClass": "CONFLICT_DOMINANT",
+      "size": 6,
+      "anyPrimitiveApplicableCount": 2,
+      "avgWrongWingCount": 9.833333333333334,
+      "avgConflictCount": 8.666666666666666
+    },
+    {
+      "clusterKey": "no-parity|cycle=short(3-4)|no-conflict|wrongWing=3-4",
+      "mechanismLabel": "short(3-4) cycle, no parity",
+      "taxonomyClass": "CYCLE_ISOLATION",
+      "size": 6,
+      "anyPrimitiveApplicableCount": 0,
+      "avgWrongWingCount": 3.5,
+      "avgConflictCount": 0
+    },
+    {
+      "clusterKey": "parity|cycle=short(3-4)|no-conflict|wrongWing=5-8",
+      "mechanismLabel": "Parity + short(3-4) cycle",
+      "taxonomyClass": "PARITY_GATED_CYCLE",
+      "size": 6,
+      "anyPrimitiveApplicableCount": 3,
+      "avgWrongWingCount": 6.333333333333333,
+      "avgConflictCount": 0
+    },
+    {
+      "clusterKey": "parity|cycle=short(3-4)|conflict|wrongWing=9+",
+      "mechanismLabel": "Parity + short(3-4) cycle",
+      "taxonomyClass": "PARITY_GATED_CYCLE",
+      "size": 5,
+      "anyPrimitiveApplicableCount": 1,
+      "avgWrongWingCount": 11,
+      "avgConflictCount": 7.2
+    },
+    {
+      "clusterKey": "parity|cycle=short(3-4)|no-conflict|wrongWing=9+",
+      "mechanismLabel": "Parity + short(3-4) cycle",
+      "taxonomyClass": "PARITY_GATED_CYCLE",
+      "size": 5,
+      "anyPrimitiveApplicableCount": 1,
+      "avgWrongWingCount": 9.6,
+      "avgConflictCount": 0
+    },
+    {
+      "clusterKey": "parity|cycle=swap(2)|conflict|wrongWing=9+",
+      "mechanismLabel": "Parity + swap(2) cycle",
+      "taxonomyClass": "PARITY_GATED_CYCLE",
+      "size": 4,
+      "anyPrimitiveApplicableCount": 2,
+      "avgWrongWingCount": 10.5,
+      "avgConflictCount": 7.5
+    },
+    {
+      "clusterKey": "no-parity|cycle=short(3-4)|no-conflict|wrongWing=9+",
+      "mechanismLabel": "short(3-4) cycle, no parity",
+      "taxonomyClass": "CYCLE_ISOLATION",
+      "size": 3,
+      "anyPrimitiveApplicableCount": 1,
+      "avgWrongWingCount": 9.666666666666666,
+      "avgConflictCount": 0
+    },
+    {
+      "clusterKey": "parity|cycle=none|conflict|wrongWing=5-8",
+      "mechanismLabel": "Parity without a resolvable cycle (parity flag set, but no cyclic wing dependency detected)",
+      "taxonomyClass": "CONFLICT_DOMINANT",
+      "size": 3,
+      "anyPrimitiveApplicableCount": 0,
+      "avgWrongWingCount": 8,
+      "avgConflictCount": 7
+    },
+    {
+      "clusterKey": "parity|cycle=long(5+)|conflict|wrongWing=9+",
+      "mechanismLabel": "Parity + long(5+) cycle",
+      "taxonomyClass": "PARITY_GATED_CYCLE",
+      "size": 2,
+      "anyPrimitiveApplicableCount": 2,
+      "avgWrongWingCount": 13,
+      "avgConflictCount": 6
+    },
+    {
+      "clusterKey": "no-parity|cycle=swap(2)|no-conflict|wrongWing=5-8",
+      "mechanismLabel": "Locked Pair (2-cycle mutual lock, no parity)",
+      "taxonomyClass": "LOCKED_PAIR",
+      "size": 1,
+      "anyPrimitiveApplicableCount": 0,
+      "avgWrongWingCount": 6,
+      "avgConflictCount": 0
+    },
+    {
+      "clusterKey": "no-parity|cycle=swap(2)|conflict|wrongWing=9+",
+      "mechanismLabel": "Locked Pair (2-cycle mutual lock, no parity)",
+      "taxonomyClass": "LOCKED_PAIR",
+      "size": 1,
+      "anyPrimitiveApplicableCount": 1,
+      "avgWrongWingCount": 9,
+      "avgConflictCount": 7
+    },
+    {
+      "clusterKey": "no-parity|cycle=swap(2)|no-conflict|wrongWing=1-2",
+      "mechanismLabel": "Locked Pair (2-cycle mutual lock, no parity)",
+      "taxonomyClass": "LOCKED_PAIR",
+      "size": 1,
+      "anyPrimitiveApplicableCount": 0,
+      "avgWrongWingCount": 2,
+      "avgConflictCount": 0
+    },
+    {
+      "clusterKey": "parity|cycle=swap(2)|no-conflict|wrongWing=5-8",
+      "mechanismLabel": "Parity + swap(2) cycle",
+      "taxonomyClass": "PARITY_GATED_CYCLE",
+      "size": 1,
+      "anyPrimitiveApplicableCount": 0,
+      "avgWrongWingCount": 5,
+      "avgConflictCount": 0
+    }
+  ],
+  "summary": [
+    {
+      "taxonomyClass": "PARITY_GATED_CYCLE",
+      "label": "Parity-Gated Cycle (parity flag + a cycle -- NOT in Directive's example list)",
+      "clusterCount": 8,
+      "totalCases": 56,
+      "share": 0.39436619718309857,
+      "anyPrimitiveApplicableCount": 20,
+      "anyPrimitiveApplicableShare": 0.35714285714285715
+    },
+    {
+      "taxonomyClass": "CYCLE_ISOLATION",
+      "label": "Cycle Isolation (isolated 3+ cycle, no conflict, no parity)",
+      "clusterCount": 5,
+      "totalCases": 50,
+      "share": 0.352112676056338,
+      "anyPrimitiveApplicableCount": 3,
+      "anyPrimitiveApplicableShare": 0.06
+    },
+    {
+      "taxonomyClass": "CONFLICT_DOMINANT",
+      "label": "Conflict Dominant (one-sided WANTS, no cycle)",
+      "clusterCount": 4,
+      "totalCases": 33,
+      "share": 0.2323943661971831,
+      "anyPrimitiveApplicableCount": 4,
+      "anyPrimitiveApplicableShare": 0.12121212121212122
+    },
+    {
+      "taxonomyClass": "LOCKED_PAIR",
+      "label": "Locked Pair (2-cycle mutual lock)",
+      "clusterCount": 3,
+      "totalCases": 3,
+      "share": 0.02112676056338028,
+      "anyPrimitiveApplicableCount": 1,
+      "anyPrimitiveApplicableShare": 0.3333333333333333
+    }
+  ]
+}

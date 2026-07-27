@@ -1,0 +1,36 @@
+State Taxonomy Sprint v1 -- Report (Solver Completeness Achievement Program, Phase 2 STEP1)
+Generated: 2026-07-27T05:46:51.075Z
+Source: src/customCube/coverageAtlas/data/coverage-hole-discovery-v1-result.json (Coverage Hole Discovery Sprint v1, 142-case Hole Dataset, 20 Dead State Clusters)
+
+1. Taxonomy Class summary (consolidated from 20 raw feature-clusters)
+  Parity-Gated Cycle (parity flag + a cycle -- NOT in Directive's example list): 56/142 cases (39.4%) across 8 cluster(s), anyPrimitiveApplicable=20/56 (35.7%)
+  Cycle Isolation (isolated 3+ cycle, no conflict, no parity): 50/142 cases (35.2%) across 5 cluster(s), anyPrimitiveApplicable=3/50 (6.0%)
+  Conflict Dominant (one-sided WANTS, no cycle): 33/142 cases (23.2%) across 4 cluster(s), anyPrimitiveApplicable=4/33 (12.1%)
+  Locked Pair (2-cycle mutual lock): 3/142 cases (2.1%) across 3 cluster(s), anyPrimitiveApplicable=1/3 (33.3%)
+
+2. Per-cluster assignment
+  [25 cases] PARITY_GATED_CYCLE <- "Parity + long(5+) cycle" (key=parity|cycle=long(5+)|no-conflict|wrongWing=9+)
+  [21 cases] CYCLE_ISOLATION <- "Long multi-piece cycle, no parity" (key=no-parity|cycle=long(5+)|no-conflict|wrongWing=5-8)
+  [15 cases] CONFLICT_DOMINANT <- "Conflict-only (one-sided WANTS dependency, no cycle to resolve it)" (key=no-parity|cycle=none|conflict|wrongWing=5-8)
+  [12 cases] CYCLE_ISOLATION <- "short(3-4) cycle, no parity" (key=no-parity|cycle=short(3-4)|no-conflict|wrongWing=5-8)
+  [9 cases] CONFLICT_DOMINANT <- "Conflict-only (one-sided WANTS dependency, no cycle to resolve it)" (key=no-parity|cycle=none|conflict|wrongWing=9+)
+  [8 cases] CYCLE_ISOLATION <- "Long multi-piece cycle, no parity" (key=no-parity|cycle=long(5+)|no-conflict|wrongWing=9+)
+  [8 cases] PARITY_GATED_CYCLE <- "Parity + long(5+) cycle" (key=parity|cycle=long(5+)|no-conflict|wrongWing=5-8)
+  [6 cases] CONFLICT_DOMINANT <- "Parity without a resolvable cycle (parity flag set, but no cyclic wing dependency detected)" (key=parity|cycle=none|conflict|wrongWing=9+)
+  [6 cases] CYCLE_ISOLATION <- "short(3-4) cycle, no parity" (key=no-parity|cycle=short(3-4)|no-conflict|wrongWing=3-4)
+  [6 cases] PARITY_GATED_CYCLE <- "Parity + short(3-4) cycle" (key=parity|cycle=short(3-4)|no-conflict|wrongWing=5-8)
+  [5 cases] PARITY_GATED_CYCLE <- "Parity + short(3-4) cycle" (key=parity|cycle=short(3-4)|conflict|wrongWing=9+)
+  [5 cases] PARITY_GATED_CYCLE <- "Parity + short(3-4) cycle" (key=parity|cycle=short(3-4)|no-conflict|wrongWing=9+)
+  [4 cases] PARITY_GATED_CYCLE <- "Parity + swap(2) cycle" (key=parity|cycle=swap(2)|conflict|wrongWing=9+)
+  [3 cases] CYCLE_ISOLATION <- "short(3-4) cycle, no parity" (key=no-parity|cycle=short(3-4)|no-conflict|wrongWing=9+)
+  [3 cases] CONFLICT_DOMINANT <- "Parity without a resolvable cycle (parity flag set, but no cyclic wing dependency detected)" (key=parity|cycle=none|conflict|wrongWing=5-8)
+  [2 cases] PARITY_GATED_CYCLE <- "Parity + long(5+) cycle" (key=parity|cycle=long(5+)|conflict|wrongWing=9+)
+  [1 cases] LOCKED_PAIR <- "Locked Pair (2-cycle mutual lock, no parity)" (key=no-parity|cycle=swap(2)|no-conflict|wrongWing=5-8)
+  [1 cases] LOCKED_PAIR <- "Locked Pair (2-cycle mutual lock, no parity)" (key=no-parity|cycle=swap(2)|conflict|wrongWing=9+)
+  [1 cases] LOCKED_PAIR <- "Locked Pair (2-cycle mutual lock, no parity)" (key=no-parity|cycle=swap(2)|no-conflict|wrongWing=1-2)
+  [1 cases] PARITY_GATED_CYCLE <- "Parity + swap(2) cycle" (key=parity|cycle=swap(2)|no-conflict|wrongWing=5-8)
+
+3. Directive-named categories NOT confirmable from this dataset
+  Bridge Missing: Would require multi-component structural analysis (is there a piece that could bridge two disjoint WANTS-graph components?) -- componentCount was computed per-case in Phase 1 (HoleStructuralProfile.componentCount) but not persisted at cluster granularity in the final result JSON, and the underlying Cubie[] states themselves were not retained (data-retention bug fixed after this Sprint, see Appendix). Needs a fresh targeted re-run.
+  Deferred Trap: Would require observing state evolution over multiple solve() attempts (a trap that only manifests after several turns since a prior fix) -- this Sprint tested each stuck state in isolation (single scratch-clone snapshot), not as a trajectory. Needs a different measurement design entirely.
+  Symmetric Trap: Would require checking the stuck state against the cube's symmetry group (states equivalent under rotation/reflection that defeat the same search uniformly) -- no symmetry-detection code exists anywhere in this codebase (verified by search). Would be new infrastructure, not a reclassification of existing data.
