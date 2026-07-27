@@ -1,0 +1,31 @@
+Recovery Necessity Validation Sprint v1 -- Report
+Generated: 2026-07-27T13:18:16.917Z
+
+1. Ground Truth Summary (RQ-1, RQ-2)
+  Total cases: 142
+  Reachable WITHOUT Recovery (main pipeline BASE/FLIP/CASE/PARITY, baseline+extended budget): 92/142 (64.8%)
+  Requires Recovery (Recovery is the ONLY path found): 3/142 (2.1%)
+  Recovery Optional (Recovery succeeds but so does something else): 5/142
+  Recovery Unnecessary (neither Recovery nor main pipeline can be credited): 134/142
+
+2. Recovery Necessity Funnel (Need -> Triggered -> Candidate Generated -> Solved)
+  Need Recovery: 3
+  ...of which Triggered: 3/3
+  ...of which Candidate Generated: 0/3
+  ...of which Solved (this single fresh call): 0/3
+  (Population-wide, regardless of need) Total Triggered: 92/142, Candidate Generated: 1/142, Solved: 0/142
+
+3. Recovery Precision / Recall / F1 (RQ-4)
+  TP=3, FP=89, FN=0, TN=50
+  Precision (of triggers, how many were truly necessary): 3.26%
+  Recall (of truly-necessary cases, how many were triggered): 100.00%
+  F1: 6.32%
+  Recovery Opportunity Loss (needed but NOT even triggered): 0 case(s): (none)
+
+4. Population Classification + Structural Profile (RQ-3)
+  RECOVERY_REQUIRED: 3 cases -- labels: worstCase:b714481, worstCase:1e928fb1, scrambleDepth10:8
+    profile: avgCycleLength=6.00, avgWrongWingCount=7.33, avgConflictEdgeCount=0.00, avgComponentCount=1.33, parityRate=33.3%
+  RECOVERY_OPTIONAL: 5 cases
+    profile: avgCycleLength=5.40, avgWrongWingCount=11.00, avgConflictEdgeCount=0.00, avgComponentCount=1.80, parityRate=80.0%
+  RECOVERY_UNNECESSARY: 134 cases
+    profile: avgCycleLength=3.49, avgWrongWingCount=7.85, avgConflictEdgeCount=2.43, avgComponentCount=1.40, parityRate=43.3%

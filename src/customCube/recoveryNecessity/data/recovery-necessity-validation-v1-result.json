@@ -1,0 +1,2622 @@
+{
+  "groundTruthSummary": {
+    "totalCases": 142,
+    "reachableWithoutRecoveryCount": 92,
+    "requiresRecoveryCount": 3,
+    "recoveryOptionalCount": 5,
+    "recoveryUnnecessaryCount": 134
+  },
+  "groundTruthRows": [
+    {
+      "label": "worstCase:45959141",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:46086463",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:64369533",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:68977335",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:84976575",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:f17d7eb9",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:70a5020b",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:7541612b",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:b714481",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": true,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": true,
+      "requiresRecovery": true,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:beb967ad",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:1e928fb1",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": true,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": true,
+      "requiresRecovery": true,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:4549b041",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:1513fcff",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:d37ca819",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:ae3d218b",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:120fc3af",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:dd4d94fd",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:36336c1",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:ad12c377",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:e7a801fb",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:1af658ab",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:4e27e5a1",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:93b485f7",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:5e5b20b",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:e5101f85",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": true,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": true
+    },
+    {
+      "label": "worstCase:4749cd9d",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:d27df773",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:c039e611",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:b2c9ceb9",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:589b0a25",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:cee673eb",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:e9009e73",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:e8be823",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:14f5293f",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:f776edb1",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:2db21feb",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:849509c9",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:c0277d5d",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:f5f1b8fd",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": true,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": true
+    },
+    {
+      "label": "worstCase:a005d41f",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:224f6f8b",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:252f8891",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:5f7ee009",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:d3283799",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:710de4d1",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:5d189c1",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:669f43ff",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:42c89b9",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": true,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": true
+    },
+    {
+      "label": "worstCase:3cece8ff",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "worstCase:44b9b619",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:12022029",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:27053491",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:45959141",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:46086463",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:64369533",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:68977335",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:84976575",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:f17d7eb9",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:a061555d",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:dda1453f",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:e7a801fb",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:1af658ab",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:70a5020b",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:56a8b82d",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:7541612b",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:b714481",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:beb967ad",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:1e928fb1",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:4549b041",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:4e27e5a1",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:d37ca819",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:93b485f7",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:5e5b20b",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:120fc3af",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:dd4d94fd",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:36336c1",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "snapshot335:ad12c377",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth10:0",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth10:1",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth10:2",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth10:4",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth10:5",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth10:6",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth10:8",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": true,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": true,
+      "requiresRecovery": true,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth10:9",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth20:0",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth20:1",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth20:2",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth20:3",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth20:4",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth20:5",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth20:6",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth20:7",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth20:9",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth30:0",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth30:1",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth30:2",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth30:3",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth30:4",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth30:5",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth30:6",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth30:7",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth30:8",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth30:9",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth40:0",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth40:1",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth40:2",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth40:3",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth40:4",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth40:5",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth40:6",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth40:8",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth40:9",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth50:0",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth50:1",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth50:2",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth50:3",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth50:4",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth50:5",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth50:6",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth50:7",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth50:8",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": true,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": true
+    },
+    {
+      "label": "scrambleDepth50:9",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth100:0",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth100:1",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth100:2",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth100:3",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth100:4",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth100:6",
+      "baselineNonRecoverySucceeded": true,
+      "extendedTestRun": false,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth100:7",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": false,
+      "extendedRecoverySucceeded": false,
+      "reachableWithoutRecovery": false,
+      "reachableWithRecovery": false,
+      "requiresRecovery": false,
+      "recoveryOptional": false
+    },
+    {
+      "label": "scrambleDepth100:9",
+      "baselineNonRecoverySucceeded": false,
+      "extendedTestRun": true,
+      "extendedNonRecoverySucceeded": true,
+      "extendedRecoverySucceeded": true,
+      "reachableWithoutRecovery": true,
+      "reachableWithRecovery": true,
+      "requiresRecovery": false,
+      "recoveryOptional": true
+    }
+  ],
+  "funnelSummary": {
+    "need": 3,
+    "triggeredGivenNeed": 3,
+    "candidateGeneratedGivenNeed": 0,
+    "solvedGivenNeed": 0,
+    "totalTriggered": 92,
+    "totalCandidateGenerated": 1,
+    "totalSolved": 0
+  },
+  "funnelRows": [
+    {
+      "label": "worstCase:45959141",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:46086463",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:64369533",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:68977335",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:84976575",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:f17d7eb9",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:70a5020b",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:7541612b",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:b714481",
+      "requiresRecovery": true,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:beb967ad",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:1e928fb1",
+      "requiresRecovery": true,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:4549b041",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:1513fcff",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:d37ca819",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:ae3d218b",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:120fc3af",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:dd4d94fd",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:36336c1",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:ad12c377",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:e7a801fb",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:1af658ab",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:4e27e5a1",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:93b485f7",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:5e5b20b",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:e5101f85",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:4749cd9d",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:d27df773",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:c039e611",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:b2c9ceb9",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:589b0a25",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:cee673eb",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:e9009e73",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:e8be823",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:14f5293f",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:f776edb1",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:2db21feb",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:849509c9",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:c0277d5d",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:f5f1b8fd",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:a005d41f",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:224f6f8b",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:252f8891",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:5f7ee009",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:d3283799",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:710de4d1",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:5d189c1",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:669f43ff",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:42c89b9",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:3cece8ff",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "worstCase:44b9b619",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:12022029",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:27053491",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:45959141",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:46086463",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:64369533",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:68977335",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:84976575",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:f17d7eb9",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:a061555d",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:dda1453f",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:e7a801fb",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:1af658ab",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:70a5020b",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:56a8b82d",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:7541612b",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:b714481",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:beb967ad",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:1e928fb1",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:4549b041",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:4e27e5a1",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:d37ca819",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:93b485f7",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:5e5b20b",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:120fc3af",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:dd4d94fd",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:36336c1",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "snapshot335:ad12c377",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth10:0",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth10:1",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth10:2",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth10:4",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth10:5",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth10:6",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth10:8",
+      "requiresRecovery": true,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth10:9",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth20:0",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth20:1",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth20:2",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": true,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth20:3",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth20:4",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth20:5",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth20:6",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth20:7",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth20:9",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth30:0",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth30:1",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth30:2",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth30:3",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth30:4",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth30:5",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth30:6",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth30:7",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth30:8",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth30:9",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth40:0",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth40:1",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth40:2",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth40:3",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth40:4",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth40:5",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth40:6",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth40:8",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth40:9",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth50:0",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth50:1",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth50:2",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth50:3",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth50:4",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth50:5",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth50:6",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth50:7",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth50:8",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth50:9",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth100:0",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth100:1",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth100:2",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth100:3",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth100:4",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth100:6",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth100:7",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "requiresRecovery": false,
+      "triggered": true,
+      "candidateGenerated": false,
+      "solved": false
+    },
+    {
+      "label": "scrambleDepth100:9",
+      "requiresRecovery": false,
+      "triggered": false,
+      "candidateGenerated": false,
+      "solved": false
+    }
+  ],
+  "precisionRecall": {
+    "truePositive": 3,
+    "falsePositive": 89,
+    "falseNegative": 0,
+    "trueNegative": 50,
+    "precision": 0.03260869565217391,
+    "recall": 1,
+    "f1": 0.06315789473684211,
+    "opportunityLossCases": []
+  },
+  "populationSummary": {
+    "requiredCount": 3,
+    "optionalCount": 5,
+    "unnecessaryCount": 134,
+    "requiredProfile": {
+      "avgCycleLength": 6,
+      "avgWrongWingCount": 7.333333333333333,
+      "avgConflictEdgeCount": 0,
+      "avgComponentCount": 1.3333333333333333,
+      "parityRate": 0.3333333333333333,
+      "n": 3
+    },
+    "optionalProfile": {
+      "avgCycleLength": 5.4,
+      "avgWrongWingCount": 11,
+      "avgConflictEdgeCount": 0,
+      "avgComponentCount": 1.8,
+      "parityRate": 0.8,
+      "n": 5
+    },
+    "unnecessaryProfile": {
+      "avgCycleLength": 3.4925373134328357,
+      "avgWrongWingCount": 7.850746268656716,
+      "avgConflictEdgeCount": 2.4328358208955225,
+      "avgComponentCount": 1.3955223880597014,
+      "parityRate": 0.43283582089552236,
+      "n": 134
+    },
+    "requiredCaseLabels": [
+      "worstCase:b714481",
+      "worstCase:1e928fb1",
+      "scrambleDepth10:8"
+    ]
+  }
+}
