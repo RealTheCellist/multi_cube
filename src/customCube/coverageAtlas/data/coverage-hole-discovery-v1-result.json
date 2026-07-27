@@ -1,0 +1,397 @@
+{
+  "generatedAt": "2026-07-27T05:40:59.148Z",
+  "inputCaseCount": 142,
+  "holeCount": 142,
+  "trueCoverageHoleCount": 114,
+  "reachableButUnexploitedCount": 28,
+  "zeroMoveLoopSummary": {
+    "totalCases": 142,
+    "confirmedZeroMoveLoopCount": 142,
+    "confirmedZeroMoveLoopShare": 1,
+    "partiallyStochasticCount": 0,
+    "avgEmptyMoveQueueRate": 1
+  },
+  "conflictSummary": {
+    "totalCases": 142,
+    "casesWithAnyConflict": 45,
+    "casesWithAnyConflictShare": 0.31690140845070425,
+    "casesWithSolvedPairTargetConflict": 0,
+    "avgConflictEdgesPerCase": 2.443661971830986,
+    "conflictPresentAndNoPrimitiveApplicable": 35,
+    "conflictAbsentAndNoPrimitiveApplicable": 79
+  },
+  "clusters": [
+    {
+      "key": "parity|cycle=long(5+)|no-conflict|wrongWing=9+",
+      "mechanismLabel": "Parity + long(5+) cycle",
+      "members": [
+        "worstCase:46086463",
+        "worstCase:d37ca819",
+        "worstCase:dd4d94fd",
+        "worstCase:e5101f85",
+        "worstCase:d27df773",
+        "worstCase:c039e611",
+        "worstCase:b2c9ceb9",
+        "worstCase:cee673eb",
+        "worstCase:e9009e73",
+        "worstCase:5d189c1",
+        "worstCase:42c89b9",
+        "snapshot335:45959141",
+        "snapshot335:46086463",
+        "snapshot335:dd4d94fd",
+        "scrambleDepth10:0",
+        "scrambleDepth20:1",
+        "scrambleDepth30:8",
+        "scrambleDepth40:4",
+        "scrambleDepth40:8",
+        "scrambleDepth50:0",
+        "scrambleDepth50:4",
+        "scrambleDepth50:6",
+        "scrambleDepth50:9",
+        "scrambleDepth100:2",
+        "scrambleDepth100:7"
+      ],
+      "size": 25,
+      "share": 0.176056338028169,
+      "anyPrimitiveApplicableCount": 11,
+      "avgWrongWingCount": 10.44,
+      "avgConflictCount": 0
+    },
+    {
+      "key": "no-parity|cycle=long(5+)|no-conflict|wrongWing=5-8",
+      "mechanismLabel": "Long multi-piece cycle, no parity",
+      "members": [
+        "worstCase:56a8b82d",
+        "worstCase:7541612b",
+        "worstCase:1513fcff",
+        "worstCase:4749cd9d",
+        "worstCase:14f5293f",
+        "worstCase:849509c9",
+        "worstCase:224f6f8b",
+        "snapshot335:dda1453f",
+        "snapshot335:56a8b82d",
+        "snapshot335:7541612b",
+        "snapshot335:b714481",
+        "snapshot335:4549b041",
+        "snapshot335:1513fcff",
+        "scrambleDepth10:5",
+        "scrambleDepth10:8",
+        "scrambleDepth20:2",
+        "scrambleDepth20:3",
+        "scrambleDepth20:6",
+        "scrambleDepth20:8",
+        "scrambleDepth30:5",
+        "scrambleDepth50:2"
+      ],
+      "size": 21,
+      "share": 0.14788732394366197,
+      "anyPrimitiveApplicableCount": 1,
+      "avgWrongWingCount": 6.285714285714286,
+      "avgConflictCount": 0
+    },
+    {
+      "key": "no-parity|cycle=none|conflict|wrongWing=5-8",
+      "mechanismLabel": "Conflict-only (one-sided WANTS dependency, no cycle to resolve it)",
+      "members": [
+        "worstCase:68977335",
+        "worstCase:70a5020b",
+        "worstCase:ae3d218b",
+        "worstCase:5f7ee009",
+        "snapshot335:27053491",
+        "snapshot335:68977335",
+        "snapshot335:70a5020b",
+        "snapshot335:d37ca819",
+        "snapshot335:5e5b20b",
+        "snapshot335:ae3d218b",
+        "scrambleDepth10:2",
+        "scrambleDepth20:9",
+        "scrambleDepth30:1",
+        "scrambleDepth100:5",
+        "scrambleDepth100:8"
+      ],
+      "size": 15,
+      "share": 0.1056338028169014,
+      "anyPrimitiveApplicableCount": 0,
+      "avgWrongWingCount": 7.133333333333334,
+      "avgConflictCount": 7.133333333333334
+    },
+    {
+      "key": "no-parity|cycle=short(3-4)|no-conflict|wrongWing=5-8",
+      "mechanismLabel": "short(3-4) cycle, no parity",
+      "members": [
+        "worstCase:f17d7eb9",
+        "worstCase:120fc3af",
+        "worstCase:36336c1",
+        "worstCase:710de4d1",
+        "snapshot335:a061555d",
+        "snapshot335:1e928fb1",
+        "scrambleDepth10:7",
+        "scrambleDepth30:0",
+        "scrambleDepth30:6",
+        "scrambleDepth30:7",
+        "scrambleDepth50:8",
+        "scrambleDepth100:4"
+      ],
+      "size": 12,
+      "share": 0.08450704225352113,
+      "anyPrimitiveApplicableCount": 0,
+      "avgWrongWingCount": 6.583333333333333,
+      "avgConflictCount": 0
+    },
+    {
+      "key": "no-parity|cycle=none|conflict|wrongWing=9+",
+      "mechanismLabel": "Conflict-only (one-sided WANTS dependency, no cycle to resolve it)",
+      "members": [
+        "worstCase:93b485f7",
+        "worstCase:f776edb1",
+        "snapshot335:93b485f7",
+        "scrambleDepth10:6",
+        "scrambleDepth10:9",
+        "scrambleDepth20:0",
+        "scrambleDepth30:9",
+        "scrambleDepth40:0",
+        "scrambleDepth50:1"
+      ],
+      "size": 9,
+      "share": 0.06338028169014084,
+      "anyPrimitiveApplicableCount": 2,
+      "avgWrongWingCount": 9.11111111111111,
+      "avgConflictCount": 9.11111111111111
+    },
+    {
+      "key": "no-parity|cycle=long(5+)|no-conflict|wrongWing=9+",
+      "mechanismLabel": "Long multi-piece cycle, no parity",
+      "members": [
+        "worstCase:45959141",
+        "worstCase:beb967ad",
+        "snapshot335:f17d7eb9",
+        "snapshot335:beb967ad",
+        "scrambleDepth10:4",
+        "scrambleDepth40:3",
+        "scrambleDepth50:3",
+        "scrambleDepth100:9"
+      ],
+      "size": 8,
+      "share": 0.056338028169014086,
+      "anyPrimitiveApplicableCount": 1,
+      "avgWrongWingCount": 9.75,
+      "avgConflictCount": 0
+    },
+    {
+      "key": "parity|cycle=long(5+)|no-conflict|wrongWing=5-8",
+      "mechanismLabel": "Parity + long(5+) cycle",
+      "members": [
+        "worstCase:84976575",
+        "worstCase:d3283799",
+        "snapshot335:84976575",
+        "snapshot335:60b5c3b1",
+        "snapshot335:120fc3af",
+        "scrambleDepth20:7",
+        "scrambleDepth30:4",
+        "scrambleDepth100:1"
+      ],
+      "size": 8,
+      "share": 0.056338028169014086,
+      "anyPrimitiveApplicableCount": 0,
+      "avgWrongWingCount": 7.5,
+      "avgConflictCount": 0
+    },
+    {
+      "key": "parity|cycle=none|conflict|wrongWing=9+",
+      "mechanismLabel": "Parity without a resolvable cycle (parity flag set, but no cyclic wing dependency detected)",
+      "members": [
+        "worstCase:1e928fb1",
+        "worstCase:de8abca9",
+        "worstCase:2db21feb",
+        "worstCase:f5f1b8fd",
+        "snapshot335:12022029",
+        "scrambleDepth100:0"
+      ],
+      "size": 6,
+      "share": 0.04225352112676056,
+      "anyPrimitiveApplicableCount": 2,
+      "avgWrongWingCount": 9.833333333333334,
+      "avgConflictCount": 8.666666666666666
+    },
+    {
+      "key": "no-parity|cycle=short(3-4)|no-conflict|wrongWing=3-4",
+      "mechanismLabel": "short(3-4) cycle, no parity",
+      "members": [
+        "worstCase:4549b041",
+        "worstCase:5e5b20b",
+        "worstCase:589b0a25",
+        "snapshot335:1af658ab",
+        "scrambleDepth10:1",
+        "scrambleDepth50:7"
+      ],
+      "size": 6,
+      "share": 0.04225352112676056,
+      "anyPrimitiveApplicableCount": 0,
+      "avgWrongWingCount": 3.5,
+      "avgConflictCount": 0
+    },
+    {
+      "key": "parity|cycle=short(3-4)|no-conflict|wrongWing=5-8",
+      "mechanismLabel": "Parity + short(3-4) cycle",
+      "members": [
+        "worstCase:e7a801fb",
+        "worstCase:a005d41f",
+        "snapshot335:e7a801fb",
+        "snapshot335:36336c1",
+        "scrambleDepth40:1",
+        "scrambleDepth40:7"
+      ],
+      "size": 6,
+      "share": 0.04225352112676056,
+      "anyPrimitiveApplicableCount": 3,
+      "avgWrongWingCount": 6.333333333333333,
+      "avgConflictCount": 0
+    },
+    {
+      "key": "parity|cycle=short(3-4)|conflict|wrongWing=9+",
+      "mechanismLabel": "Parity + short(3-4) cycle",
+      "members": [
+        "worstCase:e8be823",
+        "worstCase:252f8891",
+        "worstCase:669f43ff",
+        "scrambleDepth20:4",
+        "scrambleDepth50:5"
+      ],
+      "size": 5,
+      "share": 0.035211267605633804,
+      "anyPrimitiveApplicableCount": 1,
+      "avgWrongWingCount": 11,
+      "avgConflictCount": 7.2
+    },
+    {
+      "key": "parity|cycle=short(3-4)|no-conflict|wrongWing=9+",
+      "mechanismLabel": "Parity + short(3-4) cycle",
+      "members": [
+        "snapshot335:ad12c377",
+        "scrambleDepth10:3",
+        "scrambleDepth20:5",
+        "scrambleDepth30:2",
+        "scrambleDepth40:5"
+      ],
+      "size": 5,
+      "share": 0.035211267605633804,
+      "anyPrimitiveApplicableCount": 1,
+      "avgWrongWingCount": 9.6,
+      "avgConflictCount": 0
+    },
+    {
+      "key": "parity|cycle=swap(2)|conflict|wrongWing=9+",
+      "mechanismLabel": "Parity + swap(2) cycle",
+      "members": [
+        "scrambleDepth30:3",
+        "scrambleDepth40:9",
+        "scrambleDepth100:3",
+        "scrambleDepth100:6"
+      ],
+      "size": 4,
+      "share": 0.028169014084507043,
+      "anyPrimitiveApplicableCount": 2,
+      "avgWrongWingCount": 10.5,
+      "avgConflictCount": 7.5
+    },
+    {
+      "key": "no-parity|cycle=short(3-4)|no-conflict|wrongWing=9+",
+      "mechanismLabel": "short(3-4) cycle, no parity",
+      "members": [
+        "worstCase:64369533",
+        "worstCase:3cece8ff",
+        "snapshot335:64369533"
+      ],
+      "size": 3,
+      "share": 0.02112676056338028,
+      "anyPrimitiveApplicableCount": 1,
+      "avgWrongWingCount": 9.666666666666666,
+      "avgConflictCount": 0
+    },
+    {
+      "key": "parity|cycle=none|conflict|wrongWing=5-8",
+      "mechanismLabel": "Parity without a resolvable cycle (parity flag set, but no cyclic wing dependency detected)",
+      "members": [
+        "worstCase:4e27e5a1",
+        "worstCase:44b9b619",
+        "snapshot335:4e27e5a1"
+      ],
+      "size": 3,
+      "share": 0.02112676056338028,
+      "anyPrimitiveApplicableCount": 0,
+      "avgWrongWingCount": 8,
+      "avgConflictCount": 7
+    },
+    {
+      "key": "parity|cycle=long(5+)|conflict|wrongWing=9+",
+      "mechanismLabel": "Parity + long(5+) cycle",
+      "members": [
+        "worstCase:c0277d5d",
+        "scrambleDepth40:6"
+      ],
+      "size": 2,
+      "share": 0.014084507042253521,
+      "anyPrimitiveApplicableCount": 2,
+      "avgWrongWingCount": 13,
+      "avgConflictCount": 6
+    },
+    {
+      "key": "no-parity|cycle=swap(2)|no-conflict|wrongWing=5-8",
+      "mechanismLabel": "Locked Pair (2-cycle mutual lock, no parity)",
+      "members": [
+        "worstCase:b714481"
+      ],
+      "size": 1,
+      "share": 0.007042253521126761,
+      "anyPrimitiveApplicableCount": 0,
+      "avgWrongWingCount": 6,
+      "avgConflictCount": 0
+    },
+    {
+      "key": "no-parity|cycle=swap(2)|conflict|wrongWing=9+",
+      "mechanismLabel": "Locked Pair (2-cycle mutual lock, no parity)",
+      "members": [
+        "worstCase:ad12c377"
+      ],
+      "size": 1,
+      "share": 0.007042253521126761,
+      "anyPrimitiveApplicableCount": 1,
+      "avgWrongWingCount": 9,
+      "avgConflictCount": 7
+    },
+    {
+      "key": "no-parity|cycle=swap(2)|no-conflict|wrongWing=1-2",
+      "mechanismLabel": "Locked Pair (2-cycle mutual lock, no parity)",
+      "members": [
+        "worstCase:1af658ab"
+      ],
+      "size": 1,
+      "share": 0.007042253521126761,
+      "anyPrimitiveApplicableCount": 0,
+      "avgWrongWingCount": 2,
+      "avgConflictCount": 0
+    },
+    {
+      "key": "parity|cycle=swap(2)|no-conflict|wrongWing=5-8",
+      "mechanismLabel": "Parity + swap(2) cycle",
+      "members": [
+        "scrambleDepth40:2"
+      ],
+      "size": 1,
+      "share": 0.007042253521126761,
+      "anyPrimitiveApplicableCount": 0,
+      "avgWrongWingCount": 5,
+      "avgConflictCount": 0
+    }
+  ],
+  "aggregateNodeTypeCounts": {
+    "SolvedPair": 638,
+    "WingPair": 970,
+    "BrokenPair": 96
+  },
+  "aggregateEdgeTypeCounts": {
+    "SWAP": 82,
+    "CYCLE": 718,
+    "CONFLICT": 347
+  }
+}
