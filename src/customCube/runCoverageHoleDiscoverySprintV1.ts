@@ -12,6 +12,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { serializeCube, deserializeCube } from "./failureAnalysis/cubeSerialization";
+
 import { buildHoleCase, buildLibs, selectHoleDiscoveryInputCases, type HoleCase } from "./coverageAtlas/HoleDatasetBuilder";
 import { clusterDeadStates, profileHoleCase } from "./coverageAtlas/DeadStateClusterAnalysis";
 import { analyzeZeroMoveLoop, summarizeZeroMoveLoop, type ZeroMoveLoopResult } from "./coverageAtlas/CycleAnalysis";
@@ -19,7 +20,7 @@ import { analyzeConflicts, summarizeConflicts } from "./coverageAtlas/ConflictAn
 import { buildStateGraphAtlas } from "./coverageAtlas/StateGraphAtlas";
 import { buildCoverageAtlasResult, renderCoverageAtlasReport } from "./coverageAtlas/CoverageAtlasReport";
 
-const DATA_DIR = path.join(__dirname, "coverageAtlas", "data");
+const DATA_DIR = "src/customCube/coverageAtlas/data";
 const STEP1_CHECKPOINT = path.join(DATA_DIR, "checkpoint-step1-holes.json");
 const STEP3_CHECKPOINT = path.join(DATA_DIR, "checkpoint-step3-zeromoveloop.json");
 const REPORT_PATH = path.join(DATA_DIR, "coverage-hole-discovery-v1-report.txt");
