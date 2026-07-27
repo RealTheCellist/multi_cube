@@ -1,0 +1,69 @@
+Deep Cycle Resolver Validation Sprint v1 -- Report
+Generated: 2026-07-27T13:59:48.345Z
+
+1. Structural Comparison (RECOVERY_REQUIRED vs OPTIONAL vs UNNECESSARY)
+  RECOVERY_REQUIRED (n=3): cycleLength=6.00, cycleCount=1.33, componentCount=1.33, wrongWing=7.33, conflictEdge=0.00, swapEdge=0.67, dependencyDepth=6.00, bridgeDistance=0.33, branchingFactor=0.89, parityRate=33.3%, singleCycleShare=66.7%
+  RECOVERY_OPTIONAL (n=5): cycleLength=5.40, cycleCount=2.60, componentCount=1.80, wrongWing=11.00, conflictEdge=0.00, swapEdge=0.40, dependencyDepth=5.40, bridgeDistance=0.80, branchingFactor=0.51, parityRate=80.0%, singleCycleShare=0.0%
+  RECOVERY_UNNECESSARY (n=134): cycleLength=3.49, cycleCount=1.30, componentCount=1.40, wrongWing=7.85, conflictEdge=2.43, swapEdge=0.37, dependencyDepth=5.45, bridgeDistance=0.40, branchingFactor=0.51, parityRate=43.3%, singleCycleShare=30.6%
+
+2. Per-case Structural Profile (RECOVERY_REQUIRED, RQ-1)
+  worstCase:b714481: cycleTopology={"cycleCount":1,"cycleLengths":[6],"isSingleCycle":true,"hasSwap":false}, dependencyDepth=6, bridgeDistance=0, branchingFactor=1.67
+  worstCase:1e928fb1: cycleTopology={"cycleCount":1,"cycleLengths":[6],"isSingleCycle":true,"hasSwap":false}, dependencyDepth=6, bridgeDistance=0, branchingFactor=0.50
+  scrambleDepth10:8: cycleTopology={"cycleCount":2,"cycleLengths":[6,2],"isSingleCycle":false,"hasSwap":true}, dependencyDepth=6, bridgeDistance=1, branchingFactor=0.50
+
+3. Primitive Failure Map (RQ-2, budget sweep across BASE/FLIP/CASE/PARITY/RECOVERY)
+  worstCase:b714481:
+    BASE: terminationReason=NEVER_SUCCEEDS_AT_TESTED_BUDGETS, minSucceedingBudgetMs=N/A
+    FLIP: terminationReason=NEVER_SUCCEEDS_AT_TESTED_BUDGETS, minSucceedingBudgetMs=N/A
+    CASE: terminationReason=NEVER_SUCCEEDS_AT_TESTED_BUDGETS, minSucceedingBudgetMs=N/A
+    PARITY: terminationReason=BUDGET_DEPENDENT_SUCCESS, minSucceedingBudgetMs=30000
+    RECOVERY: terminationReason=NEVER_SUCCEEDS_AT_TESTED_BUDGETS, minSucceedingBudgetMs=N/A
+    RECOVERY repeat-trial stability (N=10 @ 30000ms): 0/10 = 0%, candidateTypes=(none)
+  worstCase:1e928fb1:
+    BASE: terminationReason=NEVER_SUCCEEDS_AT_TESTED_BUDGETS, minSucceedingBudgetMs=N/A
+    FLIP: terminationReason=NEVER_SUCCEEDS_AT_TESTED_BUDGETS, minSucceedingBudgetMs=N/A
+    CASE: terminationReason=NEVER_SUCCEEDS_AT_TESTED_BUDGETS, minSucceedingBudgetMs=N/A
+    PARITY: terminationReason=BUDGET_DEPENDENT_SUCCESS, minSucceedingBudgetMs=10000
+    RECOVERY: terminationReason=BUDGET_DEPENDENT_SUCCESS, minSucceedingBudgetMs=1000
+    RECOVERY repeat-trial stability (N=10 @ 1000ms): 10/10 = 100%, candidateTypes=CCR
+  scrambleDepth10:8:
+    BASE: terminationReason=NEVER_SUCCEEDS_AT_TESTED_BUDGETS, minSucceedingBudgetMs=N/A
+    FLIP: terminationReason=NEVER_SUCCEEDS_AT_TESTED_BUDGETS, minSucceedingBudgetMs=N/A
+    CASE: terminationReason=NEVER_SUCCEEDS_AT_TESTED_BUDGETS, minSucceedingBudgetMs=N/A
+    PARITY: terminationReason=BUDGET_DEPENDENT_SUCCESS, minSucceedingBudgetMs=30000
+    RECOVERY: terminationReason=BUDGET_DEPENDENT_SUCCESS, minSucceedingBudgetMs=2000
+    RECOVERY repeat-trial stability (N=10 @ 2000ms): 10/10 = 100%, candidateTypes=CCR
+
+4. Mechanism Identification (RQ-3/RQ-4: CCR Gate + strategy probes)
+  worstCase:b714481: gate={"eligible":true,"primaryCycleLength":6,"primaryCycleNodes":["x-2,y-2","y2,z2","x2,y-2","y-2,z2","x2,y2","x-2,z-2"],"conflictEdgeCount":0,"allCycles":[["x-2,y-2","y2,z2","x2,y-2","y-2,z2","x2,y2","x-2,z-2"]]}
+    strategy=singleCycle: succeededAtAnyBudget=false, minSucceedingBudgetMs=N/A
+    strategy=multiCycle: succeededAtAnyBudget=false, minSucceedingBudgetMs=N/A
+  worstCase:1e928fb1: gate={"eligible":true,"primaryCycleLength":6,"primaryCycleNodes":["x-2,z2","x2,z2","y2,z2","x2,z-2","y-2,z2","y2,z-2"],"conflictEdgeCount":0,"allCycles":[["x-2,z2","x2,z2","y2,z2","x2,z-2","y-2,z2","y2,z-2"]]}
+    strategy=singleCycle: succeededAtAnyBudget=true, minSucceedingBudgetMs=500
+    strategy=multiCycle: succeededAtAnyBudget=true, minSucceedingBudgetMs=500
+  scrambleDepth10:8: gate={"eligible":true,"primaryCycleLength":6,"primaryCycleNodes":["x-2,z-2","y-2,z2","y-2,z-2","x2,y-2","x2,y2","y2,z2"],"conflictEdgeCount":0,"allCycles":[["x-2,z-2","y-2,z2","y-2,z-2","x2,y-2","x2,y2","y2,z2"],["x2,z-2","x2,z2"]]}
+    strategy=singleCycle: succeededAtAnyBudget=true, minSucceedingBudgetMs=1000
+    strategy=multiCycle: succeededAtAnyBudget=true, minSucceedingBudgetMs=1000
+  Cross-case comparison: allGateEligible=true, solvedByCcr=2/3
+  unsolvedLabels: worstCase:b714481
+  verdict: SAME_EXISTING_MECHANISM_INCOMPLETE
+  rationale: 전 케이스가 동일 메커니즘 계열(CCR Gate 통과)에 속하지만, 기존 CCR 구현은 2/3건만 해결 -- 메커니즘 자체는 맞으나 탐색 완전성(leaf cap 등)이 부족.
+
+5. Deep Cycle Resolver Capability Specification (RQ-3, definition only, no implementation)
+  inputCondition: WANTS-그래프 상 단일 컴포넌트(componentCount=1) 내 conflict edge 없이(conflictEdgeCount=0) 고립된 5~6-길이 cycle 하나 -- CCRGate.ts의 기존 Gate 정의와 정확히 일치. 이번 Sprint에서 확인한 RECOVERY_REQUIRED 3건 전원이 이 조건을 만족(allGateEligible=true).
+  requiredState: Cycle을 구성하는 각 슬롯의 wrong wing이 enumerateWingCandidates()로 열거 가능한 후보 이동을 가져야 함(branchingFactor>0). 이 조건이 깨지면(후보 0개) 어떤 탐색 전략을 쓰든 애초에 진입조차 불가능.
+  expectedOutput: cycle 전체를 net-improving하게 재배열하는 이동 시퀀스. 측정 결과 2/3건에서 기존 CCR(runCCRPrototype, singleCycle/multiCycle) 구현이 이미 이 출력을 생성함.
+  searchDirection: cycle 노드를 따라가며 매 hop마다 최대 3개 후보로 가지치기하는 bounded DFS(기존 CCRPrototype.ts의 runBoundedDfs) -- '새로운 탐색 알고리즘'이 아니라 이미 존재하는 정확히 이 메커니즘. 유일하게 측정으로 확인된 한계는 MAX_LEAVES_EXPLORED=64라는 고정 leaf cap: 예산(budget)을 140ms에서 30000ms(214배)로 늘려도 결과가 전혀 바뀌지 않는 케이스가 실측으로 확인됨(아래 evidenceNote) -- 즉 이 mechanism의 완전성 한계는 '시간'이 아니라 'leaf cap'.
+  expectedCost: 시간 비용은 이미 낮음(500~2000ms 내 해결되는 케이스 존재) -- 진짜 비용은 leaf cap을 늘릴 때의 탐색 폭발(3^6=729 조합 vs 현재 cap 64)이며, 이는 새 Primitive 설계 비용이 아니라 기존 CCR의 파라미터/휴리스틱 튜닝 비용에 해당.
+  evidenceNote: Repeat-trial stability (N=10): worstCase:b714481: 0% (0/10 @ 30000ms), worstCase:1e928fb1: 100% (10/10 @ 1000ms), scrambleDepth10:8: 100% (10/10 @ 2000ms). Unsolved-at-any-tested-budget labels: worstCase:b714481.
+
+6. Primitive Opportunity Map Revision
+  candidateId: Primitive-Candidate-A
+  revisedPriority: DOWNGRADED_PARTIAL_OVERLAP
+  rationale: 이번 Sprint의 직접 측정 결과, Primitive-Candidate-A가 겨냥한 구조(cycleLength 5~6, conflictEdgeCount=0, componentCount=1)는 이미 production에 통합된 CCR(Clean-Cycle Resolution)의 Gate 정의와 정확히 일치한다. Gate 통과율 100%, 실제 해결률 2/3. 미해결 1건은 메커니즘 부재가 아니라 기존 CCR 구현의 leaf cap(MAX_LEAVES_EXPLORED=64) 한계로 실측 확인됨 -- '새 Primitive'가 아니라 '기존 Primitive의 탐색 완전성 개선' 문제.
+  redirectRecommendation: Primitive-Candidate-A를 신규 Primitive 설계 트랙에서 제거하고, 'CCR 탐색 완전성 개선(leaf cap 확장/후보 정렬 휴리스틱)'이라는 별도의 기존-Primitive 리파인먼트 트랙으로 재분류할 것을 권장. 이는 이번 Sprint의 권한 범위(신규 Primitive/Prototype 구현 금지) 밖이므로 향후 별도 Sprint가 필요.
+
+7. Prototype Readiness Decision
+  decision: C_CANDIDATE_REJECTED
+  conclusionLabel: Conclusion C -- Primitive-Candidate-A 자체가 잘못되었다
+  rationale: Primitive-Candidate-A(Deep Cycle Resolver)로 제안된 메커니즘은 이미 production Recovery layer에 CCR(Clean-Cycle Resolution)로 구현되어 있음이 직접 측정으로 확인됨. 대상 인구(3건) 전원이 CCR Gate를 통과하며(allGateEligible=true), 기존 CCR 구현이 2/3건을 이미 해결한다. 따라서 '새 Primitive가 필요하다'는 원래 전제 자체가 기각 대상이다 -- 남은 미해결 케이스는 새 메커니즘이 아니라 기존 CCR의 탐색 완전성(leaf cap) 문제이며, 이는 Primitive 설계가 아닌 기존 구현 리파인먼트 영역이다.

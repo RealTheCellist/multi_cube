@@ -1,0 +1,533 @@
+{
+  "structuralComparison": {
+    "required": {
+      "necessityClass": "RECOVERY_REQUIRED",
+      "n": 3,
+      "avgCycleLength": 6,
+      "avgCycleCount": 1.3333333333333333,
+      "avgComponentCount": 1.3333333333333333,
+      "avgWrongWingCount": 7.333333333333333,
+      "avgConflictEdgeCount": 0,
+      "avgSwapEdgeCount": 0.6666666666666666,
+      "avgDependencyDepth": 6,
+      "avgBridgeDistance": 0.3333333333333333,
+      "avgBranchingFactor": 0.888888888888889,
+      "parityRate": 0.3333333333333333,
+      "singleCycleShare": 0.6666666666666666
+    },
+    "optional": {
+      "necessityClass": "RECOVERY_OPTIONAL",
+      "n": 5,
+      "avgCycleLength": 5.4,
+      "avgCycleCount": 2.6,
+      "avgComponentCount": 1.8,
+      "avgWrongWingCount": 11,
+      "avgConflictEdgeCount": 0,
+      "avgSwapEdgeCount": 0.4,
+      "avgDependencyDepth": 5.4,
+      "avgBridgeDistance": 0.8,
+      "avgBranchingFactor": 0.5088888888888888,
+      "parityRate": 0.8,
+      "singleCycleShare": 0
+    },
+    "unnecessary": {
+      "necessityClass": "RECOVERY_UNNECESSARY",
+      "n": 134,
+      "avgCycleLength": 3.4925373134328357,
+      "avgCycleCount": 1.2985074626865671,
+      "avgComponentCount": 1.3955223880597014,
+      "avgWrongWingCount": 7.850746268656716,
+      "avgConflictEdgeCount": 2.4328358208955225,
+      "avgSwapEdgeCount": 0.373134328358209,
+      "avgDependencyDepth": 5.447761194029851,
+      "avgBridgeDistance": 0.39552238805970147,
+      "avgBranchingFactor": 0.5149487742771325,
+      "parityRate": 0.43283582089552236,
+      "singleCycleShare": 0.30597014925373134
+    }
+  },
+  "requiredCaseProfiles": [
+    {
+      "label": "worstCase:b714481",
+      "hasParity": false,
+      "cycleCount": 1,
+      "cycleLength": 6,
+      "componentCount": 1,
+      "wrongWingCount": 6,
+      "conflictEdgeCount": 0,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 6,
+      "bridgeDistance": 0,
+      "branchingFactor": 1.6666666666666667,
+      "cycleTopology": {
+        "cycleCount": 1,
+        "cycleLengths": [
+          6
+        ],
+        "isSingleCycle": true,
+        "hasSwap": false
+      }
+    },
+    {
+      "label": "worstCase:1e928fb1",
+      "hasParity": false,
+      "cycleCount": 1,
+      "cycleLength": 6,
+      "componentCount": 1,
+      "wrongWingCount": 6,
+      "conflictEdgeCount": 0,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 6,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.5,
+      "cycleTopology": {
+        "cycleCount": 1,
+        "cycleLengths": [
+          6
+        ],
+        "isSingleCycle": true,
+        "hasSwap": false
+      }
+    },
+    {
+      "label": "scrambleDepth10:8",
+      "hasParity": true,
+      "cycleCount": 2,
+      "cycleLength": 6,
+      "componentCount": 2,
+      "wrongWingCount": 10,
+      "conflictEdgeCount": 0,
+      "swapEdgeCount": 2,
+      "dependencyDepth": 6,
+      "bridgeDistance": 1,
+      "branchingFactor": 0.5,
+      "cycleTopology": {
+        "cycleCount": 2,
+        "cycleLengths": [
+          6,
+          2
+        ],
+        "isSingleCycle": false,
+        "hasSwap": true
+      }
+    }
+  ],
+  "failureMaps": [
+    {
+      "label": "worstCase:b714481",
+      "sweeps": [
+        {
+          "primitive": "BASE",
+          "successByBudget": {
+            "140": false,
+            "250": false,
+            "500": false,
+            "1000": false,
+            "2000": false,
+            "5000": false,
+            "10000": false,
+            "30000": false
+          },
+          "minSucceedingBudgetMs": null,
+          "terminationReason": "NEVER_SUCCEEDS_AT_TESTED_BUDGETS"
+        },
+        {
+          "primitive": "FLIP",
+          "successByBudget": {
+            "140": false,
+            "250": false,
+            "500": false,
+            "1000": false,
+            "2000": false,
+            "5000": false,
+            "10000": false,
+            "30000": false
+          },
+          "minSucceedingBudgetMs": null,
+          "terminationReason": "NEVER_SUCCEEDS_AT_TESTED_BUDGETS"
+        },
+        {
+          "primitive": "CASE",
+          "successByBudget": {
+            "140": false,
+            "250": false,
+            "500": false,
+            "1000": false,
+            "2000": false,
+            "5000": false,
+            "10000": false,
+            "30000": false
+          },
+          "minSucceedingBudgetMs": null,
+          "terminationReason": "NEVER_SUCCEEDS_AT_TESTED_BUDGETS"
+        },
+        {
+          "primitive": "PARITY",
+          "successByBudget": {
+            "140": false,
+            "250": false,
+            "500": false,
+            "1000": false,
+            "2000": false,
+            "5000": false,
+            "10000": false,
+            "30000": true
+          },
+          "minSucceedingBudgetMs": 30000,
+          "terminationReason": "BUDGET_DEPENDENT_SUCCESS"
+        },
+        {
+          "primitive": "RECOVERY",
+          "successByBudget": {
+            "140": false,
+            "250": false,
+            "500": false,
+            "1000": false,
+            "2000": false,
+            "5000": false,
+            "10000": false,
+            "30000": false
+          },
+          "minSucceedingBudgetMs": null,
+          "terminationReason": "NEVER_SUCCEEDS_AT_TESTED_BUDGETS"
+        }
+      ],
+      "recoveryStability": {
+        "atBudgetMs": 30000,
+        "trials": 10,
+        "successCount": 0,
+        "successRate": 0,
+        "chosenCandidateTypes": []
+      }
+    },
+    {
+      "label": "worstCase:1e928fb1",
+      "sweeps": [
+        {
+          "primitive": "BASE",
+          "successByBudget": {
+            "140": false,
+            "250": false,
+            "500": false,
+            "1000": false,
+            "2000": false,
+            "5000": false,
+            "10000": false,
+            "30000": false
+          },
+          "minSucceedingBudgetMs": null,
+          "terminationReason": "NEVER_SUCCEEDS_AT_TESTED_BUDGETS"
+        },
+        {
+          "primitive": "FLIP",
+          "successByBudget": {
+            "140": false,
+            "250": false,
+            "500": false,
+            "1000": false,
+            "2000": false,
+            "5000": false,
+            "10000": false,
+            "30000": false
+          },
+          "minSucceedingBudgetMs": null,
+          "terminationReason": "NEVER_SUCCEEDS_AT_TESTED_BUDGETS"
+        },
+        {
+          "primitive": "CASE",
+          "successByBudget": {
+            "140": false,
+            "250": false,
+            "500": false,
+            "1000": false,
+            "2000": false,
+            "5000": false,
+            "10000": false,
+            "30000": false
+          },
+          "minSucceedingBudgetMs": null,
+          "terminationReason": "NEVER_SUCCEEDS_AT_TESTED_BUDGETS"
+        },
+        {
+          "primitive": "PARITY",
+          "successByBudget": {
+            "140": false,
+            "250": false,
+            "500": false,
+            "1000": false,
+            "2000": false,
+            "5000": false,
+            "10000": true,
+            "30000": true
+          },
+          "minSucceedingBudgetMs": 10000,
+          "terminationReason": "BUDGET_DEPENDENT_SUCCESS"
+        },
+        {
+          "primitive": "RECOVERY",
+          "successByBudget": {
+            "140": false,
+            "250": false,
+            "500": false,
+            "1000": true,
+            "2000": true,
+            "5000": true,
+            "10000": true,
+            "30000": true
+          },
+          "minSucceedingBudgetMs": 1000,
+          "terminationReason": "BUDGET_DEPENDENT_SUCCESS"
+        }
+      ],
+      "recoveryStability": {
+        "atBudgetMs": 1000,
+        "trials": 10,
+        "successCount": 10,
+        "successRate": 1,
+        "chosenCandidateTypes": [
+          "CCR"
+        ]
+      }
+    },
+    {
+      "label": "scrambleDepth10:8",
+      "sweeps": [
+        {
+          "primitive": "BASE",
+          "successByBudget": {
+            "140": false,
+            "250": false,
+            "500": false,
+            "1000": false,
+            "2000": false,
+            "5000": false,
+            "10000": false,
+            "30000": false
+          },
+          "minSucceedingBudgetMs": null,
+          "terminationReason": "NEVER_SUCCEEDS_AT_TESTED_BUDGETS"
+        },
+        {
+          "primitive": "FLIP",
+          "successByBudget": {
+            "140": false,
+            "250": false,
+            "500": false,
+            "1000": false,
+            "2000": false,
+            "5000": false,
+            "10000": false,
+            "30000": false
+          },
+          "minSucceedingBudgetMs": null,
+          "terminationReason": "NEVER_SUCCEEDS_AT_TESTED_BUDGETS"
+        },
+        {
+          "primitive": "CASE",
+          "successByBudget": {
+            "140": false,
+            "250": false,
+            "500": false,
+            "1000": false,
+            "2000": false,
+            "5000": false,
+            "10000": false,
+            "30000": false
+          },
+          "minSucceedingBudgetMs": null,
+          "terminationReason": "NEVER_SUCCEEDS_AT_TESTED_BUDGETS"
+        },
+        {
+          "primitive": "PARITY",
+          "successByBudget": {
+            "140": false,
+            "250": false,
+            "500": false,
+            "1000": false,
+            "2000": false,
+            "5000": false,
+            "10000": false,
+            "30000": true
+          },
+          "minSucceedingBudgetMs": 30000,
+          "terminationReason": "BUDGET_DEPENDENT_SUCCESS"
+        },
+        {
+          "primitive": "RECOVERY",
+          "successByBudget": {
+            "140": false,
+            "250": false,
+            "500": false,
+            "1000": false,
+            "2000": true,
+            "5000": true,
+            "10000": true,
+            "30000": true
+          },
+          "minSucceedingBudgetMs": 2000,
+          "terminationReason": "BUDGET_DEPENDENT_SUCCESS"
+        }
+      ],
+      "recoveryStability": {
+        "atBudgetMs": 2000,
+        "trials": 10,
+        "successCount": 10,
+        "successRate": 1,
+        "chosenCandidateTypes": [
+          "CCR"
+        ]
+      }
+    }
+  ],
+  "mechanismProbes": [
+    {
+      "label": "worstCase:b714481",
+      "gate": {
+        "eligible": true,
+        "primaryCycleLength": 6,
+        "primaryCycleNodes": [
+          "x-2,y-2",
+          "y2,z2",
+          "x2,y-2",
+          "y-2,z2",
+          "x2,y2",
+          "x-2,z-2"
+        ],
+        "conflictEdgeCount": 0,
+        "allCycles": [
+          [
+            "x-2,y-2",
+            "y2,z2",
+            "x2,y-2",
+            "y-2,z2",
+            "x2,y2",
+            "x-2,z-2"
+          ]
+        ]
+      },
+      "strategyProbes": [
+        {
+          "strategy": "singleCycle",
+          "minSucceedingBudgetMs": null,
+          "succeededAtAnyBudget": false
+        },
+        {
+          "strategy": "multiCycle",
+          "minSucceedingBudgetMs": null,
+          "succeededAtAnyBudget": false
+        }
+      ]
+    },
+    {
+      "label": "worstCase:1e928fb1",
+      "gate": {
+        "eligible": true,
+        "primaryCycleLength": 6,
+        "primaryCycleNodes": [
+          "x-2,z2",
+          "x2,z2",
+          "y2,z2",
+          "x2,z-2",
+          "y-2,z2",
+          "y2,z-2"
+        ],
+        "conflictEdgeCount": 0,
+        "allCycles": [
+          [
+            "x-2,z2",
+            "x2,z2",
+            "y2,z2",
+            "x2,z-2",
+            "y-2,z2",
+            "y2,z-2"
+          ]
+        ]
+      },
+      "strategyProbes": [
+        {
+          "strategy": "singleCycle",
+          "minSucceedingBudgetMs": 500,
+          "succeededAtAnyBudget": true
+        },
+        {
+          "strategy": "multiCycle",
+          "minSucceedingBudgetMs": 500,
+          "succeededAtAnyBudget": true
+        }
+      ]
+    },
+    {
+      "label": "scrambleDepth10:8",
+      "gate": {
+        "eligible": true,
+        "primaryCycleLength": 6,
+        "primaryCycleNodes": [
+          "x-2,z-2",
+          "y-2,z2",
+          "y-2,z-2",
+          "x2,y-2",
+          "x2,y2",
+          "y2,z2"
+        ],
+        "conflictEdgeCount": 0,
+        "allCycles": [
+          [
+            "x-2,z-2",
+            "y-2,z2",
+            "y-2,z-2",
+            "x2,y-2",
+            "x2,y2",
+            "y2,z2"
+          ],
+          [
+            "x2,z-2",
+            "x2,z2"
+          ]
+        ]
+      },
+      "strategyProbes": [
+        {
+          "strategy": "singleCycle",
+          "minSucceedingBudgetMs": 1000,
+          "succeededAtAnyBudget": true
+        },
+        {
+          "strategy": "multiCycle",
+          "minSucceedingBudgetMs": 1000,
+          "succeededAtAnyBudget": true
+        }
+      ]
+    }
+  ],
+  "crossCaseComparison": {
+    "totalCases": 3,
+    "allGateEligible": true,
+    "solvedByCcr": 2,
+    "unsolvedLabels": [
+      "worstCase:b714481"
+    ],
+    "verdict": "SAME_EXISTING_MECHANISM_INCOMPLETE",
+    "verdictRationale": "전 케이스가 동일 메커니즘 계열(CCR Gate 통과)에 속하지만, 기존 CCR 구현은 2/3건만 해결 -- 메커니즘 자체는 맞으나 탐색 완전성(leaf cap 등)이 부족."
+  },
+  "capabilitySpec": {
+    "inputCondition": "WANTS-그래프 상 단일 컴포넌트(componentCount=1) 내 conflict edge 없이(conflictEdgeCount=0) 고립된 5~6-길이 cycle 하나 -- CCRGate.ts의 기존 Gate 정의와 정확히 일치. 이번 Sprint에서 확인한 RECOVERY_REQUIRED 3건 전원이 이 조건을 만족(allGateEligible=true).",
+    "requiredState": "Cycle을 구성하는 각 슬롯의 wrong wing이 enumerateWingCandidates()로 열거 가능한 후보 이동을 가져야 함(branchingFactor>0). 이 조건이 깨지면(후보 0개) 어떤 탐색 전략을 쓰든 애초에 진입조차 불가능.",
+    "expectedOutput": "cycle 전체를 net-improving하게 재배열하는 이동 시퀀스. 측정 결과 2/3건에서 기존 CCR(runCCRPrototype, singleCycle/multiCycle) 구현이 이미 이 출력을 생성함.",
+    "searchDirection": "cycle 노드를 따라가며 매 hop마다 최대 3개 후보로 가지치기하는 bounded DFS(기존 CCRPrototype.ts의 runBoundedDfs) -- '새로운 탐색 알고리즘'이 아니라 이미 존재하는 정확히 이 메커니즘. 유일하게 측정으로 확인된 한계는 MAX_LEAVES_EXPLORED=64라는 고정 leaf cap: 예산(budget)을 140ms에서 30000ms(214배)로 늘려도 결과가 전혀 바뀌지 않는 케이스가 실측으로 확인됨(아래 evidenceNote) -- 즉 이 mechanism의 완전성 한계는 '시간'이 아니라 'leaf cap'.",
+    "expectedCost": "시간 비용은 이미 낮음(500~2000ms 내 해결되는 케이스 존재) -- 진짜 비용은 leaf cap을 늘릴 때의 탐색 폭발(3^6=729 조합 vs 현재 cap 64)이며, 이는 새 Primitive 설계 비용이 아니라 기존 CCR의 파라미터/휴리스틱 튜닝 비용에 해당.",
+    "evidenceNote": "Repeat-trial stability (N=10): worstCase:b714481: 0% (0/10 @ 30000ms), worstCase:1e928fb1: 100% (10/10 @ 1000ms), scrambleDepth10:8: 100% (10/10 @ 2000ms). Unsolved-at-any-tested-budget labels: worstCase:b714481."
+  },
+  "opportunityMapRevision": {
+    "candidateId": "Primitive-Candidate-A",
+    "originalTarget": "Cycle Isolation / Pure Structural Isolation (State Taxonomy Sprint v2)",
+    "originalCaseCount": 3,
+    "revisedPriority": "DOWNGRADED_PARTIAL_OVERLAP",
+    "rationale": "이번 Sprint의 직접 측정 결과, Primitive-Candidate-A가 겨냥한 구조(cycleLength 5~6, conflictEdgeCount=0, componentCount=1)는 이미 production에 통합된 CCR(Clean-Cycle Resolution)의 Gate 정의와 정확히 일치한다. Gate 통과율 100%, 실제 해결률 2/3. 미해결 1건은 메커니즘 부재가 아니라 기존 CCR 구현의 leaf cap(MAX_LEAVES_EXPLORED=64) 한계로 실측 확인됨 -- '새 Primitive'가 아니라 '기존 Primitive의 탐색 완전성 개선' 문제.",
+    "redirectRecommendation": "Primitive-Candidate-A를 신규 Primitive 설계 트랙에서 제거하고, 'CCR 탐색 완전성 개선(leaf cap 확장/후보 정렬 휴리스틱)'이라는 별도의 기존-Primitive 리파인먼트 트랙으로 재분류할 것을 권장. 이는 이번 Sprint의 권한 범위(신규 Primitive/Prototype 구현 금지) 밖이므로 향후 별도 Sprint가 필요."
+  },
+  "readinessDecision": {
+    "decision": "C_CANDIDATE_REJECTED",
+    "conclusionLabel": "Conclusion C -- Primitive-Candidate-A 자체가 잘못되었다",
+    "rationale": "Primitive-Candidate-A(Deep Cycle Resolver)로 제안된 메커니즘은 이미 production Recovery layer에 CCR(Clean-Cycle Resolution)로 구현되어 있음이 직접 측정으로 확인됨. 대상 인구(3건) 전원이 CCR Gate를 통과하며(allGateEligible=true), 기존 CCR 구현이 2/3건을 이미 해결한다. 따라서 '새 Primitive가 필요하다'는 원래 전제 자체가 기각 대상이다 -- 남은 미해결 케이스는 새 메커니즘이 아니라 기존 CCR의 탐색 완전성(leaf cap) 문제이며, 이는 Primitive 설계가 아닌 기존 구현 리파인먼트 영역이다."
+  }
+}
