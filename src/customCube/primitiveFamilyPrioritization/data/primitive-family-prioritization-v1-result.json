@@ -1,0 +1,181 @@
+{
+  "priorArtResults": [
+    {
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "priorArtName": "BoundedResolver / BP-1 (tryBoundedMultiCycleResolver, MIN_CYCLE_LENGTH=4)",
+      "priorArtFile": "solverV2Prototype/BoundedResolver.ts",
+      "n": 28,
+      "succeededCount": 0,
+      "successRate": 0,
+      "succeededLabels": []
+    },
+    {
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "priorArtName": "Conflict-Dominant Sacrifice (tryConflictDominantSacrifice)",
+      "priorArtFile": "solverPrimitivePrototype/ConflictDominantSacrificePrototype.ts",
+      "n": 13,
+      "succeededCount": 5,
+      "successRate": 0.38461538461538464,
+      "succeededLabels": [
+        "worstCase:56a8b82d",
+        "snapshot335:4e27e5a1",
+        "scrambleDepth40:4",
+        "scrambleDepth40:8",
+        "scrambleDepth50:3"
+      ]
+    },
+    {
+      "failureClass": "BRIDGE_MISSING",
+      "priorArtName": "Multi-Hop Bridge Prototype (tryMultiHopBridge, targets length 2-3 cycles -- NOT cross-component bridging despite its name)",
+      "priorArtFile": "solverPrimitivePrototype/MultiHopBridgePrototype.ts",
+      "n": 12,
+      "succeededCount": 0,
+      "successRate": 0,
+      "succeededLabels": []
+    }
+  ],
+  "overlap": {
+    "cells": [
+      {
+        "rowDimension": "BRIDGE_MISSING",
+        "colDimension": "BRIDGE_MISSING",
+        "coOccurrenceCount": 12
+      },
+      {
+        "rowDimension": "BRIDGE_MISSING",
+        "colDimension": "PURE_CYCLE_ISOLATION",
+        "coOccurrenceCount": 12
+      },
+      {
+        "rowDimension": "BRIDGE_MISSING",
+        "colDimension": "CONFLICT_DEEP_DEPENDENCY",
+        "coOccurrenceCount": 0
+      },
+      {
+        "rowDimension": "PURE_CYCLE_ISOLATION",
+        "colDimension": "BRIDGE_MISSING",
+        "coOccurrenceCount": 12
+      },
+      {
+        "rowDimension": "PURE_CYCLE_ISOLATION",
+        "colDimension": "PURE_CYCLE_ISOLATION",
+        "coOccurrenceCount": 40
+      },
+      {
+        "rowDimension": "PURE_CYCLE_ISOLATION",
+        "colDimension": "CONFLICT_DEEP_DEPENDENCY",
+        "coOccurrenceCount": 0
+      },
+      {
+        "rowDimension": "CONFLICT_DEEP_DEPENDENCY",
+        "colDimension": "BRIDGE_MISSING",
+        "coOccurrenceCount": 0
+      },
+      {
+        "rowDimension": "CONFLICT_DEEP_DEPENDENCY",
+        "colDimension": "PURE_CYCLE_ISOLATION",
+        "coOccurrenceCount": 0
+      },
+      {
+        "rowDimension": "CONFLICT_DEEP_DEPENDENCY",
+        "colDimension": "CONFLICT_DEEP_DEPENDENCY",
+        "coOccurrenceCount": 13
+      }
+    ],
+    "perDimensionSatisfiedCount": {
+      "BRIDGE_MISSING": 12,
+      "PURE_CYCLE_ISOLATION": 40,
+      "CONFLICT_DEEP_DEPENDENCY": 13
+    },
+    "exclusivelyOneConditionCount": 41,
+    "multiConditionCount": 12,
+    "structuralIndependenceRate": {
+      "BRIDGE_MISSING": 0,
+      "PURE_CYCLE_ISOLATION": 0.7,
+      "CONFLICT_DEEP_DEPENDENCY": 1
+    }
+  },
+  "rois": [
+    {
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "populationSize": 28,
+      "shareOfResidual": 0.5283018867924528,
+      "shareOfTotalPopulation": 0.19718309859154928,
+      "structuralIndependenceRate": 0.7,
+      "priorArtRealSuccessRate": 0,
+      "priorArtName": "BoundedResolver / BP-1 (tryBoundedMultiCycleResolver, MIN_CYCLE_LENGTH=4)",
+      "estimatedCoverageGainIfFullySolved": 0.19718309859154928
+    },
+    {
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "populationSize": 13,
+      "shareOfResidual": 0.24528301886792453,
+      "shareOfTotalPopulation": 0.09154929577464789,
+      "structuralIndependenceRate": 1,
+      "priorArtRealSuccessRate": 0.38461538461538464,
+      "priorArtName": "Conflict-Dominant Sacrifice (tryConflictDominantSacrifice)",
+      "estimatedCoverageGainIfFullySolved": 0.09154929577464789
+    },
+    {
+      "failureClass": "BRIDGE_MISSING",
+      "populationSize": 12,
+      "shareOfResidual": 0.22641509433962265,
+      "shareOfTotalPopulation": 0.08450704225352113,
+      "structuralIndependenceRate": 0,
+      "priorArtRealSuccessRate": 0,
+      "priorArtName": "Multi-Hop Bridge Prototype (tryMultiHopBridge, targets length 2-3 cycles -- NOT cross-component bridging despite its name)",
+      "estimatedCoverageGainIfFullySolved": 0.08450704225352113
+    }
+  ],
+  "priorityScores": [
+    {
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "populationSizeScore": 1,
+      "structuralIndependenceScore": 0.7,
+      "priorArtScore": 0,
+      "expectedImpactScore": 1,
+      "researchComplexityScore": 0.35,
+      "totalScore": 0.61
+    },
+    {
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "populationSizeScore": 0.4642857142857143,
+      "structuralIndependenceScore": 1,
+      "priorArtScore": 1,
+      "expectedImpactScore": 0.46428571428571436,
+      "researchComplexityScore": 0,
+      "totalScore": 0.5857142857142857
+    },
+    {
+      "failureClass": "BRIDGE_MISSING",
+      "populationSizeScore": 0.42857142857142855,
+      "structuralIndependenceScore": 0,
+      "priorArtScore": 0,
+      "expectedImpactScore": 0.4285714285714286,
+      "researchComplexityScore": 0.43666666666666676,
+      "totalScore": 0.2587619047619048
+    }
+  ],
+  "roadmap": [
+    {
+      "priority": 1,
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "totalScore": 0.61
+    },
+    {
+      "priority": 2,
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "totalScore": 0.5857142857142857
+    },
+    {
+      "priority": 3,
+      "failureClass": "BRIDGE_MISSING",
+      "totalScore": 0.2587619047619048
+    }
+  ],
+  "finalRecommendation": {
+    "recommendation": "A_PURE_CYCLE_ISOLATION_FIRST",
+    "recommendationLabel": "A -- PURE_CYCLE_ISOLATION부터 연구",
+    "rationale": "PURE_CYCLE_ISOLATION가 5개 균등가중 기준(인구 규모=1.00, 구조적 독립성=0.70, 기존 Prior Art 실측 성공률=0.00, 기대 효과=1.00, 연구 복잡도(역산)=0.35) 종합 점수 0.610으로 최우선."
+  }
+}

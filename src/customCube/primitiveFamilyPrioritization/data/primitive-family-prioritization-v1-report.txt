@@ -1,0 +1,46 @@
+Primitive Family Prioritization Sprint v1 -- Report
+Generated: 2026-07-27T23:58:43.777Z
+
+1. Primitive Family Comparison Report (Existing Prior Art, REAL measured test)
+  PURE_CYCLE_ISOLATION: priorArt="BoundedResolver / BP-1 (tryBoundedMultiCycleResolver, MIN_CYCLE_LENGTH=4)" (solverV2Prototype/BoundedResolver.ts)
+    n=28, succeeded=0 (0.0%), succeededLabels=(none)
+  CONFLICT_DEEP_DEPENDENCY: priorArt="Conflict-Dominant Sacrifice (tryConflictDominantSacrifice)" (solverPrimitivePrototype/ConflictDominantSacrificePrototype.ts)
+    n=13, succeeded=5 (38.5%), succeededLabels=worstCase:56a8b82d, snapshot335:4e27e5a1, scrambleDepth40:4, scrambleDepth40:8, scrambleDepth50:3
+  BRIDGE_MISSING: priorArt="Multi-Hop Bridge Prototype (tryMultiHopBridge, targets length 2-3 cycles -- NOT cross-component bridging despite its name)" (solverPrimitivePrototype/MultiHopBridgePrototype.ts)
+    n=12, succeeded=0 (0.0%), succeededLabels=(none)
+
+2. Overlap Matrix (RQ-2: independent capabilities, or overlapping?)
+  BRIDGE_MISSING ∩ BRIDGE_MISSING: 12
+  BRIDGE_MISSING ∩ PURE_CYCLE_ISOLATION: 12
+  BRIDGE_MISSING ∩ CONFLICT_DEEP_DEPENDENCY: 0
+  PURE_CYCLE_ISOLATION ∩ BRIDGE_MISSING: 12
+  PURE_CYCLE_ISOLATION ∩ PURE_CYCLE_ISOLATION: 40
+  PURE_CYCLE_ISOLATION ∩ CONFLICT_DEEP_DEPENDENCY: 0
+  CONFLICT_DEEP_DEPENDENCY ∩ BRIDGE_MISSING: 0
+  CONFLICT_DEEP_DEPENDENCY ∩ PURE_CYCLE_ISOLATION: 0
+  CONFLICT_DEEP_DEPENDENCY ∩ CONFLICT_DEEP_DEPENDENCY: 13
+  Exclusively-one-condition cases: 41/53
+  Multi-condition cases (2+): 12/53
+  BRIDGE_MISSING structuralIndependenceRate: 0.0%
+  PURE_CYCLE_ISOLATION structuralIndependenceRate: 70.0%
+  CONFLICT_DEEP_DEPENDENCY structuralIndependenceRate: 100.0%
+
+3. Residual Coverage Analysis + Expected ROI
+  PURE_CYCLE_ISOLATION: n=28, shareOfResidual=52.8%, shareOfTotalPopulation=19.7%, structuralIndependenceRate=70.0%, priorArtRealSuccessRate=0.0%, estimatedCoverageGainIfFullySolved=19.7%
+  CONFLICT_DEEP_DEPENDENCY: n=13, shareOfResidual=24.5%, shareOfTotalPopulation=9.2%, structuralIndependenceRate=100.0%, priorArtRealSuccessRate=38.5%, estimatedCoverageGainIfFullySolved=9.2%
+  BRIDGE_MISSING: n=12, shareOfResidual=22.6%, shareOfTotalPopulation=8.5%, structuralIndependenceRate=0.0%, priorArtRealSuccessRate=0.0%, estimatedCoverageGainIfFullySolved=8.5%
+
+4. Priority Matrix (5 criteria, equal 20% weight each, disclosed rubric)
+  PURE_CYCLE_ISOLATION: populationSize=1.000, structuralIndependence=0.700, priorArt=0.000, expectedImpact=1.000, researchComplexity=0.350 -> TOTAL=0.610
+  CONFLICT_DEEP_DEPENDENCY: populationSize=0.464, structuralIndependence=1.000, priorArt=1.000, expectedImpact=0.464, researchComplexity=0.000 -> TOTAL=0.586
+  BRIDGE_MISSING: populationSize=0.429, structuralIndependence=0.000, priorArt=0.000, expectedImpact=0.429, researchComplexity=0.437 -> TOTAL=0.259
+
+5. Research Roadmap
+  Priority 1: PURE_CYCLE_ISOLATION (score=0.610)
+  Priority 2: CONFLICT_DEEP_DEPENDENCY (score=0.586)
+  Priority 3: BRIDGE_MISSING (score=0.259)
+
+6. Final Recommendation
+  recommendation: A_PURE_CYCLE_ISOLATION_FIRST
+  recommendationLabel: A -- PURE_CYCLE_ISOLATION부터 연구
+  rationale: PURE_CYCLE_ISOLATION가 5개 균등가중 기준(인구 규모=1.00, 구조적 독립성=0.70, 기존 Prior Art 실측 성공률=0.00, 기대 효과=1.00, 연구 복잡도(역산)=0.35) 종합 점수 0.610으로 최우선.
