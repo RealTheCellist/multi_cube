@@ -1,0 +1,127 @@
+{
+  "cycleLengthDist": {
+    "3": 3,
+    "4": 5,
+    "5": 9,
+    "6": 11
+  },
+  "representationCandidates": [
+    {
+      "id": "PAIR_MOVE",
+      "name": "Pair Move",
+      "description": "두 wing을 동시에 맞바꾸는 고정 크기(2) 이동 단위 -- 현재 LOCKED_PAIR(2-cycle) 형태만 정확히 겨냥.",
+      "minWingUnit": "fixed",
+      "unitSize": 2
+    },
+    {
+      "id": "MULTI_WING_FIXED3",
+      "name": "Multi-Wing Move (fixed k=3)",
+      "description": "3개 wing을 동시에 재배치하는 고정 크기 이동 단위 -- 3-cycle을 한 번에 겨냥, 4+ cycle은 반복 적용 필요.",
+      "minWingUnit": "fixed",
+      "unitSize": 3
+    },
+    {
+      "id": "CYCLE_ROTATION",
+      "name": "Cycle Rotation",
+      "description": "대상 cycle의 실제 길이(N)에 맞춰 N개 wing 전체를 한 번에 목표 위치로 순환 재배치하는 적응형 이동 단위 -- analyzeMultiCycle()이 이미 제공하는 cycle 순서를 그대로 재사용.",
+      "minWingUnit": "adaptive",
+      "unitSize": "cycleLength"
+    },
+    {
+      "id": "COMMUTATOR_MOVE",
+      "name": "Commutator Move",
+      "description": "Setup(S) + 좁은 3-cycle 전용 알고리즘(E) + Setup 역연산(S^-1) 조합으로, cycle 내 2~3개 wing만 재배치하고 나머지는 원상복구하는 이동 단위 -- 큐빙 이론의 표준 기법.",
+      "minWingUnit": "adaptive",
+      "unitSize": "cycleLength"
+    }
+  ],
+  "expressiveness": [
+    {
+      "representationId": "PAIR_MOVE",
+      "oneShotCoverageCount": 0,
+      "oneShotCoverageRate": 0,
+      "decomposableCoverageCount": 28,
+      "decomposableCoverageRate": 1,
+      "note": "고정 단위(2) -- 한 번의 적용으로는 cycleLength===2인 케이스만 해결. cycleLength>=2인 케이스는 이론적으로 여러 번 조합하면 닿을 가능성이 있으나 실측되지 않은 가정."
+    },
+    {
+      "representationId": "MULTI_WING_FIXED3",
+      "oneShotCoverageCount": 3,
+      "oneShotCoverageRate": 0.10714285714285714,
+      "decomposableCoverageCount": 28,
+      "decomposableCoverageRate": 1,
+      "note": "고정 단위(3) -- 한 번의 적용으로는 cycleLength===3인 케이스만 해결. cycleLength>=3인 케이스는 이론적으로 여러 번 조합하면 닿을 가능성이 있으나 실측되지 않은 가정."
+    },
+    {
+      "representationId": "CYCLE_ROTATION",
+      "oneShotCoverageCount": 28,
+      "oneShotCoverageRate": 1,
+      "decomposableCoverageCount": 28,
+      "decomposableCoverageRate": 1,
+      "note": "적응형 단위 -- 측정된 모든 cycleLength(3~6)를 한 번에 커버."
+    },
+    {
+      "representationId": "COMMUTATOR_MOVE",
+      "oneShotCoverageCount": 28,
+      "oneShotCoverageRate": 1,
+      "decomposableCoverageCount": 28,
+      "decomposableCoverageRate": 1,
+      "note": "적응형 단위 -- 측정된 모든 cycleLength(3~6)를 한 번에 커버."
+    }
+  ],
+  "complexity": [
+    {
+      "representationId": "PAIR_MOVE",
+      "expectedBranchingIncrease": "낮음 (단위 2, 기존 SWAP 처리와 유사)",
+      "searchCostEstimate": "낮음 -- 단일 hop pair 탐색",
+      "implementationDifficulty": "LOW",
+      "productionImpact": "NEW_RECOVERY_CANDIDATE_TYPE",
+      "rationale": "가장 구현이 쉽지만, 이 모집단(cycleLength 3~6, 2-length 없음)에서 one-shot coverage 0% -- 실효성 없음."
+    },
+    {
+      "representationId": "MULTI_WING_FIXED3",
+      "expectedBranchingIncrease": "중간 (단위 3)",
+      "searchCostEstimate": "중간 -- 3-hop 조합 탐색",
+      "implementationDifficulty": "MEDIUM",
+      "productionImpact": "NEW_RECOVERY_CANDIDATE_TYPE",
+      "rationale": "one-shot coverage 10.7%(길이 3 케이스만) -- 나머지 89.3%는 반복 조합이 필요하며 그 조합 자체가 실측되지 않은 가정."
+    },
+    {
+      "representationId": "CYCLE_ROTATION",
+      "expectedBranchingIncrease": "cycleLength에 비례 (측정된 avgBranchingFactor 1.7~2.5 기준 추정 탐색공간 11~232, 이미 Deep Cycle Resolver Validation Sprint에서 실측됨)",
+      "searchCostEstimate": "탐색 자체는 이미 저렴함 (BP-1 평균 5.6 leaf, CCR 평균 16.3 leaf 탐색으로 확인됨) -- 병목은 탐색 비용이 아니라 조합 가능한 저-부작용 이동의 부재",
+      "implementationDifficulty": "HIGH",
+      "productionImpact": "EXECUTOR_CHANGE_REQUIRED",
+      "rationale": "one-shot coverage 100%(적응형)지만, 현재 enumerateWingCandidates()가 반환하는 개별 후보 자체가 평균 ~30개 wing에 영향을 주는 큰 부작용(side effect)을 가진 전체 알고리즘 시퀀스(평균 104~125수)라서, 이를 그대로 N개 조합하면 부작용이 누적될 뿐 깨끗한 cycle 치환이 되지 않는다 -- Cycle Rotation은 '형태(shape)'이지 그 자체로 '메커니즘'이 아니다."
+    },
+    {
+      "representationId": "COMMUTATOR_MOVE",
+      "expectedBranchingIncrease": "낮음 (setup 탐색 + 고정된 3-cycle 전용 알고리즘)",
+      "searchCostEstimate": "중간 -- setup move 탐색이 추가되지만 각 조각의 부작용은 설계상 최소화됨(원상복구 성질)",
+      "implementationDifficulty": "HIGH",
+      "productionImpact": "EXECUTOR_CHANGE_REQUIRED",
+      "rationale": "저-부작용(low-footprint) 이동을 명시적으로 설계 목표로 삼는 유일한 후보 -- Cycle Rotation이 필요로 하는 '깨끗한 조합 가능한 최소 이동 단위'를 실제로 제공할 수 있는 메커니즘. Cycle Rotation(형태)과 상호 보완적: '적응형 길이의 Cycle을 Commutator 조합으로 재배치'가 실질적 최종 설계 방향."
+    }
+  ],
+  "integration": {
+    "input": "cubies: Cubie[] (scratch clone, 기존 모든 Primitive와 동일한 계약), lib: WingLibrary, 그리고 analyzeMultiCycle()이 이미 제공하는 cycleNodes: string[] (기존 export, 재사용).",
+    "output": "기존 RecoveryStrategy 타입과 동일한 계약: Move[] | null -- 성공 시 cycle 전체를 net-improving하게 재배열하는 이동 시퀀스, 실패 시 null. 새 타입을 만들 필요 없이 기존 CandidateType 목록에 새 태그(예: \"CYCLE_COMMUTATOR\")만 추가하는 형태로 표현 가능.",
+    "plannerInterface": "Planner(SolveTask 생성 계층)는 변경 불필요 -- 이 메커니즘은 기존 BASE/FLIP/CASE/PARITY가 모두 실패하고 CCR도 실패한 이후 시점에, Recovery Layer의 generateRecoveryStrategies()가 이미 호출하는 것과 동일한 지점(genCCR과 같은 자리)에 새 genXxx() 후보 생성 함수 하나를 추가하는 형태로 통합 가능 -- Planner 자체의 Task 생성 로직과는 무관.",
+    "recoveryRelationship": "CCR과 동일한 통합 지점(Recovery의 candidate generator)을 공유하지만 메커니즘은 다르다: CCR은 기존 enumerateWingCandidates() 출력을 그대로 bounded DFS로 조합하려 하고(측정 결과 이 조합이 근본적으로 개선 leaf를 못 만듦), 새 메커니즘은 애초에 부작용이 적은 이동 단위(commutator)를 생성해 조합한다 -- Recovery의 후보 중 하나로 추가되는 것이지 Recovery 자체의 스케줄링/선택 로직(attemptRecovery, chooseBestRecovery)은 변경하지 않는다.",
+    "primitiveLayerRelationship": "BASE/FLIP/CASE/PARITY와 마찬가지로 '한 번 호출해 Move[] | null을 받는' 하나의 Primitive로 계약을 맞출 수 있다 -- 다만 내부적으로 여러 개의 저-부작용 이동을 조합(setup+commutator+setup역연산)하는 복합 구조라는 점이 다르다. 기존 CASE Library/BASE_ALG/FLIP_ALG/PARITY_ALG는 수정하지 않는다."
+  },
+  "prototypeSpec": {
+    "input": "cubies: Cubie[] (미변경 원본 상태), lib: WingLibrary, cycleNodes: string[] (analyzeMultiCycle()의 기존 출력), deadline: number.",
+    "output": "Move[] | null -- 성공 시 cycle의 모든 wing을 목표 위치로 재배치하는 완성된 이동 시퀀스 (기존 모든 Primitive와 동일한 반환 계약).",
+    "precondition": "PURE_CYCLE_ISOLATION 형태 (componentCount===1, conflictEdgeCount===0, cycleCount>=1) -- CCR Gate와 동일한 구조적 전제. 이 Sprint가 측정한 28건 전체가 해당.",
+    "postcondition": "wrongWingCount5(결과) < wrongWingCount5(원본) -- 기존 DeferredValidator.validateDeferred()와 동일한 net-improvement 기준으로 검증. 추가로 이번 Sprint가 규명한 문제(부작용 누적)를 재발시키지 않도록: affectedWingCount(결과) 가 cycleLength보다 유의미하게 크지 않아야 한다 (측정 가능한 새 평가 기준으로 명시적으로 추가).",
+    "plannerInterface": "Recovery Layer의 generateRecoveryStrategies()에 genCCR()과 나란히 추가되는 새 후보 생성 함수 하나 -- Planner/Executor 인터페이스 변경 없음.",
+    "evaluationMethod": "이번 Sprint가 규명한 28건의 PURE_CYCLE_ISOLATION 잔여 케이스 전체를 대상으로: (1) Capability -- 몇 건을 실제로 해결하는가 (목표: CCR의 0건 대비 유의미한 개선), (2) Side-effect -- 평균 affectedWingCount가 기존 평균(~30)보다 유의미하게 낮은가 (목표: cycleLength에 근접한 값), (3) Regression -- 기존 89건(Union Covered)에 대해 회귀가 없는가. 이 세 기준 모두 이후 Prototype Sprint의 Success Criteria가 되어야 한다."
+  },
+  "finalDecision": {
+    "decision": "A_BLUEPRINT_COMPLETE_PROCEED_TO_PROTOTYPE",
+    "decisionLabel": "Conclusion A -- 새 Move Representation이 Residual Failure의 구조적 원인을 설명하며 Prototype 단계로 진행할 준비가 되었다",
+    "chosenRepresentationId": "CYCLE_ROTATION_VIA_COMMUTATOR",
+    "rationale": "Cycle Rotation(형태, one-shot coverage 100%)과 Commutator Move(메커니즘, 저-부작용 이동 생성 가능)를 결합한 '적응형 길이 Cycle을 Commutator 조합으로 재배치'가 이론적 표현력과 구현 가능한 메커니즘을 동시에 만족 -- PrototypeSpecification.ts에 정의된 조건으로 다음 Sprint에서 Prototype 착수 가능."
+  }
+}
