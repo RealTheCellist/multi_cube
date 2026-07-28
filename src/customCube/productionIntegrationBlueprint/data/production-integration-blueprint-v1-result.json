@@ -1,0 +1,627 @@
+{
+  "currentSequence": [
+    {
+      "step": "1",
+      "candidateType": "DISRUPT (narrow)",
+      "budgetSource": "shared genDeadline (1/4 slice)",
+      "gatedByGenDeadline": true,
+      "notes": "tryEndgameThroughDisruption(depth=1, recursion=0)"
+    },
+    {
+      "step": "2",
+      "candidateType": "DISRUPT (wide)",
+      "budgetSource": "shared genDeadline (1/4 slice)",
+      "gatedByGenDeadline": true,
+      "notes": "tryEndgameThroughDisruption(depth=3, recursion=1)"
+    },
+    {
+      "step": "3",
+      "candidateType": "SETUP",
+      "budgetSource": "shared genDeadline (1/4 slice)",
+      "gatedByGenDeadline": true,
+      "notes": "tryEndgameMultiPly"
+    },
+    {
+      "step": "4",
+      "candidateType": "REPAIR",
+      "budgetSource": "reserved slice off outer deadline",
+      "gatedByGenDeadline": false,
+      "notes": "runSuccessV2(W2_widerHop), REPAIR_RESERVED_SLICE_MS=75ms, production default (reservedBudget scheduling)"
+    },
+    {
+      "step": "5",
+      "candidateType": "CCR",
+      "budgetSource": "remaining outer deadline",
+      "gatedByGenDeadline": false,
+      "notes": "runCCRPrototype(cubies, lib, deadline, \"singleCycle\") -- always last, unconditional"
+    }
+  ],
+  "proposedSequence": [
+    {
+      "step": "1",
+      "candidateType": "DISRUPT (narrow)",
+      "budgetSource": "shared genDeadline (1/4 slice)",
+      "gatedByGenDeadline": true,
+      "notes": "tryEndgameThroughDisruption(depth=1, recursion=0)"
+    },
+    {
+      "step": "2",
+      "candidateType": "DISRUPT (wide)",
+      "budgetSource": "shared genDeadline (1/4 slice)",
+      "gatedByGenDeadline": true,
+      "notes": "tryEndgameThroughDisruption(depth=3, recursion=1)"
+    },
+    {
+      "step": "3",
+      "candidateType": "SETUP",
+      "budgetSource": "shared genDeadline (1/4 slice)",
+      "gatedByGenDeadline": true,
+      "notes": "tryEndgameMultiPly"
+    },
+    {
+      "step": "4",
+      "candidateType": "REPAIR",
+      "budgetSource": "reserved slice off outer deadline",
+      "gatedByGenDeadline": false,
+      "notes": "runSuccessV2(W2_widerHop), REPAIR_RESERVED_SLICE_MS=75ms, production default (reservedBudget scheduling)"
+    },
+    {
+      "step": "5",
+      "candidateType": "CCR",
+      "budgetSource": "remaining outer deadline",
+      "gatedByGenDeadline": false,
+      "notes": "runCCRPrototype(cubies, lib, deadline, \"singleCycle\") -- always last, unconditional"
+    },
+    {
+      "step": "6",
+      "candidateType": "MixedCommutator (proposed)",
+      "budgetSource": "proposed",
+      "gatedByGenDeadline": false,
+      "notes": "tryMixedCommutatorPrototype(cubies, lib, deadline) -- proposed as a reserved slice off the OUTER deadline (like REPAIR), sized per BudgetAllocationSweep's own measured dose-response curve, generated LAST (after CCR) so it never displaces existing candidates' own budget."
+    }
+  ],
+  "matrix": {
+    "n": 142,
+    "outcomeTally": [
+      {
+        "outcome": "ONLY_EXISTING",
+        "count": 3
+      },
+      {
+        "outcome": "ONLY_MIXED",
+        "count": 31
+      },
+      {
+        "outcome": "BOTH_NONE",
+        "count": 106
+      },
+      {
+        "outcome": "MIXED_WINS",
+        "count": 2
+      }
+    ],
+    "byExistingType": [
+      {
+        "existingBestType": "null",
+        "count": 137,
+        "mixedWouldWinCount": 31
+      },
+      {
+        "existingBestType": "CCR",
+        "count": 5,
+        "mixedWouldWinCount": 2
+      }
+    ],
+    "netNewCount": 31,
+    "redundantWinCount": 2,
+    "neverDisplacesCount": 3
+  },
+  "sweepPoints": [
+    {
+      "budgetMs": 75,
+      "n": 28,
+      "solvedCount": 2,
+      "successRate": 0.07142857142857142,
+      "lowFootprintCount": 1,
+      "avgRuntimeMs": 76.03571428571429
+    },
+    {
+      "budgetMs": 150,
+      "n": 28,
+      "solvedCount": 3,
+      "successRate": 0.10714285714285714,
+      "lowFootprintCount": 1,
+      "avgRuntimeMs": 151.03571428571428
+    },
+    {
+      "budgetMs": 300,
+      "n": 28,
+      "solvedCount": 5,
+      "successRate": 0.17857142857142858,
+      "lowFootprintCount": 1,
+      "avgRuntimeMs": 301
+    },
+    {
+      "budgetMs": 5000,
+      "n": 28,
+      "solvedCount": 18,
+      "successRate": 0.6428571428571429,
+      "lowFootprintCount": 1,
+      "avgRuntimeMs": 4524.321428571428
+    }
+  ],
+  "gate": {
+    "solvedCount": 3,
+    "unsolvedCount": 25,
+    "featureComparisons": [
+      {
+        "feature": "cycleLength",
+        "avgAmongSolved": 5.333333333333333,
+        "avgAmongUnsolved": 4.96
+      },
+      {
+        "feature": "conflictEdgeCount",
+        "avgAmongSolved": 0,
+        "avgAmongUnsolved": 0
+      },
+      {
+        "feature": "componentCount",
+        "avgAmongSolved": 1,
+        "avgAmongUnsolved": 1
+      },
+      {
+        "feature": "hasParity(0/1)",
+        "avgAmongSolved": 0,
+        "avgAmongUnsolved": 0.12
+      }
+    ],
+    "proposedGate": "cycleCount===1 (single dominant cycle, already required by detectCycle/analyzeMultiCycle) AND conflictEdgeCount===0 AND componentCount===1",
+    "rationale": "3건의 해결 케이스 전원이 conflictEdgeCount=0, componentCount=1을 만족함 (실측) -- CCR의 Gate(conflictEdgeCount=0)와 동일한 조건이 Mixed Commutator에도 자연스럽게 성립한다는 뜻이지만, 표본이 작아(3건) 강한 통계적 결론은 아니다."
+  },
+  "diffEstimates": [
+    {
+      "file": "fiveByFiveEdgeRecovery.ts",
+      "functionsToAdd": [
+        "genMixedCommutator() -- new, mirrors genCCR()'s exact shape"
+      ],
+      "functionsToModify": [
+        "generateRecoveryStrategies() -- add 1 import line, 1 new parameter (includeMixedCommutator=true, mirrors includeCCR's own pattern), 1 new step appended to the `order` array"
+      ],
+      "estimatedLOC": 10,
+      "riskLevel": "LOW",
+      "rationale": "CCR's own integration (this Sprint's own direct source read) is the closest real precedent: import line + a ~6-line gen function + one array-entry addition. No change to genDeadline/slice()/REPAIR's reservedBudget logic -- MixedCommutator's step is purely additive, appended after genCCR(), never altering existing candidates' own budget arithmetic."
+    },
+    {
+      "file": "fiveByFiveEdgeSolverTypes.ts",
+      "functionsToAdd": [],
+      "functionsToModify": [
+        "RecoveryType union -- add \"MixedCommutator\" as a 5th member (currently \"DISRUPT\" | \"SETUP\" | \"REPAIR\" | \"CCR\")"
+      ],
+      "estimatedLOC": 1,
+      "riskLevel": "LOW",
+      "rationale": "A pure additive union-type widening -- every existing exhaustive switch/consumer of RecoveryType (if any) would need a TypeScript compiler check to confirm no non-exhaustive-match errors; none were found reading the type's only consumer sites in fiveByFiveEdgeRecovery.ts itself (type is only ever constructed via the `add()` helper's first argument, never pattern-matched exhaustively)."
+    },
+    {
+      "file": "fiveByFiveEdgePlanner.ts",
+      "functionsToAdd": [],
+      "functionsToModify": [],
+      "estimatedLOC": 0,
+      "riskLevel": "LOW",
+      "rationale": "Confirmed by direct read-only inspection this Sprint: the Planner never references RecoveryType/RecoveryStrategy or generateRecoveryStrategies() directly -- it operates one layer above Recovery entirely. No change required, matching the Directive's own explicit prohibition."
+    },
+    {
+      "file": "fiveByFiveEdgeExecutor.ts",
+      "functionsToAdd": [],
+      "functionsToModify": [],
+      "estimatedLOC": 0,
+      "riskLevel": "LOW",
+      "rationale": "Confirmed by direct read-only inspection (also noted in this Sprint's own IntegrationSequenceReport comments, carried over from CCR Production Integration Sprint v1's own finding): executeTask() calls attemptRecovery()/generateRecoveryStrategies() without ever passing the new trailing parameter, so a new includeMixedCommutator=true default requires ZERO Executor changes -- the exact same mechanism CCR's own integration already relied on."
+    }
+  ],
+  "checklist": [
+    {
+      "item": "새 RecoveryType 추가 여부",
+      "detail": "예 -- \"MixedCommutator\"를 RecoveryType 유니온(fiveByFiveEdgeSolverTypes.ts)에 5번째 멤버로 추가."
+    },
+    {
+      "item": "후보 생성 함수",
+      "detail": "genMixedCommutator() -- genCCR()과 동일한 형태: tryMixedCommutatorPrototype(cubies, lib, deadline) 호출 -> add(\"MixedCommutator\", description, moves)."
+    },
+    {
+      "item": "등록 위치",
+      "detail": "generateRecoveryStrategies()의 `order` 배열, genCCR 다음(6번째, 마지막) -- 기존 DISRUPT/DISRUPT/SETUP/REPAIR/CCR의 예산 산술을 전혀 건드리지 않는 순수 추가."
+    },
+    {
+      "item": "평가 순서",
+      "detail": "genDisrupt1 -> genDisrupt2 -> genSetup -> genRepair -> genCCR -> genMixedCommutator(신규). chooseBestRecovery()는 순서와 무관하게 최고 score만 선택하므로, 이 순서는 '누가 이기는가'가 아니라 '누가 예산을 얼마나 쓰는가'만 결정한다."
+    },
+    {
+      "item": "Validation 계약",
+      "detail": "tryMixedCommutatorPrototype 자체가 이미 validateDeferred로 내부 검증을 마치고 null 또는 검증된 moves만 반환 -- add() 호출 시 추가 검증 불필요, REPAIR/CCR과 동일한 패턴."
+    },
+    {
+      "item": "Selection 메커니즘 (실측으로 발견된 핵심 이슈)",
+      "detail": "chooseBestRecovery()의 순수 scoreWholeState 경쟁에 그대로 맡기면 안 된다 -- 실측 결과 Mixed Commutator 후보의 raw score가 wrongWingCount는 개선되어도 protectedEdges(-60) 페널티 때문에 자주 강하게 음수로 나온다. REPAIR의 shortCircuitRepair 패턴(자체 validateDeferred 통과 시 score 비교 없이 즉시 채택)을 그대로 재사용할 것을 권고."
+    },
+    {
+      "item": "Regression 체크포인트",
+      "detail": "89 Union Covered 케이스에서 regressionCount=0 (Mixed Commutator Prototype Sprint v1에서 이미 실측 확인) -- Production Integration 이후에도 동일한 89건 재검증을 다음 Sprint의 필수 회귀 체크포인트로 지정."
+    }
+  ],
+  "readiness": {
+    "decision": "A_PROCEED_TO_INTEGRATION",
+    "decisionLabel": "Conclusion A -- Production Integration 설계가 완성되었다. 다음 Sprint에서 코드 통합 가능.",
+    "netNewCount": 31,
+    "allDiffLowRisk": true,
+    "gateResolved": true,
+    "rationale": "netNewCount=31건의 실질적 신규 capability, 모든 파일 Diff Risk=LOW, Gate 실측 근거 확보, Regression 0건 -- Integration Sequence/Budget Allocation/Gate/Diff Estimate/Checklist 5개 산출물이 모두 실측 데이터로 뒷받침된다."
+  },
+  "negativeScoreWinCount": 1,
+  "scoreCompatibility": {
+    "foundRows": 33,
+    "negativeScoreCount": 28,
+    "avgMixedScore": -673.6818181818181
+  },
+  "sampleInteractionRows": [
+    {
+      "label": "worstCase:45959141",
+      "populationTag": "SECONDARY_ONLY",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": true,
+      "mixedScore": -1203,
+      "mixedFootprintRatio": 3,
+      "wouldMixedWin": true,
+      "outcome": "ONLY_MIXED"
+    },
+    {
+      "label": "worstCase:46086463",
+      "populationTag": "SECONDARY_ONLY",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:64369533",
+      "populationTag": "REGRESSION",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:68977335",
+      "populationTag": "REGRESSION",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:84976575",
+      "populationTag": "PRIMARY",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:f17d7eb9",
+      "populationTag": "SECONDARY_ONLY",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:70a5020b",
+      "populationTag": "REGRESSION",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "populationTag": "SECONDARY_ONLY",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:7541612b",
+      "populationTag": "PRIMARY",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:b714481",
+      "populationTag": "REGRESSION",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:beb967ad",
+      "populationTag": "REGRESSION",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": true,
+      "mixedScore": -1435,
+      "mixedFootprintRatio": 4.166666666666667,
+      "wouldMixedWin": true,
+      "outcome": "ONLY_MIXED"
+    },
+    {
+      "label": "worstCase:1e928fb1",
+      "populationTag": "REGRESSION",
+      "existingBestType": "CCR",
+      "existingBestScore": -1167,
+      "existingCandidateCount": 1,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "ONLY_EXISTING"
+    },
+    {
+      "label": "worstCase:4549b041",
+      "populationTag": "PRIMARY",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:1513fcff",
+      "populationTag": "REGRESSION",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:d37ca819",
+      "populationTag": "SECONDARY_ONLY",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:ae3d218b",
+      "populationTag": "REGRESSION",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:120fc3af",
+      "populationTag": "REGRESSION",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:dd4d94fd",
+      "populationTag": "REGRESSION",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": true,
+      "mixedScore": -397.5,
+      "mixedFootprintRatio": 1.1666666666666667,
+      "wouldMixedWin": true,
+      "outcome": "ONLY_MIXED"
+    },
+    {
+      "label": "worstCase:36336c1",
+      "populationTag": "PRIMARY",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:ad12c377",
+      "populationTag": "REGRESSION",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:e7a801fb",
+      "populationTag": "REGRESSION",
+      "existingBestType": "CCR",
+      "existingBestScore": -556,
+      "existingCandidateCount": 1,
+      "mixedFound": true,
+      "mixedScore": 152,
+      "mixedFootprintRatio": 3,
+      "wouldMixedWin": true,
+      "outcome": "MIXED_WINS"
+    },
+    {
+      "label": "worstCase:1af658ab",
+      "populationTag": "PRIMARY",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:4e27e5a1",
+      "populationTag": "REGRESSION",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:93b485f7",
+      "populationTag": "REGRESSION",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:5e5b20b",
+      "populationTag": "REGRESSION",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:e5101f85",
+      "populationTag": "REGRESSION",
+      "existingBestType": "CCR",
+      "existingBestScore": -1299.5,
+      "existingCandidateCount": 1,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "ONLY_EXISTING"
+    },
+    {
+      "label": "worstCase:4749cd9d",
+      "populationTag": "REGRESSION",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:d27df773",
+      "populationTag": "REGRESSION",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:c039e611",
+      "populationTag": "REGRESSION",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    },
+    {
+      "label": "worstCase:b2c9ceb9",
+      "populationTag": "REGRESSION",
+      "existingBestType": null,
+      "existingBestScore": null,
+      "existingCandidateCount": 0,
+      "mixedFound": false,
+      "mixedScore": null,
+      "mixedFootprintRatio": null,
+      "wouldMixedWin": false,
+      "outcome": "BOTH_NONE"
+    }
+  ]
+}

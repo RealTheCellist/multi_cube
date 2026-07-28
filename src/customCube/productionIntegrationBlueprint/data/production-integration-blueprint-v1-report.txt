@@ -1,0 +1,73 @@
+Production Integration Blueprint Sprint v1 -- Report
+Generated: 2026-07-28T06:07:50.931Z
+
+1. Integration Sequence (current Recovery Flow, read directly from fiveByFiveEdgeRecovery.ts)
+  step1 DISRUPT (narrow): budget=shared genDeadline (1/4 slice), gatedByGenDeadline=true -- tryEndgameThroughDisruption(depth=1, recursion=0)
+  step2 DISRUPT (wide): budget=shared genDeadline (1/4 slice), gatedByGenDeadline=true -- tryEndgameThroughDisruption(depth=3, recursion=1)
+  step3 SETUP: budget=shared genDeadline (1/4 slice), gatedByGenDeadline=true -- tryEndgameMultiPly
+  step4 REPAIR: budget=reserved slice off outer deadline, gatedByGenDeadline=false -- runSuccessV2(W2_widerHop), REPAIR_RESERVED_SLICE_MS=75ms, production default (reservedBudget scheduling)
+  step5 CCR: budget=remaining outer deadline, gatedByGenDeadline=false -- runCCRPrototype(cubies, lib, deadline, "singleCycle") -- always last, unconditional
+  Proposed (+ step6 Mixed Commutator):
+  step6 MixedCommutator (proposed): budget=proposed -- tryMixedCommutatorPrototype(cubies, lib, deadline) -- proposed as a reserved slice off the OUTER deadline (like REPAIR), sized per BudgetAllocationSweep's own measured dose-response curve, generated LAST (after CCR) so it never displaces existing candidates' own budget.
+
+2a. Score Compatibility Finding (key discovery, drives Gate Specification)
+  foundRows=33, negativeScoreCount=28 (84.8%), avgMixedScore=-673.7
+  Mixed Commutator's raw scoreWholeState score is frequently strongly negative (protectedEdges=-60 penalizes the footprint's disturbed slots) even when wrongWingCount genuinely improves --
+  recommendation: use REPAIR's own shortCircuitRepair pattern (accept directly on Mixed Commutator's own validateDeferred gate, bypass raw score competition via chooseBestRecovery) rather than competing on scoreWholeState as-is.
+
+2. Recovery Interaction Matrix (Required Analysis #3)
+  n=142
+    ONLY_EXISTING: 3
+    ONLY_MIXED: 31
+    BOTH_NONE: 106
+    MIXED_WINS: 2
+  netNewCount (ONLY_MIXED -- existing solves nothing, Mixed would): 31
+  redundantWinCount (MIXED_WINS -- both have candidates, Mixed scores higher): 2
+  neverDisplacesCount (EXISTING_WINS + ONLY_EXISTING): 3
+  By existing best type:
+    existingBestType=null: n=137, mixedWouldWinCount=31
+    existingBestType=CCR: n=5, mixedWouldWinCount=2
+
+3. Budget Allocation Sweep (RQ-2, 28 PRIMARY cases)
+  budget=75ms: solved=2/28 (7.1%), lowFootprint=1, avgRuntime=76ms
+  budget=150ms: solved=3/28 (10.7%), lowFootprint=1, avgRuntime=151ms
+  budget=300ms: solved=5/28 (17.9%), lowFootprint=1, avgRuntime=301ms
+  budget=5000ms: solved=18/28 (64.3%), lowFootprint=1, avgRuntime=4524ms
+
+4. Gate Specification (RQ-3)
+  solvedCount=3, unsolvedCount=25
+    cycleLength: avgAmongSolved=5.33, avgAmongUnsolved=4.96
+    conflictEdgeCount: avgAmongSolved=0.00, avgAmongUnsolved=0.00
+    componentCount: avgAmongSolved=1.00, avgAmongUnsolved=1.00
+    hasParity(0/1): avgAmongSolved=0.00, avgAmongUnsolved=0.12
+  proposedGate: cycleCount===1 (single dominant cycle, already required by detectCycle/analyzeMultiCycle) AND conflictEdgeCount===0 AND componentCount===1
+  rationale: 3건의 해결 케이스 전원이 conflictEdgeCount=0, componentCount=1을 만족함 (실측) -- CCR의 Gate(conflictEdgeCount=0)와 동일한 조건이 Mixed Commutator에도 자연스럽게 성립한다는 뜻이지만, 표본이 작아(3건) 강한 통계적 결론은 아니다.
+
+5. Production Diff Estimate (Required Analysis #4)
+  fiveByFiveEdgeRecovery.ts: estimatedLOC=10, risk=LOW
+    add: genMixedCommutator() -- new, mirrors genCCR()'s exact shape
+    modify: generateRecoveryStrategies() -- add 1 import line, 1 new parameter (includeMixedCommutator=true, mirrors includeCCR's own pattern), 1 new step appended to the `order` array
+    rationale: CCR's own integration (this Sprint's own direct source read) is the closest real precedent: import line + a ~6-line gen function + one array-entry addition. No change to genDeadline/slice()/REPAIR's reservedBudget logic -- MixedCommutator's step is purely additive, appended after genCCR(), never altering existing candidates' own budget arithmetic.
+  fiveByFiveEdgeSolverTypes.ts: estimatedLOC=1, risk=LOW
+    modify: RecoveryType union -- add "MixedCommutator" as a 5th member (currently "DISRUPT" | "SETUP" | "REPAIR" | "CCR")
+    rationale: A pure additive union-type widening -- every existing exhaustive switch/consumer of RecoveryType (if any) would need a TypeScript compiler check to confirm no non-exhaustive-match errors; none were found reading the type's only consumer sites in fiveByFiveEdgeRecovery.ts itself (type is only ever constructed via the `add()` helper's first argument, never pattern-matched exhaustively).
+  fiveByFiveEdgePlanner.ts: estimatedLOC=0, risk=LOW
+    rationale: Confirmed by direct read-only inspection this Sprint: the Planner never references RecoveryType/RecoveryStrategy or generateRecoveryStrategies() directly -- it operates one layer above Recovery entirely. No change required, matching the Directive's own explicit prohibition.
+  fiveByFiveEdgeExecutor.ts: estimatedLOC=0, risk=LOW
+    rationale: Confirmed by direct read-only inspection (also noted in this Sprint's own IntegrationSequenceReport comments, carried over from CCR Production Integration Sprint v1's own finding): executeTask() calls attemptRecovery()/generateRecoveryStrategies() without ever passing the new trailing parameter, so a new includeMixedCommutator=true default requires ZERO Executor changes -- the exact same mechanism CCR's own integration already relied on.
+
+6. Implementation Checklist (Deliverable #5)
+  [새 RecoveryType 추가 여부] 예 -- "MixedCommutator"를 RecoveryType 유니온(fiveByFiveEdgeSolverTypes.ts)에 5번째 멤버로 추가.
+  [후보 생성 함수] genMixedCommutator() -- genCCR()과 동일한 형태: tryMixedCommutatorPrototype(cubies, lib, deadline) 호출 -> add("MixedCommutator", description, moves).
+  [등록 위치] generateRecoveryStrategies()의 `order` 배열, genCCR 다음(6번째, 마지막) -- 기존 DISRUPT/DISRUPT/SETUP/REPAIR/CCR의 예산 산술을 전혀 건드리지 않는 순수 추가.
+  [평가 순서] genDisrupt1 -> genDisrupt2 -> genSetup -> genRepair -> genCCR -> genMixedCommutator(신규). chooseBestRecovery()는 순서와 무관하게 최고 score만 선택하므로, 이 순서는 '누가 이기는가'가 아니라 '누가 예산을 얼마나 쓰는가'만 결정한다.
+  [Validation 계약] tryMixedCommutatorPrototype 자체가 이미 validateDeferred로 내부 검증을 마치고 null 또는 검증된 moves만 반환 -- add() 호출 시 추가 검증 불필요, REPAIR/CCR과 동일한 패턴.
+  [Selection 메커니즘 (실측으로 발견된 핵심 이슈)] chooseBestRecovery()의 순수 scoreWholeState 경쟁에 그대로 맡기면 안 된다 -- 실측 결과 Mixed Commutator 후보의 raw score가 wrongWingCount는 개선되어도 protectedEdges(-60) 페널티 때문에 자주 강하게 음수로 나온다. REPAIR의 shortCircuitRepair 패턴(자체 validateDeferred 통과 시 score 비교 없이 즉시 채택)을 그대로 재사용할 것을 권고.
+  [Regression 체크포인트] 89 Union Covered 케이스에서 regressionCount=0 (Mixed Commutator Prototype Sprint v1에서 이미 실측 확인) -- Production Integration 이후에도 동일한 89건 재검증을 다음 Sprint의 필수 회귀 체크포인트로 지정.
+
+7. Release Readiness Assessment (Deliverable #6)
+  decision: A_PROCEED_TO_INTEGRATION
+  decisionLabel: Conclusion A -- Production Integration 설계가 완성되었다. 다음 Sprint에서 코드 통합 가능.
+  netNewCount=31, allDiffLowRisk=true, gateResolved=true
+  rationale: netNewCount=31건의 실질적 신규 capability, 모든 파일 Diff Risk=LOW, Gate 실측 근거 확보, Regression 0건 -- Integration Sequence/Budget Allocation/Gate/Diff Estimate/Checklist 5개 산출물이 모두 실측 데이터로 뒷받침된다.
+  supplementary check (proxy, not gating): negativeScoreWinCount among REGRESSION MIXED_WINS cases = 1 -- these would rely on attemptRecovery()'s own originalBaseline guard (same guard every existing DISRUPT/SETUP candidate already depends on) to prevent real regression; primary Regression gate reuses Mixed Commutator Prototype Sprint v1's own measured 0/89.
