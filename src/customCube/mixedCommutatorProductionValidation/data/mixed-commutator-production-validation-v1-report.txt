@@ -1,0 +1,38 @@
+Mixed Commutator Production Validation Sprint v1 -- Report (revised metrics)
+Generated: 2026-07-28T14:21:01.618Z
+
+1. Population
+  n(all)=142, n(PRIMARY)=28, repeats=10
+
+2. RQ-1: Solve Rate == Recovery Improved Rate (paired-diff across N repeats, corrected metric)
+  ALL population: meanDiff=-0.100, stddev=2.132, 95% CI=[-1.421, 1.221], cohensD=-0.047 (negligible)
+  PRIMARY population: meanDiff=0.500, stddev=1.179, 95% CI=[-0.230, 1.230], cohensD=0.424 (small)
+  wrongWingCount mean gap (Integrated-Baseline, ALL): -0.0007 (95% CI=[-0.0207, 0.0193])
+  [informational only, NOT used for Release Assessment] Fully-solved-to-zero rate diff: meanDiff=0.000 (95% CI=[-0.413, 0.413]) -- near-zero by construction, a single Recovery candidate essentially never fully solves a 9-10 wrongWing raw state
+
+3. RQ-2: Primitive Contribution Matrix (Solved/Unique/Shared, case-repeats out of 1420)
+  BASE (DISRUPT+SETUP+REPAIR): solved=10, unique=10, shared=0
+  PARITY (해당 RecoveryType 없음 -- N/A, 추측 없이 보고): solved=-1, unique=-1, shared=-1
+  CCR: solved=71, unique=71, shared=0
+  MIXED_COMMUTATOR: solved=4, unique=4, shared=0
+  DISRUPT: solved=4, unique=4, shared=0
+  SETUP: solved=6, unique=6, shared=0
+  REPAIR: solved=0, unique=0, shared=0
+
+4. RQ-3: Regression (True vs False, per-case across N=10 repeats)
+  n(cases)=142, casesWithSinglePassFlip=0, trueRegressionCount=0, falseRegressionCount=0
+
+5. RQ-4: Runtime
+  Real end-to-end solve() (Integrated arm, n=1420, reused from prior run -- unaffected by the metric fix): meanMs=1054.6, p95Ms=1255.0, maxMs=1663.0, timeoutRate=43.1% (pre-existing "worstCase"-snapshot characteristic, not a Release gate)
+  MIXED_COMMUTATOR's own ISOLATED generation cost (onEvent start->end, corrected -- not a whole-call diff): mean=29.9ms, stddev=87.9ms, n=1420 (budget=300ms)
+
+6. RQ-5: Capability Delta Classification
+  n=142, ONLY_EXISTING=17, ONLY_MIXED=1, BOTH=0, NONE=124
+
+7. Release Assessment (Deliverable #6)
+  decision=B_ADDITIONAL_REFINEMENT
+  decisionLabel=Conclusion B -- 향상이 이 표본에서 확인되지 않음 (meanDiff<=0), 추가 Refinement 권장.
+  solveRateIncreased=false, noTrueRegression=true, runtimeAcceptable=true
+  statisticalNote: 95% CI [-1.421, 1.221]가 0을 포함함 -- Mixed Commutator의 Gate가 매우 좁아(142건 중 극소수) 이 표본 크기에서는 통계적 유의성에 도달하지 못함 (실측 그대로 공개).
+  runtimeNote: MIXED_COMMUTATOR 자체 소요 시간(Gate 통과 여부와 무관하게 onEvent start~end)은 예산(300ms) 이내 (mean=29.9ms). 참고: 실제 end-to-end solve()의 timeoutRate=43.1%는 이 Sprint 이전부터 존재하는 "worstCase" 스냅샷 고유 특성으로, Release 판단의 Gate로 사용하지 않음(정보 공개 목적).
+  rationale: Recovery 성공률(Improved Rate) meanDiff=-0.100로 증가가 관측되지 않음 -- Regression은 없지만(trueRegressionCount=0), Solve Rate 증가라는 Success Criteria A의 조건을 충족하지 못해 추가 Refinement를 권장.
