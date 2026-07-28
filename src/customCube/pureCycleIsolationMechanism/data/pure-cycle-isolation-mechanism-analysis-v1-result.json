@@ -1,0 +1,3197 @@
+{
+  "fidelityRows": [
+    {
+      "label": "worstCase:84976575",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "worstCase:7541612b",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "worstCase:4549b041",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "worstCase:36336c1",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "worstCase:1af658ab",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "worstCase:589b0a25",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "worstCase:f776edb1",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "snapshot335:45959141",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "snapshot335:1af658ab",
+      "realSolved": true,
+      "shadowSolved": true,
+      "realMoveCount": 203,
+      "shadowMoveCount": 203,
+      "matches": true
+    },
+    {
+      "label": "snapshot335:56a8b82d",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "snapshot335:b714481",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "snapshot335:4549b041",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "snapshot335:120fc3af",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "snapshot335:36336c1",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "scrambleDepth10:0",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "scrambleDepth10:2",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "scrambleDepth10:4",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "scrambleDepth20:5",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "scrambleDepth20:6",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "scrambleDepth30:4",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "scrambleDepth40:0",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "scrambleDepth40:1",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "scrambleDepth100:2",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "realSolved": false,
+      "shadowSolved": false,
+      "realMoveCount": 0,
+      "shadowMoveCount": 0,
+      "matches": true
+    }
+  ],
+  "mechanismRows": [
+    {
+      "label": "worstCase:84976575",
+      "cycleLength": 6,
+      "wrongWingCount": 6,
+      "bp1": {
+        "leavesExplored": 13,
+        "maxDepthReached": 6,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 7,
+        "bestLeafPairCount": 6
+      },
+      "ccr": {
+        "leavesExplored": 64,
+        "maxDepthReached": 6,
+        "terminationReason": "LEAF_CAP_REACHED",
+        "moves": null,
+        "bestLeafWrongWingCount": 7,
+        "bestLeafPairCount": 6
+      },
+      "sameTerminationReason": false,
+      "bothSearchExhausted": false,
+      "eitherLeafCapReached": true
+    },
+    {
+      "label": "worstCase:7541612b",
+      "cycleLength": 6,
+      "wrongWingCount": 6,
+      "bp1": {
+        "leavesExplored": 10,
+        "maxDepthReached": 6,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 8,
+        "bestLeafPairCount": 6
+      },
+      "ccr": {
+        "leavesExplored": 30,
+        "maxDepthReached": 6,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 6,
+        "bestLeafPairCount": 6
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "worstCase:4549b041",
+      "cycleLength": 4,
+      "wrongWingCount": 4,
+      "bp1": {
+        "leavesExplored": 1,
+        "maxDepthReached": 0,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 4,
+        "bestLeafPairCount": 8
+      },
+      "ccr": {
+        "leavesExplored": 1,
+        "maxDepthReached": 0,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 4,
+        "bestLeafPairCount": 8
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "worstCase:36336c1",
+      "cycleLength": 4,
+      "wrongWingCount": 4,
+      "bp1": {
+        "leavesExplored": 1,
+        "maxDepthReached": 0,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 4,
+        "bestLeafPairCount": 8
+      },
+      "ccr": {
+        "leavesExplored": 1,
+        "maxDepthReached": 0,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 4,
+        "bestLeafPairCount": 8
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "worstCase:1af658ab",
+      "cycleLength": 4,
+      "wrongWingCount": 4,
+      "bp1": {
+        "leavesExplored": 6,
+        "maxDepthReached": 4,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 4,
+        "bestLeafPairCount": 9
+      },
+      "ccr": {
+        "leavesExplored": 10,
+        "maxDepthReached": 4,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 4,
+        "bestLeafPairCount": 9
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "worstCase:589b0a25",
+      "cycleLength": 6,
+      "wrongWingCount": 6,
+      "bp1": {
+        "leavesExplored": 5,
+        "maxDepthReached": 6,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 8,
+        "bestLeafPairCount": 5
+      },
+      "ccr": {
+        "leavesExplored": 7,
+        "maxDepthReached": 6,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 8,
+        "bestLeafPairCount": 5
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "worstCase:f776edb1",
+      "cycleLength": 5,
+      "wrongWingCount": 5,
+      "bp1": {
+        "leavesExplored": 8,
+        "maxDepthReached": 5,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 7,
+        "bestLeafPairCount": 6
+      },
+      "ccr": {
+        "leavesExplored": 19,
+        "maxDepthReached": 5,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 7,
+        "bestLeafPairCount": 6
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "cycleLength": 6,
+      "wrongWingCount": 7,
+      "bp1": {
+        "leavesExplored": 3,
+        "maxDepthReached": 4,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 8,
+        "bestLeafPairCount": 5
+      },
+      "ccr": {
+        "leavesExplored": 3,
+        "maxDepthReached": 4,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 8,
+        "bestLeafPairCount": 5
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "snapshot335:45959141",
+      "cycleLength": 6,
+      "wrongWingCount": 6,
+      "bp1": {
+        "leavesExplored": 10,
+        "maxDepthReached": 6,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 6,
+        "bestLeafPairCount": 7
+      },
+      "ccr": {
+        "leavesExplored": 64,
+        "maxDepthReached": 6,
+        "terminationReason": "LEAF_CAP_REACHED",
+        "moves": null,
+        "bestLeafWrongWingCount": 6,
+        "bestLeafPairCount": 7
+      },
+      "sameTerminationReason": false,
+      "bothSearchExhausted": false,
+      "eitherLeafCapReached": true
+    },
+    {
+      "label": "snapshot335:1af658ab",
+      "cycleLength": 3,
+      "wrongWingCount": 4,
+      "bp1": {
+        "leavesExplored": 4,
+        "maxDepthReached": 3,
+        "terminationReason": "SOLUTION_FOUND",
+        "moves": [
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            0,
+            1
+          ],
+          [
+            "x",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            0,
+            1
+          ],
+          [
+            "x",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            1,
+            -1
+          ],
+          [
+            "x",
+            0,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            1,
+            -1
+          ],
+          [
+            "x",
+            0,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            1
+          ],
+          [
+            "z",
+            -1,
+            1
+          ],
+          [
+            "z",
+            0,
+            1
+          ],
+          [
+            "z",
+            1,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "z",
+            1,
+            -1
+          ],
+          [
+            "z",
+            0,
+            -1
+          ],
+          [
+            "z",
+            -1,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            0,
+            1
+          ],
+          [
+            "x",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            0,
+            1
+          ],
+          [
+            "x",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            1,
+            -1
+          ],
+          [
+            "x",
+            0,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            1,
+            -1
+          ],
+          [
+            "x",
+            0,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            1
+          ],
+          [
+            "z",
+            -1,
+            1
+          ],
+          [
+            "z",
+            0,
+            1
+          ],
+          [
+            "z",
+            1,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "z",
+            1,
+            -1
+          ],
+          [
+            "z",
+            0,
+            -1
+          ],
+          [
+            "z",
+            -1,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            1
+          ],
+          [
+            "z",
+            -1,
+            1
+          ],
+          [
+            "z",
+            0,
+            1
+          ],
+          [
+            "z",
+            1,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "z",
+            1,
+            -1
+          ],
+          [
+            "z",
+            0,
+            -1
+          ],
+          [
+            "z",
+            -1,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            -1
+          ]
+        ],
+        "bestLeafWrongWingCount": 2,
+        "bestLeafPairCount": 10
+      },
+      "ccr": {
+        "leavesExplored": 4,
+        "maxDepthReached": 3,
+        "terminationReason": "SOLUTION_FOUND",
+        "moves": [
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            0,
+            1
+          ],
+          [
+            "x",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            0,
+            1
+          ],
+          [
+            "x",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            1,
+            -1
+          ],
+          [
+            "x",
+            0,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            1,
+            -1
+          ],
+          [
+            "x",
+            0,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            1
+          ],
+          [
+            "z",
+            -1,
+            1
+          ],
+          [
+            "z",
+            0,
+            1
+          ],
+          [
+            "z",
+            1,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "z",
+            1,
+            -1
+          ],
+          [
+            "z",
+            0,
+            -1
+          ],
+          [
+            "z",
+            -1,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            0,
+            1
+          ],
+          [
+            "x",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            0,
+            1
+          ],
+          [
+            "x",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            1,
+            -1
+          ],
+          [
+            "x",
+            0,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            1,
+            -1
+          ],
+          [
+            "x",
+            0,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            1
+          ],
+          [
+            "z",
+            -1,
+            1
+          ],
+          [
+            "z",
+            0,
+            1
+          ],
+          [
+            "z",
+            1,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "z",
+            1,
+            -1
+          ],
+          [
+            "z",
+            0,
+            -1
+          ],
+          [
+            "z",
+            -1,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            1
+          ],
+          [
+            "z",
+            -1,
+            1
+          ],
+          [
+            "z",
+            0,
+            1
+          ],
+          [
+            "z",
+            1,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "z",
+            1,
+            -1
+          ],
+          [
+            "z",
+            0,
+            -1
+          ],
+          [
+            "z",
+            -1,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            -1
+          ]
+        ],
+        "bestLeafWrongWingCount": 2,
+        "bestLeafPairCount": 10
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": false,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "snapshot335:56a8b82d",
+      "cycleLength": 3,
+      "wrongWingCount": 3,
+      "bp1": {
+        "leavesExplored": 2,
+        "maxDepthReached": 3,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 4,
+        "bestLeafPairCount": 9
+      },
+      "ccr": {
+        "leavesExplored": 2,
+        "maxDepthReached": 3,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 4,
+        "bestLeafPairCount": 9
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "snapshot335:b714481",
+      "cycleLength": 6,
+      "wrongWingCount": 6,
+      "bp1": {
+        "leavesExplored": 12,
+        "maxDepthReached": 6,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 7,
+        "bestLeafPairCount": 5
+      },
+      "ccr": {
+        "leavesExplored": 18,
+        "maxDepthReached": 6,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 7,
+        "bestLeafPairCount": 5
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "snapshot335:4549b041",
+      "cycleLength": 6,
+      "wrongWingCount": 6,
+      "bp1": {
+        "leavesExplored": 1,
+        "maxDepthReached": 0,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 6,
+        "bestLeafPairCount": 6
+      },
+      "ccr": {
+        "leavesExplored": 1,
+        "maxDepthReached": 0,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 6,
+        "bestLeafPairCount": 6
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "cycleLength": 4,
+      "wrongWingCount": 4,
+      "bp1": {
+        "leavesExplored": 1,
+        "maxDepthReached": 0,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 4,
+        "bestLeafPairCount": 8
+      },
+      "ccr": {
+        "leavesExplored": 1,
+        "maxDepthReached": 0,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 4,
+        "bestLeafPairCount": 8
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "snapshot335:120fc3af",
+      "cycleLength": 5,
+      "wrongWingCount": 5,
+      "bp1": {
+        "leavesExplored": 3,
+        "maxDepthReached": 5,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 6,
+        "bestLeafPairCount": 6
+      },
+      "ccr": {
+        "leavesExplored": 7,
+        "maxDepthReached": 5,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 6,
+        "bestLeafPairCount": 6
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "snapshot335:36336c1",
+      "cycleLength": 6,
+      "wrongWingCount": 6,
+      "bp1": {
+        "leavesExplored": 16,
+        "maxDepthReached": 6,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 8,
+        "bestLeafPairCount": 5
+      },
+      "ccr": {
+        "leavesExplored": 64,
+        "maxDepthReached": 6,
+        "terminationReason": "LEAF_CAP_REACHED",
+        "moves": null,
+        "bestLeafWrongWingCount": 7,
+        "bestLeafPairCount": 5
+      },
+      "sameTerminationReason": false,
+      "bothSearchExhausted": false,
+      "eitherLeafCapReached": true
+    },
+    {
+      "label": "scrambleDepth10:0",
+      "cycleLength": 5,
+      "wrongWingCount": 5,
+      "bp1": {
+        "leavesExplored": 9,
+        "maxDepthReached": 5,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 6,
+        "bestLeafPairCount": 6
+      },
+      "ccr": {
+        "leavesExplored": 15,
+        "maxDepthReached": 5,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 6,
+        "bestLeafPairCount": 6
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "scrambleDepth10:2",
+      "cycleLength": 3,
+      "wrongWingCount": 3,
+      "bp1": {
+        "leavesExplored": 3,
+        "maxDepthReached": 3,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 4,
+        "bestLeafPairCount": 8
+      },
+      "ccr": {
+        "leavesExplored": 4,
+        "maxDepthReached": 3,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 4,
+        "bestLeafPairCount": 8
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "cycleLength": 4,
+      "wrongWingCount": 4,
+      "bp1": {
+        "leavesExplored": 6,
+        "maxDepthReached": 4,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 7,
+        "bestLeafPairCount": 5
+      },
+      "ccr": {
+        "leavesExplored": 18,
+        "maxDepthReached": 4,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 7,
+        "bestLeafPairCount": 5
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "scrambleDepth10:4",
+      "cycleLength": 5,
+      "wrongWingCount": 5,
+      "bp1": {
+        "leavesExplored": 10,
+        "maxDepthReached": 5,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 7,
+        "bestLeafPairCount": 6
+      },
+      "ccr": {
+        "leavesExplored": 21,
+        "maxDepthReached": 5,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 7,
+        "bestLeafPairCount": 6
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "scrambleDepth20:5",
+      "cycleLength": 5,
+      "wrongWingCount": 6,
+      "bp1": {
+        "leavesExplored": 6,
+        "maxDepthReached": 5,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 6,
+        "bestLeafPairCount": 8
+      },
+      "ccr": {
+        "leavesExplored": 28,
+        "maxDepthReached": 5,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 6,
+        "bestLeafPairCount": 8
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "scrambleDepth20:6",
+      "cycleLength": 5,
+      "wrongWingCount": 5,
+      "bp1": {
+        "leavesExplored": 7,
+        "maxDepthReached": 5,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 6,
+        "bestLeafPairCount": 7
+      },
+      "ccr": {
+        "leavesExplored": 13,
+        "maxDepthReached": 5,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 5,
+        "bestLeafPairCount": 7
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "cycleLength": 6,
+      "wrongWingCount": 6,
+      "bp1": {
+        "leavesExplored": 2,
+        "maxDepthReached": 3,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 6,
+        "bestLeafPairCount": 6
+      },
+      "ccr": {
+        "leavesExplored": 3,
+        "maxDepthReached": 6,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 6,
+        "bestLeafPairCount": 6
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "scrambleDepth30:4",
+      "cycleLength": 5,
+      "wrongWingCount": 5,
+      "bp1": {
+        "leavesExplored": 3,
+        "maxDepthReached": 5,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 6,
+        "bestLeafPairCount": 7
+      },
+      "ccr": {
+        "leavesExplored": 4,
+        "maxDepthReached": 5,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 6,
+        "bestLeafPairCount": 7
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "scrambleDepth40:0",
+      "cycleLength": 6,
+      "wrongWingCount": 6,
+      "bp1": {
+        "leavesExplored": 1,
+        "maxDepthReached": 0,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 6,
+        "bestLeafPairCount": 6
+      },
+      "ccr": {
+        "leavesExplored": 1,
+        "maxDepthReached": 0,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 6,
+        "bestLeafPairCount": 6
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "scrambleDepth40:1",
+      "cycleLength": 6,
+      "wrongWingCount": 6,
+      "bp1": {
+        "leavesExplored": 11,
+        "maxDepthReached": 6,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 6,
+        "bestLeafPairCount": 7
+      },
+      "ccr": {
+        "leavesExplored": 42,
+        "maxDepthReached": 6,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 6,
+        "bestLeafPairCount": 7
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "scrambleDepth100:2",
+      "cycleLength": 5,
+      "wrongWingCount": 5,
+      "bp1": {
+        "leavesExplored": 3,
+        "maxDepthReached": 5,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 7,
+        "bestLeafPairCount": 5
+      },
+      "ccr": {
+        "leavesExplored": 10,
+        "maxDepthReached": 5,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 7,
+        "bestLeafPairCount": 5
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "cycleLength": 5,
+      "wrongWingCount": 5,
+      "bp1": {
+        "leavesExplored": 1,
+        "maxDepthReached": 0,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 5,
+        "bestLeafPairCount": 7
+      },
+      "ccr": {
+        "leavesExplored": 1,
+        "maxDepthReached": 0,
+        "terminationReason": "SEARCH_EXHAUSTED",
+        "moves": null,
+        "bestLeafWrongWingCount": 5,
+        "bestLeafPairCount": 7
+      },
+      "sameTerminationReason": true,
+      "bothSearchExhausted": true,
+      "eitherLeafCapReached": false
+    }
+  ],
+  "sharedFailureSummary": {
+    "totalCases": 28,
+    "sameTerminationReasonCount": 25,
+    "bothSearchExhaustedCount": 24,
+    "eitherLeafCapReachedCount": 3,
+    "bp1TerminationTally": {
+      "SEARCH_EXHAUSTED": 27,
+      "SOLUTION_FOUND": 1
+    },
+    "ccrTerminationTally": {
+      "LEAF_CAP_REACHED": 3,
+      "SEARCH_EXHAUSTED": 24,
+      "SOLUTION_FOUND": 1
+    },
+    "avgBp1LeavesExplored": 5.642857142857143,
+    "avgCcrLeavesExplored": 16.285714285714285,
+    "avgBp1MaxDepth": 3.7857142857142856,
+    "avgCcrMaxDepth": 3.892857142857143
+  },
+  "subtypeClassified": [
+    {
+      "label": "worstCase:84976575",
+      "subtype": "LOCKED_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 6
+    },
+    {
+      "label": "worstCase:7541612b",
+      "subtype": "LONG_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 6
+    },
+    {
+      "label": "worstCase:4549b041",
+      "subtype": "DEAD_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 4
+    },
+    {
+      "label": "worstCase:36336c1",
+      "subtype": "DEAD_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 4
+    },
+    {
+      "label": "worstCase:1af658ab",
+      "subtype": "DEAD_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 4
+    },
+    {
+      "label": "worstCase:589b0a25",
+      "subtype": "LONG_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 6
+    },
+    {
+      "label": "worstCase:f776edb1",
+      "subtype": "DEAD_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 5
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "subtype": "LONG_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 6
+    },
+    {
+      "label": "snapshot335:45959141",
+      "subtype": "LOCKED_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 6
+    },
+    {
+      "label": "snapshot335:1af658ab",
+      "subtype": "UNKNOWN",
+      "cycleCount": 1,
+      "cycleLength": 3
+    },
+    {
+      "label": "snapshot335:56a8b82d",
+      "subtype": "DEAD_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 3
+    },
+    {
+      "label": "snapshot335:b714481",
+      "subtype": "LONG_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 6
+    },
+    {
+      "label": "snapshot335:4549b041",
+      "subtype": "LONG_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 6
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "subtype": "DEAD_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 4
+    },
+    {
+      "label": "snapshot335:120fc3af",
+      "subtype": "DEAD_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 5
+    },
+    {
+      "label": "snapshot335:36336c1",
+      "subtype": "LOCKED_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 6
+    },
+    {
+      "label": "scrambleDepth10:0",
+      "subtype": "DEAD_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 5
+    },
+    {
+      "label": "scrambleDepth10:2",
+      "subtype": "DEAD_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 3
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "subtype": "DEAD_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 4
+    },
+    {
+      "label": "scrambleDepth10:4",
+      "subtype": "DEAD_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 5
+    },
+    {
+      "label": "scrambleDepth20:5",
+      "subtype": "DEAD_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 5
+    },
+    {
+      "label": "scrambleDepth20:6",
+      "subtype": "DEAD_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 5
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "subtype": "LONG_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 6
+    },
+    {
+      "label": "scrambleDepth30:4",
+      "subtype": "DEAD_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 5
+    },
+    {
+      "label": "scrambleDepth40:0",
+      "subtype": "LONG_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 6
+    },
+    {
+      "label": "scrambleDepth40:1",
+      "subtype": "LONG_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 6
+    },
+    {
+      "label": "scrambleDepth100:2",
+      "subtype": "DEAD_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 5
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "subtype": "DEAD_CYCLE",
+      "cycleCount": 1,
+      "cycleLength": 5
+    }
+  ],
+  "subtypeSummaries": [
+    {
+      "subtype": "LOCKED_CYCLE",
+      "n": 3,
+      "labels": [
+        "worstCase:84976575",
+        "snapshot335:45959141",
+        "snapshot335:36336c1"
+      ]
+    },
+    {
+      "subtype": "LONG_CYCLE",
+      "n": 8,
+      "labels": [
+        "worstCase:7541612b",
+        "worstCase:589b0a25",
+        "worstCase:de8abca9",
+        "snapshot335:b714481",
+        "snapshot335:4549b041",
+        "scrambleDepth20:8",
+        "scrambleDepth40:0",
+        "scrambleDepth40:1"
+      ]
+    },
+    {
+      "subtype": "DEAD_CYCLE",
+      "n": 16,
+      "labels": [
+        "worstCase:4549b041",
+        "worstCase:36336c1",
+        "worstCase:1af658ab",
+        "worstCase:f776edb1",
+        "snapshot335:56a8b82d",
+        "snapshot335:1513fcff",
+        "snapshot335:120fc3af",
+        "scrambleDepth10:0",
+        "scrambleDepth10:2",
+        "scrambleDepth10:3",
+        "scrambleDepth10:4",
+        "scrambleDepth20:5",
+        "scrambleDepth20:6",
+        "scrambleDepth30:4",
+        "scrambleDepth100:2",
+        "scrambleDepth100:8"
+      ]
+    },
+    {
+      "subtype": "UNKNOWN",
+      "n": 1,
+      "labels": [
+        "snapshot335:1af658ab"
+      ]
+    }
+  ],
+  "mechanismGapSpec": {
+    "currentlyPossible": "BP-1(폭 2)과 CCR(폭 3) 모두, 동일한 cycle 순회 순서(analyzeMultiCycle 공유)를 따라 매 hop마다 실제 존재하는 이동 후보로 branch하는 bounded DFS를 수행할 수 있다 -- 평균 5.6(BP-1)/16.3(CCR) leaf, 평균 깊이 3.8/3.9까지 도달 가능.",
+    "currentlyImpossible": "16건(DEAD_CYCLE)은 두 메커니즘 모두 SEARCH_EXHAUSTED로 종료 -- 존재하는 모든 이동 후보를 다 시도해도 net-improving한 leaf가 하나도 없다는 뜻이며, 이는 폭(2 vs 3)이나 시간이 아니라 enumerateWingCandidates()가 이 특정 순열에 제공하는 이동 자체의 근본적 부족(representational gap)을 시사한다. 3건(LOCKED_CYCLE)은 leaf cap에 걸려 탐색 자체가 완결되지 못했다 -- 이 부분집합은 원칙적으로 더 넓은/깊은 탐색이 도움이 될 수 있다.",
+    "commonFailureCondition": "공통 종료 원인 일치율: 25/28건에서 BP-1과 CCR이 동일한 terminationReason으로 종료 -- 두 메커니즘이 폭(2 vs 3)만 다를 뿐 근본적으로 같은 이동 후보 풀에서 탐색하기 때문에 실패 양상도 수렴한다는 실측 증거.",
+    "representativeCases": [
+      "worstCase:84976575",
+      "snapshot335:45959141",
+      "snapshot335:36336c1",
+      "worstCase:7541612b",
+      "worstCase:589b0a25",
+      "worstCase:de8abca9",
+      "snapshot335:b714481",
+      "snapshot335:4549b041"
+    ]
+  },
+  "readiness": {
+    "conclusion": "B_MULTIPLE_SUBTYPES_NEED_SEPARATE_RESEARCH",
+    "conclusionLabel": "Conclusion B -- 여러 Subtype이 존재한다",
+    "rationale": "4개의 Subtype으로 나뉘며 최대 Subtype(DEAD_CYCLE)도 57.1%로 지배적이지 않다(임계치 60%) -- 단일 Blueprint로 전체를 포괄할 수 없으며, Subtype별 개별 연구가 필요하다."
+  }
+}

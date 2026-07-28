@@ -1,0 +1,65 @@
+PURE_CYCLE_ISOLATION Structural Mechanism Analysis Sprint v1 -- Report
+Generated: 2026-07-28T00:06:27.866Z
+
+0. Fidelity Check (BP-1 shadow vs real resolveBoundedMultiCycle)
+  Cases checked: 28, mismatches: 0
+
+1. PURE_CYCLE_ISOLATION Structural Report + BP-1 vs CCR Failure Matrix
+  worstCase:84976575: cycleLength=6, wrongWing=6 | BP-1: SEARCH_EXHAUSTED (leaves=13, depth=6, bestLeafWrongWing=7) | CCR: LEAF_CAP_REACHED (leaves=64, depth=6, bestLeafWrongWing=7) | sameReason=false
+  worstCase:7541612b: cycleLength=6, wrongWing=6 | BP-1: SEARCH_EXHAUSTED (leaves=10, depth=6, bestLeafWrongWing=8) | CCR: SEARCH_EXHAUSTED (leaves=30, depth=6, bestLeafWrongWing=6) | sameReason=true
+  worstCase:4549b041: cycleLength=4, wrongWing=4 | BP-1: SEARCH_EXHAUSTED (leaves=1, depth=0, bestLeafWrongWing=4) | CCR: SEARCH_EXHAUSTED (leaves=1, depth=0, bestLeafWrongWing=4) | sameReason=true
+  worstCase:36336c1: cycleLength=4, wrongWing=4 | BP-1: SEARCH_EXHAUSTED (leaves=1, depth=0, bestLeafWrongWing=4) | CCR: SEARCH_EXHAUSTED (leaves=1, depth=0, bestLeafWrongWing=4) | sameReason=true
+  worstCase:1af658ab: cycleLength=4, wrongWing=4 | BP-1: SEARCH_EXHAUSTED (leaves=6, depth=4, bestLeafWrongWing=4) | CCR: SEARCH_EXHAUSTED (leaves=10, depth=4, bestLeafWrongWing=4) | sameReason=true
+  worstCase:589b0a25: cycleLength=6, wrongWing=6 | BP-1: SEARCH_EXHAUSTED (leaves=5, depth=6, bestLeafWrongWing=8) | CCR: SEARCH_EXHAUSTED (leaves=7, depth=6, bestLeafWrongWing=8) | sameReason=true
+  worstCase:f776edb1: cycleLength=5, wrongWing=5 | BP-1: SEARCH_EXHAUSTED (leaves=8, depth=5, bestLeafWrongWing=7) | CCR: SEARCH_EXHAUSTED (leaves=19, depth=5, bestLeafWrongWing=7) | sameReason=true
+  worstCase:de8abca9: cycleLength=6, wrongWing=7 | BP-1: SEARCH_EXHAUSTED (leaves=3, depth=4, bestLeafWrongWing=8) | CCR: SEARCH_EXHAUSTED (leaves=3, depth=4, bestLeafWrongWing=8) | sameReason=true
+  snapshot335:45959141: cycleLength=6, wrongWing=6 | BP-1: SEARCH_EXHAUSTED (leaves=10, depth=6, bestLeafWrongWing=6) | CCR: LEAF_CAP_REACHED (leaves=64, depth=6, bestLeafWrongWing=6) | sameReason=false
+  snapshot335:1af658ab: cycleLength=3, wrongWing=4 | BP-1: SOLUTION_FOUND (leaves=4, depth=3, bestLeafWrongWing=2) | CCR: SOLUTION_FOUND (leaves=4, depth=3, bestLeafWrongWing=2) | sameReason=true
+  snapshot335:56a8b82d: cycleLength=3, wrongWing=3 | BP-1: SEARCH_EXHAUSTED (leaves=2, depth=3, bestLeafWrongWing=4) | CCR: SEARCH_EXHAUSTED (leaves=2, depth=3, bestLeafWrongWing=4) | sameReason=true
+  snapshot335:b714481: cycleLength=6, wrongWing=6 | BP-1: SEARCH_EXHAUSTED (leaves=12, depth=6, bestLeafWrongWing=7) | CCR: SEARCH_EXHAUSTED (leaves=18, depth=6, bestLeafWrongWing=7) | sameReason=true
+  snapshot335:4549b041: cycleLength=6, wrongWing=6 | BP-1: SEARCH_EXHAUSTED (leaves=1, depth=0, bestLeafWrongWing=6) | CCR: SEARCH_EXHAUSTED (leaves=1, depth=0, bestLeafWrongWing=6) | sameReason=true
+  snapshot335:1513fcff: cycleLength=4, wrongWing=4 | BP-1: SEARCH_EXHAUSTED (leaves=1, depth=0, bestLeafWrongWing=4) | CCR: SEARCH_EXHAUSTED (leaves=1, depth=0, bestLeafWrongWing=4) | sameReason=true
+  snapshot335:120fc3af: cycleLength=5, wrongWing=5 | BP-1: SEARCH_EXHAUSTED (leaves=3, depth=5, bestLeafWrongWing=6) | CCR: SEARCH_EXHAUSTED (leaves=7, depth=5, bestLeafWrongWing=6) | sameReason=true
+  snapshot335:36336c1: cycleLength=6, wrongWing=6 | BP-1: SEARCH_EXHAUSTED (leaves=16, depth=6, bestLeafWrongWing=8) | CCR: LEAF_CAP_REACHED (leaves=64, depth=6, bestLeafWrongWing=7) | sameReason=false
+  scrambleDepth10:0: cycleLength=5, wrongWing=5 | BP-1: SEARCH_EXHAUSTED (leaves=9, depth=5, bestLeafWrongWing=6) | CCR: SEARCH_EXHAUSTED (leaves=15, depth=5, bestLeafWrongWing=6) | sameReason=true
+  scrambleDepth10:2: cycleLength=3, wrongWing=3 | BP-1: SEARCH_EXHAUSTED (leaves=3, depth=3, bestLeafWrongWing=4) | CCR: SEARCH_EXHAUSTED (leaves=4, depth=3, bestLeafWrongWing=4) | sameReason=true
+  scrambleDepth10:3: cycleLength=4, wrongWing=4 | BP-1: SEARCH_EXHAUSTED (leaves=6, depth=4, bestLeafWrongWing=7) | CCR: SEARCH_EXHAUSTED (leaves=18, depth=4, bestLeafWrongWing=7) | sameReason=true
+  scrambleDepth10:4: cycleLength=5, wrongWing=5 | BP-1: SEARCH_EXHAUSTED (leaves=10, depth=5, bestLeafWrongWing=7) | CCR: SEARCH_EXHAUSTED (leaves=21, depth=5, bestLeafWrongWing=7) | sameReason=true
+  scrambleDepth20:5: cycleLength=5, wrongWing=6 | BP-1: SEARCH_EXHAUSTED (leaves=6, depth=5, bestLeafWrongWing=6) | CCR: SEARCH_EXHAUSTED (leaves=28, depth=5, bestLeafWrongWing=6) | sameReason=true
+  scrambleDepth20:6: cycleLength=5, wrongWing=5 | BP-1: SEARCH_EXHAUSTED (leaves=7, depth=5, bestLeafWrongWing=6) | CCR: SEARCH_EXHAUSTED (leaves=13, depth=5, bestLeafWrongWing=5) | sameReason=true
+  scrambleDepth20:8: cycleLength=6, wrongWing=6 | BP-1: SEARCH_EXHAUSTED (leaves=2, depth=3, bestLeafWrongWing=6) | CCR: SEARCH_EXHAUSTED (leaves=3, depth=6, bestLeafWrongWing=6) | sameReason=true
+  scrambleDepth30:4: cycleLength=5, wrongWing=5 | BP-1: SEARCH_EXHAUSTED (leaves=3, depth=5, bestLeafWrongWing=6) | CCR: SEARCH_EXHAUSTED (leaves=4, depth=5, bestLeafWrongWing=6) | sameReason=true
+  scrambleDepth40:0: cycleLength=6, wrongWing=6 | BP-1: SEARCH_EXHAUSTED (leaves=1, depth=0, bestLeafWrongWing=6) | CCR: SEARCH_EXHAUSTED (leaves=1, depth=0, bestLeafWrongWing=6) | sameReason=true
+  scrambleDepth40:1: cycleLength=6, wrongWing=6 | BP-1: SEARCH_EXHAUSTED (leaves=11, depth=6, bestLeafWrongWing=6) | CCR: SEARCH_EXHAUSTED (leaves=42, depth=6, bestLeafWrongWing=6) | sameReason=true
+  scrambleDepth100:2: cycleLength=5, wrongWing=5 | BP-1: SEARCH_EXHAUSTED (leaves=3, depth=5, bestLeafWrongWing=7) | CCR: SEARCH_EXHAUSTED (leaves=10, depth=5, bestLeafWrongWing=7) | sameReason=true
+  scrambleDepth100:8: cycleLength=5, wrongWing=5 | BP-1: SEARCH_EXHAUSTED (leaves=1, depth=0, bestLeafWrongWing=5) | CCR: SEARCH_EXHAUSTED (leaves=1, depth=0, bestLeafWrongWing=5) | sameReason=true
+
+  Shared Failure Summary:
+    Same termination reason: 25/28
+    Both SEARCH_EXHAUSTED: 24/28
+    Either LEAF_CAP_REACHED: 3/28
+    BP-1 termination tally: {"SEARCH_EXHAUSTED":27,"SOLUTION_FOUND":1}
+    CCR termination tally: {"LEAF_CAP_REACHED":3,"SEARCH_EXHAUSTED":24,"SOLUTION_FOUND":1}
+    avg leaves explored: BP-1=5.6, CCR=16.3
+    avg max depth reached: BP-1=3.8, CCR=3.9
+
+2. Subtype Taxonomy (RQ-4)
+  LOCKED_CYCLE: n=3 (10.7%)
+    labels: worstCase:84976575, snapshot335:45959141, snapshot335:36336c1
+  LONG_CYCLE: n=8 (28.6%)
+    labels: worstCase:7541612b, worstCase:589b0a25, worstCase:de8abca9, snapshot335:b714481, snapshot335:4549b041, scrambleDepth20:8, scrambleDepth40:0, scrambleDepth40:1
+  DEAD_CYCLE: n=16 (57.1%)
+    labels: worstCase:4549b041, worstCase:36336c1, worstCase:1af658ab, worstCase:f776edb1, snapshot335:56a8b82d, snapshot335:1513fcff, snapshot335:120fc3af, scrambleDepth10:0, scrambleDepth10:2, scrambleDepth10:3, scrambleDepth10:4, scrambleDepth20:5, scrambleDepth20:6, scrambleDepth30:4, scrambleDepth100:2, scrambleDepth100:8
+  UNKNOWN: n=1 (3.6%)
+    labels: snapshot335:1af658ab
+
+3. Mechanism Gap Specification
+  currentlyPossible: BP-1(폭 2)과 CCR(폭 3) 모두, 동일한 cycle 순회 순서(analyzeMultiCycle 공유)를 따라 매 hop마다 실제 존재하는 이동 후보로 branch하는 bounded DFS를 수행할 수 있다 -- 평균 5.6(BP-1)/16.3(CCR) leaf, 평균 깊이 3.8/3.9까지 도달 가능.
+  currentlyImpossible: 16건(DEAD_CYCLE)은 두 메커니즘 모두 SEARCH_EXHAUSTED로 종료 -- 존재하는 모든 이동 후보를 다 시도해도 net-improving한 leaf가 하나도 없다는 뜻이며, 이는 폭(2 vs 3)이나 시간이 아니라 enumerateWingCandidates()가 이 특정 순열에 제공하는 이동 자체의 근본적 부족(representational gap)을 시사한다. 3건(LOCKED_CYCLE)은 leaf cap에 걸려 탐색 자체가 완결되지 못했다 -- 이 부분집합은 원칙적으로 더 넓은/깊은 탐색이 도움이 될 수 있다.
+  commonFailureCondition: 공통 종료 원인 일치율: 25/28건에서 BP-1과 CCR이 동일한 terminationReason으로 종료 -- 두 메커니즘이 폭(2 vs 3)만 다를 뿐 근본적으로 같은 이동 후보 풀에서 탐색하기 때문에 실패 양상도 수렴한다는 실측 증거.
+  representativeCases: worstCase:84976575, snapshot335:45959141, snapshot335:36336c1, worstCase:7541612b, worstCase:589b0a25, worstCase:de8abca9, snapshot335:b714481, snapshot335:4549b041
+
+4. Blueprint Readiness Assessment
+  conclusion: B_MULTIPLE_SUBTYPES_NEED_SEPARATE_RESEARCH
+  conclusionLabel: Conclusion B -- 여러 Subtype이 존재한다
+  rationale: 4개의 Subtype으로 나뉘며 최대 Subtype(DEAD_CYCLE)도 57.1%로 지배적이지 않다(임계치 60%) -- 단일 Blueprint로 전체를 포괄할 수 없으며, Subtype별 개별 연구가 필요하다.
