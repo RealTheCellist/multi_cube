@@ -1,0 +1,56 @@
+Move Representation Gap Analysis Sprint v1 -- Report
+Generated: 2026-07-28T00:54:10.790Z
+
+1. Move Representation Report (per-case candidate summary)
+  worstCase:84976575: totalCandidates=19, anyImprovingCandidate=false, bestWrongWingDelta=0, avgAffectedWingCount=30.32
+  worstCase:7541612b: totalCandidates=25, anyImprovingCandidate=false, bestWrongWingDelta=0, avgAffectedWingCount=30.92
+  worstCase:4549b041: totalCandidates=3, anyImprovingCandidate=false, bestWrongWingDelta=1, avgAffectedWingCount=32.33
+  worstCase:36336c1: totalCandidates=3, anyImprovingCandidate=false, bestWrongWingDelta=1, avgAffectedWingCount=28.00
+  worstCase:1af658ab: totalCandidates=4, anyImprovingCandidate=false, bestWrongWingDelta=1, avgAffectedWingCount=29.50
+  worstCase:589b0a25: totalCandidates=9, anyImprovingCandidate=false, bestWrongWingDelta=1, avgAffectedWingCount=27.22
+  worstCase:f776edb1: totalCandidates=10, anyImprovingCandidate=false, bestWrongWingDelta=0, avgAffectedWingCount=30.80
+  worstCase:de8abca9: totalCandidates=23, anyImprovingCandidate=false, bestWrongWingDelta=0, avgAffectedWingCount=30.57
+  snapshot335:45959141: totalCandidates=40, anyImprovingCandidate=false, bestWrongWingDelta=0, avgAffectedWingCount=29.73
+  snapshot335:1af658ab: totalCandidates=5, anyImprovingCandidate=false, bestWrongWingDelta=0, avgAffectedWingCount=33.20
+  snapshot335:56a8b82d: totalCandidates=7, anyImprovingCandidate=false, bestWrongWingDelta=1, avgAffectedWingCount=28.29
+  snapshot335:b714481: totalCandidates=27, anyImprovingCandidate=false, bestWrongWingDelta=1, avgAffectedWingCount=29.07
+  snapshot335:4549b041: totalCandidates=17, anyImprovingCandidate=false, bestWrongWingDelta=0, avgAffectedWingCount=29.06
+  snapshot335:1513fcff: totalCandidates=6, anyImprovingCandidate=false, bestWrongWingDelta=1, avgAffectedWingCount=28.33
+  snapshot335:120fc3af: totalCandidates=13, anyImprovingCandidate=false, bestWrongWingDelta=0, avgAffectedWingCount=30.23
+  snapshot335:36336c1: totalCandidates=19, anyImprovingCandidate=false, bestWrongWingDelta=0, avgAffectedWingCount=29.16
+  scrambleDepth10:0: totalCandidates=12, anyImprovingCandidate=false, bestWrongWingDelta=0, avgAffectedWingCount=31.58
+  scrambleDepth10:2: totalCandidates=5, anyImprovingCandidate=false, bestWrongWingDelta=1, avgAffectedWingCount=28.80
+  scrambleDepth10:3: totalCandidates=21, anyImprovingCandidate=false, bestWrongWingDelta=0, avgAffectedWingCount=29.38
+  scrambleDepth10:4: totalCandidates=14, anyImprovingCandidate=false, bestWrongWingDelta=0, avgAffectedWingCount=31.14
+  scrambleDepth20:5: totalCandidates=17, anyImprovingCandidate=false, bestWrongWingDelta=0, avgAffectedWingCount=30.88
+  scrambleDepth20:6: totalCandidates=13, anyImprovingCandidate=false, bestWrongWingDelta=0, avgAffectedWingCount=28.15
+  scrambleDepth20:8: totalCandidates=13, anyImprovingCandidate=false, bestWrongWingDelta=0, avgAffectedWingCount=29.69
+  scrambleDepth30:4: totalCandidates=13, anyImprovingCandidate=false, bestWrongWingDelta=0, avgAffectedWingCount=32.23
+  scrambleDepth40:0: totalCandidates=18, anyImprovingCandidate=false, bestWrongWingDelta=0, avgAffectedWingCount=32.33
+  scrambleDepth40:1: totalCandidates=34, anyImprovingCandidate=false, bestWrongWingDelta=0, avgAffectedWingCount=29.06
+  scrambleDepth100:2: totalCandidates=17, anyImprovingCandidate=false, bestWrongWingDelta=1, avgAffectedWingCount=30.35
+  scrambleDepth100:8: totalCandidates=11, anyImprovingCandidate=false, bestWrongWingDelta=0, avgAffectedWingCount=31.73
+
+2. Generated Move Taxonomy (Move Coverage Matrix)
+  COMPONENT_SPLIT: count=223 (53.3%), avgAffectedWingCount=29.68, avgMoveLength=125.2
+  CYCLE_MERGE: count=44 (10.5%), avgAffectedWingCount=30.39, avgMoveLength=124.9
+  CYCLE_SPLIT: count=83 (19.9%), avgAffectedWingCount=30.34, avgMoveLength=124.0
+  LATERAL_NO_CHANGE: count=57 (13.6%), avgAffectedWingCount=30.42, avgMoveLength=114.1
+  REGRESSIVE: count=11 (2.6%), avgAffectedWingCount=32.09, avgMoveLength=104.3
+
+3. Representation Gap Report
+  representableMoveClasses: COMPONENT_SPLIT, CYCLE_MERGE, CYCLE_SPLIT, LATERAL_NO_CHANGE, REGRESSIVE
+  neverGeneratedMoveClasses: COMPONENT_MERGE, CYCLE_ROTATION_IMPROVING
+  casesWithNoImprovingCandidateAtAll: 28/28 (100.0%)
+  representativeGapLabels: worstCase:84976575, worstCase:7541612b, worstCase:4549b041, worstCase:36336c1, worstCase:1af658ab, worstCase:589b0a25, worstCase:f776edb1, worstCase:de8abca9
+
+4. Residual Move Requirement (specification only, no implementation)
+  observedLimitation: 28/28건(100.0%)에서 enumerateWingCandidates()가 cycle의 어느 hop에서도 wrongWingCount를 개선하는 후보를 단 하나도 내놓지 못한다 -- LATERAL_NO_CHANGE(57건, 평균 영향 wing수=30.42)와 REGRESSIVE(11건)만 존재하고, CYCLE_ROTATION_IMPROVING(0건)은 이 하위집합에서 관측되지 않는다.
+  requiredStructuralCondition: 현재 enumerateWingCandidates()가 생성하는 모든 후보는 평균적으로 소수(측정된 avgAffectedWingCount)의 wing만 재배치하며, 이 재배치는 cycle/component 구조를 바꾸지 않고 '어떤 wing이 틀렸는가'만 이동시킨다(LATERAL_NO_CHANGE) -- 이는 순수 고립 cycle에서 한 조각을 목표 위치로 옮기면 그 조각이 있던 자리가 새로 틀리게 되는 zero-sum 특성과 일치한다. 이 zero-sum을 깨려면, 한 번의 논리적 이동(setup+commutator 조합 포함)이 cycle 내 2개 이상의 wing을 '동시에' 자신의 목표 위치로 옮기는 이동이 필요하다 -- 즉 현재처럼 '이 wing을 어디로 옮길까'가 아니라 '이 cycle 전체를 어떻게 재배열할까'를 단위로 하는 이동.
+  expectedMechanismShape: 기존 코드베이스 개념으로 표현하면: enumerateWingCandidates()가 제공하는 '단일 wing 재배치' 이동의 조합이 아니라, cycle의 여러 노드를 함께 재배열하는 commutator류 이동(예: A->B->C->A 순환을 한 번에 A<->C, B는 그대로 두는 형태) -- 이는 새 Primitive/Prototype 설계 단계에서 검토할 사항이며 이번 Sprint는 '무엇이 필요한가'만 정의하고 구현하지 않는다.
+  evidenceNote: Representable move classes observed across the full population: COMPONENT_SPLIT, CYCLE_MERGE, CYCLE_SPLIT, LATERAL_NO_CHANGE, REGRESSIVE. Never-generated classes: COMPONENT_MERGE, CYCLE_ROTATION_IMPROVING.
+
+5. Blueprint Readiness Assessment
+  conclusion: A_GAP_CLEAR
+  conclusionLabel: Conclusion A -- 현재 Move Generator의 표현력 부족이 Residual Failure의 주요 원인이다
+  rationale: 28건 중 28건(100.0%)에서 어떤 cycle hop의 후보도 wrongWingCount를 개선하지 못함 -- 임계치(60%) 이상. 탐색 알고리즘(BP-1/CCR)이 아니라 이동 후보 생성 자체의 표현력 한계가 주 원인으로 확인됨. Move Representation Blueprint Sprint 착수 가능.
