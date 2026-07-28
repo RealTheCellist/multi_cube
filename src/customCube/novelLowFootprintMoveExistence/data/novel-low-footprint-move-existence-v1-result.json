@@ -1,0 +1,606 @@
+{
+  "intrinsic": [
+    {
+      "name": "BASE_ALG",
+      "moveLength": 11,
+      "affectedWingCount": 18
+    },
+    {
+      "name": "FLIP_ALG",
+      "moveLength": 3,
+      "affectedWingCount": 16
+    },
+    {
+      "name": "PARITY_ALG",
+      "moveLength": 38,
+      "affectedWingCount": 25
+    }
+  ],
+  "catalog": [
+    {
+      "label": "worstCase:84976575",
+      "cycleLength": 6,
+      "attemptsEvaluated": 7203,
+      "found": true,
+      "bestAffectedWingCount": 16,
+      "bestFootprintRatio": 2.6666666666666665,
+      "bestKnownPattern": "FLIP_ALG",
+      "bestMoveLength": 24,
+      "bestWrongWingBefore": 6,
+      "bestWrongWingAfter": 5,
+      "improvingCount": 4
+    },
+    {
+      "label": "worstCase:7541612b",
+      "cycleLength": 6,
+      "attemptsEvaluated": 7203,
+      "found": false,
+      "bestAffectedWingCount": null,
+      "bestFootprintRatio": null,
+      "bestKnownPattern": null,
+      "bestMoveLength": null,
+      "bestWrongWingBefore": null,
+      "bestWrongWingAfter": null,
+      "improvingCount": 0
+    },
+    {
+      "label": "worstCase:4549b041",
+      "cycleLength": 4,
+      "attemptsEvaluated": 7203,
+      "found": false,
+      "bestAffectedWingCount": null,
+      "bestFootprintRatio": null,
+      "bestKnownPattern": null,
+      "bestMoveLength": null,
+      "bestWrongWingBefore": null,
+      "bestWrongWingAfter": null,
+      "improvingCount": 0
+    },
+    {
+      "label": "worstCase:36336c1",
+      "cycleLength": 4,
+      "attemptsEvaluated": 7203,
+      "found": true,
+      "bestAffectedWingCount": 19,
+      "bestFootprintRatio": 4.75,
+      "bestKnownPattern": "FLIP_ALG",
+      "bestMoveLength": 20,
+      "bestWrongWingBefore": 4,
+      "bestWrongWingAfter": 2,
+      "improvingCount": 3
+    },
+    {
+      "label": "worstCase:1af658ab",
+      "cycleLength": 4,
+      "attemptsEvaluated": 7203,
+      "found": false,
+      "bestAffectedWingCount": null,
+      "bestFootprintRatio": null,
+      "bestKnownPattern": null,
+      "bestMoveLength": null,
+      "bestWrongWingBefore": null,
+      "bestWrongWingAfter": null,
+      "improvingCount": 0
+    },
+    {
+      "label": "worstCase:589b0a25",
+      "cycleLength": 6,
+      "attemptsEvaluated": 7203,
+      "found": true,
+      "bestAffectedWingCount": 15,
+      "bestFootprintRatio": 2.5,
+      "bestKnownPattern": "PARITY_ALG",
+      "bestMoveLength": 160,
+      "bestWrongWingBefore": 6,
+      "bestWrongWingAfter": 4,
+      "improvingCount": 1
+    },
+    {
+      "label": "worstCase:f776edb1",
+      "cycleLength": 5,
+      "attemptsEvaluated": 7203,
+      "found": false,
+      "bestAffectedWingCount": null,
+      "bestFootprintRatio": null,
+      "bestKnownPattern": null,
+      "bestMoveLength": null,
+      "bestWrongWingBefore": null,
+      "bestWrongWingAfter": null,
+      "improvingCount": 0
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "cycleLength": 6,
+      "attemptsEvaluated": 7203,
+      "found": false,
+      "bestAffectedWingCount": null,
+      "bestFootprintRatio": null,
+      "bestKnownPattern": null,
+      "bestMoveLength": null,
+      "bestWrongWingBefore": null,
+      "bestWrongWingAfter": null,
+      "improvingCount": 0
+    },
+    {
+      "label": "snapshot335:45959141",
+      "cycleLength": 6,
+      "attemptsEvaluated": 7203,
+      "found": true,
+      "bestAffectedWingCount": 25,
+      "bestFootprintRatio": 4.166666666666667,
+      "bestKnownPattern": "FLIP_ALG",
+      "bestMoveLength": 24,
+      "bestWrongWingBefore": 6,
+      "bestWrongWingAfter": 4,
+      "improvingCount": 4
+    },
+    {
+      "label": "snapshot335:1af658ab",
+      "cycleLength": 3,
+      "attemptsEvaluated": 7203,
+      "found": true,
+      "bestAffectedWingCount": 19,
+      "bestFootprintRatio": 6.333333333333333,
+      "bestKnownPattern": "BASE_ALG",
+      "bestMoveLength": 60,
+      "bestWrongWingBefore": 4,
+      "bestWrongWingAfter": 2,
+      "improvingCount": 2
+    },
+    {
+      "label": "snapshot335:56a8b82d",
+      "cycleLength": 3,
+      "attemptsEvaluated": 7203,
+      "found": false,
+      "bestAffectedWingCount": null,
+      "bestFootprintRatio": null,
+      "bestKnownPattern": null,
+      "bestMoveLength": null,
+      "bestWrongWingBefore": null,
+      "bestWrongWingAfter": null,
+      "improvingCount": 0
+    },
+    {
+      "label": "snapshot335:b714481",
+      "cycleLength": 6,
+      "attemptsEvaluated": 7203,
+      "found": false,
+      "bestAffectedWingCount": null,
+      "bestFootprintRatio": null,
+      "bestKnownPattern": null,
+      "bestMoveLength": null,
+      "bestWrongWingBefore": null,
+      "bestWrongWingAfter": null,
+      "improvingCount": 0
+    },
+    {
+      "label": "snapshot335:4549b041",
+      "cycleLength": 6,
+      "attemptsEvaluated": 7203,
+      "found": true,
+      "bestAffectedWingCount": 20,
+      "bestFootprintRatio": 3.3333333333333335,
+      "bestKnownPattern": "FLIP_ALG",
+      "bestMoveLength": 24,
+      "bestWrongWingBefore": 6,
+      "bestWrongWingAfter": 4,
+      "improvingCount": 3
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "cycleLength": 4,
+      "attemptsEvaluated": 7203,
+      "found": false,
+      "bestAffectedWingCount": null,
+      "bestFootprintRatio": null,
+      "bestKnownPattern": null,
+      "bestMoveLength": null,
+      "bestWrongWingBefore": null,
+      "bestWrongWingAfter": null,
+      "improvingCount": 0
+    },
+    {
+      "label": "snapshot335:120fc3af",
+      "cycleLength": 5,
+      "attemptsEvaluated": 7203,
+      "found": true,
+      "bestAffectedWingCount": 16,
+      "bestFootprintRatio": 3.2,
+      "bestKnownPattern": "FLIP_ALG",
+      "bestMoveLength": 24,
+      "bestWrongWingBefore": 5,
+      "bestWrongWingAfter": 4,
+      "improvingCount": 4
+    },
+    {
+      "label": "snapshot335:36336c1",
+      "cycleLength": 6,
+      "attemptsEvaluated": 7203,
+      "found": true,
+      "bestAffectedWingCount": 17,
+      "bestFootprintRatio": 2.8333333333333335,
+      "bestKnownPattern": "BASE_ALG",
+      "bestMoveLength": 52,
+      "bestWrongWingBefore": 6,
+      "bestWrongWingAfter": 5,
+      "improvingCount": 6
+    },
+    {
+      "label": "scrambleDepth10:0",
+      "cycleLength": 5,
+      "attemptsEvaluated": 7203,
+      "found": true,
+      "bestAffectedWingCount": 20,
+      "bestFootprintRatio": 4,
+      "bestKnownPattern": "FLIP_ALG",
+      "bestMoveLength": 24,
+      "bestWrongWingBefore": 5,
+      "bestWrongWingAfter": 3,
+      "improvingCount": 3
+    },
+    {
+      "label": "scrambleDepth10:2",
+      "cycleLength": 3,
+      "attemptsEvaluated": 7203,
+      "found": false,
+      "bestAffectedWingCount": null,
+      "bestFootprintRatio": null,
+      "bestKnownPattern": null,
+      "bestMoveLength": null,
+      "bestWrongWingBefore": null,
+      "bestWrongWingAfter": null,
+      "improvingCount": 0
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "cycleLength": 4,
+      "attemptsEvaluated": 7203,
+      "found": true,
+      "bestAffectedWingCount": 18,
+      "bestFootprintRatio": 4.5,
+      "bestKnownPattern": "BASE_ALG",
+      "bestMoveLength": 56,
+      "bestWrongWingBefore": 4,
+      "bestWrongWingAfter": 2,
+      "improvingCount": 1
+    },
+    {
+      "label": "scrambleDepth10:4",
+      "cycleLength": 5,
+      "attemptsEvaluated": 7203,
+      "found": true,
+      "bestAffectedWingCount": 23,
+      "bestFootprintRatio": 4.6,
+      "bestKnownPattern": "FLIP_ALG",
+      "bestMoveLength": 28,
+      "bestWrongWingBefore": 5,
+      "bestWrongWingAfter": 3,
+      "improvingCount": 1
+    },
+    {
+      "label": "scrambleDepth20:5",
+      "cycleLength": 5,
+      "attemptsEvaluated": 7203,
+      "found": false,
+      "bestAffectedWingCount": null,
+      "bestFootprintRatio": null,
+      "bestKnownPattern": null,
+      "bestMoveLength": null,
+      "bestWrongWingBefore": null,
+      "bestWrongWingAfter": null,
+      "improvingCount": 0
+    },
+    {
+      "label": "scrambleDepth20:6",
+      "cycleLength": 5,
+      "attemptsEvaluated": 7203,
+      "found": true,
+      "bestAffectedWingCount": 14,
+      "bestFootprintRatio": 2.8,
+      "bestKnownPattern": "PARITY_ALG",
+      "bestMoveLength": 160,
+      "bestWrongWingBefore": 5,
+      "bestWrongWingAfter": 3,
+      "improvingCount": 1
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "cycleLength": 6,
+      "attemptsEvaluated": 7203,
+      "found": false,
+      "bestAffectedWingCount": null,
+      "bestFootprintRatio": null,
+      "bestKnownPattern": null,
+      "bestMoveLength": null,
+      "bestWrongWingBefore": null,
+      "bestWrongWingAfter": null,
+      "improvingCount": 0
+    },
+    {
+      "label": "scrambleDepth30:4",
+      "cycleLength": 5,
+      "attemptsEvaluated": 7203,
+      "found": false,
+      "bestAffectedWingCount": null,
+      "bestFootprintRatio": null,
+      "bestKnownPattern": null,
+      "bestMoveLength": null,
+      "bestWrongWingBefore": null,
+      "bestWrongWingAfter": null,
+      "improvingCount": 0
+    },
+    {
+      "label": "scrambleDepth40:0",
+      "cycleLength": 6,
+      "attemptsEvaluated": 7203,
+      "found": true,
+      "bestAffectedWingCount": 21,
+      "bestFootprintRatio": 3.5,
+      "bestKnownPattern": "FLIP_ALG",
+      "bestMoveLength": 20,
+      "bestWrongWingBefore": 6,
+      "bestWrongWingAfter": 4,
+      "improvingCount": 4
+    },
+    {
+      "label": "scrambleDepth40:1",
+      "cycleLength": 6,
+      "attemptsEvaluated": 7203,
+      "found": true,
+      "bestAffectedWingCount": 14,
+      "bestFootprintRatio": 2.3333333333333335,
+      "bestKnownPattern": "PARITY_ALG",
+      "bestMoveLength": 160,
+      "bestWrongWingBefore": 6,
+      "bestWrongWingAfter": 5,
+      "improvingCount": 7
+    },
+    {
+      "label": "scrambleDepth100:2",
+      "cycleLength": 5,
+      "attemptsEvaluated": 7203,
+      "found": true,
+      "bestAffectedWingCount": 17,
+      "bestFootprintRatio": 3.4,
+      "bestKnownPattern": "FLIP_ALG",
+      "bestMoveLength": 28,
+      "bestWrongWingBefore": 5,
+      "bestWrongWingAfter": 3,
+      "improvingCount": 1
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "cycleLength": 5,
+      "attemptsEvaluated": 7203,
+      "found": false,
+      "bestAffectedWingCount": null,
+      "bestFootprintRatio": null,
+      "bestKnownPattern": null,
+      "bestMoveLength": null,
+      "bestWrongWingBefore": null,
+      "bestWrongWingAfter": null,
+      "improvingCount": 0
+    }
+  ],
+  "distribution": {
+    "n": 28,
+    "foundCount": 15,
+    "foundRate": 0.5357142857142857,
+    "avgBestFootprintRatio": 3.661111111111111,
+    "medianBestFootprintRatio": 3.4,
+    "minBestFootprintRatio": 2.3333333333333335,
+    "maxBestFootprintRatio": 6.333333333333333,
+    "lowFootprintAchievedCount": 0,
+    "lowFootprintAchievedRate": 0,
+    "byCycleLength": [
+      {
+        "cycleLength": 3,
+        "n": 3,
+        "foundCount": 1
+      },
+      {
+        "cycleLength": 4,
+        "n": 5,
+        "foundCount": 2
+      },
+      {
+        "cycleLength": 5,
+        "n": 9,
+        "foundCount": 5
+      },
+      {
+        "cycleLength": 6,
+        "n": 11,
+        "foundCount": 7
+      }
+    ]
+  },
+  "coverageFacts": [
+    {
+      "claim": "enumerateWingCandidates() returns exactly [...setup, ...entry.seq] -- ONE fixed library entry plus ONE single-piece BFS relocation, never a bracket of two independently conjugated swaps.",
+      "verificationMethod": "Direct source read, fiveByFiveEdges.ts:1553-1589 (enumerateWingCandidates body).",
+      "verified": true
+    },
+    {
+      "claim": "invertSequence() (the operation required to build the A'/B' undo-halves of a bracket commutator) is never imported or used in fiveByFiveEdges.ts, solverV2Prototype/BoundedResolver.ts, or solverPrimitiveCCRPrototype/CCRPrototype.ts.",
+      "verificationMethod": "grep -rn \"invertSequence\" across src/customCube/ -- 0 matches in those 3 files (checked at Sprint authoring time).",
+      "verified": true
+    },
+    {
+      "claim": "BP-1 (BoundedResolver) and CCR (CCRPrototype) both chain enumerateWingCandidates() output SEQUENTIALLY (concatenation across hops), never wrapping an earlier hop's moves with its own inverse.",
+      "verificationMethod": "Direct source read of both files' DFS/hop-composition logic (established across CCR Completeness Validation Sprint v1 and PURE_CYCLE_ISOLATION Structural Mechanism Analysis Sprint v1's own shadow instrumentation, this Sprint's own re-read confirms no change).",
+      "verified": true
+    },
+    {
+      "claim": "Therefore: Existing Generator ⊂ Required Move Set (the bracket-commutator shape this Sprint tests is structurally outside what the current generator can ever produce, independent of this Sprint's own empirical Capability result).",
+      "verificationMethod": "Logical consequence of the 3 facts above.",
+      "verified": true
+    }
+  ],
+  "structure": {
+    "classified": [
+      {
+        "label": "worstCase:84976575",
+        "cycleLength": 6,
+        "structureLabel": "CONJUGATED_CYCLE"
+      },
+      {
+        "label": "worstCase:7541612b",
+        "cycleLength": 6,
+        "structureLabel": "NONE_FOUND"
+      },
+      {
+        "label": "worstCase:4549b041",
+        "cycleLength": 4,
+        "structureLabel": "NONE_FOUND"
+      },
+      {
+        "label": "worstCase:36336c1",
+        "cycleLength": 4,
+        "structureLabel": "CONJUGATED_CYCLE"
+      },
+      {
+        "label": "worstCase:1af658ab",
+        "cycleLength": 4,
+        "structureLabel": "NONE_FOUND"
+      },
+      {
+        "label": "worstCase:589b0a25",
+        "cycleLength": 6,
+        "structureLabel": "CONJUGATED_CYCLE"
+      },
+      {
+        "label": "worstCase:f776edb1",
+        "cycleLength": 5,
+        "structureLabel": "NONE_FOUND"
+      },
+      {
+        "label": "worstCase:de8abca9",
+        "cycleLength": 6,
+        "structureLabel": "NONE_FOUND"
+      },
+      {
+        "label": "snapshot335:45959141",
+        "cycleLength": 6,
+        "structureLabel": "CONJUGATED_CYCLE"
+      },
+      {
+        "label": "snapshot335:1af658ab",
+        "cycleLength": 3,
+        "structureLabel": "CONJUGATED_CYCLE"
+      },
+      {
+        "label": "snapshot335:56a8b82d",
+        "cycleLength": 3,
+        "structureLabel": "NONE_FOUND"
+      },
+      {
+        "label": "snapshot335:b714481",
+        "cycleLength": 6,
+        "structureLabel": "NONE_FOUND"
+      },
+      {
+        "label": "snapshot335:4549b041",
+        "cycleLength": 6,
+        "structureLabel": "CONJUGATED_CYCLE"
+      },
+      {
+        "label": "snapshot335:1513fcff",
+        "cycleLength": 4,
+        "structureLabel": "NONE_FOUND"
+      },
+      {
+        "label": "snapshot335:120fc3af",
+        "cycleLength": 5,
+        "structureLabel": "CONJUGATED_CYCLE"
+      },
+      {
+        "label": "snapshot335:36336c1",
+        "cycleLength": 6,
+        "structureLabel": "CONJUGATED_CYCLE"
+      },
+      {
+        "label": "scrambleDepth10:0",
+        "cycleLength": 5,
+        "structureLabel": "CONJUGATED_CYCLE"
+      },
+      {
+        "label": "scrambleDepth10:2",
+        "cycleLength": 3,
+        "structureLabel": "NONE_FOUND"
+      },
+      {
+        "label": "scrambleDepth10:3",
+        "cycleLength": 4,
+        "structureLabel": "CONJUGATED_CYCLE"
+      },
+      {
+        "label": "scrambleDepth10:4",
+        "cycleLength": 5,
+        "structureLabel": "CONJUGATED_CYCLE"
+      },
+      {
+        "label": "scrambleDepth20:5",
+        "cycleLength": 5,
+        "structureLabel": "NONE_FOUND"
+      },
+      {
+        "label": "scrambleDepth20:6",
+        "cycleLength": 5,
+        "structureLabel": "CONJUGATED_CYCLE"
+      },
+      {
+        "label": "scrambleDepth20:8",
+        "cycleLength": 6,
+        "structureLabel": "NONE_FOUND"
+      },
+      {
+        "label": "scrambleDepth30:4",
+        "cycleLength": 5,
+        "structureLabel": "NONE_FOUND"
+      },
+      {
+        "label": "scrambleDepth40:0",
+        "cycleLength": 6,
+        "structureLabel": "CONJUGATED_CYCLE"
+      },
+      {
+        "label": "scrambleDepth40:1",
+        "cycleLength": 6,
+        "structureLabel": "CONJUGATED_CYCLE"
+      },
+      {
+        "label": "scrambleDepth100:2",
+        "cycleLength": 5,
+        "structureLabel": "CONJUGATED_CYCLE"
+      },
+      {
+        "label": "scrambleDepth100:8",
+        "cycleLength": 5,
+        "structureLabel": "NONE_FOUND"
+      }
+    ],
+    "tally": [
+      {
+        "structureLabel": "NONE_FOUND",
+        "count": 13
+      },
+      {
+        "structureLabel": "CONJUGATED_CYCLE",
+        "count": 15
+      }
+    ],
+    "dominantLabel": "CONJUGATED_CYCLE",
+    "dominantShare": 1
+  },
+  "feasibility": {
+    "decision": "C_EXISTENCE_NOT_DEMONSTRATED",
+    "decisionLabel": "Conclusion C -- 저-footprint Move의 존재를 입증하지 못했다",
+    "existenceConfirmed": false,
+    "lowFootprintAchievedCount": 0,
+    "structureDominant": true,
+    "dominantLabel": "CONJUGATED_CYCLE",
+    "dominantShare": 1,
+    "rationale": "28건 중 footprintRatio<=2를 달성한 개선 구성이 0건 -- 4-part bracket commutator(BASE_ALG/FLIP_ALG/PARITY_ALG를 서로 다르게 conjugate한 두 사본의 진짜 commutator, 이전 Sprint의 단순 conjugation과 달리 A,B,A',B' 전체 구조)조차 저-footprint 해를 찾지 못함 -- 지금까지의 Primitive 연구 방향(기존 라이브러리의 조합/변형) 자체를 재검토해야 한다."
+  }
+}

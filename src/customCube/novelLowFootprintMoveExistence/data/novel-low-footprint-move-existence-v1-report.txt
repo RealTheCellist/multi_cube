@@ -1,0 +1,68 @@
+Novel Low-Footprint Move Existence Validation Sprint v1 -- Report
+Generated: 2026-07-28T02:02:23.615Z
+
+0. BASE_ALG/FLIP_ALG/PARITY_ALG Intrinsic Footprint (RQ-3 groundwork)
+  BASE_ALG: moveLength=11, affectedWingCount=18
+  FLIP_ALG: moveLength=3, affectedWingCount=16
+  PARITY_ALG: moveLength=38, affectedWingCount=25
+
+1. Low-Footprint Move Catalog (per case, best bracket-commutator found)
+  worstCase:84976575: cycleLength=6, found=true, bestAffectedWingCount=16, bestFootprintRatio=2.67, bestKnownPattern=FLIP_ALG, improvingCount=4/7203
+  worstCase:7541612b: cycleLength=6, found=false, bestAffectedWingCount=N/A, bestFootprintRatio=N/A, bestKnownPattern=N/A, improvingCount=0/7203
+  worstCase:4549b041: cycleLength=4, found=false, bestAffectedWingCount=N/A, bestFootprintRatio=N/A, bestKnownPattern=N/A, improvingCount=0/7203
+  worstCase:36336c1: cycleLength=4, found=true, bestAffectedWingCount=19, bestFootprintRatio=4.75, bestKnownPattern=FLIP_ALG, improvingCount=3/7203
+  worstCase:1af658ab: cycleLength=4, found=false, bestAffectedWingCount=N/A, bestFootprintRatio=N/A, bestKnownPattern=N/A, improvingCount=0/7203
+  worstCase:589b0a25: cycleLength=6, found=true, bestAffectedWingCount=15, bestFootprintRatio=2.50, bestKnownPattern=PARITY_ALG, improvingCount=1/7203
+  worstCase:f776edb1: cycleLength=5, found=false, bestAffectedWingCount=N/A, bestFootprintRatio=N/A, bestKnownPattern=N/A, improvingCount=0/7203
+  worstCase:de8abca9: cycleLength=6, found=false, bestAffectedWingCount=N/A, bestFootprintRatio=N/A, bestKnownPattern=N/A, improvingCount=0/7203
+  snapshot335:45959141: cycleLength=6, found=true, bestAffectedWingCount=25, bestFootprintRatio=4.17, bestKnownPattern=FLIP_ALG, improvingCount=4/7203
+  snapshot335:1af658ab: cycleLength=3, found=true, bestAffectedWingCount=19, bestFootprintRatio=6.33, bestKnownPattern=BASE_ALG, improvingCount=2/7203
+  snapshot335:56a8b82d: cycleLength=3, found=false, bestAffectedWingCount=N/A, bestFootprintRatio=N/A, bestKnownPattern=N/A, improvingCount=0/7203
+  snapshot335:b714481: cycleLength=6, found=false, bestAffectedWingCount=N/A, bestFootprintRatio=N/A, bestKnownPattern=N/A, improvingCount=0/7203
+  snapshot335:4549b041: cycleLength=6, found=true, bestAffectedWingCount=20, bestFootprintRatio=3.33, bestKnownPattern=FLIP_ALG, improvingCount=3/7203
+  snapshot335:1513fcff: cycleLength=4, found=false, bestAffectedWingCount=N/A, bestFootprintRatio=N/A, bestKnownPattern=N/A, improvingCount=0/7203
+  snapshot335:120fc3af: cycleLength=5, found=true, bestAffectedWingCount=16, bestFootprintRatio=3.20, bestKnownPattern=FLIP_ALG, improvingCount=4/7203
+  snapshot335:36336c1: cycleLength=6, found=true, bestAffectedWingCount=17, bestFootprintRatio=2.83, bestKnownPattern=BASE_ALG, improvingCount=6/7203
+  scrambleDepth10:0: cycleLength=5, found=true, bestAffectedWingCount=20, bestFootprintRatio=4.00, bestKnownPattern=FLIP_ALG, improvingCount=3/7203
+  scrambleDepth10:2: cycleLength=3, found=false, bestAffectedWingCount=N/A, bestFootprintRatio=N/A, bestKnownPattern=N/A, improvingCount=0/7203
+  scrambleDepth10:3: cycleLength=4, found=true, bestAffectedWingCount=18, bestFootprintRatio=4.50, bestKnownPattern=BASE_ALG, improvingCount=1/7203
+  scrambleDepth10:4: cycleLength=5, found=true, bestAffectedWingCount=23, bestFootprintRatio=4.60, bestKnownPattern=FLIP_ALG, improvingCount=1/7203
+  scrambleDepth20:5: cycleLength=5, found=false, bestAffectedWingCount=N/A, bestFootprintRatio=N/A, bestKnownPattern=N/A, improvingCount=0/7203
+  scrambleDepth20:6: cycleLength=5, found=true, bestAffectedWingCount=14, bestFootprintRatio=2.80, bestKnownPattern=PARITY_ALG, improvingCount=1/7203
+  scrambleDepth20:8: cycleLength=6, found=false, bestAffectedWingCount=N/A, bestFootprintRatio=N/A, bestKnownPattern=N/A, improvingCount=0/7203
+  scrambleDepth30:4: cycleLength=5, found=false, bestAffectedWingCount=N/A, bestFootprintRatio=N/A, bestKnownPattern=N/A, improvingCount=0/7203
+  scrambleDepth40:0: cycleLength=6, found=true, bestAffectedWingCount=21, bestFootprintRatio=3.50, bestKnownPattern=FLIP_ALG, improvingCount=4/7203
+  scrambleDepth40:1: cycleLength=6, found=true, bestAffectedWingCount=14, bestFootprintRatio=2.33, bestKnownPattern=PARITY_ALG, improvingCount=7/7203
+  scrambleDepth100:2: cycleLength=5, found=true, bestAffectedWingCount=17, bestFootprintRatio=3.40, bestKnownPattern=FLIP_ALG, improvingCount=1/7203
+  scrambleDepth100:8: cycleLength=5, found=false, bestAffectedWingCount=N/A, bestFootprintRatio=N/A, bestKnownPattern=N/A, improvingCount=0/7203
+
+2. Minimal Footprint Distribution
+  n=28, foundCount=15 (53.6%)
+  avgBestFootprintRatio=3.66, medianBestFootprintRatio=3.40, min=2.33, max=6.33
+  lowFootprintAchieved(footprintRatio<=2): 0/15 found (0.0% of found)
+  by cycleLength:
+    cycleLength=3: n=3, foundCount=1
+    cycleLength=4: n=5, foundCount=2
+    cycleLength=5: n=9, foundCount=5
+    cycleLength=6: n=11, foundCount=7
+
+3. Existing Generator Coverage Check (RQ-3, structural)
+  [VERIFIED] enumerateWingCandidates() returns exactly [...setup, ...entry.seq] -- ONE fixed library entry plus ONE single-piece BFS relocation, never a bracket of two independently conjugated swaps.
+    via: Direct source read, fiveByFiveEdges.ts:1553-1589 (enumerateWingCandidates body).
+  [VERIFIED] invertSequence() (the operation required to build the A'/B' undo-halves of a bracket commutator) is never imported or used in fiveByFiveEdges.ts, solverV2Prototype/BoundedResolver.ts, or solverPrimitiveCCRPrototype/CCRPrototype.ts.
+    via: grep -rn "invertSequence" across src/customCube/ -- 0 matches in those 3 files (checked at Sprint authoring time).
+  [VERIFIED] BP-1 (BoundedResolver) and CCR (CCRPrototype) both chain enumerateWingCandidates() output SEQUENTIALLY (concatenation across hops), never wrapping an earlier hop's moves with its own inverse.
+    via: Direct source read of both files' DFS/hop-composition logic (established across CCR Completeness Validation Sprint v1 and PURE_CYCLE_ISOLATION Structural Mechanism Analysis Sprint v1's own shadow instrumentation, this Sprint's own re-read confirms no change).
+  [VERIFIED] Therefore: Existing Generator ⊂ Required Move Set (the bracket-commutator shape this Sprint tests is structurally outside what the current generator can ever produce, independent of this Sprint's own empirical Capability result).
+    via: Logical consequence of the 3 facts above.
+
+4. Structure Classification (RQ-4)
+  NONE_FOUND: 13
+  CONJUGATED_CYCLE: 15
+  dominantLabel=CONJUGATED_CYCLE, dominantShare=100.0%
+
+5. Blueprint Feasibility Assessment
+  decision: C_EXISTENCE_NOT_DEMONSTRATED
+  decisionLabel: Conclusion C -- 저-footprint Move의 존재를 입증하지 못했다
+  existenceConfirmed=false, lowFootprintAchievedCount=0, structureDominant=true
+  rationale: 28건 중 footprintRatio<=2를 달성한 개선 구성이 0건 -- 4-part bracket commutator(BASE_ALG/FLIP_ALG/PARITY_ALG를 서로 다르게 conjugate한 두 사본의 진짜 commutator, 이전 Sprint의 단순 conjugation과 달리 A,B,A',B' 전체 구조)조차 저-footprint 해를 찾지 못함 -- 지금까지의 Primitive 연구 방향(기존 라이브러리의 조합/변형) 자체를 재검토해야 한다.
