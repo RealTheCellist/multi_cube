@@ -1,0 +1,58 @@
+Move Representation Prototype Sprint v1 -- Report
+Generated: 2026-07-28T01:37:01.230Z
+
+1. Prototype Capability Report + Coverage Comparison
+  PRIMARY (PURE_CYCLE_ISOLATION): n=28, solved=1 (3.6%), baseline=0, ΔCoverage=1
+  SECONDARY (all 53 residual): n=53, solved=1 (1.9%), baseline=0, ΔCoverage=1
+  REGRESSION (89 Union Covered): n=89, solved=8 (9.0%), baseline=89, ΔCoverage=-81
+
+2. Representation Validation (per-case, PRIMARY population)
+  worstCase:84976575: solved=false, cycleLength=6, leavesExplored=44, affectedWingCount=N/A, setupLabel=N/A, runtime=4599ms
+  worstCase:7541612b: solved=false, cycleLength=6, leavesExplored=26, affectedWingCount=N/A, setupLabel=N/A, runtime=2151ms
+  worstCase:4549b041: solved=false, cycleLength=4, leavesExplored=1, affectedWingCount=N/A, setupLabel=N/A, runtime=6ms
+  worstCase:36336c1: solved=false, cycleLength=4, leavesExplored=1, affectedWingCount=N/A, setupLabel=N/A, runtime=7ms
+  worstCase:1af658ab: solved=false, cycleLength=4, leavesExplored=12, affectedWingCount=N/A, setupLabel=N/A, runtime=549ms
+  worstCase:589b0a25: solved=false, cycleLength=6, leavesExplored=6, affectedWingCount=N/A, setupLabel=N/A, runtime=418ms
+  worstCase:f776edb1: solved=false, cycleLength=5, leavesExplored=19, affectedWingCount=N/A, setupLabel=N/A, runtime=1764ms
+  worstCase:de8abca9: solved=false, cycleLength=6, leavesExplored=3, affectedWingCount=N/A, setupLabel=N/A, runtime=1288ms
+  snapshot335:45959141: solved=false, cycleLength=6, leavesExplored=40, affectedWingCount=N/A, setupLabel=N/A, runtime=5042ms
+  snapshot335:1af658ab: solved=true, cycleLength=3, leavesExplored=4, affectedWingCount=42, setupLabel=IDENTITY(no setup), runtime=218ms
+  snapshot335:56a8b82d: solved=false, cycleLength=3, leavesExplored=2, affectedWingCount=N/A, setupLabel=N/A, runtime=15ms
+  snapshot335:b714481: solved=false, cycleLength=6, leavesExplored=32, affectedWingCount=N/A, setupLabel=N/A, runtime=3412ms
+  snapshot335:4549b041: solved=false, cycleLength=6, leavesExplored=1, affectedWingCount=N/A, setupLabel=N/A, runtime=253ms
+  snapshot335:1513fcff: solved=false, cycleLength=4, leavesExplored=1, affectedWingCount=N/A, setupLabel=N/A, runtime=6ms
+  snapshot335:120fc3af: solved=false, cycleLength=5, leavesExplored=10, affectedWingCount=N/A, setupLabel=N/A, runtime=1640ms
+  snapshot335:36336c1: solved=false, cycleLength=6, leavesExplored=61, affectedWingCount=N/A, setupLabel=N/A, runtime=4287ms
+  scrambleDepth10:0: solved=false, cycleLength=5, leavesExplored=16, affectedWingCount=N/A, setupLabel=N/A, runtime=702ms
+  scrambleDepth10:2: solved=false, cycleLength=3, leavesExplored=4, affectedWingCount=N/A, setupLabel=N/A, runtime=417ms
+  scrambleDepth10:3: solved=false, cycleLength=4, leavesExplored=12, affectedWingCount=N/A, setupLabel=N/A, runtime=877ms
+  scrambleDepth10:4: solved=false, cycleLength=5, leavesExplored=23, affectedWingCount=N/A, setupLabel=N/A, runtime=978ms
+  scrambleDepth20:5: solved=false, cycleLength=5, leavesExplored=12, affectedWingCount=N/A, setupLabel=N/A, runtime=1578ms
+  scrambleDepth20:6: solved=false, cycleLength=5, leavesExplored=16, affectedWingCount=N/A, setupLabel=N/A, runtime=2152ms
+  scrambleDepth20:8: solved=false, cycleLength=6, leavesExplored=10, affectedWingCount=N/A, setupLabel=N/A, runtime=1371ms
+  scrambleDepth30:4: solved=false, cycleLength=5, leavesExplored=4, affectedWingCount=N/A, setupLabel=N/A, runtime=648ms
+  scrambleDepth40:0: solved=false, cycleLength=6, leavesExplored=1, affectedWingCount=N/A, setupLabel=N/A, runtime=208ms
+  scrambleDepth40:1: solved=false, cycleLength=6, leavesExplored=21, affectedWingCount=N/A, setupLabel=N/A, runtime=1894ms
+  scrambleDepth100:2: solved=false, cycleLength=5, leavesExplored=8, affectedWingCount=N/A, setupLabel=N/A, runtime=783ms
+  scrambleDepth100:8: solved=false, cycleLength=5, leavesExplored=1, affectedWingCount=N/A, setupLabel=N/A, runtime=215ms
+
+3. Side Effect Analysis (solved PRIMARY cases only)
+  n=1, avgAffectedWingCount=42.00, avgCycleLength=3.00, avgFootprintRatio=14.00
+  Blueprint target (footprintRatio<=2.0) achieved: 0/1 (0.0%)
+
+4. Search Cost (PRIMARY population)
+  avgLeavesExplored=14.0, avgMaxDepthReached=3.9, avgRuntimeMs=1339
+
+5. Failure Analysis (PRIMARY population)
+  SOLVED: 1/28
+  COMMUTATOR_FAILURE: 27/28
+    labels: worstCase:84976575, worstCase:7541612b, worstCase:4549b041, worstCase:36336c1, worstCase:1af658ab, worstCase:589b0a25, worstCase:f776edb1, worstCase:de8abca9, snapshot335:45959141, snapshot335:56a8b82d, snapshot335:b714481, snapshot335:4549b041, snapshot335:1513fcff, snapshot335:120fc3af, snapshot335:36336c1, scrambleDepth10:0, scrambleDepth10:2, scrambleDepth10:3, scrambleDepth10:4, scrambleDepth20:5, scrambleDepth20:6, scrambleDepth20:8, scrambleDepth30:4, scrambleDepth40:0, scrambleDepth40:1, scrambleDepth100:2, scrambleDepth100:8
+
+6. Regression Report (89 Union Covered cases)
+  n=89, regressionCount=0, incidentalSolveCount=8, cleanCount=81
+
+7. Prototype Assessment
+  decision: C_BLUEPRINT_NEEDS_REVISION
+  decisionLabel: Conclusion C -- Blueprint 수정 필요 (Capability 기준 미달)
+  capabilityPass=false, sideEffectPass=false, regressionPass=true, integrationPass=true
+  rationale: PURE_CYCLE_ISOLATION coverage 증가량이 1건으로 유의미성 기준(3건) 미달 -- Commutator 메커니즘 자체가 예상한 만큼 새 capability를 제공하지 못함.

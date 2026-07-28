@@ -1,0 +1,3352 @@
+{
+  "primaryCapability": {
+    "populationTag": "PRIMARY (PURE_CYCLE_ISOLATION)",
+    "n": 28,
+    "solvedCount": 1,
+    "successRate": 0.03571428571428571,
+    "baselineSolvedCount": 0,
+    "coverageDelta": 1
+  },
+  "secondaryCapability": {
+    "populationTag": "SECONDARY (all 53 residual)",
+    "n": 53,
+    "solvedCount": 1,
+    "successRate": 0.018867924528301886,
+    "baselineSolvedCount": 0,
+    "coverageDelta": 1
+  },
+  "regressionCapability": {
+    "populationTag": "REGRESSION (89 Union Covered)",
+    "n": 89,
+    "solvedCount": 8,
+    "successRate": 0.0898876404494382,
+    "baselineSolvedCount": 89,
+    "coverageDelta": -81
+  },
+  "sideEffect": {
+    "n": 1,
+    "avgAffectedWingCount": 42,
+    "avgCycleLength": 3,
+    "avgFootprintRatio": 14,
+    "blueprintTargetAchievedCount": 0,
+    "blueprintTargetAchievedRate": 0
+  },
+  "searchCost": {
+    "avgLeavesExplored": 13.964285714285714,
+    "avgMaxDepthReached": 3.892857142857143,
+    "avgRuntimeMs": 1338.5
+  },
+  "failureTally": [
+    {
+      "reason": "SOLVED",
+      "count": 1,
+      "labels": [
+        "snapshot335:1af658ab"
+      ]
+    },
+    {
+      "reason": "COMMUTATOR_FAILURE",
+      "count": 27,
+      "labels": [
+        "worstCase:84976575",
+        "worstCase:7541612b",
+        "worstCase:4549b041",
+        "worstCase:36336c1",
+        "worstCase:1af658ab",
+        "worstCase:589b0a25",
+        "worstCase:f776edb1",
+        "worstCase:de8abca9",
+        "snapshot335:45959141",
+        "snapshot335:56a8b82d",
+        "snapshot335:b714481",
+        "snapshot335:4549b041",
+        "snapshot335:1513fcff",
+        "snapshot335:120fc3af",
+        "snapshot335:36336c1",
+        "scrambleDepth10:0",
+        "scrambleDepth10:2",
+        "scrambleDepth10:3",
+        "scrambleDepth10:4",
+        "scrambleDepth20:5",
+        "scrambleDepth20:6",
+        "scrambleDepth20:8",
+        "scrambleDepth30:4",
+        "scrambleDepth40:0",
+        "scrambleDepth40:1",
+        "scrambleDepth100:2",
+        "scrambleDepth100:8"
+      ]
+    }
+  ],
+  "regressionAnalysis": {
+    "n": 89,
+    "regressionCount": 0,
+    "incidentalSolveCount": 8,
+    "cleanCount": 81
+  },
+  "assessment": {
+    "decision": "C_BLUEPRINT_NEEDS_REVISION",
+    "decisionLabel": "Conclusion C -- Blueprint 수정 필요 (Capability 기준 미달)",
+    "capabilityPass": false,
+    "sideEffectPass": false,
+    "regressionPass": true,
+    "integrationPass": true,
+    "rationale": "PURE_CYCLE_ISOLATION coverage 증가량이 1건으로 유의미성 기준(3건) 미달 -- Commutator 메커니즘 자체가 예상한 만큼 새 capability를 제공하지 못함."
+  },
+  "primaryRows": [
+    {
+      "label": "worstCase:84976575",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 6,
+        "leavesExplored": 44,
+        "maxDepthReached": 6,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 4599
+    },
+    {
+      "label": "worstCase:7541612b",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 6,
+        "leavesExplored": 26,
+        "maxDepthReached": 6,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 2151
+    },
+    {
+      "label": "worstCase:4549b041",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 4,
+        "leavesExplored": 1,
+        "maxDepthReached": 0,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 4,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 6
+    },
+    {
+      "label": "worstCase:36336c1",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 4,
+        "leavesExplored": 1,
+        "maxDepthReached": 0,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 4,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 7
+    },
+    {
+      "label": "worstCase:1af658ab",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 4,
+        "leavesExplored": 12,
+        "maxDepthReached": 4,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 4,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 549
+    },
+    {
+      "label": "worstCase:589b0a25",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 6,
+        "leavesExplored": 6,
+        "maxDepthReached": 6,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 418
+    },
+    {
+      "label": "worstCase:f776edb1",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 5,
+        "leavesExplored": 19,
+        "maxDepthReached": 5,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 5,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 1764
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 6,
+        "leavesExplored": 3,
+        "maxDepthReached": 4,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 1288
+    },
+    {
+      "label": "snapshot335:45959141",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 6,
+        "leavesExplored": 40,
+        "maxDepthReached": 6,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 5042
+    },
+    {
+      "label": "snapshot335:1af658ab",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": [
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            0,
+            1
+          ],
+          [
+            "x",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            0,
+            1
+          ],
+          [
+            "x",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            1,
+            -1
+          ],
+          [
+            "x",
+            0,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            1,
+            -1
+          ],
+          [
+            "x",
+            0,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            1
+          ],
+          [
+            "z",
+            -1,
+            1
+          ],
+          [
+            "z",
+            0,
+            1
+          ],
+          [
+            "z",
+            1,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "z",
+            1,
+            -1
+          ],
+          [
+            "z",
+            0,
+            -1
+          ],
+          [
+            "z",
+            -1,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            0,
+            1
+          ],
+          [
+            "x",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            0,
+            1
+          ],
+          [
+            "x",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            1,
+            -1
+          ],
+          [
+            "x",
+            0,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            1,
+            -1
+          ],
+          [
+            "x",
+            0,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            1
+          ],
+          [
+            "z",
+            -1,
+            1
+          ],
+          [
+            "z",
+            0,
+            1
+          ],
+          [
+            "z",
+            1,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "z",
+            1,
+            -1
+          ],
+          [
+            "z",
+            0,
+            -1
+          ],
+          [
+            "z",
+            -1,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            1
+          ],
+          [
+            "z",
+            -1,
+            1
+          ],
+          [
+            "z",
+            0,
+            1
+          ],
+          [
+            "z",
+            1,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "z",
+            1,
+            -1
+          ],
+          [
+            "z",
+            0,
+            -1
+          ],
+          [
+            "z",
+            -1,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            -1
+          ]
+        ],
+        "cycleLength": 3,
+        "leavesExplored": 4,
+        "maxDepthReached": 3,
+        "setupLabel": "IDENTITY(no setup)",
+        "affectedWingCount": 42,
+        "wrongWingBefore": 4,
+        "wrongWingAfter": 2
+      },
+      "runtimeMs": 218
+    },
+    {
+      "label": "snapshot335:56a8b82d",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 3,
+        "leavesExplored": 2,
+        "maxDepthReached": 3,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 3,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 15
+    },
+    {
+      "label": "snapshot335:b714481",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 6,
+        "leavesExplored": 32,
+        "maxDepthReached": 6,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 3412
+    },
+    {
+      "label": "snapshot335:4549b041",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 6,
+        "leavesExplored": 1,
+        "maxDepthReached": 0,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 253
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 4,
+        "leavesExplored": 1,
+        "maxDepthReached": 0,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 4,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 6
+    },
+    {
+      "label": "snapshot335:120fc3af",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 5,
+        "leavesExplored": 10,
+        "maxDepthReached": 5,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 5,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 1640
+    },
+    {
+      "label": "snapshot335:36336c1",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 6,
+        "leavesExplored": 61,
+        "maxDepthReached": 6,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 4287
+    },
+    {
+      "label": "scrambleDepth10:0",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 5,
+        "leavesExplored": 16,
+        "maxDepthReached": 5,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 5,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 702
+    },
+    {
+      "label": "scrambleDepth10:2",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 3,
+        "leavesExplored": 4,
+        "maxDepthReached": 3,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 3,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 417
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 4,
+        "leavesExplored": 12,
+        "maxDepthReached": 4,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 4,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 877
+    },
+    {
+      "label": "scrambleDepth10:4",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 5,
+        "leavesExplored": 23,
+        "maxDepthReached": 5,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 5,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 978
+    },
+    {
+      "label": "scrambleDepth20:5",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 5,
+        "leavesExplored": 12,
+        "maxDepthReached": 5,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 1578
+    },
+    {
+      "label": "scrambleDepth20:6",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 5,
+        "leavesExplored": 16,
+        "maxDepthReached": 5,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 5,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 2152
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 6,
+        "leavesExplored": 10,
+        "maxDepthReached": 6,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 1371
+    },
+    {
+      "label": "scrambleDepth30:4",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 5,
+        "leavesExplored": 4,
+        "maxDepthReached": 5,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 5,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 648
+    },
+    {
+      "label": "scrambleDepth40:0",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 6,
+        "leavesExplored": 1,
+        "maxDepthReached": 0,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 208
+    },
+    {
+      "label": "scrambleDepth40:1",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 6,
+        "leavesExplored": 21,
+        "maxDepthReached": 6,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 1894
+    },
+    {
+      "label": "scrambleDepth100:2",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 5,
+        "leavesExplored": 8,
+        "maxDepthReached": 5,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 5,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 783
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "populationTag": "PRIMARY",
+      "result": {
+        "moves": null,
+        "cycleLength": 5,
+        "leavesExplored": 1,
+        "maxDepthReached": 0,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 5,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 215
+    }
+  ],
+  "regressionRows": [
+    {
+      "label": "worstCase:64369533",
+      "populationTag": "REGRESSION",
+      "result": {
+        "moves": null,
+        "cycleLength": 4,
+        "leavesExplored": 18,
+        "maxDepthReached": 4,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 10,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 2172
+    },
+    {
+      "label": "worstCase:68977335",
+      "populationTag": "REGRESSION",
+      "result": {
+        "moves": null,
+        "cycleLength": null,
+        "leavesExplored": 0,
+        "maxDepthReached": 0,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 1
+    },
+    {
+      "label": "worstCase:70a5020b",
+      "populationTag": "REGRESSION",
+      "result": {
+        "moves": null,
+        "cycleLength": null,
+        "leavesExplored": 0,
+        "maxDepthReached": 0,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 0
+    },
+    {
+      "label": "worstCase:b714481",
+      "populationTag": "REGRESSION",
+      "result": {
+        "moves": null,
+        "cycleLength": 6,
+        "leavesExplored": 6,
+        "maxDepthReached": 6,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 912
+    },
+    {
+      "label": "worstCase:beb967ad",
+      "populationTag": "REGRESSION",
+      "result": {
+        "moves": null,
+        "cycleLength": 6,
+        "leavesExplored": 1,
+        "maxDepthReached": 0,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 11,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 207
+    },
+    {
+      "label": "worstCase:1e928fb1",
+      "populationTag": "REGRESSION",
+      "result": {
+        "moves": null,
+        "cycleLength": 6,
+        "leavesExplored": 36,
+        "maxDepthReached": 6,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 5024
+    },
+    {
+      "label": "worstCase:1513fcff",
+      "populationTag": "REGRESSION",
+      "result": {
+        "moves": null,
+        "cycleLength": 6,
+        "leavesExplored": 54,
+        "maxDepthReached": 6,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 5014
+    },
+    {
+      "label": "worstCase:ae3d218b",
+      "populationTag": "REGRESSION",
+      "result": {
+        "moves": null,
+        "cycleLength": null,
+        "leavesExplored": 0,
+        "maxDepthReached": 0,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 0
+    },
+    {
+      "label": "worstCase:120fc3af",
+      "populationTag": "REGRESSION",
+      "result": {
+        "moves": null,
+        "cycleLength": 5,
+        "leavesExplored": 6,
+        "maxDepthReached": 5,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 5,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 199
+    },
+    {
+      "label": "worstCase:dd4d94fd",
+      "populationTag": "REGRESSION",
+      "result": {
+        "moves": null,
+        "cycleLength": 6,
+        "leavesExplored": 38,
+        "maxDepthReached": 6,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 12,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 5067
+    },
+    {
+      "label": "worstCase:ad12c377",
+      "populationTag": "REGRESSION",
+      "result": {
+        "moves": null,
+        "cycleLength": null,
+        "leavesExplored": 0,
+        "maxDepthReached": 0,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 0
+    },
+    {
+      "label": "worstCase:e7a801fb",
+      "populationTag": "REGRESSION",
+      "result": {
+        "moves": null,
+        "cycleLength": 6,
+        "leavesExplored": 54,
+        "maxDepthReached": 6,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 10,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 5003
+    },
+    {
+      "label": "worstCase:4e27e5a1",
+      "populationTag": "REGRESSION",
+      "result": {
+        "moves": null,
+        "cycleLength": null,
+        "leavesExplored": 0,
+        "maxDepthReached": 0,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 0
+    },
+    {
+      "label": "worstCase:93b485f7",
+      "populationTag": "REGRESSION",
+      "result": {
+        "moves": null,
+        "cycleLength": null,
+        "leavesExplored": 0,
+        "maxDepthReached": 0,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 2
+    },
+    {
+      "label": "worstCase:5e5b20b",
+      "populationTag": "REGRESSION",
+      "result": {
+        "moves": null,
+        "cycleLength": 3,
+        "leavesExplored": 4,
+        "maxDepthReached": 3,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 450
+    },
+    {
+      "label": "worstCase:e5101f85",
+      "populationTag": "REGRESSION",
+      "result": {
+        "moves": [
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            0,
+            1
+          ],
+          [
+            "x",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            0,
+            1
+          ],
+          [
+            "x",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            1,
+            -1
+          ],
+          [
+            "x",
+            0,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            1,
+            -1
+          ],
+          [
+            "x",
+            0,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            0,
+            1
+          ],
+          [
+            "x",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            1,
+            -1
+          ],
+          [
+            "x",
+            0,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            0,
+            1
+          ],
+          [
+            "x",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            0,
+            1
+          ],
+          [
+            "x",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            1,
+            -1
+          ],
+          [
+            "x",
+            0,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            1,
+            -1
+          ],
+          [
+            "x",
+            0,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            0,
+            1
+          ],
+          [
+            "x",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            1,
+            -1
+          ],
+          [
+            "x",
+            0,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "x",
+            0,
+            -1
+          ],
+          [
+            "x",
+            1,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "x",
+            1,
+            1
+          ],
+          [
+            "x",
+            0,
+            1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "x",
+            0,
+            -1
+          ],
+          [
+            "x",
+            1,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "x",
+            1,
+            1
+          ],
+          [
+            "x",
+            0,
+            1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            1
+          ],
+          [
+            "z",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            0,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            0,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ]
+        ],
+        "cycleLength": 6,
+        "leavesExplored": 40,
+        "maxDepthReached": 6,
+        "setupLabel": "IDENTITY(no setup)",
+        "affectedWingCount": 41,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 7
+      },
+      "runtimeMs": 4394
+    },
+    {
+      "label": "worstCase:4749cd9d",
+      "populationTag": "REGRESSION",
+      "result": {
+        "moves": null,
+        "cycleLength": null,
+        "leavesExplored": 0,
+        "maxDepthReached": 0,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 0
+    },
+    {
+      "label": "worstCase:d27df773",
+      "populationTag": "REGRESSION",
+      "result": {
+        "moves": null,
+        "cycleLength": 6,
+        "leavesExplored": 18,
+        "maxDepthReached": 6,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 1997
+    },
+    {
+      "label": "worstCase:c039e611",
+      "populationTag": "REGRESSION",
+      "result": {
+        "moves": null,
+        "cycleLength": 3,
+        "leavesExplored": 9,
+        "maxDepthReached": 3,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 492
+    },
+    {
+      "label": "worstCase:b2c9ceb9",
+      "populationTag": "REGRESSION",
+      "result": {
+        "moves": null,
+        "cycleLength": 6,
+        "leavesExplored": 58,
+        "maxDepthReached": 6,
+        "setupLabel": null,
+        "affectedWingCount": null,
+        "wrongWingBefore": 12,
+        "wrongWingAfter": null
+      },
+      "runtimeMs": 5014
+    }
+  ]
+}
