@@ -1,0 +1,39 @@
+Mixed Commutator Opportunity Analysis Sprint v1 -- Report
+Generated: 2026-07-28T23:06:21.927Z
+
+1. Gate Funnel (RQ-1, n=142)
+  Total: 142
+  cycleCount===1 passes: 43
+  + componentCount===1: 41
+  Final Gate (+ conflictCount===0): 34
+  Generated (at 300ms production-realistic budget): 7
+  Improved: 7
+
+2. Shadow Evaluation (RQ-2, Gate entirely bypassed, extended budget=5000ms)
+  hasAnyCycle (Prototype's own looser precondition): 108/142
+  shadowSolvable (Potentially Solvable): 86/142
+  anyDeadlineHit (extended budget still not enough somewhere): false
+
+3. Gate Ablation (RQ-3, each condition independently)
+  NO_CYCLE_RESTRICTION: cycleCount===1 조건 제거 (componentCount===1 AND conflictCount===0만 유지)
+    relaxedGatePass=53, newlyAdmitted=19, newlyAdmittedShadowSolvable=17
+  NO_COMPONENT_RESTRICTION: componentCount===1 조건 제거 (cycleCount===1 AND conflictCount===0만 유지)
+    relaxedGatePass=35, newlyAdmitted=1, newlyAdmittedShadowSolvable=1
+  NO_CONFLICT_RESTRICTION: conflictCount===0 조건 제거 (cycleCount===1 AND componentCount===1만 유지)
+    relaxedGatePass=41, newlyAdmitted=7, newlyAdmittedShadowSolvable=7
+
+4. Priority Reorder Test (RQ-4, near-miss cases only, n=13 candidate cases x 2 variants)
+  Neither reorder variant rescued any near-miss case within the real 300ms budget.
+
+5. Opportunity Matrix (RQ-5, Required Measurement #4)
+  Population | Eligible | Improved | PotentiallySolvable | Lost
+  PRIMARY | 28 | 5 | 18 | 0
+  SECONDARY_ONLY | 0 | 0 | 10 | 10
+  REGRESSION | 6 | 2 | 58 | 56
+  ALL | 34 | 7 | 86 | 66
+  Opportunity Loss (ALL, PotentiallySolvable-ActuallyAttempted): 52
+
+6. Recommendation (Deliverable #5)
+  decision=B_GATE_REFINEMENT
+  decisionLabel=Conclusion B -- Gate가 실제 Capability를 막고 있다. Gate Refinement Sprint 진행 권장.
+  rationale: Opportunity Loss=52건 (Potentially Solvable=86 - Actually Attempted=34) -- Gate가 배제한 상태 중 실제로 개선 가능한 사례가 존재.
