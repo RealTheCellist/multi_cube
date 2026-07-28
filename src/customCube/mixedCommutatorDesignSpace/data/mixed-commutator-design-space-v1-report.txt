@@ -1,0 +1,72 @@
+Mixed Commutator Design Space Validation Sprint v1 -- Report
+Generated: 2026-07-28T02:40:33.264Z
+
+1. Mixed Commutator Report -- Pattern Pair Rows
+  BASE_ALG+BASE_ALG (Same): casesWithSuccess=4/28, avgAffectedWingCount=17.75, avgMoveLength=55.0, avgImprovementScore=1.50
+  FLIP_ALG+FLIP_ALG (Same): casesWithSuccess=9/28, avgAffectedWingCount=18.67, avgMoveLength=24.0, avgImprovementScore=1.67
+  PARITY_ALG+PARITY_ALG (Same): casesWithSuccess=3/28, avgAffectedWingCount=14.33, avgMoveLength=160.0, avgImprovementScore=1.67
+  BASE_ALG+FLIP_ALG (Mixed): casesWithSuccess=5/28, avgAffectedWingCount=18.60, avgMoveLength=40.8, avgImprovementScore=1.40
+  BASE_ALG+PARITY_ALG (Mixed): casesWithSuccess=0/28, avgAffectedWingCount=N/A, avgMoveLength=N/A, avgImprovementScore=N/A
+  FLIP_ALG+PARITY_ALG (Mixed): casesWithSuccess=1/28, avgAffectedWingCount=22.00, avgMoveLength=94.0, avgImprovementScore=1.00
+  >> winning pair (used for Setup Length probes): PARITY_ALG+PARITY_ALG
+
+1b. Same vs Mixed Pattern Matrix (Required Analysis #1)
+  Same: success=16, avgFootprint=16.92, avgMoveLength=79.7, avgImprovement=1.61
+  Mixed: success=6, avgFootprint=20.30, avgMoveLength=67.4, avgImprovement=1.20
+
+2. Design Space Coverage Matrix -- Setup Length Probes (winning pair only)
+  worstCase:84976575: L2.best=N/A | L3.best=N/A
+  worstCase:7541612b: L2.best=affected=23,ratio=3.83,side=B | L3.best=N/A
+  worstCase:4549b041: L2.best=N/A | L3.best=N/A
+  worstCase:36336c1: L2.best=N/A | L3.best=N/A
+  worstCase:1af658ab: L2.best=N/A | L3.best=N/A
+  worstCase:589b0a25: L2.best=affected=15,ratio=2.50,side=B | L3.best=N/A
+  worstCase:f776edb1: L2.best=N/A | L3.best=N/A
+  worstCase:de8abca9: L2.best=N/A | L3.best=N/A
+  snapshot335:45959141: L2.best=N/A | L3.best=N/A
+  snapshot335:1af658ab: L2.best=N/A | L3.best=N/A
+  snapshot335:56a8b82d: L2.best=N/A | L3.best=N/A
+  snapshot335:b714481: L2.best=affected=12,ratio=2.00,side=B | L3.best=N/A
+  snapshot335:4549b041: L2.best=N/A | L3.best=N/A
+  snapshot335:1513fcff: L2.best=N/A | L3.best=N/A
+  snapshot335:120fc3af: L2.best=N/A | L3.best=N/A
+  snapshot335:36336c1: L2.best=N/A | L3.best=N/A
+  scrambleDepth10:0: L2.best=N/A | L3.best=N/A
+  scrambleDepth10:2: L2.best=N/A | L3.best=N/A
+  scrambleDepth10:3: L2.best=N/A | L3.best=N/A
+  scrambleDepth10:4: L2.best=N/A | L3.best=N/A
+  scrambleDepth20:5: L2.best=N/A | L3.best=N/A
+  scrambleDepth20:6: L2.best=affected=14,ratio=2.80,side=A | L3.best=N/A
+  scrambleDepth20:8: L2.best=N/A | L3.best=N/A
+  scrambleDepth30:4: L2.best=N/A | L3.best=N/A
+  scrambleDepth40:0: L2.best=N/A | L3.best=N/A
+  scrambleDepth40:1: L2.best=affected=14,ratio=2.33,side=B | L3.best=N/A
+  scrambleDepth100:2: L2.best=N/A | L3.best=N/A
+  scrambleDepth100:8: L2.best=N/A | L3.best=N/A
+
+3. Footprint Distribution (pooled across whole expanded design space)
+  n=69, min=1.60, avg=3.49, median=3.40, max=6.33
+
+4. Convergence Analysis (RQ-3: does global min keep improving as design space grows?)
+  stage1_same_pattern_L1: cumulativeAttempts=201684, casesWithImprovement=15, globalMinFootprintRatio=2.33, avgBest=3.56, lowFootprintCaseCount(<=2.0)=0
+  stage2_mixed_pattern_L1: cumulativeAttempts=403368, casesWithImprovement=18, globalMinFootprintRatio=1.60, avgBest=3.44, lowFootprintCaseCount(<=2.0)=1
+  stage3_setup_length_L2: cumulativeAttempts=532392, casesWithImprovement=19, globalMinFootprintRatio=1.60, avgBest=3.39, lowFootprintCaseCount(<=2.0)=2
+  stage4_setup_length_L3: cumulativeAttempts=661416, casesWithImprovement=19, globalMinFootprintRatio=1.60, avgBest=3.39, lowFootprintCaseCount(<=2.0)=2
+
+5. Structure Classification (RQ-4)
+  NONE_FOUND: 9
+  MIXED_PATTERN: 3
+  DEEP_SETUP: 2
+  WIDE_SETUP: 14
+  dominantLabel=WIDE_SETUP, dominantShare=73.7%
+
+6. Limiting Factor Analysis (Required Analysis #4)
+  limitingFactor: SETUP_LENGTH
+  rationale: Mixed Pattern이 실제로 global min을 2.33 -> 1.60로 낮췄으나(Pattern 선택은 한계가 아님), Setup 길이를 2/3으로 늘려도 추가 개선이 없었다(1.60 -> 1.60) -- Setup 길이가 현재 한계 요인이다.
+  stage1GlobalMin=2.33, stage2GlobalMin=1.60, stage3GlobalMin=1.60, stage4GlobalMin=1.60
+
+7. Mechanism Assessment (Deliverable #5, Success Criteria)
+  decision: A_SUFFICIENT_DESIGN_SPACE
+  decisionLabel: Conclusion A -- Bracket Commutator는 충분한 설계 공간을 가진다. Prototype 확장 가능.
+  globalMinFootprintRatio=1.60, nearMissCaseCount(<=2.2)=2, priorSprintBest=2.33, improvedBeyondPrior=true
+  rationale: globalMinFootprintRatio=1.60 (목표 <=2), near-miss(<=2.2) 케이스 2건(기준 3건) -- 확장된 설계 공간에서 목표 또는 이에 준하는 반복 가능한 결과를 확보했다.

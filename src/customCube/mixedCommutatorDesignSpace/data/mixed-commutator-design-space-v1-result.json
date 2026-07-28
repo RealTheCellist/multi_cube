@@ -1,0 +1,274 @@
+{
+  "pairRows": [
+    {
+      "patternA": "BASE_ALG",
+      "patternB": "BASE_ALG",
+      "samePattern": true,
+      "casesWithSuccess": 4,
+      "avgAffectedWingCount": 17.75,
+      "avgMoveLength": 55,
+      "avgImprovementScore": 1.5
+    },
+    {
+      "patternA": "FLIP_ALG",
+      "patternB": "FLIP_ALG",
+      "samePattern": true,
+      "casesWithSuccess": 9,
+      "avgAffectedWingCount": 18.666666666666668,
+      "avgMoveLength": 24,
+      "avgImprovementScore": 1.6666666666666667
+    },
+    {
+      "patternA": "PARITY_ALG",
+      "patternB": "PARITY_ALG",
+      "samePattern": true,
+      "casesWithSuccess": 3,
+      "avgAffectedWingCount": 14.333333333333334,
+      "avgMoveLength": 160,
+      "avgImprovementScore": 1.6666666666666667
+    },
+    {
+      "patternA": "BASE_ALG",
+      "patternB": "FLIP_ALG",
+      "samePattern": false,
+      "casesWithSuccess": 5,
+      "avgAffectedWingCount": 18.6,
+      "avgMoveLength": 40.8,
+      "avgImprovementScore": 1.4
+    },
+    {
+      "patternA": "BASE_ALG",
+      "patternB": "PARITY_ALG",
+      "samePattern": false,
+      "casesWithSuccess": 0,
+      "avgAffectedWingCount": null,
+      "avgMoveLength": null,
+      "avgImprovementScore": null
+    },
+    {
+      "patternA": "FLIP_ALG",
+      "patternB": "PARITY_ALG",
+      "samePattern": false,
+      "casesWithSuccess": 1,
+      "avgAffectedWingCount": 22,
+      "avgMoveLength": 94,
+      "avgImprovementScore": 1
+    }
+  ],
+  "sameVsMixedRows": [
+    {
+      "group": "Same",
+      "success": 16,
+      "avgFootprint": 16.916666666666668,
+      "avgMoveLength": 79.66666666666667,
+      "avgImprovement": 1.6111111111111114
+    },
+    {
+      "group": "Mixed",
+      "success": 6,
+      "avgFootprint": 20.3,
+      "avgMoveLength": 67.4,
+      "avgImprovement": 1.2
+    }
+  ],
+  "footprintDistribution": {
+    "n": 69,
+    "min": 1.6,
+    "avg": 3.4913043478260883,
+    "median": 3.4,
+    "max": 6.333333333333333
+  },
+  "convergence": [
+    {
+      "stage": "stage1_same_pattern_L1",
+      "cumulativeAttempts": 201684,
+      "casesWithAnyImprovement": 15,
+      "globalMinFootprintRatio": 2.3333333333333335,
+      "avgBestFootprintRatioAcrossCases": 3.561111111111111,
+      "lowFootprintCaseCount": 0
+    },
+    {
+      "stage": "stage2_mixed_pattern_L1",
+      "cumulativeAttempts": 403368,
+      "casesWithAnyImprovement": 18,
+      "globalMinFootprintRatio": 1.6,
+      "avgBestFootprintRatioAcrossCases": 3.443518518518518,
+      "lowFootprintCaseCount": 1
+    },
+    {
+      "stage": "stage3_setup_length_L2",
+      "cumulativeAttempts": 532392,
+      "casesWithAnyImprovement": 19,
+      "globalMinFootprintRatio": 1.6,
+      "avgBestFootprintRatioAcrossCases": 3.3850877192982445,
+      "lowFootprintCaseCount": 2
+    },
+    {
+      "stage": "stage4_setup_length_L3",
+      "cumulativeAttempts": 661416,
+      "casesWithAnyImprovement": 19,
+      "globalMinFootprintRatio": 1.6,
+      "avgBestFootprintRatioAcrossCases": 3.3850877192982445,
+      "lowFootprintCaseCount": 2
+    }
+  ],
+  "structure": {
+    "classified": [
+      {
+        "label": "worstCase:84976575",
+        "structureLabel": "WIDE_SETUP"
+      },
+      {
+        "label": "worstCase:7541612b",
+        "structureLabel": "DEEP_SETUP"
+      },
+      {
+        "label": "worstCase:4549b041",
+        "structureLabel": "NONE_FOUND"
+      },
+      {
+        "label": "worstCase:36336c1",
+        "structureLabel": "WIDE_SETUP"
+      },
+      {
+        "label": "worstCase:1af658ab",
+        "structureLabel": "NONE_FOUND"
+      },
+      {
+        "label": "worstCase:589b0a25",
+        "structureLabel": "WIDE_SETUP"
+      },
+      {
+        "label": "worstCase:f776edb1",
+        "structureLabel": "NONE_FOUND"
+      },
+      {
+        "label": "worstCase:de8abca9",
+        "structureLabel": "MIXED_PATTERN"
+      },
+      {
+        "label": "snapshot335:45959141",
+        "structureLabel": "WIDE_SETUP"
+      },
+      {
+        "label": "snapshot335:1af658ab",
+        "structureLabel": "WIDE_SETUP"
+      },
+      {
+        "label": "snapshot335:56a8b82d",
+        "structureLabel": "NONE_FOUND"
+      },
+      {
+        "label": "snapshot335:b714481",
+        "structureLabel": "DEEP_SETUP"
+      },
+      {
+        "label": "snapshot335:4549b041",
+        "structureLabel": "WIDE_SETUP"
+      },
+      {
+        "label": "snapshot335:1513fcff",
+        "structureLabel": "NONE_FOUND"
+      },
+      {
+        "label": "snapshot335:120fc3af",
+        "structureLabel": "WIDE_SETUP"
+      },
+      {
+        "label": "snapshot335:36336c1",
+        "structureLabel": "WIDE_SETUP"
+      },
+      {
+        "label": "scrambleDepth10:0",
+        "structureLabel": "MIXED_PATTERN"
+      },
+      {
+        "label": "scrambleDepth10:2",
+        "structureLabel": "NONE_FOUND"
+      },
+      {
+        "label": "scrambleDepth10:3",
+        "structureLabel": "WIDE_SETUP"
+      },
+      {
+        "label": "scrambleDepth10:4",
+        "structureLabel": "WIDE_SETUP"
+      },
+      {
+        "label": "scrambleDepth20:5",
+        "structureLabel": "NONE_FOUND"
+      },
+      {
+        "label": "scrambleDepth20:6",
+        "structureLabel": "WIDE_SETUP"
+      },
+      {
+        "label": "scrambleDepth20:8",
+        "structureLabel": "NONE_FOUND"
+      },
+      {
+        "label": "scrambleDepth30:4",
+        "structureLabel": "MIXED_PATTERN"
+      },
+      {
+        "label": "scrambleDepth40:0",
+        "structureLabel": "WIDE_SETUP"
+      },
+      {
+        "label": "scrambleDepth40:1",
+        "structureLabel": "WIDE_SETUP"
+      },
+      {
+        "label": "scrambleDepth100:2",
+        "structureLabel": "WIDE_SETUP"
+      },
+      {
+        "label": "scrambleDepth100:8",
+        "structureLabel": "NONE_FOUND"
+      }
+    ],
+    "tally": [
+      {
+        "structureLabel": "NONE_FOUND",
+        "count": 9
+      },
+      {
+        "structureLabel": "MIXED_PATTERN",
+        "count": 3
+      },
+      {
+        "structureLabel": "DEEP_SETUP",
+        "count": 2
+      },
+      {
+        "structureLabel": "WIDE_SETUP",
+        "count": 14
+      }
+    ],
+    "dominantLabel": "WIDE_SETUP",
+    "dominantShare": 0.7368421052631579
+  },
+  "limitingFactor": {
+    "limitingFactor": "SETUP_LENGTH",
+    "rationale": "Mixed Pattern이 실제로 global min을 2.33 -> 1.60로 낮췄으나(Pattern 선택은 한계가 아님), Setup 길이를 2/3으로 늘려도 추가 개선이 없었다(1.60 -> 1.60) -- Setup 길이가 현재 한계 요인이다.",
+    "stage1GlobalMin": 2.3333333333333335,
+    "stage2GlobalMin": 1.6,
+    "stage3GlobalMin": 1.6,
+    "stage4GlobalMin": 1.6,
+    "mixedPatternImproved": true,
+    "setupLengthImproved": false
+  },
+  "assessment": {
+    "decision": "A_SUFFICIENT_DESIGN_SPACE",
+    "decisionLabel": "Conclusion A -- Bracket Commutator는 충분한 설계 공간을 가진다. Prototype 확장 가능.",
+    "globalMinFootprintRatio": 1.6,
+    "nearMissCaseCount": 2,
+    "priorSprintBest": 2.33,
+    "improvedBeyondPrior": true,
+    "rationale": "globalMinFootprintRatio=1.60 (목표 <=2), near-miss(<=2.2) 케이스 2건(기준 3건) -- 확장된 설계 공간에서 목표 또는 이에 준하는 반복 가능한 결과를 확보했다."
+  },
+  "winningPair": {
+    "patternA": "PARITY_ALG",
+    "patternB": "PARITY_ALG"
+  }
+}
