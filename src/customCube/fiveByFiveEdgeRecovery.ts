@@ -33,6 +33,20 @@ import { runSuccessV2, W2_WIDER_HOP } from "./solverPrimitivePrototypeRefinement
 // CCR Prototype Sprint v1's, untouched by this Sprint). Wired in as a new
 // "CCR"-typed Recovery candidate, generated last (after REPAIR).
 import { runCCRPrototype } from "./solverPrimitiveCCRPrototype/CCRPrototype";
+// Production Integration Sprint v1's chosen Integration Point: mirrors
+// CCR's own (repair_after) -- tryMixedCommutatorPrototype reused
+// UNMODIFIED (its own Cycle Detection/Bracket Search/Deferred Validation
+// are exactly Mixed Commutator Prototype Sprint v1's, untouched by this
+// Sprint). Wired in as a new "MIXED_COMMUTATOR"-typed Recovery candidate,
+// generated last (after CCR). Gate (cycleCount===1 AND
+// conflictEdgeCount===0 AND componentCount===1, Production Integration
+// Blueprint Sprint v1's own measured recommendation) uses
+// buildStateGraph/analyzeConstraints -- existing, unmodified structural
+// analysis already used throughout this codebase's research arc, no new
+// analysis logic.
+import { tryMixedCommutatorPrototype } from "./mixedCommutatorPrototype/MixedCommutatorPrototype";
+import { buildStateGraph } from "./capabilityAnalysis/stateGraphBuilder";
+import { analyzeConstraints } from "./capabilityAnalysis/constraintAnalyzer";
 
 // Section 13's Time Budget table gives Recovery its own small sub-budgets
 // (생성 50ms / Simulation 50ms / Retry 150ms) -- these are PER-TASK budgets
@@ -75,6 +89,15 @@ export type SchedulingStrategy = "baseline" | "priorityGate" | "reservedBudget";
 // comparison against baseline/priorityGate (same nominal budget size,
 // just protected from being starved out by DISRUPT/SETUP running long).
 const REPAIR_RESERVED_SLICE_MS = 75;
+
+// Production Integration Sprint v1: Mixed Commutator's own reserved slice,
+// off the OUTER deadline exactly like REPAIR_RESERVED_SLICE_MS -- never
+// the shared genDeadline DISRUPT/SETUP compete over. Sized per Production
+// Integration Blueprint Sprint v1's own measured Budget Allocation Sweep
+// (75ms:2/28, 150ms:3/28, 300ms:5/28, 5000ms:18/28 solved on the PRIMARY
+// population) -- 300ms chosen as the disclosed capability/cost tradeoff
+// point, matching RECOVERY_GEN_BUDGET_MS's own size.
+const MIXED_COMMUTATOR_RESERVED_SLICE_MS = 300;
 
 // Instrumentation hook for Integration Refinement Sprint v1's own STEP1/
 // STEP2 scheduling-verification measurements (matched/skipped/budget-
@@ -137,7 +160,15 @@ export function generateRecoveryStrategies(
   // The CCR Production Integration Sprint v1 benchmark passes false to
   // reconstruct the pre-CCR baseline for an honest before/after
   // comparison, never product callers.
-  includeCCR = true
+  includeCCR = true,
+  // Production Integration Sprint v1: mirrors includeCCR's own pattern
+  // exactly. Defaults to true (Mixed Commutator included) for real
+  // production use -- fiveByFiveEdgeExecutor.ts's own executeTask() is
+  // never modified and never passes this new trailing parameter, so the
+  // real production call site automatically gets Mixed Commutator via
+  // this default with ZERO Executor changes, the same mechanism CCR's own
+  // integration already relies on.
+  includeMixedCommutator = true
 ): RecoveryStrategy[] {
   const { lib, flipLib, caseLib } = libs;
   const genDeadline = Math.min(deadline, Date.now() + RECOVERY_GEN_BUDGET_MS);
@@ -261,15 +292,43 @@ export function generateRecoveryStrategies(
     onEvent?.({ candidateType: "CCR", phase: added ? "generated" : "empty", atMs: Date.now() });
   };
 
+  // Production Integration Sprint v1: Integration Point mirrors CCR's own
+  // (repair_after) -- always generated LAST, regardless of
+  // schedulingStrategy (the REPAIR A/B scheduling question is unrelated
+  // to this candidate's own placement, same reasoning as genCCR's own
+  // comment). Gate (Production Integration Blueprint Sprint v1's own
+  // measured recommendation): cycleCount===1 AND conflictEdgeCount===0
+  // AND componentCount===1, checked via the SAME buildStateGraph/
+  // analyzeConstraints already used throughout this codebase's research
+  // arc -- no new structural analysis. Budget: MIXED_COMMUTATOR_RESERVED_SLICE_MS
+  // reserved slice off the OUTER deadline, exactly like REPAIR's own
+  // reservedBudget mechanism -- never the shared genDeadline.
+  const genMixedCommutator = () => {
+    if (!includeMixedCommutator) return;
+    onEvent?.({ candidateType: "MIXED_COMMUTATOR", phase: "start", atMs: Date.now() });
+    const stats = analyzeConstraints(buildStateGraph(cubies));
+    if (stats.cycleCount !== 1 || stats.conflictCount !== 0 || stats.componentCount !== 1) {
+      onEvent?.({ candidateType: "MIXED_COMMUTATOR", phase: "skipped", atMs: Date.now() });
+      return;
+    }
+    const d = Math.min(deadline, Date.now() + MIXED_COMMUTATOR_RESERVED_SLICE_MS);
+    const moves = tryMixedCommutatorPrototype(cubies, lib, d);
+    const added = add("MIXED_COMMUTATOR", "Mixed Pattern Bracket Commutator (cycleCount=1 AND conflictEdgeCount=0 AND componentCount=1 Gate, reserved-slice scheduling)", moves);
+    onEvent?.({ candidateType: "MIXED_COMMUTATOR", phase: added ? "generated" : "empty", atMs: Date.now() });
+  };
+
   // baseline/reservedBudget keep the ORIGINAL DISRUPT,DISRUPT,SETUP,REPAIR
   // order (reservedBudget's only change is REPAIR's own gating rule inside
   // genRepair(), not ordering); priorityGate (Strategy A) tries REPAIR
   // FIRST, using the exact same shared-genDeadline mechanism as baseline,
   // simply given first crack at it before DISRUPT/SETUP can consume it.
-  // CCR is always appended last in both variants (Integration Point
-  // "repair_after" is independent of the REPAIR scheduling A/B question).
+  // CCR and MIXED_COMMUTATOR are always appended last (in that order) in
+  // both variants (both Integration Points are independent of the REPAIR
+  // scheduling A/B question).
   const order =
-    schedulingStrategy === "priorityGate" ? [genRepair, genDisrupt1, genDisrupt2, genSetup, genCCR] : [genDisrupt1, genDisrupt2, genSetup, genRepair, genCCR];
+    schedulingStrategy === "priorityGate"
+      ? [genRepair, genDisrupt1, genDisrupt2, genSetup, genCCR, genMixedCommutator]
+      : [genDisrupt1, genDisrupt2, genSetup, genRepair, genCCR, genMixedCommutator];
   for (const step of order) step();
 
   return candidates;
@@ -332,7 +391,12 @@ export function attemptRecovery(
   // CCR Production Integration Sprint v1: threaded through to
   // generateRecoveryStrategies -- see that function's own includeCCR
   // comment. Defaults to true (CCR included) for real production use.
-  includeCCR = true
+  includeCCR = true,
+  // Production Integration Sprint v1: threaded through to
+  // generateRecoveryStrategies -- see that function's own
+  // includeMixedCommutator comment. Defaults to true (Mixed Commutator
+  // included) for real production use.
+  includeMixedCommutator = true
 ): Move[] {
   const log = (label: string, detail?: string) => trace?.push({ at: Date.now(), label, detail });
   const visited = new Set<number>();
@@ -355,7 +419,7 @@ export function attemptRecovery(
   for (let round = 0; round < MAX_RECOVERY_RETRIES; round++) {
     if (Date.now() > deadline) break;
 
-    const candidates = generateRecoveryStrategies(scratch, libs, deadline, weights, includeRepair, schedulingStrategy, undefined, includeCCR);
+    const candidates = generateRecoveryStrategies(scratch, libs, deadline, weights, includeRepair, schedulingStrategy, undefined, includeCCR, includeMixedCommutator);
     if (candidates.length === 0) {
       log("recovery-no-candidates", `${round + 1}회차: Recovery 후보를 찾지 못함`);
       break;
@@ -388,13 +452,15 @@ export function attemptRecovery(
       }${best.expectedFuturePotential.toFixed(1)}`
     );
 
-    // CCR Production Integration Sprint v1: CCR's own moves (runCCRPrototype
-    // -> its own internal validateDeferred gate, byte-identical invariant to
-    // REPAIR's runSuccessV2) are ALSO already guaranteed net-improving by
-    // the time they reach here -- the same reasoning this short-circuit
-    // already relies on for REPAIR, extended to the one other candidate
-    // type that shares the exact same guarantee.
-    if ((best.type === "REPAIR" || best.type === "CCR") && shortCircuitRepair && afterDisrupt < originalBaseline) {
+    // CCR Production Integration Sprint v1 / Mixed Commutator Production
+    // Integration Sprint v1: CCR's and MIXED_COMMUTATOR's own moves
+    // (runCCRPrototype / tryMixedCommutatorPrototype -> each one's own
+    // internal validateDeferred gate, byte-identical invariant to REPAIR's
+    // runSuccessV2) are ALSO already guaranteed net-improving by the time
+    // they reach here -- the same reasoning this short-circuit already
+    // relies on for REPAIR, extended to the other candidate types that
+    // share the exact same guarantee.
+    if ((best.type === "REPAIR" || best.type === "CCR" || best.type === "MIXED_COMMUTATOR") && shortCircuitRepair && afterDisrupt < originalBaseline) {
       log("recovery-repair-short-circuit", `${best.type}가 이미 net-improvement 검증됨(wrongWing ${originalBaseline} -> ${afterDisrupt}) -- retryTask 생략`);
       applySeq(cubies, applied);
       return applied;

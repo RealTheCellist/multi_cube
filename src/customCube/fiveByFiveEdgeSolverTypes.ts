@@ -92,7 +92,12 @@ export interface SolveStrategy {
 // added alongside DISRUPT/SETUP/REPAIR -- targets cycleLength 5~6,
 // conflictEdgeCount=0, a disjoint Gate from REPAIR's own cycleLength 2~4
 // (see solverPrimitiveCCRPrototype/CCRGate.ts).
-export type RecoveryType = "DISRUPT" | "SETUP" | "REPAIR" | "CCR";
+// "MIXED_COMMUTATOR" (Mixed Commutator Production Integration Sprint v1)
+// added alongside DISRUPT/SETUP/REPAIR/CCR -- Gate: cycleCount===1 AND
+// conflictEdgeCount===0 AND componentCount===1 (Production Integration
+// Blueprint Sprint v1's own measured recommendation; see
+// mixedCommutatorPrototype/MixedCommutatorPrototype.ts).
+export type RecoveryType = "DISRUPT" | "SETUP" | "REPAIR" | "CCR" | "MIXED_COMMUTATOR";
 
 export interface RecoveryStrategy {
   id: number;

@@ -1,0 +1,31 @@
+Mixed Commutator Production Integration Sprint v1 -- Report
+Generated: 2026-07-28T06:51:43.074Z
+
+1. Implementation Summary
+  Files modified: fiveByFiveEdgeRecovery.ts, fiveByFiveEdgeSolverTypes.ts (2 files, matching Directive's expectation)
+  RecoveryType extended: + "MIXED_COMMUTATOR"
+  genMixedCommutator() added: Gate=cycleCount===1 AND conflictEdgeCount===0 AND componentCount===1, Budget=MIXED_COMMUTATOR_RESERVED_SLICE_MS=300ms reserved slice off outer deadline (REPAIR-style), generated last (after CCR)
+  Short-circuit type-check extended: (REPAIR|CCR|MIXED_COMMUTATOR)
+  New optional trailing params: includeMixedCommutator=true on generateRecoveryStrategies()/attemptRecovery() (mirrors includeCCR's own pattern) -- zero Executor changes required
+
+2. Source Diff Summary (RQ-4)
+  See git diff --stat for exact line counts; 2 files touched, 0 Planner/Executor/fiveByFiveEdges.ts/Prototype changes, Public API changes are purely additive (new optional trailing params, new RecoveryType union member)
+
+3. Recovery Flow (post-integration, 142 cases)
+  n=142
+  Gate: generated=1, skipped=108, empty=33
+  mixedChosenCount=1, outcomeChangedCount=11, shortCircuitCount=1
+
+4. Compatibility Report (충돌 여부)
+  regressionCount=0 (cases where MIXED_COMMUTATOR changed the outcome AND made wrongWingCount worse-or-equal)
+
+5. Primitive Contract Verification (RQ-2)
+  n=1, nonEmptyMovesCount=1, negativeWrongWingDeltaCount=1, throwCount=0
+  fullyCompliant=true
+  1건의 MIXED_COMMUTATOR 후보 전원이 non-empty moves, expectedWrongWingDelta<0 (validateDeferred 보장과 일치), 예외 발생 0건 -- Primitive 계약 완전 유지.
+
+6. Integration Assessment (Deliverable #6)
+  decision: A_PROCEED_TO_VALIDATION
+  decisionLabel: Conclusion A -- Integration 완료. 다음 Sprint는 Production Validation Sprint 진행.
+  buildSucceeded=true, contractCompliant=true, noRegression=true
+  rationale: Build 성공, Primitive 계약 100% 유지, Regression 0건, Recovery Layer 정상 동작(Gate/Short-Circuit 실측 확인) -- Production Integration이 완료되었다.
