@@ -1,0 +1,65 @@
+Gate Refinement Sprint v1 -- Report
+Generated: 2026-07-29T00:05:50.746Z
+
+Population: n=142, repeats=10, PotentiallySolvable (Shadow, Gate-bypassed)=86
+
+1. Gate Funnel Comparison (RQ-1, Eligible/Generated -- repeat-independent, Mixed Commutator itself deterministic)
+  Gate A (Current Production (Baseline)): cycleCount===1 AND conflictCount===0 AND componentCount===1
+    eligibleCases=34, generatedCases=6
+  Gate B (Cycle relaxed): cycleCount>=1 AND conflictCount===0 AND componentCount===1
+    eligibleCases=53, generatedCases=13
+  Gate C (Conflict relaxed): cycleCount===1 AND componentCount===1
+    eligibleCases=41, generatedCases=12
+  Gate D (Cycle + Conflict relaxed): cycleCount>=1 AND componentCount===1
+    eligibleCases=61, generatedCases=20
+  Gate E (Maximum relaxation): cycleCount>=1
+    eligibleCases=108, generatedCases=40
+
+2. Capability Comparison (RQ-2, aggregated across 10 repeats x cases -- real chooseBestRecovery() winner)
+  Gate A: mixedChosenCount=60, improvedByMixedCount=60, uniqueCapabilityCases=6
+  Gate B: mixedChosenCount=130, improvedByMixedCount=130, uniqueCapabilityCases=11
+  Gate C: mixedChosenCount=120, improvedByMixedCount=120, uniqueCapabilityCases=12
+  Gate D: mixedChosenCount=200, improvedByMixedCount=200, uniqueCapabilityCases=18
+  Gate E: mixedChosenCount=395, improvedByMixedCount=395, uniqueCapabilityCases=34
+
+3. Runtime Comparison (RQ-4, Mixed's own generation wall-ms, only counted when eligible)
+  Gate A: n=34, mean=301.1ms, stddev=0.3ms, timeoutCount=6
+  Gate B: n=53, mean=301.2ms, stddev=0.4ms, timeoutCount=13
+  Gate C: n=41, mean=301.1ms, stddev=0.4ms, timeoutCount=12
+  Gate D: n=61, mean=301.2ms, stddev=0.4ms, timeoutCount=20
+  Gate E: n=108, mean=301.2ms, stddev=0.4ms, timeoutCount=40
+
+4. Regression Report (RQ-3, True Regression -- mean wrongWingAfter >0.5 worse than Gate A, per case across repeats)
+  Gate A: trueRegressionCount=0
+  Gate B: trueRegressionCount=1
+  Gate C: trueRegressionCount=0
+  Gate D: trueRegressionCount=1
+  Gate E: trueRegressionCount=1
+
+5. Recovery Ratio Report (Improved / PotentiallySolvable=86)
+  Gate A: improvedCaseRepeats=60, recoveryRatio=0.6977
+  Gate B: improvedCaseRepeats=130, recoveryRatio=1.5116
+  Gate C: improvedCaseRepeats=120, recoveryRatio=1.3953
+  Gate D: improvedCaseRepeats=200, recoveryRatio=2.3256
+  Gate E: improvedCaseRepeats=395, recoveryRatio=4.5930
+
+6. Gate Decision (Success Criteria, Section 7)
+  Gate A: conclusion=C_KEEP_CURRENT
+    improvedDelta=+0, regressionZero=true, runtimeAcceptable=true, recoveryRatioMeaningfullyIncreased=false
+    rationale: improvedDelta=+0 -- 증가가 거의 없거나 없음. 현재 Gate 유지.
+  Gate B: conclusion=B_NEEDS_REFINEMENT
+    improvedDelta=+70, regressionZero=false, runtimeAcceptable=true, recoveryRatioMeaningfullyIncreased=true
+    rationale: improvedDelta=+70(증가)이나 regressionZero=false, runtimeAcceptable=true -- 추가 Refinement 필요.
+  Gate C: conclusion=A_REPLACE_GATE
+    improvedDelta=+60, regressionZero=true, runtimeAcceptable=true, recoveryRatioMeaningfullyIncreased=true
+    rationale: improvedDelta=+60 (유의미), regression=0, timeoutRate=29.3% (허용범위), recoveryRatio 0.698->1.395 -- Gate 교체 권고 조건 모두 충족.
+  Gate D: conclusion=B_NEEDS_REFINEMENT
+    improvedDelta=+140, regressionZero=false, runtimeAcceptable=true, recoveryRatioMeaningfullyIncreased=true
+    rationale: improvedDelta=+140(증가)이나 regressionZero=false, runtimeAcceptable=true -- 추가 Refinement 필요.
+  Gate E: conclusion=B_NEEDS_REFINEMENT
+    improvedDelta=+335, regressionZero=false, runtimeAcceptable=true, recoveryRatioMeaningfullyIncreased=true
+    rationale: improvedDelta=+335(증가)이나 regressionZero=false, runtimeAcceptable=true -- 추가 Refinement 필요.
+
+7. Final Recommended Gate (Section 10)
+  Gate C (Conflict relaxed): cycleCount===1 AND componentCount===1
+  improvedDelta=+60 (유의미), regression=0, timeoutRate=29.3% (허용범위), recoveryRatio 0.698->1.395 -- Gate 교체 권고 조건 모두 충족.
