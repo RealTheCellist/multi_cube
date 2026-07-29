@@ -1,0 +1,56 @@
+CONFLICT_DEEP_DEPENDENCY Budget & Scheduling Validation Sprint v1 -- Report
+Generated: 2026-07-29T04:56:51.732Z
+Population: n=16 (dose-response), n=142 (regression check)
+
+1. Budget Allocation Matrix (Deliverable #1)
+  reservationMs=75:
+    BASELINE: improvedRate=0.0% (0/160), onlyExisting=0, onlyReserved=0, both=0, none=0, avgElapsedMs=0.0, budgetUtilization=0.0%, timeoutRate=0.0%
+    ARM_A_DISRUPT: improvedRate=0.0% (0/160), onlyExisting=0, onlyReserved=0, both=0, none=160, avgElapsedMs=140.1, budgetUtilization=186.9%, timeoutRate=100.0%
+    ARM_B_SETUP: improvedRate=0.6% (1/160), onlyExisting=0, onlyReserved=1, both=0, none=159, avgElapsedMs=165.7, budgetUtilization=220.9%, timeoutRate=99.4%
+    ARM_C_BOTH: improvedRate=0.6% (1/160), onlyExisting=0, onlyReserved=1, both=0, none=159, avgElapsedMs=152.9, budgetUtilization=203.9%, timeoutRate=100.0%
+  reservationMs=150:
+    BASELINE: improvedRate=0.6% (1/160), onlyExisting=0, onlyReserved=0, both=0, none=0, avgElapsedMs=0.0, budgetUtilization=0.0%, timeoutRate=0.0%
+    ARM_A_DISRUPT: improvedRate=0.6% (1/160), onlyExisting=0, onlyReserved=0, both=1, none=159, avgElapsedMs=206.1, budgetUtilization=137.4%, timeoutRate=100.0%
+    ARM_B_SETUP: improvedRate=3.1% (5/160), onlyExisting=0, onlyReserved=4, both=1, none=155, avgElapsedMs=219.5, budgetUtilization=146.3%, timeoutRate=98.8%
+    ARM_C_BOTH: improvedRate=3.1% (5/160), onlyExisting=0, onlyReserved=4, both=1, none=155, avgElapsedMs=212.8, budgetUtilization=141.9%, timeoutRate=100.0%
+  reservationMs=300:
+    BASELINE: improvedRate=0.6% (1/160), onlyExisting=0, onlyReserved=0, both=0, none=0, avgElapsedMs=0.0, budgetUtilization=0.0%, timeoutRate=0.0%
+    ARM_A_DISRUPT: improvedRate=0.6% (1/160), onlyExisting=0, onlyReserved=0, both=1, none=159, avgElapsedMs=365.3, budgetUtilization=121.8%, timeoutRate=100.0%
+    ARM_B_SETUP: improvedRate=8.1% (13/160), onlyExisting=0, onlyReserved=12, both=1, none=147, avgElapsedMs=388.3, budgetUtilization=129.4%, timeoutRate=96.9%
+    ARM_C_BOTH: improvedRate=8.1% (13/160), onlyExisting=0, onlyReserved=12, both=1, none=147, avgElapsedMs=376.8, budgetUtilization=125.6%, timeoutRate=100.0%
+  reservationMs=500:
+    BASELINE: improvedRate=0.0% (0/160), onlyExisting=0, onlyReserved=0, both=0, none=0, avgElapsedMs=0.0, budgetUtilization=0.0%, timeoutRate=0.0%
+    ARM_A_DISRUPT: improvedRate=0.0% (0/160), onlyExisting=0, onlyReserved=0, both=0, none=160, avgElapsedMs=583.5, budgetUtilization=116.7%, timeoutRate=100.0%
+    ARM_B_SETUP: improvedRate=11.9% (19/160), onlyExisting=0, onlyReserved=19, both=0, none=141, avgElapsedMs=557.5, budgetUtilization=111.5%, timeoutRate=93.1%
+    ARM_C_BOTH: improvedRate=11.9% (19/160), onlyExisting=0, onlyReserved=19, both=0, none=141, avgElapsedMs=570.5, budgetUtilization=114.1%, timeoutRate=100.0%
+
+2. Reserved Slice Dose-Response (RQ-4, Deliverable #2)
+  Best configuration: ARM_B_SETUP @ 500ms (improvedRate=11.9%, timeoutRate=93.1%)
+  Baseline @ same size: improvedRate=0.0%
+
+3. Runtime Report (RQ-1/RQ-2/RQ-3)
+  BASELINE@75ms: avgElapsedMs=0.0, budgetUtilization=0.0%, timeoutRate=0.0%
+  ARM_A_DISRUPT@75ms: avgElapsedMs=140.1, budgetUtilization=186.9%, timeoutRate=100.0%
+  ARM_B_SETUP@75ms: avgElapsedMs=165.7, budgetUtilization=220.9%, timeoutRate=99.4%
+  ARM_C_BOTH@75ms: avgElapsedMs=152.9, budgetUtilization=203.9%, timeoutRate=100.0%
+  BASELINE@150ms: avgElapsedMs=0.0, budgetUtilization=0.0%, timeoutRate=0.0%
+  ARM_A_DISRUPT@150ms: avgElapsedMs=206.1, budgetUtilization=137.4%, timeoutRate=100.0%
+  ARM_B_SETUP@150ms: avgElapsedMs=219.5, budgetUtilization=146.3%, timeoutRate=98.8%
+  ARM_C_BOTH@150ms: avgElapsedMs=212.8, budgetUtilization=141.9%, timeoutRate=100.0%
+  BASELINE@300ms: avgElapsedMs=0.0, budgetUtilization=0.0%, timeoutRate=0.0%
+  ARM_A_DISRUPT@300ms: avgElapsedMs=365.3, budgetUtilization=121.8%, timeoutRate=100.0%
+  ARM_B_SETUP@300ms: avgElapsedMs=388.3, budgetUtilization=129.4%, timeoutRate=96.9%
+  ARM_C_BOTH@300ms: avgElapsedMs=376.8, budgetUtilization=125.6%, timeoutRate=100.0%
+  BASELINE@500ms: avgElapsedMs=0.0, budgetUtilization=0.0%, timeoutRate=0.0%
+  ARM_A_DISRUPT@500ms: avgElapsedMs=583.5, budgetUtilization=116.7%, timeoutRate=100.0%
+  ARM_B_SETUP@500ms: avgElapsedMs=557.5, budgetUtilization=111.5%, timeoutRate=93.1%
+  ARM_C_BOTH@500ms: avgElapsedMs=570.5, budgetUtilization=114.1%, timeoutRate=100.0%
+
+4. Regression Report (RQ-5, Deliverable #4)
+  bestConfig=ARM_B_SETUP@500ms tested against n=142 cases
+  casesWithSinglePassFlip=1, trueRegressionCount=0, falseRegressionCount=1
+
+5. Production Recommendation (Deliverable #5)
+  conclusion=A_INTEGRATION_RECOMMENDED
+  conclusionLabel=Conclusion A -- Reserved Slice 방식이 명확히 우월하고 안전함. Production Integration 진행 권고.
+  rationale: bestConfig=ARM_B_SETUP@500ms, improvedRate 0.0% -> 11.9% (delta=+11.9pp, onlyReserved=19), trueRegressionCount=0, reservationMs=500ms (<=500ms) -- 모든 Success Criteria A 조건 충족.
