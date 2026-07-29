@@ -296,24 +296,37 @@ export function generateRecoveryStrategies(
   // (repair_after) -- always generated LAST, regardless of
   // schedulingStrategy (the REPAIR A/B scheduling question is unrelated
   // to this candidate's own placement, same reasoning as genCCR's own
-  // comment). Gate (Production Integration Blueprint Sprint v1's own
-  // measured recommendation): cycleCount===1 AND conflictEdgeCount===0
-  // AND componentCount===1, checked via the SAME buildStateGraph/
-  // analyzeConstraints already used throughout this codebase's research
-  // arc -- no new structural analysis. Budget: MIXED_COMMUTATOR_RESERVED_SLICE_MS
-  // reserved slice off the OUTER deadline, exactly like REPAIR's own
-  // reservedBudget mechanism -- never the shared genDeadline.
+  // comment). Budget: MIXED_COMMUTATOR_RESERVED_SLICE_MS reserved slice
+  // off the OUTER deadline, exactly like REPAIR's own reservedBudget
+  // mechanism -- never the shared genDeadline.
+  //
+  // Gate (Gate Refinement Sprint v1's own measured recommendation,
+  // Gate Production Integration Sprint v1): cycleCount===1 AND
+  // componentCount===1 -- the original conflictEdgeCount===0 condition
+  // (Production Integration Blueprint Sprint v1) is REMOVED here.
+  // Gate Refinement Sprint v1 measured all 5 candidate relaxations
+  // (A=this original Gate, B=cycle relaxed, C=conflict removed,
+  // D=cycle+conflict relaxed, E=cycleCount>=1 only) via a real
+  // chooseBestRecovery() selection simulation against real DISRUPT/SETUP/
+  // REPAIR/CCR candidates: relaxing cycleCount (B/D/E) each introduced a
+  // real regression, but removing ONLY conflictEdgeCount===0 (Gate C) did
+  // not (0 regressions across 142 cases x N=10 repeats), while increasing
+  // Improved case-repeats from 60 to 120 and Recovery Ratio from 0.698 to
+  // 1.395 -- the only candidate that satisfied every Success Criteria A
+  // condition. Checked via the SAME buildStateGraph/analyzeConstraints
+  // already used throughout this codebase's research arc -- no new
+  // structural analysis.
   const genMixedCommutator = () => {
     if (!includeMixedCommutator) return;
     onEvent?.({ candidateType: "MIXED_COMMUTATOR", phase: "start", atMs: Date.now() });
     const stats = analyzeConstraints(buildStateGraph(cubies));
-    if (stats.cycleCount !== 1 || stats.conflictCount !== 0 || stats.componentCount !== 1) {
+    if (stats.cycleCount !== 1 || stats.componentCount !== 1) {
       onEvent?.({ candidateType: "MIXED_COMMUTATOR", phase: "skipped", atMs: Date.now() });
       return;
     }
     const d = Math.min(deadline, Date.now() + MIXED_COMMUTATOR_RESERVED_SLICE_MS);
     const moves = tryMixedCommutatorPrototype(cubies, lib, d);
-    const added = add("MIXED_COMMUTATOR", "Mixed Pattern Bracket Commutator (cycleCount=1 AND conflictEdgeCount=0 AND componentCount=1 Gate, reserved-slice scheduling)", moves);
+    const added = add("MIXED_COMMUTATOR", "Mixed Pattern Bracket Commutator (cycleCount=1 AND componentCount=1 Gate, reserved-slice scheduling)", moves);
     onEvent?.({ candidateType: "MIXED_COMMUTATOR", phase: added ? "generated" : "empty", atMs: Date.now() });
   };
 

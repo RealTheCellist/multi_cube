@@ -94,9 +94,10 @@ export interface SolveStrategy {
 // (see solverPrimitiveCCRPrototype/CCRGate.ts).
 // "MIXED_COMMUTATOR" (Mixed Commutator Production Integration Sprint v1)
 // added alongside DISRUPT/SETUP/REPAIR/CCR -- Gate: cycleCount===1 AND
-// conflictEdgeCount===0 AND componentCount===1 (Production Integration
-// Blueprint Sprint v1's own measured recommendation; see
-// mixedCommutatorPrototype/MixedCommutatorPrototype.ts).
+// componentCount===1 (conflictEdgeCount===0 originally required by
+// Production Integration Blueprint Sprint v1, REMOVED by Gate Production
+// Integration Sprint v1 per Gate Refinement Sprint v1's own measured
+// recommendation -- see mixedCommutatorPrototype/MixedCommutatorPrototype.ts).
 export type RecoveryType = "DISRUPT" | "SETUP" | "REPAIR" | "CCR" | "MIXED_COMMUTATOR";
 
 export interface RecoveryStrategy {

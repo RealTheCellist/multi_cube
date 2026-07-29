@@ -1,0 +1,3675 @@
+{
+  "contract": {
+    "n": 7,
+    "nonEmptyMovesCount": 7,
+    "negativeWrongWingDeltaCount": 7,
+    "throwCount": 0,
+    "fullyCompliant": true,
+    "rationale": "7건의 MIXED_COMMUTATOR 후보 전원이 non-empty moves, expectedWrongWingDelta<0, 예외 발생 0건 -- Gate 변경 후에도 Primitive 계약 완전 유지."
+  },
+  "compatibility": {
+    "n": 142,
+    "gateGeneratedCount": 7,
+    "gateSkippedCount": 101,
+    "gateEmptyCount": 34,
+    "mixedChosenCount": 6,
+    "outcomeChangedCount": 11,
+    "regressionCount": 0
+  },
+  "runtime": {
+    "n": 142,
+    "mean": 46.40845070422535,
+    "stddev": 107.94187790701669,
+    "coefficientOfVariation": 2.3259099640055187,
+    "ci95Half": 17.754231096944707,
+    "ciLower": 28.654219607280645,
+    "ciUpper": 64.16268180117007
+  },
+  "rechecks": [],
+  "trueRegressionCount": 0,
+  "assessment": {
+    "decision": "A_INTEGRATION_COMPLETE",
+    "decisionLabel": "Conclusion A -- Production Gate 교체 완료. Integration 완료.",
+    "buildSucceeded": true,
+    "contractCompliant": true,
+    "noRegression": true,
+    "runtimeNormal": true,
+    "gateActivated": true,
+    "rationale": "Build 성공, Primitive 계약 100% 유지, Regression 0건, Runtime 정상(mean=46.4ms), Gate C 실제 활성화 확인(generated=7) -- Gate Production Integration이 완료되었다."
+  },
+  "rows": [
+    {
+      "label": "worstCase:45959141",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 9,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:46086463",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 9,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:64369533",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 10,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "worstCase:68977335",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:84976575",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 2
+    },
+    {
+      "label": "worstCase:f17d7eb9",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 9,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "worstCase:70a5020b",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 11,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:7541612b",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "worstCase:b714481",
+      "populationTag": "REGRESSION",
+      "gatePhase": "empty",
+      "withMixedBestType": "CCR",
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": true,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": 4,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:beb967ad",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 11,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:1e928fb1",
+      "populationTag": "REGRESSION",
+      "gatePhase": "empty",
+      "withMixedBestType": "CCR",
+      "withoutMixedBestType": "CCR",
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": 4,
+      "wrongWingAfterWithoutMixed": 4,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:4549b041",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 4,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 302
+    },
+    {
+      "label": "worstCase:1513fcff",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 9,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:d37ca819",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:ae3d218b",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "worstCase:120fc3af",
+      "populationTag": "REGRESSION",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 5,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 302
+    },
+    {
+      "label": "worstCase:dd4d94fd",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 12,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "worstCase:36336c1",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 4,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 301
+    },
+    {
+      "label": "worstCase:ad12c377",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:e7a801fb",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": "CCR",
+      "withoutMixedBestType": "CCR",
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 10,
+      "wrongWingAfterWithMixed": 8,
+      "wrongWingAfterWithoutMixed": 8,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:1af658ab",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 4,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 302
+    },
+    {
+      "label": "worstCase:4e27e5a1",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "worstCase:93b485f7",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 9,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:5e5b20b",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:e5101f85",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": "CCR",
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": true,
+      "wrongWingBefore": 9,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": 8,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:4749cd9d",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 9,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:d27df773",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 9,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:c039e611",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": "SETUP",
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": true,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": 3,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "worstCase:b2c9ceb9",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 12,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "worstCase:589b0a25",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 301
+    },
+    {
+      "label": "worstCase:cee673eb",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 9,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:e9009e73",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": "CCR",
+      "withoutMixedBestType": "CCR",
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 13,
+      "wrongWingAfterWithMixed": 12,
+      "wrongWingAfterWithoutMixed": 12,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:e8be823",
+      "populationTag": "REGRESSION",
+      "gatePhase": "generated",
+      "withMixedBestType": "DISRUPT",
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": true,
+      "wrongWingBefore": 11,
+      "wrongWingAfterWithMixed": 10,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": {
+        "id": 11,
+        "type": "MIXED_COMMUTATOR",
+        "description": "Mixed Pattern Bracket Commutator (cycleCount=1 AND componentCount=1 Gate, reserved-slice scheduling)",
+        "moves": [
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ]
+        ],
+        "expectedWrongWingDelta": -1,
+        "expectedFuturePotential": -557.5,
+        "score": -645.5
+      },
+      "mixedOwnMs": 304
+    },
+    {
+      "label": "worstCase:14f5293f",
+      "populationTag": "REGRESSION",
+      "gatePhase": "generated",
+      "withMixedBestType": "MIXED_COMMUTATOR",
+      "withoutMixedBestType": null,
+      "mixedWasChosen": true,
+      "outcomeChangedByMixed": true,
+      "wrongWingBefore": 15,
+      "wrongWingAfterWithMixed": 14,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": {
+        "id": 12,
+        "type": "MIXED_COMMUTATOR",
+        "description": "Mixed Pattern Bracket Commutator (cycleCount=1 AND componentCount=1 Gate, reserved-slice scheduling)",
+        "moves": [
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ]
+        ],
+        "expectedWrongWingDelta": -1,
+        "expectedFuturePotential": -557.5,
+        "score": -637.5
+      },
+      "mixedOwnMs": 303
+    },
+    {
+      "label": "worstCase:f776edb1",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 5,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "worstCase:2db21feb",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 9,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "worstCase:849509c9",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "worstCase:c0277d5d",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 12,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "worstCase:f5f1b8fd",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 10,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 2
+    },
+    {
+      "label": "worstCase:a005d41f",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:224f6f8b",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "worstCase:252f8891",
+      "populationTag": "REGRESSION",
+      "gatePhase": "generated",
+      "withMixedBestType": "MIXED_COMMUTATOR",
+      "withoutMixedBestType": null,
+      "mixedWasChosen": true,
+      "outcomeChangedByMixed": true,
+      "wrongWingBefore": 11,
+      "wrongWingAfterWithMixed": 10,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": {
+        "id": 13,
+        "type": "MIXED_COMMUTATOR",
+        "description": "Mixed Pattern Bracket Commutator (cycleCount=1 AND componentCount=1 Gate, reserved-slice scheduling)",
+        "moves": [
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "z",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            1,
+            -1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "z",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            1,
+            -1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ]
+        ],
+        "expectedWrongWingDelta": -1,
+        "expectedFuturePotential": -557.5,
+        "score": -645.5
+      },
+      "mixedOwnMs": 302
+    },
+    {
+      "label": "worstCase:5f7ee009",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:d3283799",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 10,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:710de4d1",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:5d189c1",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 9,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "worstCase:669f43ff",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 12,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "worstCase:42c89b9",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": "CCR",
+      "withoutMixedBestType": "CCR",
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 12,
+      "wrongWingAfterWithMixed": 11,
+      "wrongWingAfterWithoutMixed": 11,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 3
+    },
+    {
+      "label": "worstCase:3cece8ff",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 9,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "worstCase:44b9b619",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "snapshot335:12022029",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 10,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "snapshot335:27053491",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "snapshot335:45959141",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "snapshot335:46086463",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 9,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "snapshot335:64369533",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 10,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "snapshot335:68977335",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "snapshot335:84976575",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "snapshot335:f17d7eb9",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "snapshot335:a061555d",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "snapshot335:dda1453f",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 5,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "snapshot335:e7a801fb",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "snapshot335:1af658ab",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 4,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 301
+    },
+    {
+      "label": "snapshot335:70a5020b",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "snapshot335:56a8b82d",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 3,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 301
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 9,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "snapshot335:7541612b",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 11,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "snapshot335:b714481",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "snapshot335:beb967ad",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 11,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "snapshot335:1e928fb1",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 10,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "snapshot335:4549b041",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 302
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 4,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 301
+    },
+    {
+      "label": "snapshot335:4e27e5a1",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "snapshot335:d37ca819",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "snapshot335:93b485f7",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": "DISRUPT",
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": true,
+      "wrongWingBefore": 9,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": 7,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 3
+    },
+    {
+      "label": "snapshot335:5e5b20b",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 9,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "snapshot335:120fc3af",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 5,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "snapshot335:dd4d94fd",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 12,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "snapshot335:36336c1",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 2
+    },
+    {
+      "label": "snapshot335:ad12c377",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 9,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "scrambleDepth10:0",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 5,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth10:1",
+      "populationTag": "REGRESSION",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 10,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 302
+    },
+    {
+      "label": "scrambleDepth10:2",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 3,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 301
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 4,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 301
+    },
+    {
+      "label": "scrambleDepth10:4",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 5,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth10:5",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth10:6",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth10:8",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": "CCR",
+      "withoutMixedBestType": "CCR",
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 10,
+      "wrongWingAfterWithMixed": 9,
+      "wrongWingAfterWithoutMixed": 9,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "scrambleDepth10:9",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth20:0",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 5,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "scrambleDepth20:1",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 9,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth20:2",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth20:3",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth20:4",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth20:5",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "scrambleDepth20:6",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 5,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth20:7",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "scrambleDepth20:9",
+      "populationTag": "REGRESSION",
+      "gatePhase": "generated",
+      "withMixedBestType": "MIXED_COMMUTATOR",
+      "withoutMixedBestType": null,
+      "mixedWasChosen": true,
+      "outcomeChangedByMixed": true,
+      "wrongWingBefore": 12,
+      "wrongWingAfterWithMixed": 11,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": {
+        "id": 19,
+        "type": "MIXED_COMMUTATOR",
+        "description": "Mixed Pattern Bracket Commutator (cycleCount=1 AND componentCount=1 Gate, reserved-slice scheduling)",
+        "moves": [
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            -2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            -2,
+            -1
+          ]
+        ],
+        "expectedWrongWingDelta": -1,
+        "expectedFuturePotential": -557.5,
+        "score": -637.5
+      },
+      "mixedOwnMs": 302
+    },
+    {
+      "label": "scrambleDepth30:0",
+      "populationTag": "REGRESSION",
+      "gatePhase": "generated",
+      "withMixedBestType": "MIXED_COMMUTATOR",
+      "withoutMixedBestType": null,
+      "mixedWasChosen": true,
+      "outcomeChangedByMixed": true,
+      "wrongWingBefore": 12,
+      "wrongWingAfterWithMixed": 10,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": {
+        "id": 20,
+        "type": "MIXED_COMMUTATOR",
+        "description": "Mixed Pattern Bracket Commutator (cycleCount=1 AND componentCount=1 Gate, reserved-slice scheduling)",
+        "moves": [
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "x",
+            -2,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            -1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            -1,
+            1
+          ],
+          [
+            "x",
+            -2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ]
+        ],
+        "expectedWrongWingDelta": -2,
+        "expectedFuturePotential": -1115,
+        "score": -1195
+      },
+      "mixedOwnMs": 303
+    },
+    {
+      "label": "scrambleDepth30:1",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 11,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth30:2",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 11,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "scrambleDepth30:3",
+      "populationTag": "REGRESSION",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 301
+    },
+    {
+      "label": "scrambleDepth30:4",
+      "populationTag": "PRIMARY",
+      "gatePhase": "generated",
+      "withMixedBestType": "MIXED_COMMUTATOR",
+      "withoutMixedBestType": null,
+      "mixedWasChosen": true,
+      "outcomeChangedByMixed": true,
+      "wrongWingBefore": 5,
+      "wrongWingAfterWithMixed": 3,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": {
+        "id": 21,
+        "type": "MIXED_COMMUTATOR",
+        "description": "Mixed Pattern Bracket Commutator (cycleCount=1 AND componentCount=1 Gate, reserved-slice scheduling)",
+        "moves": [
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "z",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            1,
+            -1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "z",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            1,
+            -1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ]
+        ],
+        "expectedWrongWingDelta": -2,
+        "expectedFuturePotential": -1115,
+        "score": -1203
+      },
+      "mixedOwnMs": 189
+    },
+    {
+      "label": "scrambleDepth30:5",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "scrambleDepth30:6",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 11,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "scrambleDepth30:7",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "scrambleDepth30:8",
+      "populationTag": "REGRESSION",
+      "gatePhase": "generated",
+      "withMixedBestType": "MIXED_COMMUTATOR",
+      "withoutMixedBestType": null,
+      "mixedWasChosen": true,
+      "outcomeChangedByMixed": true,
+      "wrongWingBefore": 10,
+      "wrongWingAfterWithMixed": 9,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": {
+        "id": 22,
+        "type": "MIXED_COMMUTATOR",
+        "description": "Mixed Pattern Bracket Commutator (cycleCount=1 AND componentCount=1 Gate, reserved-slice scheduling)",
+        "moves": [
+          [
+            "z",
+            -2,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "z",
+            -2,
+            1
+          ],
+          [
+            "y",
+            1,
+            1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "y",
+            1,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "z",
+            -2,
+            -1
+          ],
+          [
+            "z",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            -1
+          ],
+          [
+            "y",
+            2,
+            -1
+          ],
+          [
+            "x",
+            2,
+            1
+          ],
+          [
+            "z",
+            2,
+            1
+          ]
+        ],
+        "expectedWrongWingDelta": -1,
+        "expectedFuturePotential": 240,
+        "score": 168
+      },
+      "mixedOwnMs": 303
+    },
+    {
+      "label": "scrambleDepth30:9",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "scrambleDepth40:0",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 301
+    },
+    {
+      "label": "scrambleDepth40:1",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "scrambleDepth40:2",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 10,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "scrambleDepth40:3",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 9,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth40:4",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 9,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth40:5",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth40:6",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 10,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "scrambleDepth40:8",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth40:9",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth50:0",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth50:1",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "scrambleDepth50:2",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": "CCR",
+      "withoutMixedBestType": "CCR",
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": 7,
+      "wrongWingAfterWithoutMixed": 7,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth50:3",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth50:4",
+      "populationTag": "REGRESSION",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "scrambleDepth50:5",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth50:6",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth50:7",
+      "populationTag": "REGRESSION",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 6,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "scrambleDepth50:8",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": "CCR",
+      "withoutMixedBestType": "CCR",
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 12,
+      "wrongWingAfterWithMixed": 11,
+      "wrongWingAfterWithoutMixed": 11,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth50:9",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth100:0",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "scrambleDepth100:1",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 10,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "scrambleDepth100:2",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 5,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "scrambleDepth100:3",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 10,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth100:4",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "populationTag": "SECONDARY_ONLY",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 10,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth100:6",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 8,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    },
+    {
+      "label": "scrambleDepth100:7",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 7,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 0
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "populationTag": "PRIMARY",
+      "gatePhase": "empty",
+      "withMixedBestType": null,
+      "withoutMixedBestType": null,
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 5,
+      "wrongWingAfterWithMixed": null,
+      "wrongWingAfterWithoutMixed": null,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 302
+    },
+    {
+      "label": "scrambleDepth100:9",
+      "populationTag": "REGRESSION",
+      "gatePhase": "skipped",
+      "withMixedBestType": "CCR",
+      "withoutMixedBestType": "CCR",
+      "mixedWasChosen": false,
+      "outcomeChangedByMixed": false,
+      "wrongWingBefore": 12,
+      "wrongWingAfterWithMixed": 11,
+      "wrongWingAfterWithoutMixed": 11,
+      "threw": false,
+      "mixedCandidate": null,
+      "mixedOwnMs": 1
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+Gate Production Integration Sprint v1 -- Report
+Generated: 2026-07-29T00:27:07.107Z
+
+1. Production Diff Summary
+  Files modified: fiveByFiveEdgeRecovery.ts (Gate condition), fiveByFiveEdgeSolverTypes.ts (comment only)
+  Change: genMixedCommutator's Gate -- removed conflictCount===0, kept cycleCount===1 AND componentCount===1 (Gate C, Gate Refinement Sprint v1's recommendation)
+
+2. RQ-1: Production Build
+  buildSucceeded=true (npx vite build; see docs for captured output)
+
+3. RQ-2: Primitive Contract Verification
+  n=7, nonEmptyMovesCount=7, negativeWrongWingDeltaCount=7, throwCount=0
+  fullyCompliant=true
+  7건의 MIXED_COMMUTATOR 후보 전원이 non-empty moves, expectedWrongWingDelta<0, 예외 발생 0건 -- Gate 변경 후에도 Primitive 계약 완전 유지.
+
+4. RQ-3: Recovery Flow (Gate C activation, real production code, n=142)
+  Gate: generated=7, empty=34, skipped=101
+  mixedChosenCount=6, outcomeChangedCount=11
+
+5. RQ-4: Regression Report
+  single-pass regressionCount=0 (outcome changed AND wrongWingAfterWithMixed >= wrongWingAfterWithoutMixed)
+  True/False Regression recheck (N=10 repeats per flagged case, >0.5 mean-gap threshold, matching this arc's own established methodology):
+    no cases flagged by the single pass -- nothing to recheck.
+  trueRegressionCount=0, falseRegressionCount=0
+
+6. RQ-5: Runtime Report (generateRecoveryStrategies() wall-ms, real production code)
+  n=142, mean=46.4ms, stddev=107.9ms, 95% CI=[28.7, 64.2]
+
+7. Integration Assessment
+  decision=A_INTEGRATION_COMPLETE
+  decisionLabel=Conclusion A -- Production Gate 교체 완료. Integration 완료.
+  buildSucceeded=true, contractCompliant=true, noRegression=true, runtimeNormal=true, gateActivated=true
+  rationale: Build 성공, Primitive 계약 100% 유지, Regression 0건, Runtime 정상(mean=46.4ms), Gate C 실제 활성화 확인(generated=7) -- Gate Production Integration이 완료되었다.
