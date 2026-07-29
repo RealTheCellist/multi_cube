@@ -256,16 +256,29 @@ export function generateRecoveryStrategies(
 
   const genSetup = () => {
     if (schedulingStrategy === "reservedBudget" && useSetupReservedSlice) {
-      // CONFLICT_DEEP_DEPENDENCY Reserved Slice Production Integration
-      // Sprint v1: SETUP's slot is protected exactly like genRepair()'s own
-      // reservedBudget branch -- always attempted (never gated by
-      // `Date.now() < genDeadline`), using a fresh SETUP_RESERVED_SLICE_MS
-      // window measured off the OUTER `deadline` rather than the (possibly
-      // already-exhausted) shared genDeadline. Order is otherwise
-      // unchanged (still runs third, before REPAIR).
+      // CONFLICT_DEEP_DEPENDENCY Scheduler Prototype Sprint v1 (Option A --
+      // "SETUP Last-Resort"): Architecture Revision Sprint v1's Counterfactual
+      // Replay found that 6/11 True Regression cases resolved when SETUP (or
+      // its Reserved Slice) was removed -- SETUP was winning chooseBestRecovery()
+      // away from CCR/MIXED_COMMUTATOR often enough to net-reduce Recovery-level
+      // improvedRate (10.7%->5.1%, Reserved Slice Production Integration Sprint
+      // v1). This block now only runs genSetup() AT ALL (order moved to LAST,
+      // see the `order` array below) and only ATTEMPTS the search if every
+      // earlier candidate type (DISRUPT/REPAIR/CCR/MIXED_COMMUTATOR) produced
+      // nothing -- `candidates.length === 0` at this point in the sequence.
+      // SETUP no longer competes in the ordinary chooseBestRecovery() argmax
+      // when any other real candidate exists; it is tried only as a genuine
+      // last resort. chooseBestRecovery() itself is NOT modified (0 lines) --
+      // this is purely a Scheduler Ordering + generation-gating change, per
+      // this Sprint's own Directive scope. Still uses the same
+      // SETUP_RESERVED_SLICE_MS window off the OUTER deadline as before.
+      if (candidates.length > 0) {
+        onEvent?.({ candidateType: "SETUP", phase: "skipped", atMs: Date.now() });
+        return;
+      }
       onEvent?.({ candidateType: "SETUP", phase: "start", atMs: Date.now() });
       const d = Math.min(deadline, Date.now() + SETUP_RESERVED_SLICE_MS);
-      const added = add("SETUP", "Multi-ply Setup (즉시 이득 없는 수 + 후속 수습, reservedBudget scheduling)", tryEndgameMultiPly(cubies, lib, flipLib, d));
+      const added = add("SETUP", "Multi-ply Setup (즉시 이득 없는 수 + 후속 수습, reservedBudget scheduling, last-resort)", tryEndgameMultiPly(cubies, lib, flipLib, d));
       onEvent?.({ candidateType: "SETUP", phase: added ? "generated" : "empty", atMs: Date.now() });
       return;
     }
@@ -371,18 +384,32 @@ export function generateRecoveryStrategies(
     onEvent?.({ candidateType: "MIXED_COMMUTATOR", phase: added ? "generated" : "empty", atMs: Date.now() });
   };
 
-  // baseline/reservedBudget keep the ORIGINAL DISRUPT,DISRUPT,SETUP,REPAIR
-  // order (reservedBudget's only change is REPAIR's own gating rule inside
-  // genRepair(), not ordering); priorityGate (Strategy A) tries REPAIR
-  // FIRST, using the exact same shared-genDeadline mechanism as baseline,
-  // simply given first crack at it before DISRUPT/SETUP can consume it.
-  // CCR and MIXED_COMMUTATOR are always appended last (in that order) in
-  // both variants (both Integration Points are independent of the REPAIR
-  // scheduling A/B question).
+  // baseline keeps the ORIGINAL DISRUPT,DISRUPT,SETUP,REPAIR order;
+  // priorityGate (Strategy A) tries REPAIR FIRST, using the exact same
+  // shared-genDeadline mechanism as baseline, simply given first crack at
+  // it before DISRUPT/SETUP can consume it. CCR and MIXED_COMMUTATOR are
+  // always appended last (in that order) in both variants (both
+  // Integration Points are independent of the REPAIR scheduling A/B
+  // question).
+  //
+  // reservedBudget + useSetupReservedSlice=true (today's real production):
+  // Scheduler Prototype Sprint v1's Option A moves genSetup() to the very
+  // end of the order -- its own genSetup() body (above) now checks
+  // `candidates.length === 0` before attempting anything, so this ordering
+  // change is what makes "last resort" actually mean something: by the
+  // time genSetup() runs, DISRUPT/REPAIR/CCR/MIXED_COMMUTATOR have already
+  // had their turn, so `candidates` truthfully reflects whether any of them
+  // found something. Every other schedulingStrategy/useSetupReservedSlice
+  // combination (baseline, priorityGate, or reservedBudget with
+  // useSetupReservedSlice=false) keeps the pre-existing order untouched --
+  // this Sprint's only allowed change is Scheduler Ordering for the one
+  // branch under test.
   const order =
     schedulingStrategy === "priorityGate"
       ? [genRepair, genDisrupt1, genDisrupt2, genSetup, genCCR, genMixedCommutator]
-      : [genDisrupt1, genDisrupt2, genSetup, genRepair, genCCR, genMixedCommutator];
+      : schedulingStrategy === "reservedBudget" && useSetupReservedSlice
+        ? [genDisrupt1, genDisrupt2, genRepair, genCCR, genMixedCommutator, genSetup]
+        : [genDisrupt1, genDisrupt2, genSetup, genRepair, genCCR, genMixedCommutator];
   for (const step of order) step();
 
   return candidates;
