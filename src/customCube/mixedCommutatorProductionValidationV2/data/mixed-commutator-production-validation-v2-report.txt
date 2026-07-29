@@ -1,0 +1,31 @@
+Mixed Commutator Production Validation Sprint v2 -- Report
+Generated: 2026-07-29T01:30:18.189Z
+
+Population: n=142, n(PRIMARY)=28, repeats=10
+Baseline = Gate A (shadow-reconstructed, pre-integration); Integrated = Gate C (REAL current production)
+
+1. RQ-1: Improved Rate (paired-diff across N repeats, Integrated(GateC) - Baseline(GateA))
+  ALL population: meanDiff=6.000, stddev=0.000, 95% CI=[6.000, 6.000], cohensD=0.000 (negligible)
+  PRIMARY population: meanDiff=0.000, stddev=0.000, 95% CI=[0.000, 0.000], cohensD=0.000 (negligible)
+  wrongWingCount mean gap (Integrated-Baseline, ALL): -0.0493 (95% CI=[-0.0493, -0.0493])
+
+2. RQ-2/Primitive Contribution (case-repeats out of 1420, Gate C / Integrated arm)
+  DISRUPT: solved=6, unique=6, shared=0
+  SETUP: solved=6, unique=5, shared=1
+  REPAIR: solved=0, unique=0, shared=0
+  CCR: solved=72, unique=62, shared=10
+  MIXED_COMMUTATOR: solved=120, unique=109, shared=11
+  Capability Delta: n=142, ONLY_EXISTING=16, ONLY_MIXED=10, BOTH=2, NONE=114
+
+3. RQ-3: Regression (True vs False, N=10 repeats per case)
+  n(cases)=142, casesWithSinglePassFlip=0, trueRegressionCount=0, falseRegressionCount=0
+
+4. RQ-4: Runtime
+  Real end-to-end solve() (current production == Gate C, n=142): meanMs=1039.8, p95Ms=1176.0, maxMs=1346.0, timeoutRate=37.3% (pre-existing "worstCase"-snapshot characteristic, informational)
+  MIXED_COMMUTATOR's own isolated generation cost: mean=229.1ms, stddev=128.8ms (budget=300ms)
+
+5. RQ-5 / Release Assessment (Deliverable)
+  decision=A_RELEASE_APPROVED
+  decisionLabel=Conclusion A -- Mixed Commutator Gate C를 포함한 현재 Production을 Release 승인.
+  improvedRateIncreased=true, ciSupportsImprovement=true, noTrueRegression=true, runtimeAcceptable=true
+  rationale: Improved Rate meanDiff=6.000, 95% CI=[6.000, 6.000]가 개선 방향을 지지, Regression 0, Runtime 정상(solve() p95=1176.0ms) -- Release Criteria A 충족.
