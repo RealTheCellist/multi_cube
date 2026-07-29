@@ -1,0 +1,74 @@
+CONFLICT_DEEP_DEPENDENCY Scheduler Prototype Sprint v1 -- Report
+Generated: 2026-07-29T12:40:04.693Z
+Population: Production Replay n=142x15; Counterfactual n=11x10; Competition n=142x10; Invocation n=142x10; E2E n=142x5
+
+1. Scheduler Ordering Diagram (Deliverable #1)
+  Before (Reserved Slice Production Integration Sprint v1): DISRUPT, DISRUPT, SETUP(reserved 500ms, competes equally), REPAIR, CCR, MIXED_COMMUTATOR
+  After (this Sprint, Option A): DISRUPT, DISRUPT, REPAIR, CCR, MIXED_COMMUTATOR, SETUP(reserved 500ms, LAST-RESORT -- only attempted if candidates.length===0)
+
+2. Competition Matrix (Deliverable #2)
+  Before (Architecture Revision Sprint v1): SETUP win rate=12.5% (177/1420)
+  After (this Sprint): SETUP win rate=3.9% (56/1420), avg score gap=0.0
+
+3. Invocation Summary (Deliverable #3)
+  SETUP skipped (last-resort, another candidate already existed)=7.6% (108/1420)
+  SETUP actually invoked (search ran)=92.4% (generated=76, empty=1236)
+
+4. Regression Analysis (Deliverable #4)
+  n=142, casesWithSinglePassFlip=6, trueRegressionCount=0, falseRegressionCount=6
+    worstCase:e5101f85: FALSE_REGRESSION (meanGap=0.13, singlePassFlip=5)
+    worstCase:14f5293f: FALSE_REGRESSION (meanGap=-0.07, singlePassFlip=1)
+    worstCase:42c89b9: FALSE_REGRESSION (meanGap=-0.13, singlePassFlip=1)
+    scrambleDepth10:0: FALSE_REGRESSION (meanGap=0.13, singlePassFlip=2)
+    scrambleDepth10:8: FALSE_REGRESSION (meanGap=-0.20, singlePassFlip=1)
+    scrambleDepth50:2: FALSE_REGRESSION (meanGap=-0.20, singlePassFlip=1)
+  Root cause of remaining flips: 6 case(s), SETUP-involved=0, other(CCR/MIXED/Scheduler timing)=6
+
+5. Counterfactual Replay -- 11 original True Regression cases, re-run under NEW scheduler (Deliverable #5)
+  worstCase:e7a801fb (n=10): FULL(new scheduler) succeededRate=100.0%, regressedRate=0.0%
+  worstCase:e5101f85 (n=10): FULL(new scheduler) succeededRate=60.0%, regressedRate=0.0%
+  worstCase:e9009e73 (n=10): FULL(new scheduler) succeededRate=10.0%, regressedRate=0.0%
+  worstCase:e8be823 (n=10): FULL(new scheduler) succeededRate=30.0%, regressedRate=0.0%
+  worstCase:42c89b9 (n=10): FULL(new scheduler) succeededRate=90.0%, regressedRate=0.0%
+  scrambleDepth10:8 (n=10): FULL(new scheduler) succeededRate=70.0%, regressedRate=0.0%
+  scrambleDepth30:0 (n=10): FULL(new scheduler) succeededRate=100.0%, regressedRate=0.0%
+  scrambleDepth30:4 (n=10): FULL(new scheduler) succeededRate=0.0%, regressedRate=0.0%
+  scrambleDepth50:2 (n=10): FULL(new scheduler) succeededRate=90.0%, regressedRate=0.0%
+  scrambleDepth50:8 (n=10): FULL(new scheduler) succeededRate=100.0%, regressedRate=0.0%
+  scrambleDepth100:9 (n=10): FULL(new scheduler) succeededRate=30.0%, regressedRate=0.0%
+
+6. Statistical Validation (Deliverable #6)
+  Improved count diff (Candidate-Baseline, per repeat, n=15): mean=1.93, 95% CI=[1.16, 2.71], Cohen's d_z=1.26 (large)
+  Regressed count diff (Candidate-Baseline, per repeat): mean=0.00, 95% CI=[0.00, 0.00], Cohen's d_z=0.00 (negligible)
+  Runtime diff ms (Candidate-Baseline, per repeat avg): mean=281.3, 95% CI=[271.4, 291.2]
+
+7. Runtime 영향 (Deliverable #7)
+  Recovery-level avg time diff: 281.3ms (Candidate - Baseline)
+  E2E real solve() runtime: avg=1063.7ms, p95=1286ms, max=1599ms
+  SETUP invocation savings: 7.6% of rounds never pay SETUP's up-to-500ms search cost at all (see section 3).
+
+8. E2E Capability (real solve(), same methodology as Reserved Slice Production Integration Sprint v1)
+  Improved=0.6%, Solved=0.0%, SETUP chosen=2 (succeeded 0), RecoveryTriggered=356, RecoverySucceeded=3
+
+9. Scheduler Decision Matrix (Deliverable #8)
+  [Level 1][PASS] Option A (SETUP Last-Resort) 정상 동작
+    fiveByFiveEdgeRecovery.ts의 order 배열이 reservedBudget+useSetupReservedSlice=true일 때 SETUP을 마지막으로 이동시켰고, genSetup()은 candidates.length>0이면 스킵됨을 스모크 테스트로 확인. chooseBestRecovery()는 0줄 수정. 실측 Invocation: SETUP 스킵률=7.6% (108/1420), 실제 탐색 호출률=92.4%.
+  [Level 2][PASS] True Regression 감소
+    True Regression: 11건(Reserved Slice Production Integration Sprint v1) -> 0건(이번 Sprint). False Regression=6건, 단일-pass flip=6건/142.
+  [Level 2][PASS] Architecture Sprint 결과와 동일한 방향 재현 (Counterfactual 재검증)
+    Architecture Revision Sprint v1에서 SETUP/Reserved 제거로 회복됐던 11건 중 6건(55%)이 근본 원인으로 지목됨. 이번 Sprint에서 실제 Scheduler 변경 후 재실행한 결과, FULL(새 Production) succeededRate>=50%인 케이스(=회귀 해소로 간주) 7/11건.
+  [Level 3][PASS] Capability 유지 또는 증가
+    Repeat당 평균 성공 케이스 수 diff(Candidate-Baseline): mean=1.93, 95% CI=[1.16, 2.71], Cohen's d_z=1.26(large).
+  [Level 3][PASS] Regression 증가 없음
+    Repeat당 평균 Regression 케이스 수 diff: mean=0.00, 95% CI=[0.00, 0.00].
+  [Level 3][PASS] Paired CI가 개선 방향을 지지
+    improvedCountDiff의 95% CI 하한=1.16. CI가 0 이상이거나 평균이 양(+)이며 효과크기가 무시할 수준을 넘음.
+  [Level 3][PASS] 경쟁 구조 변화 확인 (Competition Matrix After)
+    Scheduler 변경 후 SETUP 승리 라운드=56/1420(3.9%) -- Before(Architecture Revision Sprint)의 12.5%(177/1420)와 비교.
+  [Level 2][PASS] Regression 원인 분류 (SETUP/CCR/Budget/Scheduler)
+    남은 flip 케이스 6건 중 SETUP이 관여한 케이스=0건, 그 외(CCR/MIXED_COMMUTATOR 등 Scheduler/Budget 타이밍 기인 추정)=6건.
+
+Final Decision (Deliverable #9): A -- True Regression 감소, Architecture Sprint와 동일한 방향 재현, Capability 유지/증가, Regression 증가 없음, Paired CI가 개선을 지지 -- Option A를 Scheduler Contract로 채택.
+
+10. Next Sprint Proposal (Deliverable #10)
+  Option A(SETUP Last-Resort)를 Scheduler Contract로 확정. 다음은 더 넓은 population(N>=30) 또는 실사용 시나리오에서의 장기 모니터링을 제안.
