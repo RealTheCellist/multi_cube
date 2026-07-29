@@ -1,0 +1,51 @@
+CONFLICT_DEEP_DEPENDENCY Structural Mechanism Analysis Sprint v1 -- Report
+Generated: 2026-07-29T03:13:51.050Z
+Population: n=16 (CONFLICT_DEEP_DEPENDENCY residuals from Primitive Set Completeness Validation Sprint v2)
+
+1. Failure Matrix (Primitive x Failure Reason, Deliverable #1)
+  DISRUPT: GATE_REJECTED=0, CANDIDATE_GENERATION_EMPTY=0, SEARCH_EXHAUSTED_NO_IMPROVEMENT=0, DEADLINE_HIT=4, SOLVED=12
+  SETUP: GATE_REJECTED=0, CANDIDATE_GENERATION_EMPTY=0, SEARCH_EXHAUSTED_NO_IMPROVEMENT=0, DEADLINE_HIT=0, SOLVED=16
+  REPAIR: GATE_REJECTED=16, CANDIDATE_GENERATION_EMPTY=0, SEARCH_EXHAUSTED_NO_IMPROVEMENT=0, DEADLINE_HIT=0, SOLVED=0
+  CCR: GATE_REJECTED=16, CANDIDATE_GENERATION_EMPTY=0, SEARCH_EXHAUSTED_NO_IMPROVEMENT=0, DEADLINE_HIT=0, SOLVED=0
+  MIXED_COMMUTATOR: GATE_REJECTED=16, CANDIDATE_GENERATION_EMPTY=0, SEARCH_EXHAUSTED_NO_IMPROVEMENT=0, DEADLINE_HIT=0, SOLVED=0
+  Dominant reason per Primitive:
+    DISRUPT: SOLVED (75.0%)
+    SETUP: SOLVED (100.0%)
+    REPAIR: GATE_REJECTED (100.0%)
+    CCR: GATE_REJECTED (100.0%)
+    MIXED_COMMUTATOR: GATE_REJECTED (100.0%)
+
+2. Conflict Structure Report (RQ-4)
+  worstCase:70a5020b: conflictEdgeCount=7, dependencyDepth=7, dependencyBranching=1, dependencyComponentCount=1, bridgeCount=0, sharedConflictCount=7, protectedEdgeCount=0, wrongWingCount=7
+  worstCase:56a8b82d: conflictEdgeCount=9, dependencyDepth=9, dependencyBranching=1, dependencyComponentCount=1, bridgeCount=0, sharedConflictCount=9, protectedEdgeCount=0, wrongWingCount=11
+  worstCase:d37ca819: conflictEdgeCount=7, dependencyDepth=7, dependencyBranching=1, dependencyComponentCount=1, bridgeCount=0, sharedConflictCount=7, protectedEdgeCount=0, wrongWingCount=7
+  worstCase:ae3d218b: conflictEdgeCount=7, dependencyDepth=7, dependencyBranching=1, dependencyComponentCount=1, bridgeCount=0, sharedConflictCount=7, protectedEdgeCount=0, wrongWingCount=7
+  worstCase:4e27e5a1: conflictEdgeCount=7, dependencyDepth=7, dependencyBranching=1, dependencyComponentCount=1, bridgeCount=0, sharedConflictCount=7, protectedEdgeCount=0, wrongWingCount=8
+  worstCase:44b9b619: conflictEdgeCount=7, dependencyDepth=7, dependencyBranching=1, dependencyComponentCount=1, bridgeCount=0, sharedConflictCount=7, protectedEdgeCount=0, wrongWingCount=8
+  snapshot335:27053491: conflictEdgeCount=7, dependencyDepth=7, dependencyBranching=1, dependencyComponentCount=1, bridgeCount=0, sharedConflictCount=7, protectedEdgeCount=0, wrongWingCount=7
+  snapshot335:4e27e5a1: conflictEdgeCount=7, dependencyDepth=7, dependencyBranching=1, dependencyComponentCount=1, bridgeCount=0, sharedConflictCount=7, protectedEdgeCount=0, wrongWingCount=8
+  snapshot335:d37ca819: conflictEdgeCount=7, dependencyDepth=7, dependencyBranching=1, dependencyComponentCount=1, bridgeCount=0, sharedConflictCount=7, protectedEdgeCount=0, wrongWingCount=7
+  snapshot335:5e5b20b: conflictEdgeCount=8, dependencyDepth=8, dependencyBranching=1, dependencyComponentCount=1, bridgeCount=0, sharedConflictCount=8, protectedEdgeCount=0, wrongWingCount=9
+  snapshot335:ae3d218b: conflictEdgeCount=7, dependencyDepth=7, dependencyBranching=1, dependencyComponentCount=1, bridgeCount=0, sharedConflictCount=7, protectedEdgeCount=0, wrongWingCount=7
+  scrambleDepth10:7: conflictEdgeCount=8, dependencyDepth=8, dependencyBranching=1, dependencyComponentCount=1, bridgeCount=0, sharedConflictCount=8, protectedEdgeCount=0, wrongWingCount=8
+  scrambleDepth40:4: conflictEdgeCount=9, dependencyDepth=9, dependencyBranching=1, dependencyComponentCount=1, bridgeCount=0, sharedConflictCount=9, protectedEdgeCount=0, wrongWingCount=9
+  scrambleDepth40:8: conflictEdgeCount=7, dependencyDepth=7, dependencyBranching=1, dependencyComponentCount=1, bridgeCount=0, sharedConflictCount=7, protectedEdgeCount=0, wrongWingCount=7
+  scrambleDepth50:3: conflictEdgeCount=7, dependencyDepth=7, dependencyBranching=1, dependencyComponentCount=1, bridgeCount=0, sharedConflictCount=7, protectedEdgeCount=0, wrongWingCount=8
+  scrambleDepth100:7: conflictEdgeCount=7, dependencyDepth=7, dependencyBranching=1, dependencyComponentCount=1, bridgeCount=0, sharedConflictCount=7, protectedEdgeCount=0, wrongWingCount=7
+
+3. Subtype Classification Report (RQ-1/RQ-5, Deliverable #3)
+  LINEAR_CHAIN: n=16, avgDependencyDepth=7.38, avgConflictEdgeCount=7.38, avgDependencyBranching=1.00, avgDependencyComponentCount=1.00, avgBridgeCount=0.00, avgSharedConflictCount=7.38, avgProtectedEdgeCount=0.00, avgWrongWingCount=7.81
+    labels: worstCase:70a5020b, worstCase:56a8b82d, worstCase:d37ca819, worstCase:ae3d218b, worstCase:4e27e5a1, worstCase:44b9b619, snapshot335:27053491, snapshot335:4e27e5a1, snapshot335:d37ca819, snapshot335:5e5b20b, snapshot335:ae3d218b, scrambleDepth10:7, scrambleDepth40:4, scrambleDepth40:8, scrambleDepth50:3, scrambleDepth100:7
+
+4. Mechanism Summary (RQ-1, Deliverable #4)
+  totalCases=16, isSingleDominantMechanism=true
+  signature=[SOLVED|SOLVED|GATE_REJECTED|GATE_REJECTED|GATE_REJECTED] n=12 (75.0%)
+    labels: worstCase:70a5020b, worstCase:d37ca819, worstCase:ae3d218b, worstCase:4e27e5a1, snapshot335:27053491, snapshot335:4e27e5a1, snapshot335:d37ca819, snapshot335:ae3d218b, scrambleDepth10:7, scrambleDepth40:8, scrambleDepth50:3, scrambleDepth100:7
+  signature=[DEADLINE_HIT|SOLVED|GATE_REJECTED|GATE_REJECTED|GATE_REJECTED] n=4 (25.0%)
+    labels: worstCase:56a8b82d, worstCase:44b9b619, snapshot335:5e5b20b, scrambleDepth40:4
+
+5. Recommendation (Deliverable #5)
+  conclusion=A_MECHANISM_IDENTIFIED
+  conclusionLabel=Conclusion A -- 단일 지배적 메커니즘 또는 명확히 분리된 Subtype 확인, 다음 Blueprint 방향 제시 가능.
+  rationale: dominantGroup.share=75.0% (>=60% 기준: true), hasSubtypeSeparation=false.
+  nextStepDirection: 모든 사례가 사실상 동일한 실패 시그니처(SOLVED|SOLVED|GATE_REJECTED|GATE_REJECTED|GATE_REJECTED)를 공유 -- Gate 기반 3개 Primitive(REPAIR/CCR/MIXED_COMMUTATOR)는 구조적으로 cycle을 요구해 conflict-only DAG를 원천적으로 배제하고, Gate 없는 2개(DISRUPT/SETUP)는 탐색 능력 부족으로 실패. 다음 Blueprint는 "cycle 없이 CONFLICT-only DAG를 직접 순회하는 새 Primitive"를 목표로 설계 가능.

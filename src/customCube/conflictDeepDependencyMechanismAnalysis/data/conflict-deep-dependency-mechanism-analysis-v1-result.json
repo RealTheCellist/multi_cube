@@ -1,0 +1,1758 @@
+{
+  "conflictLabels": [
+    "worstCase:70a5020b",
+    "worstCase:56a8b82d",
+    "worstCase:d37ca819",
+    "worstCase:ae3d218b",
+    "worstCase:4e27e5a1",
+    "worstCase:44b9b619",
+    "snapshot335:27053491",
+    "snapshot335:4e27e5a1",
+    "snapshot335:d37ca819",
+    "snapshot335:5e5b20b",
+    "snapshot335:ae3d218b",
+    "scrambleDepth10:7",
+    "scrambleDepth40:4",
+    "scrambleDepth40:8",
+    "scrambleDepth50:3",
+    "scrambleDepth100:7"
+  ],
+  "featuresList": [
+    {
+      "label": "worstCase:70a5020b",
+      "hasParity": false,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 7,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.5714285714285714,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0,
+      "dependencyBranching": 1,
+      "dependencyComponentCount": 1,
+      "bridgeCount": 0,
+      "sharedConflictCount": 7,
+      "protectedEdgeCount": 0
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "hasParity": true,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 11,
+      "conflictEdgeCount": 9,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 9,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.09090909090909091,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 3,
+      "cycleEdgeCount": 0,
+      "dependencyBranching": 1,
+      "dependencyComponentCount": 1,
+      "bridgeCount": 0,
+      "sharedConflictCount": 9,
+      "protectedEdgeCount": 0
+    },
+    {
+      "label": "worstCase:d37ca819",
+      "hasParity": false,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 7,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.2857142857142857,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0,
+      "dependencyBranching": 1,
+      "dependencyComponentCount": 1,
+      "bridgeCount": 0,
+      "sharedConflictCount": 7,
+      "protectedEdgeCount": 0
+    },
+    {
+      "label": "worstCase:ae3d218b",
+      "hasParity": false,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 7,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.5714285714285714,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0,
+      "dependencyBranching": 1,
+      "dependencyComponentCount": 1,
+      "bridgeCount": 0,
+      "sharedConflictCount": 7,
+      "protectedEdgeCount": 0
+    },
+    {
+      "label": "worstCase:4e27e5a1",
+      "hasParity": true,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 8,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.625,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0,
+      "dependencyBranching": 1,
+      "dependencyComponentCount": 1,
+      "bridgeCount": 0,
+      "sharedConflictCount": 7,
+      "protectedEdgeCount": 0
+    },
+    {
+      "label": "worstCase:44b9b619",
+      "hasParity": true,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 8,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0,
+      "dependencyBranching": 1,
+      "dependencyComponentCount": 1,
+      "bridgeCount": 0,
+      "sharedConflictCount": 7,
+      "protectedEdgeCount": 0
+    },
+    {
+      "label": "snapshot335:27053491",
+      "hasParity": false,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 7,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.14285714285714285,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0,
+      "dependencyBranching": 1,
+      "dependencyComponentCount": 1,
+      "bridgeCount": 0,
+      "sharedConflictCount": 7,
+      "protectedEdgeCount": 0
+    },
+    {
+      "label": "snapshot335:4e27e5a1",
+      "hasParity": true,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 8,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.625,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0,
+      "dependencyBranching": 1,
+      "dependencyComponentCount": 1,
+      "bridgeCount": 0,
+      "sharedConflictCount": 7,
+      "protectedEdgeCount": 0
+    },
+    {
+      "label": "snapshot335:d37ca819",
+      "hasParity": false,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 7,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.2857142857142857,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0,
+      "dependencyBranching": 1,
+      "dependencyComponentCount": 1,
+      "bridgeCount": 0,
+      "sharedConflictCount": 7,
+      "protectedEdgeCount": 0
+    },
+    {
+      "label": "snapshot335:5e5b20b",
+      "hasParity": true,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 9,
+      "conflictEdgeCount": 8,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 8,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.7777777777777778,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 4,
+      "cycleEdgeCount": 0,
+      "dependencyBranching": 1,
+      "dependencyComponentCount": 1,
+      "bridgeCount": 0,
+      "sharedConflictCount": 8,
+      "protectedEdgeCount": 0
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "hasParity": false,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 7,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.5714285714285714,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0,
+      "dependencyBranching": 1,
+      "dependencyComponentCount": 1,
+      "bridgeCount": 0,
+      "sharedConflictCount": 7,
+      "protectedEdgeCount": 0
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "hasParity": false,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 8,
+      "conflictEdgeCount": 8,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 8,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.625,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 4,
+      "cycleEdgeCount": 0,
+      "dependencyBranching": 1,
+      "dependencyComponentCount": 1,
+      "bridgeCount": 0,
+      "sharedConflictCount": 8,
+      "protectedEdgeCount": 0
+    },
+    {
+      "label": "scrambleDepth40:4",
+      "hasParity": false,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 9,
+      "conflictEdgeCount": 9,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 9,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.2222222222222222,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 3,
+      "cycleEdgeCount": 0,
+      "dependencyBranching": 1,
+      "dependencyComponentCount": 1,
+      "bridgeCount": 0,
+      "sharedConflictCount": 9,
+      "protectedEdgeCount": 0
+    },
+    {
+      "label": "scrambleDepth40:8",
+      "hasParity": false,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 7,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.5714285714285714,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0,
+      "dependencyBranching": 1,
+      "dependencyComponentCount": 1,
+      "bridgeCount": 0,
+      "sharedConflictCount": 7,
+      "protectedEdgeCount": 0
+    },
+    {
+      "label": "scrambleDepth50:3",
+      "hasParity": true,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 8,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0,
+      "dependencyBranching": 1,
+      "dependencyComponentCount": 1,
+      "bridgeCount": 0,
+      "sharedConflictCount": 7,
+      "protectedEdgeCount": 0
+    },
+    {
+      "label": "scrambleDepth100:7",
+      "hasParity": false,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 7,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.2857142857142857,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0,
+      "dependencyBranching": 1,
+      "dependencyComponentCount": 1,
+      "bridgeCount": 0,
+      "sharedConflictCount": 7,
+      "protectedEdgeCount": 0
+    }
+  ],
+  "allProbeResults": [
+    [
+      {
+        "primitive": "DISRUPT",
+        "label": "worstCase:70a5020b",
+        "failureReason": "SOLVED",
+        "solvedCount": 2,
+        "avgElapsedMs": 4768.2,
+        "gateDetail": "no structural Gate; candidateProxyFound=true (enumerateWingCandidates proxy, DISRUPT itself uses the relaxed superset internally)"
+      },
+      {
+        "primitive": "SETUP",
+        "label": "worstCase:70a5020b",
+        "failureReason": "SOLVED",
+        "solvedCount": 3,
+        "avgElapsedMs": 4244.7,
+        "gateDetail": "no structural Gate; candidateExists=true (exact same enumerateWingCandidates SETUP calls internally)"
+      },
+      {
+        "primitive": "REPAIR",
+        "label": "worstCase:70a5020b",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "analyzeMultiCycle=null (no cycle) -- Gate requires cycleLength in [2,4]"
+      },
+      {
+        "primitive": "CCR",
+        "label": "worstCase:70a5020b",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "primaryCycleLength=0 (Gate requires [5,6]), conflictEdgeCount=7 (Gate requires 0)"
+      },
+      {
+        "primitive": "MIXED_COMMUTATOR",
+        "label": "worstCase:70a5020b",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0.8,
+        "gateDetail": "internal detectCycle Gate failed (cycleLength=null, no cycle) -- attemptsEvaluated=0"
+      }
+    ],
+    [
+      {
+        "primitive": "DISRUPT",
+        "label": "worstCase:56a8b82d",
+        "failureReason": "DEADLINE_HIT",
+        "solvedCount": 0,
+        "avgElapsedMs": 5093.7,
+        "gateDetail": "no structural Gate; candidateProxyFound=true (enumerateWingCandidates proxy, DISRUPT itself uses the relaxed superset internally)"
+      },
+      {
+        "primitive": "SETUP",
+        "label": "worstCase:56a8b82d",
+        "failureReason": "SOLVED",
+        "solvedCount": 9,
+        "avgElapsedMs": 2488,
+        "gateDetail": "no structural Gate; candidateExists=true (exact same enumerateWingCandidates SETUP calls internally)"
+      },
+      {
+        "primitive": "REPAIR",
+        "label": "worstCase:56a8b82d",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "analyzeMultiCycle=null (no cycle) -- Gate requires cycleLength in [2,4]"
+      },
+      {
+        "primitive": "CCR",
+        "label": "worstCase:56a8b82d",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "primaryCycleLength=0 (Gate requires [5,6]), conflictEdgeCount=9 (Gate requires 0)"
+      },
+      {
+        "primitive": "MIXED_COMMUTATOR",
+        "label": "worstCase:56a8b82d",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0.8,
+        "gateDetail": "internal detectCycle Gate failed (cycleLength=null, no cycle) -- attemptsEvaluated=0"
+      }
+    ],
+    [
+      {
+        "primitive": "DISRUPT",
+        "label": "worstCase:d37ca819",
+        "failureReason": "SOLVED",
+        "solvedCount": 1,
+        "avgElapsedMs": 5093,
+        "gateDetail": "no structural Gate; candidateProxyFound=true (enumerateWingCandidates proxy, DISRUPT itself uses the relaxed superset internally)"
+      },
+      {
+        "primitive": "SETUP",
+        "label": "worstCase:d37ca819",
+        "failureReason": "SOLVED",
+        "solvedCount": 3,
+        "avgElapsedMs": 3637.5,
+        "gateDetail": "no structural Gate; candidateExists=true (exact same enumerateWingCandidates SETUP calls internally)"
+      },
+      {
+        "primitive": "REPAIR",
+        "label": "worstCase:d37ca819",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "analyzeMultiCycle=null (no cycle) -- Gate requires cycleLength in [2,4]"
+      },
+      {
+        "primitive": "CCR",
+        "label": "worstCase:d37ca819",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "primaryCycleLength=0 (Gate requires [5,6]), conflictEdgeCount=7 (Gate requires 0)"
+      },
+      {
+        "primitive": "MIXED_COMMUTATOR",
+        "label": "worstCase:d37ca819",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0.4,
+        "gateDetail": "internal detectCycle Gate failed (cycleLength=null, no cycle) -- attemptsEvaluated=0"
+      }
+    ],
+    [
+      {
+        "primitive": "DISRUPT",
+        "label": "worstCase:ae3d218b",
+        "failureReason": "SOLVED",
+        "solvedCount": 4,
+        "avgElapsedMs": 3982.1,
+        "gateDetail": "no structural Gate; candidateProxyFound=true (enumerateWingCandidates proxy, DISRUPT itself uses the relaxed superset internally)"
+      },
+      {
+        "primitive": "SETUP",
+        "label": "worstCase:ae3d218b",
+        "failureReason": "SOLVED",
+        "solvedCount": 4,
+        "avgElapsedMs": 4719,
+        "gateDetail": "no structural Gate; candidateExists=true (exact same enumerateWingCandidates SETUP calls internally)"
+      },
+      {
+        "primitive": "REPAIR",
+        "label": "worstCase:ae3d218b",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "analyzeMultiCycle=null (no cycle) -- Gate requires cycleLength in [2,4]"
+      },
+      {
+        "primitive": "CCR",
+        "label": "worstCase:ae3d218b",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "primaryCycleLength=0 (Gate requires [5,6]), conflictEdgeCount=7 (Gate requires 0)"
+      },
+      {
+        "primitive": "MIXED_COMMUTATOR",
+        "label": "worstCase:ae3d218b",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0.5,
+        "gateDetail": "internal detectCycle Gate failed (cycleLength=null, no cycle) -- attemptsEvaluated=0"
+      }
+    ],
+    [
+      {
+        "primitive": "DISRUPT",
+        "label": "worstCase:4e27e5a1",
+        "failureReason": "SOLVED",
+        "solvedCount": 1,
+        "avgElapsedMs": 5110.1,
+        "gateDetail": "no structural Gate; candidateProxyFound=true (enumerateWingCandidates proxy, DISRUPT itself uses the relaxed superset internally)"
+      },
+      {
+        "primitive": "SETUP",
+        "label": "worstCase:4e27e5a1",
+        "failureReason": "SOLVED",
+        "solvedCount": 3,
+        "avgElapsedMs": 4077.5,
+        "gateDetail": "no structural Gate; candidateExists=true (exact same enumerateWingCandidates SETUP calls internally)"
+      },
+      {
+        "primitive": "REPAIR",
+        "label": "worstCase:4e27e5a1",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "analyzeMultiCycle=null (no cycle) -- Gate requires cycleLength in [2,4]"
+      },
+      {
+        "primitive": "CCR",
+        "label": "worstCase:4e27e5a1",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "primaryCycleLength=0 (Gate requires [5,6]), conflictEdgeCount=7 (Gate requires 0)"
+      },
+      {
+        "primitive": "MIXED_COMMUTATOR",
+        "label": "worstCase:4e27e5a1",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0.3,
+        "gateDetail": "internal detectCycle Gate failed (cycleLength=null, no cycle) -- attemptsEvaluated=0"
+      }
+    ],
+    [
+      {
+        "primitive": "DISRUPT",
+        "label": "worstCase:44b9b619",
+        "failureReason": "DEADLINE_HIT",
+        "solvedCount": 0,
+        "avgElapsedMs": 5071.4,
+        "gateDetail": "no structural Gate; candidateProxyFound=true (enumerateWingCandidates proxy, DISRUPT itself uses the relaxed superset internally)"
+      },
+      {
+        "primitive": "SETUP",
+        "label": "worstCase:44b9b619",
+        "failureReason": "SOLVED",
+        "solvedCount": 3,
+        "avgElapsedMs": 4331.4,
+        "gateDetail": "no structural Gate; candidateExists=true (exact same enumerateWingCandidates SETUP calls internally)"
+      },
+      {
+        "primitive": "REPAIR",
+        "label": "worstCase:44b9b619",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "analyzeMultiCycle=null (no cycle) -- Gate requires cycleLength in [2,4]"
+      },
+      {
+        "primitive": "CCR",
+        "label": "worstCase:44b9b619",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "primaryCycleLength=0 (Gate requires [5,6]), conflictEdgeCount=7 (Gate requires 0)"
+      },
+      {
+        "primitive": "MIXED_COMMUTATOR",
+        "label": "worstCase:44b9b619",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0.4,
+        "gateDetail": "internal detectCycle Gate failed (cycleLength=null, no cycle) -- attemptsEvaluated=0"
+      }
+    ],
+    [
+      {
+        "primitive": "DISRUPT",
+        "label": "snapshot335:27053491",
+        "failureReason": "SOLVED",
+        "solvedCount": 3,
+        "avgElapsedMs": 4549.9,
+        "gateDetail": "no structural Gate; candidateProxyFound=true (enumerateWingCandidates proxy, DISRUPT itself uses the relaxed superset internally)"
+      },
+      {
+        "primitive": "SETUP",
+        "label": "snapshot335:27053491",
+        "failureReason": "SOLVED",
+        "solvedCount": 2,
+        "avgElapsedMs": 4696.8,
+        "gateDetail": "no structural Gate; candidateExists=true (exact same enumerateWingCandidates SETUP calls internally)"
+      },
+      {
+        "primitive": "REPAIR",
+        "label": "snapshot335:27053491",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "analyzeMultiCycle=null (no cycle) -- Gate requires cycleLength in [2,4]"
+      },
+      {
+        "primitive": "CCR",
+        "label": "snapshot335:27053491",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "primaryCycleLength=0 (Gate requires [5,6]), conflictEdgeCount=7 (Gate requires 0)"
+      },
+      {
+        "primitive": "MIXED_COMMUTATOR",
+        "label": "snapshot335:27053491",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0.4,
+        "gateDetail": "internal detectCycle Gate failed (cycleLength=null, no cycle) -- attemptsEvaluated=0"
+      }
+    ],
+    [
+      {
+        "primitive": "DISRUPT",
+        "label": "snapshot335:4e27e5a1",
+        "failureReason": "SOLVED",
+        "solvedCount": 2,
+        "avgElapsedMs": 5088.4,
+        "gateDetail": "no structural Gate; candidateProxyFound=true (enumerateWingCandidates proxy, DISRUPT itself uses the relaxed superset internally)"
+      },
+      {
+        "primitive": "SETUP",
+        "label": "snapshot335:4e27e5a1",
+        "failureReason": "SOLVED",
+        "solvedCount": 3,
+        "avgElapsedMs": 3941.9,
+        "gateDetail": "no structural Gate; candidateExists=true (exact same enumerateWingCandidates SETUP calls internally)"
+      },
+      {
+        "primitive": "REPAIR",
+        "label": "snapshot335:4e27e5a1",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "analyzeMultiCycle=null (no cycle) -- Gate requires cycleLength in [2,4]"
+      },
+      {
+        "primitive": "CCR",
+        "label": "snapshot335:4e27e5a1",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "primaryCycleLength=0 (Gate requires [5,6]), conflictEdgeCount=7 (Gate requires 0)"
+      },
+      {
+        "primitive": "MIXED_COMMUTATOR",
+        "label": "snapshot335:4e27e5a1",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0.4,
+        "gateDetail": "internal detectCycle Gate failed (cycleLength=null, no cycle) -- attemptsEvaluated=0"
+      }
+    ],
+    [
+      {
+        "primitive": "DISRUPT",
+        "label": "snapshot335:d37ca819",
+        "failureReason": "SOLVED",
+        "solvedCount": 3,
+        "avgElapsedMs": 4913.2,
+        "gateDetail": "no structural Gate; candidateProxyFound=true (enumerateWingCandidates proxy, DISRUPT itself uses the relaxed superset internally)"
+      },
+      {
+        "primitive": "SETUP",
+        "label": "snapshot335:d37ca819",
+        "failureReason": "SOLVED",
+        "solvedCount": 3,
+        "avgElapsedMs": 3756.6,
+        "gateDetail": "no structural Gate; candidateExists=true (exact same enumerateWingCandidates SETUP calls internally)"
+      },
+      {
+        "primitive": "REPAIR",
+        "label": "snapshot335:d37ca819",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "analyzeMultiCycle=null (no cycle) -- Gate requires cycleLength in [2,4]"
+      },
+      {
+        "primitive": "CCR",
+        "label": "snapshot335:d37ca819",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "primaryCycleLength=0 (Gate requires [5,6]), conflictEdgeCount=7 (Gate requires 0)"
+      },
+      {
+        "primitive": "MIXED_COMMUTATOR",
+        "label": "snapshot335:d37ca819",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0.4,
+        "gateDetail": "internal detectCycle Gate failed (cycleLength=null, no cycle) -- attemptsEvaluated=0"
+      }
+    ],
+    [
+      {
+        "primitive": "DISRUPT",
+        "label": "snapshot335:5e5b20b",
+        "failureReason": "DEADLINE_HIT",
+        "solvedCount": 0,
+        "avgElapsedMs": 5130.7,
+        "gateDetail": "no structural Gate; candidateProxyFound=true (enumerateWingCandidates proxy, DISRUPT itself uses the relaxed superset internally)"
+      },
+      {
+        "primitive": "SETUP",
+        "label": "snapshot335:5e5b20b",
+        "failureReason": "SOLVED",
+        "solvedCount": 7,
+        "avgElapsedMs": 2504,
+        "gateDetail": "no structural Gate; candidateExists=true (exact same enumerateWingCandidates SETUP calls internally)"
+      },
+      {
+        "primitive": "REPAIR",
+        "label": "snapshot335:5e5b20b",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "analyzeMultiCycle=null (no cycle) -- Gate requires cycleLength in [2,4]"
+      },
+      {
+        "primitive": "CCR",
+        "label": "snapshot335:5e5b20b",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "primaryCycleLength=0 (Gate requires [5,6]), conflictEdgeCount=8 (Gate requires 0)"
+      },
+      {
+        "primitive": "MIXED_COMMUTATOR",
+        "label": "snapshot335:5e5b20b",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0.4,
+        "gateDetail": "internal detectCycle Gate failed (cycleLength=null, no cycle) -- attemptsEvaluated=0"
+      }
+    ],
+    [
+      {
+        "primitive": "DISRUPT",
+        "label": "snapshot335:ae3d218b",
+        "failureReason": "SOLVED",
+        "solvedCount": 6,
+        "avgElapsedMs": 3982.6,
+        "gateDetail": "no structural Gate; candidateProxyFound=true (enumerateWingCandidates proxy, DISRUPT itself uses the relaxed superset internally)"
+      },
+      {
+        "primitive": "SETUP",
+        "label": "snapshot335:ae3d218b",
+        "failureReason": "SOLVED",
+        "solvedCount": 4,
+        "avgElapsedMs": 4227.9,
+        "gateDetail": "no structural Gate; candidateExists=true (exact same enumerateWingCandidates SETUP calls internally)"
+      },
+      {
+        "primitive": "REPAIR",
+        "label": "snapshot335:ae3d218b",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "analyzeMultiCycle=null (no cycle) -- Gate requires cycleLength in [2,4]"
+      },
+      {
+        "primitive": "CCR",
+        "label": "snapshot335:ae3d218b",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "primaryCycleLength=0 (Gate requires [5,6]), conflictEdgeCount=7 (Gate requires 0)"
+      },
+      {
+        "primitive": "MIXED_COMMUTATOR",
+        "label": "snapshot335:ae3d218b",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0.4,
+        "gateDetail": "internal detectCycle Gate failed (cycleLength=null, no cycle) -- attemptsEvaluated=0"
+      }
+    ],
+    [
+      {
+        "primitive": "DISRUPT",
+        "label": "scrambleDepth10:7",
+        "failureReason": "SOLVED",
+        "solvedCount": 1,
+        "avgElapsedMs": 5102.7,
+        "gateDetail": "no structural Gate; candidateProxyFound=true (enumerateWingCandidates proxy, DISRUPT itself uses the relaxed superset internally)"
+      },
+      {
+        "primitive": "SETUP",
+        "label": "scrambleDepth10:7",
+        "failureReason": "SOLVED",
+        "solvedCount": 6,
+        "avgElapsedMs": 3776.7,
+        "gateDetail": "no structural Gate; candidateExists=true (exact same enumerateWingCandidates SETUP calls internally)"
+      },
+      {
+        "primitive": "REPAIR",
+        "label": "scrambleDepth10:7",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "analyzeMultiCycle=null (no cycle) -- Gate requires cycleLength in [2,4]"
+      },
+      {
+        "primitive": "CCR",
+        "label": "scrambleDepth10:7",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "primaryCycleLength=0 (Gate requires [5,6]), conflictEdgeCount=8 (Gate requires 0)"
+      },
+      {
+        "primitive": "MIXED_COMMUTATOR",
+        "label": "scrambleDepth10:7",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0.3,
+        "gateDetail": "internal detectCycle Gate failed (cycleLength=null, no cycle) -- attemptsEvaluated=0"
+      }
+    ],
+    [
+      {
+        "primitive": "DISRUPT",
+        "label": "scrambleDepth40:4",
+        "failureReason": "DEADLINE_HIT",
+        "solvedCount": 0,
+        "avgElapsedMs": 5091.6,
+        "gateDetail": "no structural Gate; candidateProxyFound=true (enumerateWingCandidates proxy, DISRUPT itself uses the relaxed superset internally)"
+      },
+      {
+        "primitive": "SETUP",
+        "label": "scrambleDepth40:4",
+        "failureReason": "SOLVED",
+        "solvedCount": 4,
+        "avgElapsedMs": 3564.3,
+        "gateDetail": "no structural Gate; candidateExists=true (exact same enumerateWingCandidates SETUP calls internally)"
+      },
+      {
+        "primitive": "REPAIR",
+        "label": "scrambleDepth40:4",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "analyzeMultiCycle=null (no cycle) -- Gate requires cycleLength in [2,4]"
+      },
+      {
+        "primitive": "CCR",
+        "label": "scrambleDepth40:4",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "primaryCycleLength=0 (Gate requires [5,6]), conflictEdgeCount=9 (Gate requires 0)"
+      },
+      {
+        "primitive": "MIXED_COMMUTATOR",
+        "label": "scrambleDepth40:4",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0.5,
+        "gateDetail": "internal detectCycle Gate failed (cycleLength=null, no cycle) -- attemptsEvaluated=0"
+      }
+    ],
+    [
+      {
+        "primitive": "DISRUPT",
+        "label": "scrambleDepth40:8",
+        "failureReason": "SOLVED",
+        "solvedCount": 2,
+        "avgElapsedMs": 4985.3,
+        "gateDetail": "no structural Gate; candidateProxyFound=true (enumerateWingCandidates proxy, DISRUPT itself uses the relaxed superset internally)"
+      },
+      {
+        "primitive": "SETUP",
+        "label": "scrambleDepth40:8",
+        "failureReason": "SOLVED",
+        "solvedCount": 5,
+        "avgElapsedMs": 3313.8,
+        "gateDetail": "no structural Gate; candidateExists=true (exact same enumerateWingCandidates SETUP calls internally)"
+      },
+      {
+        "primitive": "REPAIR",
+        "label": "scrambleDepth40:8",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "analyzeMultiCycle=null (no cycle) -- Gate requires cycleLength in [2,4]"
+      },
+      {
+        "primitive": "CCR",
+        "label": "scrambleDepth40:8",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "primaryCycleLength=0 (Gate requires [5,6]), conflictEdgeCount=7 (Gate requires 0)"
+      },
+      {
+        "primitive": "MIXED_COMMUTATOR",
+        "label": "scrambleDepth40:8",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0.3,
+        "gateDetail": "internal detectCycle Gate failed (cycleLength=null, no cycle) -- attemptsEvaluated=0"
+      }
+    ],
+    [
+      {
+        "primitive": "DISRUPT",
+        "label": "scrambleDepth50:3",
+        "failureReason": "SOLVED",
+        "solvedCount": 2,
+        "avgElapsedMs": 4841.2,
+        "gateDetail": "no structural Gate; candidateProxyFound=true (enumerateWingCandidates proxy, DISRUPT itself uses the relaxed superset internally)"
+      },
+      {
+        "primitive": "SETUP",
+        "label": "scrambleDepth50:3",
+        "failureReason": "SOLVED",
+        "solvedCount": 6,
+        "avgElapsedMs": 3505.2,
+        "gateDetail": "no structural Gate; candidateExists=true (exact same enumerateWingCandidates SETUP calls internally)"
+      },
+      {
+        "primitive": "REPAIR",
+        "label": "scrambleDepth50:3",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "analyzeMultiCycle=null (no cycle) -- Gate requires cycleLength in [2,4]"
+      },
+      {
+        "primitive": "CCR",
+        "label": "scrambleDepth50:3",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "primaryCycleLength=0 (Gate requires [5,6]), conflictEdgeCount=7 (Gate requires 0)"
+      },
+      {
+        "primitive": "MIXED_COMMUTATOR",
+        "label": "scrambleDepth50:3",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0.5,
+        "gateDetail": "internal detectCycle Gate failed (cycleLength=null, no cycle) -- attemptsEvaluated=0"
+      }
+    ],
+    [
+      {
+        "primitive": "DISRUPT",
+        "label": "scrambleDepth100:7",
+        "failureReason": "SOLVED",
+        "solvedCount": 1,
+        "avgElapsedMs": 5073.8,
+        "gateDetail": "no structural Gate; candidateProxyFound=true (enumerateWingCandidates proxy, DISRUPT itself uses the relaxed superset internally)"
+      },
+      {
+        "primitive": "SETUP",
+        "label": "scrambleDepth100:7",
+        "failureReason": "SOLVED",
+        "solvedCount": 4,
+        "avgElapsedMs": 3768.8,
+        "gateDetail": "no structural Gate; candidateExists=true (exact same enumerateWingCandidates SETUP calls internally)"
+      },
+      {
+        "primitive": "REPAIR",
+        "label": "scrambleDepth100:7",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "analyzeMultiCycle=null (no cycle) -- Gate requires cycleLength in [2,4]"
+      },
+      {
+        "primitive": "CCR",
+        "label": "scrambleDepth100:7",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0,
+        "gateDetail": "primaryCycleLength=0 (Gate requires [5,6]), conflictEdgeCount=7 (Gate requires 0)"
+      },
+      {
+        "primitive": "MIXED_COMMUTATOR",
+        "label": "scrambleDepth100:7",
+        "failureReason": "GATE_REJECTED",
+        "solvedCount": 0,
+        "avgElapsedMs": 0.3,
+        "gateDetail": "internal detectCycle Gate failed (cycleLength=null, no cycle) -- attemptsEvaluated=0"
+      }
+    ]
+  ],
+  "failureMatrix": {
+    "DISRUPT": {
+      "GATE_REJECTED": 0,
+      "CANDIDATE_GENERATION_EMPTY": 0,
+      "SEARCH_EXHAUSTED_NO_IMPROVEMENT": 0,
+      "DEADLINE_HIT": 4,
+      "SOLVED": 12
+    },
+    "SETUP": {
+      "GATE_REJECTED": 0,
+      "CANDIDATE_GENERATION_EMPTY": 0,
+      "SEARCH_EXHAUSTED_NO_IMPROVEMENT": 0,
+      "DEADLINE_HIT": 0,
+      "SOLVED": 16
+    },
+    "REPAIR": {
+      "GATE_REJECTED": 16,
+      "CANDIDATE_GENERATION_EMPTY": 0,
+      "SEARCH_EXHAUSTED_NO_IMPROVEMENT": 0,
+      "DEADLINE_HIT": 0,
+      "SOLVED": 0
+    },
+    "CCR": {
+      "GATE_REJECTED": 16,
+      "CANDIDATE_GENERATION_EMPTY": 0,
+      "SEARCH_EXHAUSTED_NO_IMPROVEMENT": 0,
+      "DEADLINE_HIT": 0,
+      "SOLVED": 0
+    },
+    "MIXED_COMMUTATOR": {
+      "GATE_REJECTED": 16,
+      "CANDIDATE_GENERATION_EMPTY": 0,
+      "SEARCH_EXHAUSTED_NO_IMPROVEMENT": 0,
+      "DEADLINE_HIT": 0,
+      "SOLVED": 0
+    }
+  },
+  "perPrimitiveDominant": [
+    {
+      "primitive": "DISRUPT",
+      "dominantReason": "SOLVED",
+      "dominantShare": 0.75,
+      "n": 16
+    },
+    {
+      "primitive": "SETUP",
+      "dominantReason": "SOLVED",
+      "dominantShare": 1,
+      "n": 16
+    },
+    {
+      "primitive": "REPAIR",
+      "dominantReason": "GATE_REJECTED",
+      "dominantShare": 1,
+      "n": 16
+    },
+    {
+      "primitive": "CCR",
+      "dominantReason": "GATE_REJECTED",
+      "dominantShare": 1,
+      "n": 16
+    },
+    {
+      "primitive": "MIXED_COMMUTATOR",
+      "dominantReason": "GATE_REJECTED",
+      "dominantShare": 1,
+      "n": 16
+    }
+  ],
+  "mechanismSummary": {
+    "totalCases": 16,
+    "groups": [
+      {
+        "signature": "SOLVED|SOLVED|GATE_REJECTED|GATE_REJECTED|GATE_REJECTED",
+        "labels": [
+          "worstCase:70a5020b",
+          "worstCase:d37ca819",
+          "worstCase:ae3d218b",
+          "worstCase:4e27e5a1",
+          "snapshot335:27053491",
+          "snapshot335:4e27e5a1",
+          "snapshot335:d37ca819",
+          "snapshot335:ae3d218b",
+          "scrambleDepth10:7",
+          "scrambleDepth40:8",
+          "scrambleDepth50:3",
+          "scrambleDepth100:7"
+        ],
+        "count": 12,
+        "share": 0.75
+      },
+      {
+        "signature": "DEADLINE_HIT|SOLVED|GATE_REJECTED|GATE_REJECTED|GATE_REJECTED",
+        "labels": [
+          "worstCase:56a8b82d",
+          "worstCase:44b9b619",
+          "snapshot335:5e5b20b",
+          "scrambleDepth40:4"
+        ],
+        "count": 4,
+        "share": 0.25
+      }
+    ],
+    "dominantGroup": {
+      "signature": "SOLVED|SOLVED|GATE_REJECTED|GATE_REJECTED|GATE_REJECTED",
+      "labels": [
+        "worstCase:70a5020b",
+        "worstCase:d37ca819",
+        "worstCase:ae3d218b",
+        "worstCase:4e27e5a1",
+        "snapshot335:27053491",
+        "snapshot335:4e27e5a1",
+        "snapshot335:d37ca819",
+        "snapshot335:ae3d218b",
+        "scrambleDepth10:7",
+        "scrambleDepth40:8",
+        "scrambleDepth50:3",
+        "scrambleDepth100:7"
+      ],
+      "count": 12,
+      "share": 0.75
+    },
+    "isSingleDominantMechanism": true
+  },
+  "subtypeRows": [
+    {
+      "label": "worstCase:70a5020b",
+      "subtype": "LINEAR_CHAIN",
+      "features": {
+        "label": "worstCase:70a5020b",
+        "hasParity": false,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 7,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.5714285714285714,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0,
+        "dependencyBranching": 1,
+        "dependencyComponentCount": 1,
+        "bridgeCount": 0,
+        "sharedConflictCount": 7,
+        "protectedEdgeCount": 0
+      }
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "subtype": "LINEAR_CHAIN",
+      "features": {
+        "label": "worstCase:56a8b82d",
+        "hasParity": true,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 11,
+        "conflictEdgeCount": 9,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 9,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.09090909090909091,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 3,
+        "cycleEdgeCount": 0,
+        "dependencyBranching": 1,
+        "dependencyComponentCount": 1,
+        "bridgeCount": 0,
+        "sharedConflictCount": 9,
+        "protectedEdgeCount": 0
+      }
+    },
+    {
+      "label": "worstCase:d37ca819",
+      "subtype": "LINEAR_CHAIN",
+      "features": {
+        "label": "worstCase:d37ca819",
+        "hasParity": false,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 7,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.2857142857142857,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0,
+        "dependencyBranching": 1,
+        "dependencyComponentCount": 1,
+        "bridgeCount": 0,
+        "sharedConflictCount": 7,
+        "protectedEdgeCount": 0
+      }
+    },
+    {
+      "label": "worstCase:ae3d218b",
+      "subtype": "LINEAR_CHAIN",
+      "features": {
+        "label": "worstCase:ae3d218b",
+        "hasParity": false,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 7,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.5714285714285714,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0,
+        "dependencyBranching": 1,
+        "dependencyComponentCount": 1,
+        "bridgeCount": 0,
+        "sharedConflictCount": 7,
+        "protectedEdgeCount": 0
+      }
+    },
+    {
+      "label": "worstCase:4e27e5a1",
+      "subtype": "LINEAR_CHAIN",
+      "features": {
+        "label": "worstCase:4e27e5a1",
+        "hasParity": true,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 8,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.625,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0,
+        "dependencyBranching": 1,
+        "dependencyComponentCount": 1,
+        "bridgeCount": 0,
+        "sharedConflictCount": 7,
+        "protectedEdgeCount": 0
+      }
+    },
+    {
+      "label": "worstCase:44b9b619",
+      "subtype": "LINEAR_CHAIN",
+      "features": {
+        "label": "worstCase:44b9b619",
+        "hasParity": true,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 8,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0,
+        "dependencyBranching": 1,
+        "dependencyComponentCount": 1,
+        "bridgeCount": 0,
+        "sharedConflictCount": 7,
+        "protectedEdgeCount": 0
+      }
+    },
+    {
+      "label": "snapshot335:27053491",
+      "subtype": "LINEAR_CHAIN",
+      "features": {
+        "label": "snapshot335:27053491",
+        "hasParity": false,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 7,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.14285714285714285,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0,
+        "dependencyBranching": 1,
+        "dependencyComponentCount": 1,
+        "bridgeCount": 0,
+        "sharedConflictCount": 7,
+        "protectedEdgeCount": 0
+      }
+    },
+    {
+      "label": "snapshot335:4e27e5a1",
+      "subtype": "LINEAR_CHAIN",
+      "features": {
+        "label": "snapshot335:4e27e5a1",
+        "hasParity": true,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 8,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.625,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0,
+        "dependencyBranching": 1,
+        "dependencyComponentCount": 1,
+        "bridgeCount": 0,
+        "sharedConflictCount": 7,
+        "protectedEdgeCount": 0
+      }
+    },
+    {
+      "label": "snapshot335:d37ca819",
+      "subtype": "LINEAR_CHAIN",
+      "features": {
+        "label": "snapshot335:d37ca819",
+        "hasParity": false,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 7,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.2857142857142857,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0,
+        "dependencyBranching": 1,
+        "dependencyComponentCount": 1,
+        "bridgeCount": 0,
+        "sharedConflictCount": 7,
+        "protectedEdgeCount": 0
+      }
+    },
+    {
+      "label": "snapshot335:5e5b20b",
+      "subtype": "LINEAR_CHAIN",
+      "features": {
+        "label": "snapshot335:5e5b20b",
+        "hasParity": true,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 9,
+        "conflictEdgeCount": 8,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 8,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.7777777777777778,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 4,
+        "cycleEdgeCount": 0,
+        "dependencyBranching": 1,
+        "dependencyComponentCount": 1,
+        "bridgeCount": 0,
+        "sharedConflictCount": 8,
+        "protectedEdgeCount": 0
+      }
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "subtype": "LINEAR_CHAIN",
+      "features": {
+        "label": "snapshot335:ae3d218b",
+        "hasParity": false,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 7,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.5714285714285714,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0,
+        "dependencyBranching": 1,
+        "dependencyComponentCount": 1,
+        "bridgeCount": 0,
+        "sharedConflictCount": 7,
+        "protectedEdgeCount": 0
+      }
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "subtype": "LINEAR_CHAIN",
+      "features": {
+        "label": "scrambleDepth10:7",
+        "hasParity": false,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 8,
+        "conflictEdgeCount": 8,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 8,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.625,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 4,
+        "cycleEdgeCount": 0,
+        "dependencyBranching": 1,
+        "dependencyComponentCount": 1,
+        "bridgeCount": 0,
+        "sharedConflictCount": 8,
+        "protectedEdgeCount": 0
+      }
+    },
+    {
+      "label": "scrambleDepth40:4",
+      "subtype": "LINEAR_CHAIN",
+      "features": {
+        "label": "scrambleDepth40:4",
+        "hasParity": false,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 9,
+        "conflictEdgeCount": 9,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 9,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.2222222222222222,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 3,
+        "cycleEdgeCount": 0,
+        "dependencyBranching": 1,
+        "dependencyComponentCount": 1,
+        "bridgeCount": 0,
+        "sharedConflictCount": 9,
+        "protectedEdgeCount": 0
+      }
+    },
+    {
+      "label": "scrambleDepth40:8",
+      "subtype": "LINEAR_CHAIN",
+      "features": {
+        "label": "scrambleDepth40:8",
+        "hasParity": false,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 7,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.5714285714285714,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0,
+        "dependencyBranching": 1,
+        "dependencyComponentCount": 1,
+        "bridgeCount": 0,
+        "sharedConflictCount": 7,
+        "protectedEdgeCount": 0
+      }
+    },
+    {
+      "label": "scrambleDepth50:3",
+      "subtype": "LINEAR_CHAIN",
+      "features": {
+        "label": "scrambleDepth50:3",
+        "hasParity": true,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 8,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0,
+        "dependencyBranching": 1,
+        "dependencyComponentCount": 1,
+        "bridgeCount": 0,
+        "sharedConflictCount": 7,
+        "protectedEdgeCount": 0
+      }
+    },
+    {
+      "label": "scrambleDepth100:7",
+      "subtype": "LINEAR_CHAIN",
+      "features": {
+        "label": "scrambleDepth100:7",
+        "hasParity": false,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 7,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.2857142857142857,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0,
+        "dependencyBranching": 1,
+        "dependencyComponentCount": 1,
+        "bridgeCount": 0,
+        "sharedConflictCount": 7,
+        "protectedEdgeCount": 0
+      }
+    }
+  ],
+  "subtypeSummaries": [
+    {
+      "subtype": "LINEAR_CHAIN",
+      "n": 16,
+      "avgDependencyDepth": 7.375,
+      "avgConflictEdgeCount": 7.375,
+      "avgDependencyBranching": 1,
+      "avgDependencyComponentCount": 1,
+      "avgBridgeCount": 0,
+      "avgSharedConflictCount": 7.375,
+      "avgProtectedEdgeCount": 0,
+      "avgWrongWingCount": 7.8125,
+      "labels": [
+        "worstCase:70a5020b",
+        "worstCase:56a8b82d",
+        "worstCase:d37ca819",
+        "worstCase:ae3d218b",
+        "worstCase:4e27e5a1",
+        "worstCase:44b9b619",
+        "snapshot335:27053491",
+        "snapshot335:4e27e5a1",
+        "snapshot335:d37ca819",
+        "snapshot335:5e5b20b",
+        "snapshot335:ae3d218b",
+        "scrambleDepth10:7",
+        "scrambleDepth40:4",
+        "scrambleDepth40:8",
+        "scrambleDepth50:3",
+        "scrambleDepth100:7"
+      ]
+    }
+  ],
+  "recommendation": {
+    "conclusion": "A_MECHANISM_IDENTIFIED",
+    "conclusionLabel": "Conclusion A -- 단일 지배적 메커니즘 또는 명확히 분리된 Subtype 확인, 다음 Blueprint 방향 제시 가능.",
+    "isSingleDominantMechanism": true,
+    "hasSubtypeSeparation": false,
+    "rationale": "dominantGroup.share=75.0% (>=60% 기준: true), hasSubtypeSeparation=false.",
+    "nextStepDirection": "모든 사례가 사실상 동일한 실패 시그니처(SOLVED|SOLVED|GATE_REJECTED|GATE_REJECTED|GATE_REJECTED)를 공유 -- Gate 기반 3개 Primitive(REPAIR/CCR/MIXED_COMMUTATOR)는 구조적으로 cycle을 요구해 conflict-only DAG를 원천적으로 배제하고, Gate 없는 2개(DISRUPT/SETUP)는 탐색 능력 부족으로 실패. 다음 Blueprint는 \"cycle 없이 CONFLICT-only DAG를 직접 순회하는 새 Primitive\"를 목표로 설계 가능."
+  }
+}
