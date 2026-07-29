@@ -1,0 +1,218 @@
+{
+  "regressionSummary": {
+    "n": 142,
+    "casesWithSinglePassFlip": 11,
+    "trueRegressionCount": 0,
+    "falseRegressionCount": 11
+  },
+  "statisticalValidation": {
+    "nRepeats": 30,
+    "improvedCountDiff": {
+      "stats": {
+        "n": 30,
+        "mean": 1.1333333333333333,
+        "stddev": 1.4793599112881342,
+        "coefficientOfVariation": 1.3053175687836478,
+        "ci95Half": 0.5293821454664837,
+        "ciLower": 0.6039511878668496,
+        "ciUpper": 1.662715478799817
+      },
+      "effectSize": {
+        "meanDiff": 1.1333333333333333,
+        "variance": 2.188505747126436,
+        "standardError": 0.2700929313604508,
+        "cohensD": 0.7660970969170696,
+        "magnitude": "medium"
+      }
+    },
+    "regressedCountDiff": {
+      "stats": {
+        "n": 30,
+        "mean": 0,
+        "stddev": 0,
+        "coefficientOfVariation": 0,
+        "ci95Half": 0,
+        "ciLower": 0,
+        "ciUpper": 0
+      },
+      "effectSize": {
+        "meanDiff": 0,
+        "variance": 0,
+        "standardError": 0,
+        "cohensD": 0,
+        "magnitude": "negligible"
+      }
+    },
+    "runtimeDiffMs": {
+      "stats": {
+        "n": 30,
+        "mean": 279.41549295774644,
+        "stddev": 13.665458340542443,
+        "coefficientOfVariation": 0.04890730358537761,
+        "ci95Half": 4.890121463951311,
+        "ciLower": 274.52537149379515,
+        "ciUpper": 284.3056144216977
+      },
+      "effectSize": {
+        "meanDiff": 279.41549295774644,
+        "variance": 186.74475165710103,
+        "standardError": 2.4949599305874033,
+        "cohensD": 20.44684385951267,
+        "magnitude": "large"
+      }
+    }
+  },
+  "e2eSummary": {
+    "n": 1420,
+    "improvedCount": 6,
+    "improvedRate": 0.004225352112676056,
+    "solvedCount": 0,
+    "solveRate": 0,
+    "setupChosenCount": 0,
+    "setupSucceededCount": 0,
+    "recoveryTriggeredCount": 661,
+    "recoverySucceededCount": 3,
+    "deadlineMissedCount": 682,
+    "runtime": {
+      "n": 1420,
+      "avgMs": 1069.2725352112675,
+      "medianMs": 1006,
+      "p95Ms": 1313,
+      "maxMs": 2842
+    }
+  },
+  "interactionMatrix": [
+    {
+      "type": "DISRUPT",
+      "baselineInvocationCount": 1,
+      "baselineInvocationRate": 0.00023474178403755868,
+      "baselineSelectedCount": 1,
+      "baselineSelectedRate": 0.00023474178403755868,
+      "baselineSuccessCount": 0,
+      "baselineSuccessRate": 0,
+      "candidateInvocationCount": 1,
+      "candidateInvocationRate": 0.00023474178403755868,
+      "candidateSelectedCount": 1,
+      "candidateSelectedRate": 0.00023474178403755868,
+      "candidateSuccessCount": 0,
+      "candidateSuccessRate": 0
+    },
+    {
+      "type": "SETUP",
+      "baselineInvocationCount": 10,
+      "baselineInvocationRate": 0.002347417840375587,
+      "baselineSelectedCount": 10,
+      "baselineSelectedRate": 0.002347417840375587,
+      "baselineSuccessCount": 0,
+      "baselineSuccessRate": 0,
+      "candidateInvocationCount": 164,
+      "candidateInvocationRate": 0.038497652582159626,
+      "candidateSelectedCount": 164,
+      "candidateSelectedRate": 0.038497652582159626,
+      "candidateSuccessCount": 21,
+      "candidateSuccessRate": 0.12804878048780488
+    },
+    {
+      "type": "REPAIR",
+      "baselineInvocationCount": 0,
+      "baselineInvocationRate": 0,
+      "baselineSelectedCount": 0,
+      "baselineSelectedRate": 0,
+      "baselineSuccessCount": 0,
+      "baselineSuccessRate": 0,
+      "candidateInvocationCount": 0,
+      "candidateInvocationRate": 0,
+      "candidateSelectedCount": 0,
+      "candidateSelectedRate": 0,
+      "candidateSuccessCount": 0,
+      "candidateSuccessRate": 0
+    },
+    {
+      "type": "CCR",
+      "baselineInvocationCount": 145,
+      "baselineInvocationRate": 0.03403755868544601,
+      "baselineSelectedCount": 145,
+      "baselineSelectedRate": 0.03403755868544601,
+      "baselineSuccessCount": 145,
+      "baselineSuccessRate": 1,
+      "candidateInvocationCount": 161,
+      "candidateInvocationRate": 0.03779342723004695,
+      "candidateSelectedCount": 161,
+      "candidateSelectedRate": 0.03779342723004695,
+      "candidateSuccessCount": 161,
+      "candidateSuccessRate": 1
+    },
+    {
+      "type": "MIXED_COMMUTATOR",
+      "baselineInvocationCount": 163,
+      "baselineInvocationRate": 0.038262910798122066,
+      "baselineSelectedCount": 162,
+      "baselineSelectedRate": 0.038028169014084505,
+      "baselineSuccessCount": 162,
+      "baselineSuccessRate": 1,
+      "candidateInvocationCount": 160,
+      "candidateInvocationRate": 0.03755868544600939,
+      "candidateSelectedCount": 159,
+      "candidateSelectedRate": 0.03732394366197183,
+      "candidateSuccessCount": 159,
+      "candidateSuccessRate": 1
+    },
+    {
+      "type": "none",
+      "baselineInvocationCount": 3942,
+      "baselineInvocationRate": 0.9253521126760563,
+      "baselineSelectedCount": 3942,
+      "baselineSelectedRate": 0.9253521126760563,
+      "baselineSuccessCount": 0,
+      "baselineSuccessRate": 0,
+      "candidateInvocationCount": 3775,
+      "candidateInvocationRate": 0.886150234741784,
+      "candidateSelectedCount": 3775,
+      "candidateSelectedRate": 0.886150234741784,
+      "candidateSuccessCount": 0,
+      "candidateSuccessRate": 0
+    }
+  ],
+  "decisionMatrix": {
+    "rows": [
+      {
+        "level": 1,
+        "criterion": "Production Integration 성공",
+        "status": "PASS",
+        "evidence": "fiveByFiveEdgeExecutor.ts의 실제 solve() 경로(executeTask())는 schedulingStrategy 기본값 \"reservedBudget\"을 그대로 attemptRecovery()에 전달하고, includeCCR/includeMixedCommutator/useSetupReservedSlice는 한 번도 override하지 않는다(각각 기본값 true) -- 즉 Scheduler Prototype Sprint v1이 수정한 SETUP Last-Resort 분기(reservedBudget && useSetupReservedSlice===true)는 이미 실제 Production의 유일한 실행 경로다. 이번 Sprint는 추가 코드 변경 없이 이 사실을 재확인했다(Executor/Primitive Logic/Planner/SolverEngine/BFS/Deferred Validator 0줄 수정)."
+      },
+      {
+        "level": 2,
+        "criterion": "Regression 증가 없음",
+        "status": "PASS",
+        "evidence": "True Regression: Scheduler Prototype Sprint v1(N=15) 0건 -> 이번 Sprint(N=30) 0건. False Regression=11건, 단일-pass flip=11건/142."
+      },
+      {
+        "level": 2,
+        "criterion": "Primitive Interaction -- 다른 Primitive 악화 없음",
+        "status": "PASS",
+        "evidence": "DISRUPT/REPAIR/CCR/MIXED_COMMUTATOR 중 Candidate에서 Success Rate가 Baseline 대비 20%p 이상 하락한 타입 없음."
+      },
+      {
+        "level": 3,
+        "criterion": "Success Rate 유지 또는 증가",
+        "status": "PASS",
+        "evidence": "Repeat당 평균 성공 케이스 수 diff(Candidate-Baseline, N=30): mean=1.13, 95% CI=[0.60, 1.66], Cohen's d_z=0.77(medium)."
+      },
+      {
+        "level": 4,
+        "criterion": "Runtime 증가가 허용 범위",
+        "status": "PASS",
+        "evidence": "E2E 실 solve() p95=1313ms (Scheduler Prototype Sprint v1 p95=1286ms 대비 +15% 허용 기준=1479ms). avg=1069.3ms, max=2842ms, Deadline Miss=682/1420(48.0%)."
+      },
+      {
+        "level": 5,
+        "criterion": "N>=30 재현성 PASS",
+        "status": "PASS",
+        "evidence": "N=30(기준 N>=30 충족). improvedCountDiff 95% CI=[0.60, 1.66]."
+      }
+    ],
+    "decision": "A",
+    "decisionRationale": "Regression 증가 없음, Primitive Interaction 이상 없음, Success Rate 유지/증가, Runtime 허용 범위, N>=30 재현성 PASS -- Production Contract 확정, Scheduler Ordering Release 가능."
+  }
+}

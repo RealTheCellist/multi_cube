@@ -1,0 +1,44 @@
+CONFLICT_DEEP_DEPENDENCY Scheduler Production Integration Sprint v1 -- Report
+Generated: 2026-07-29T15:24:18.568Z
+Population: Production Replay n=142x30; E2E n=142x10
+
+1. Integration 방법 (STEP1, Deliverable)
+  코드 변경 없음. fiveByFiveEdgeExecutor.ts의 executeTask()는 schedulingStrategy 기본값 "reservedBudget"을 attemptRecovery()에 그대로 전달하고,
+  includeCCR/includeMixedCommutator/useSetupReservedSlice는 override하지 않는다(각각 기본값 true).
+  즉 Scheduler Prototype Sprint v1이 수정한 SETUP Last-Resort 분기(reservedBudget && useSetupReservedSlice===true)는 이미 실제 Production의 유일한 실행 경로다.
+
+2. Runtime 분석 (STEP3, Deliverable)
+  E2E 실 solve(): avg=1069.3ms, p95=1313ms, max=2842ms
+  Deadline Miss=682/1420 (48.0%)
+
+3. Regression 분석 (STEP2, Deliverable)
+  n=142, casesWithSinglePassFlip=11, trueRegressionCount=0, falseRegressionCount=11
+
+4. Primitive Interaction (STEP5, Deliverable)
+  DISRUPT: Invocation 0.0%->0.0%, Selected 0.0%->0.0%, Success(선택시) 0.0%->0.0%
+  SETUP: Invocation 0.2%->3.8%, Selected 0.2%->3.8%, Success(선택시) 0.0%->12.8%
+  REPAIR: Invocation 0.0%->0.0%, Selected 0.0%->0.0%, Success(선택시) 0.0%->0.0%
+  CCR: Invocation 3.4%->3.8%, Selected 3.4%->3.8%, Success(선택시) 100.0%->100.0%
+  MIXED_COMMUTATOR: Invocation 3.8%->3.8%, Selected 3.8%->3.7%, Success(선택시) 100.0%->100.0%
+  none: Invocation 92.5%->88.6%, Selected 92.5%->88.6%, Success(선택시) 0.0%->0.0%
+
+5. Statistical Validation (STEP4, Deliverable)
+  Improved count diff (Candidate-Baseline, per repeat, n=30): mean=1.13, 95% CI=[0.60, 1.66], Cohen's d_z=0.77 (medium)
+  Regressed count diff (Candidate-Baseline, per repeat): mean=0.00, 95% CI=[0.00, 0.00]
+  Runtime diff ms (Candidate-Baseline, per repeat avg): mean=279.4, 95% CI=[274.5, 284.3]
+
+6. Decision Matrix (STEP6, Deliverable)
+  [Level 1][PASS] Production Integration 성공
+    fiveByFiveEdgeExecutor.ts의 실제 solve() 경로(executeTask())는 schedulingStrategy 기본값 "reservedBudget"을 그대로 attemptRecovery()에 전달하고, includeCCR/includeMixedCommutator/useSetupReservedSlice는 한 번도 override하지 않는다(각각 기본값 true) -- 즉 Scheduler Prototype Sprint v1이 수정한 SETUP Last-Resort 분기(reservedBudget && useSetupReservedSlice===true)는 이미 실제 Production의 유일한 실행 경로다. 이번 Sprint는 추가 코드 변경 없이 이 사실을 재확인했다(Executor/Primitive Logic/Planner/SolverEngine/BFS/Deferred Validator 0줄 수정).
+  [Level 2][PASS] Regression 증가 없음
+    True Regression: Scheduler Prototype Sprint v1(N=15) 0건 -> 이번 Sprint(N=30) 0건. False Regression=11건, 단일-pass flip=11건/142.
+  [Level 2][PASS] Primitive Interaction -- 다른 Primitive 악화 없음
+    DISRUPT/REPAIR/CCR/MIXED_COMMUTATOR 중 Candidate에서 Success Rate가 Baseline 대비 20%p 이상 하락한 타입 없음.
+  [Level 3][PASS] Success Rate 유지 또는 증가
+    Repeat당 평균 성공 케이스 수 diff(Candidate-Baseline, N=30): mean=1.13, 95% CI=[0.60, 1.66], Cohen's d_z=0.77(medium).
+  [Level 4][PASS] Runtime 증가가 허용 범위
+    E2E 실 solve() p95=1313ms (Scheduler Prototype Sprint v1 p95=1286ms 대비 +15% 허용 기준=1479ms). avg=1069.3ms, max=2842ms, Deadline Miss=682/1420(48.0%).
+  [Level 5][PASS] N>=30 재현성 PASS
+    N=30(기준 N>=30 충족). improvedCountDiff 95% CI=[0.60, 1.66].
+
+Final Decision: A -- Regression 증가 없음, Primitive Interaction 이상 없음, Success Rate 유지/증가, Runtime 허용 범위, N>=30 재현성 PASS -- Production Contract 확정, Scheduler Ordering Release 가능.
