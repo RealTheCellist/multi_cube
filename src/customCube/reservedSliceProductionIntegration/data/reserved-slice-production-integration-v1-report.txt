@@ -1,0 +1,78 @@
+CONFLICT_DEEP_DEPENDENCY Reserved Slice Production Integration Sprint v1 -- Report
+Generated: 2026-07-29T06:50:20.748Z
+Population: Recovery-level n=142 x 15 repeats; End-to-End n=142 x 5 repeats
+
+1. Integration Diff Summary
+  fiveByFiveEdgeRecovery.ts: +SETUP_RESERVED_SLICE_MS=500, +useSetupReservedSlice param (default true) on generateRecoveryStrategies()/attemptRecovery(), genSetup() reservedBudget branch now uses a reserved-slice window off the outer deadline.
+  fiveByFiveEdgeExecutor.ts / fiveByFiveEdgePlanner.ts / DISRUPT/SETUP/REPAIR/CCR/Mixed Commutator internal search logic: UNTOUCHED.
+
+2. Scheduler Diagram (reservedBudget order, unchanged): DISRUPT, DISRUPT, SETUP(reserved 500ms off outer deadline), REPAIR(reserved 75ms off outer deadline), CCR(remainingTime), MIXED_COMMUTATOR(reserved 300ms off outer deadline)
+
+3. Reserved Slice Runtime (Deliverable #3)
+  Baseline arm (Recovery-level) runtime: avg=654.2ms, median=578ms, p95=1141ms, max=1377ms
+  Candidate arm (Recovery-level) runtime: avg=949.7ms, median=1001ms, p95=1152ms, max=1343ms
+  SETUP-chosen candidateTimeMs distribution (n=233): avg=935.4ms, p95=1159ms, max=1252ms
+  End-to-End solve() runtime: avg=1039.9ms, median=1012ms, p95=1170ms, max=1367ms
+
+4. Capability Comparison (STEP3, Deliverable #4)
+  Recovery-level improvedRate: Baseline(useSetupReservedSlice=false)=10.7% -> Candidate(=true)=5.1% (delta=-5.6pp)
+  End-to-End real solve(): Improved=0.7%, Solved=0.0%, RecoveryTriggered=447/710, RecoverySucceeded=5, SETUP chosen=5 (succeeded 0), DeadlineMissed=259
+
+5. Regression Analysis (STEP4, Deliverable #5)
+  n=142, casesWithSinglePassFlip=17, trueRegressionCount=11, falseRegressionCount=6
+    worstCase:b714481: FALSE_REGRESSION (meanGap=0.27, singlePassFlip=2)
+    worstCase:e7a801fb: TRUE_REGRESSION (meanGap=0.80, singlePassFlip=7)
+    worstCase:e5101f85: TRUE_REGRESSION (meanGap=0.73, singlePassFlip=11)
+    worstCase:e9009e73: TRUE_REGRESSION (meanGap=0.87, singlePassFlip=13)
+    worstCase:e8be823: TRUE_REGRESSION (meanGap=0.73, singlePassFlip=11)
+    worstCase:14f5293f: FALSE_REGRESSION (meanGap=0.07, singlePassFlip=2)
+    worstCase:252f8891: FALSE_REGRESSION (meanGap=0.27, singlePassFlip=4)
+    worstCase:42c89b9: TRUE_REGRESSION (meanGap=0.93, singlePassFlip=14)
+    scrambleDepth10:0: FALSE_REGRESSION (meanGap=0.13, singlePassFlip=1)
+    scrambleDepth10:8: TRUE_REGRESSION (meanGap=0.93, singlePassFlip=14)
+    scrambleDepth30:0: TRUE_REGRESSION (meanGap=1.07, singlePassFlip=8)
+    scrambleDepth30:4: TRUE_REGRESSION (meanGap=1.20, singlePassFlip=9)
+    scrambleDepth30:8: FALSE_REGRESSION (meanGap=0.33, singlePassFlip=5)
+    scrambleDepth30:9: FALSE_REGRESSION (meanGap=0.13, singlePassFlip=1)
+    scrambleDepth50:2: TRUE_REGRESSION (meanGap=0.93, singlePassFlip=14)
+    scrambleDepth50:8: TRUE_REGRESSION (meanGap=0.93, singlePassFlip=14)
+    scrambleDepth100:9: TRUE_REGRESSION (meanGap=0.87, singlePassFlip=13)
+
+6. Primitive Interaction Matrix (STEP7, Deliverable #6)
+  DISRUPT: Baseline 9 (0.4%) -> Candidate 11 (0.5%), delta=0.1pp
+  SETUP: Baseline 14 (0.7%) -> Candidate 233 (10.9%), delta=10.3pp
+  REPAIR: Baseline 0 (0.0%) -> Candidate 0 (0.0%), delta=0.0pp
+  CCR: Baseline 128 (6.0%) -> Candidate 28 (1.3%), delta=-4.7pp
+  MIXED_COMMUTATOR: Baseline 99 (4.6%) -> Candidate 60 (2.8%), delta=-1.8pp
+  none: Baseline 1880 (88.3%) -> Candidate 1798 (84.4%), delta=-3.8pp
+  Multi-offer rate (>=2 distinct types offered in same round): Baseline=0.2%, Candidate=1.4%
+  Starvation flags: none
+
+7. Budget Utilization (STEP6, Deliverable #7)
+  SETUP chosen count=233, avg Reserved Budget Utilization=187.1%, Timeout Rate(>=90% of 500ms)=97.0%
+
+8. Timeout Distribution (Deliverable #8)
+  See section 7 -- Timeout Rate 97.0% among SETUP-chosen rounds (n=233).
+
+9. Runtime Distribution (Deliverable #9)
+  See section 3.
+
+10. Release Readiness Matrix (Deliverable #10)
+  [PASS] Level 1 -- Production Integration 정상 동작
+    SETUP_RESERVED_SLICE_MS=500이 fiveByFiveEdgeRecovery.ts의 genSetup()에 실제로 적용됨 (Functional Verification STEP2에서 확인: reservedBudget 전략에서 SETUP이 더 이상 shared genDeadline에 skip되지 않음). chooseBestRecovery()는 한 줄도 수정되지 않음.
+  [OPEN_QUESTION] Level 2 -- Capability 향상 재현
+    Recovery-level improvedRate: Baseline 10.7% -> Candidate 5.1% (delta=-5.6pp). Budget & Scheduling Validation Sprint v1의 Shadow 측정치(delta=+11.9pp)의 50% 이상 -- 재현 미달, 원인 분석 필요.
+  [FAIL] Level 2 -- Regression 허용 범위
+    True Regression=11건, False Regression(노이즈)=6건, 단일-pass flip 관측=17건 / 142개 케이스.
+  [PASS] Level 3 -- Runtime 허용 범위
+    Candidate arm Recovery-layer runtime: avg=950ms, p95=1152ms, max=1343ms (기준 <=1200ms). SETUP 채택 시 Reserved Budget Utilization=187.1%, Timeout Rate=97.0% (500ms에서도 예산을 거의 항상 소진 -- Shadow Sprint의 timeoutRate=93.1%와 일관됨, 새로운 문제 아님).
+  [PASS] Level 3 -- Primitive Interaction (Starvation/Scheduler 안정성)
+    SETUP 채택률 상승에도 불구, REPAIR/CCR/MIXED_COMMUTATOR 채택률이 5pp 이상 하락하는 Starvation 신호 없음 (SETUP은 REPAIR/CCR/MIXED_COMMUTATOR와 Gate가 근본적으로 다른 population을 대상으로 하므로 구조적으로 경쟁하지 않음 -- Multi-offer rate: Baseline 0.2% -> Candidate 1.4%).
+  [PASS] 실제 solve() End-to-End Capability (real Production 확인)
+    실제 solve() 710회 실행: Improved 0.7%, Solved 0.0%, Recovery Trigger 447건 중 Recovery Success 5건, SETUP 채택 5건 중 성공 0건, Deadline Miss 259건. 실제 Production 경로에서 SETUP Reserved Slice가 작동하고 있음을 직접 확인.
+
+11. Final Decision (Deliverable #11)
+  Decision C: 하나 이상의 기준이 FAIL -- Shadow Scheduler에서 관찰된 효과가 실제 Production에서 재현되지 않거나 구조적 문제 발생, Architecture 수준 재검토 필요.
+
+12. Next Sprint Proposal (Deliverable #12)
+  Architecture Revision Sprint: Shadow Scheduler와 실제 Production 간 재현 실패 또는 구조적 문제의 원인 규명.

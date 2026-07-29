@@ -99,6 +99,20 @@ const REPAIR_RESERVED_SLICE_MS = 75;
 // point, matching RECOVERY_GEN_BUDGET_MS's own size.
 const MIXED_COMMUTATOR_RESERVED_SLICE_MS = 300;
 
+// CONFLICT_DEEP_DEPENDENCY Reserved Slice Production Integration Sprint v1:
+// SETUP's own reserved slice, off the OUTER deadline exactly like
+// REPAIR_RESERVED_SLICE_MS/MIXED_COMMUTATOR_RESERVED_SLICE_MS -- never the
+// shared genDeadline DISRUPT competes over. Sized per the preceding Budget
+// & Scheduling Validation Sprint v1's own Shadow Scheduler measurement
+// (Dose-Response over 75/150/300/500ms: improvedRate 0.6%/3.1%/8.1%/11.9%,
+// monotonically increasing and still climbing at 500ms -- the tested
+// ceiling, not SETUP's true saturation point) with 0 True Regression across
+// the full 142-case population. That same Sprint also found DISRUPT's own
+// Reserved Slice contributes zero unique wins (onlyReserved=0) at every
+// tested size -- so only SETUP gets a reserved slice here, DISRUPT keeps
+// sharing genDeadline exactly as before.
+const SETUP_RESERVED_SLICE_MS = 500;
+
 // Instrumentation hook for Integration Refinement Sprint v1's own STEP1/
 // STEP2 scheduling-verification measurements (matched/skipped/budget-
 // exhausted/timing) -- optional, no-op for every real caller. Reuses the
@@ -168,7 +182,20 @@ export function generateRecoveryStrategies(
   // real production call site automatically gets Mixed Commutator via
   // this default with ZERO Executor changes, the same mechanism CCR's own
   // integration already relies on.
-  includeMixedCommutator = true
+  includeMixedCommutator = true,
+  // CONFLICT_DEEP_DEPENDENCY Reserved Slice Production Integration Sprint
+  // v1: mirrors includeCCR/includeMixedCommutator's own pattern -- a
+  // trailing, defaulted parameter fiveByFiveEdgeExecutor.ts's own
+  // executeTask() (frozen this Sprint) never passes, so the real
+  // production call site automatically gets SETUP's reserved slice via
+  // this default with ZERO Executor changes. Unlike includeCCR/
+  // includeMixedCommutator (which fully disable a candidate), this only
+  // controls WHICH budget rule genSetup() uses -- SETUP itself still runs
+  // either way; `false` reconstructs the pre-this-Sprint reservedBudget
+  // behavior (SETUP sharing genDeadline with DISRUPT via slice(), gated by
+  // `Date.now() < genDeadline` like before) for the Capability/Regression
+  // Validation's Baseline arm, never real product callers.
+  useSetupReservedSlice = true
 ): RecoveryStrategy[] {
   const { lib, flipLib, caseLib } = libs;
   const genDeadline = Math.min(deadline, Date.now() + RECOVERY_GEN_BUDGET_MS);
@@ -228,6 +255,20 @@ export function generateRecoveryStrategies(
   };
 
   const genSetup = () => {
+    if (schedulingStrategy === "reservedBudget" && useSetupReservedSlice) {
+      // CONFLICT_DEEP_DEPENDENCY Reserved Slice Production Integration
+      // Sprint v1: SETUP's slot is protected exactly like genRepair()'s own
+      // reservedBudget branch -- always attempted (never gated by
+      // `Date.now() < genDeadline`), using a fresh SETUP_RESERVED_SLICE_MS
+      // window measured off the OUTER `deadline` rather than the (possibly
+      // already-exhausted) shared genDeadline. Order is otherwise
+      // unchanged (still runs third, before REPAIR).
+      onEvent?.({ candidateType: "SETUP", phase: "start", atMs: Date.now() });
+      const d = Math.min(deadline, Date.now() + SETUP_RESERVED_SLICE_MS);
+      const added = add("SETUP", "Multi-ply Setup (즉시 이득 없는 수 + 후속 수습, reservedBudget scheduling)", tryEndgameMultiPly(cubies, lib, flipLib, d));
+      onEvent?.({ candidateType: "SETUP", phase: added ? "generated" : "empty", atMs: Date.now() });
+      return;
+    }
     if (Date.now() >= genDeadline) {
       onEvent?.({ candidateType: "SETUP", phase: "skipped", atMs: Date.now() });
       return;
@@ -409,7 +450,12 @@ export function attemptRecovery(
   // generateRecoveryStrategies -- see that function's own
   // includeMixedCommutator comment. Defaults to true (Mixed Commutator
   // included) for real production use.
-  includeMixedCommutator = true
+  includeMixedCommutator = true,
+  // CONFLICT_DEEP_DEPENDENCY Reserved Slice Production Integration Sprint
+  // v1: threaded through to generateRecoveryStrategies -- see that
+  // function's own useSetupReservedSlice comment. Defaults to true
+  // (SETUP's reserved slice active) for real production use.
+  useSetupReservedSlice = true
 ): Move[] {
   const log = (label: string, detail?: string) => trace?.push({ at: Date.now(), label, detail });
   const visited = new Set<number>();
@@ -432,7 +478,7 @@ export function attemptRecovery(
   for (let round = 0; round < MAX_RECOVERY_RETRIES; round++) {
     if (Date.now() > deadline) break;
 
-    const candidates = generateRecoveryStrategies(scratch, libs, deadline, weights, includeRepair, schedulingStrategy, undefined, includeCCR, includeMixedCommutator);
+    const candidates = generateRecoveryStrategies(scratch, libs, deadline, weights, includeRepair, schedulingStrategy, undefined, includeCCR, includeMixedCommutator, useSetupReservedSlice);
     if (candidates.length === 0) {
       log("recovery-no-candidates", `${round + 1}회차: Recovery 후보를 찾지 못함`);
       break;
