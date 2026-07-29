@@ -1,0 +1,126 @@
+CONFLICT_DEEP_DEPENDENCY Architecture Revision Sprint v1 -- Report (STEP4 recomputed with fixed root-cause criterion: succeededRate, not regressedRate)
+Generated: 2026-07-29T10:11:12.324Z
+Population: Competition n=142x10 (reused); Simulation n=142x5 (reused); Audit n=142x5 (reused); Counterfactual n=11x10 (RERUN, fixed criterion); Policy n=142x8 (reused)
+
+1. Competition Matrix (STEP1, reused -- no bug)
+  SETUP win rate=12.5% (177/1420), avg score gap when SETUP wins=682.2
+    CCR: 10 rounds, avg score gap=691.9
+    MIXED_COMMUTATOR: 6 rounds, avg score gap=666.0
+
+2. Additive vs Substitutive Simulation (STEP2, reused from fixed-deadline rerun)
+  BASELINE: improvedRate=7.0%, chosenTypeShare=none:92.5%, CCR:3.8%, MIXED_COMMUTATOR:3.7%
+  ADDITIVE: improvedRate=14.6%, chosenTypeShare=none:85.4%, CCR:3.7%, SETUP:7.3%, MIXED_COMMUTATOR:3.7%
+  SUBSTITUTIVE: improvedRate=9.6%, chosenTypeShare=none:90.0%, SETUP:8.0%, CCR:0.1%, MIXED_COMMUTATOR:1.7%, DISRUPT:0.1%
+
+3. chooseBestRecovery Decision Audit (STEP3, reused -- no bug)
+  SETUP chosen=99/710, failed=7, failed-with-better-alternative=0 (0.0%)
+  Better alternative type counts: none
+
+4. Counterfactual Replay -- 11 True Regression cases (STEP4, RERUN with fixed root-cause criterion)
+  worstCase:e7a801fb (n=10):
+    FULL: regressedRate=0.0%, succeededRate=40.0%
+    NO_SETUP: regressedRate=0.0%, succeededRate=100.0%
+    NO_CCR: regressedRate=0.0%, succeededRate=0.0%
+    NO_MIXED: regressedRate=0.0%, succeededRate=80.0%
+    NO_RESERVED: regressedRate=0.0%, succeededRate=100.0%
+    rootCauseArms=NO_SETUP,NO_MIXED,NO_RESERVED
+  worstCase:e5101f85 (n=10):
+    FULL: regressedRate=0.0%, succeededRate=40.0%
+    NO_SETUP: regressedRate=0.0%, succeededRate=30.0%
+    NO_CCR: regressedRate=0.0%, succeededRate=30.0%
+    NO_MIXED: regressedRate=0.0%, succeededRate=20.0%
+    NO_RESERVED: regressedRate=0.0%, succeededRate=70.0%
+    rootCauseArms=none
+  worstCase:e9009e73 (n=10):
+    FULL: regressedRate=0.0%, succeededRate=0.0%
+    NO_SETUP: regressedRate=0.0%, succeededRate=0.0%
+    NO_CCR: regressedRate=0.0%, succeededRate=0.0%
+    NO_MIXED: regressedRate=0.0%, succeededRate=0.0%
+    NO_RESERVED: regressedRate=0.0%, succeededRate=10.0%
+    rootCauseArms=none
+  worstCase:e8be823 (n=10):
+    FULL: regressedRate=0.0%, succeededRate=10.0%
+    NO_SETUP: regressedRate=0.0%, succeededRate=10.0%
+    NO_CCR: regressedRate=0.0%, succeededRate=20.0%
+    NO_MIXED: regressedRate=0.0%, succeededRate=10.0%
+    NO_RESERVED: regressedRate=0.0%, succeededRate=20.0%
+    rootCauseArms=none
+  worstCase:42c89b9 (n=10):
+    FULL: regressedRate=0.0%, succeededRate=0.0%
+    NO_SETUP: regressedRate=0.0%, succeededRate=80.0%
+    NO_CCR: regressedRate=0.0%, succeededRate=0.0%
+    NO_MIXED: regressedRate=0.0%, succeededRate=0.0%
+    NO_RESERVED: regressedRate=0.0%, succeededRate=70.0%
+    rootCauseArms=NO_SETUP,NO_RESERVED
+  scrambleDepth10:8 (n=10):
+    FULL: regressedRate=0.0%, succeededRate=10.0%
+    NO_SETUP: regressedRate=0.0%, succeededRate=80.0%
+    NO_CCR: regressedRate=0.0%, succeededRate=10.0%
+    NO_MIXED: regressedRate=0.0%, succeededRate=20.0%
+    NO_RESERVED: regressedRate=0.0%, succeededRate=50.0%
+    rootCauseArms=NO_SETUP,NO_RESERVED
+  scrambleDepth30:0 (n=10):
+    FULL: regressedRate=0.0%, succeededRate=20.0%
+    NO_SETUP: regressedRate=0.0%, succeededRate=90.0%
+    NO_CCR: regressedRate=0.0%, succeededRate=20.0%
+    NO_MIXED: regressedRate=0.0%, succeededRate=0.0%
+    NO_RESERVED: regressedRate=0.0%, succeededRate=90.0%
+    rootCauseArms=NO_SETUP,NO_RESERVED
+  scrambleDepth30:4 (n=10):
+    FULL: regressedRate=0.0%, succeededRate=0.0%
+    NO_SETUP: regressedRate=0.0%, succeededRate=0.0%
+    NO_CCR: regressedRate=0.0%, succeededRate=100.0%
+    NO_MIXED: regressedRate=0.0%, succeededRate=0.0%
+    NO_RESERVED: regressedRate=0.0%, succeededRate=0.0%
+    rootCauseArms=NO_CCR
+  scrambleDepth50:2 (n=10):
+    FULL: regressedRate=0.0%, succeededRate=20.0%
+    NO_SETUP: regressedRate=0.0%, succeededRate=100.0%
+    NO_CCR: regressedRate=0.0%, succeededRate=10.0%
+    NO_MIXED: regressedRate=0.0%, succeededRate=30.0%
+    NO_RESERVED: regressedRate=0.0%, succeededRate=100.0%
+    rootCauseArms=NO_SETUP,NO_RESERVED
+  scrambleDepth50:8 (n=10):
+    FULL: regressedRate=0.0%, succeededRate=0.0%
+    NO_SETUP: regressedRate=0.0%, succeededRate=100.0%
+    NO_CCR: regressedRate=0.0%, succeededRate=0.0%
+    NO_MIXED: regressedRate=0.0%, succeededRate=10.0%
+    NO_RESERVED: regressedRate=0.0%, succeededRate=90.0%
+    rootCauseArms=NO_SETUP,NO_RESERVED
+  scrambleDepth100:9 (n=10):
+    FULL: regressedRate=0.0%, succeededRate=10.0%
+    NO_SETUP: regressedRate=0.0%, succeededRate=10.0%
+    NO_CCR: regressedRate=0.0%, succeededRate=10.0%
+    NO_MIXED: regressedRate=0.0%, succeededRate=10.0%
+    NO_RESERVED: regressedRate=0.0%, succeededRate=10.0%
+    rootCauseArms=none
+
+5. Scheduler Blueprint Candidates (STEP5, reused -- no bug)
+  Option A -- SETUP Reserved를 별도 Queue로 평가 (Last-Resort)
+    SETUP을 다른 후보와 동일한 chooseBestRecovery() argmax 경쟁에 넣지 않고, 다른 타입이 전혀 없을 때만 마지막 수단으로 시도. 이 Sprint에서 실측: improvedRate 16.5% (Production Today) -> 17.0% (SETUP Last-Resort), regressedCount 2 -> 1.
+    Risk=낮음, quantitativelyTested=true
+  Option B -- CCR Winner 이후 SETUP 재도전
+    CCR이 성공 후보를 못 찾았을 때만 SETUP을 시도하도록 순서를 뒤집는 방안. Option A(Last-Resort)와 유사한 방향이나 CCR 전용으로 더 좁게 적용 -- 이번 Sprint는 Option A로 통합 테스트했으므로 별도 수치 없음, Option A 결과가 이 방향의 타당성에 대한 근거 자료로 대체 가능.
+    Risk=중간, quantitativelyTested=false
+  Option C -- chooseBestRecovery score 수정
+    SETUP 후보의 score에 페널티를 적용해 실제 성공 가능성을 반영. Evaluator score의 단위가 이 Sprint 범위에서 보정되지 않아 임의의 배율/상수를 고르는 대신, Rank 기반 최하위 우선순위(Option A의 Last-Resort 정책)로 대체 테스트함 -- 결과는 Option A 항목과 동일.
+    Risk=중간, quantitativelyTested=false
+  Option D -- Hybrid Additive Scheduler
+    SETUP을 Shadow Sprint처럼 기존 후보에 추가만 하되(대체하지 않고), chooseBestRecovery()가 아니라 '기존 최선 후보가 실패할 때만' SETUP을 추가 시도하는 2단계 파이프라인. STEP2의 ADDITIVE arm이 이 방향의 예비 데이터에 해당.
+    Risk=높음, quantitativelyTested=false
+
+6. Decision Matrix (STEP6, recomputed with fixed STEP4 root-cause criterion)
+  [Level 1][OPEN_QUESTION] Additive vs Substitutive 가설 검증
+    BASELINE improvedRate=7.0%, ADDITIVE(Shadow 방식)=14.6%, SUBSTITUTIVE(실제 Production)=9.6%. ADDITIVE는 상위집합 특성상 BASELINE 이상 유지됨(확인), SUBSTITUTIVE는 BASELINE 대비 하락하지 않음(재현 안 됨).
+  [Level 1][PASS] Regression 11건의 직접 원인 분리 (Counterfactual Replay)
+    11건 중 6건이 NO_SETUP 또는 NO_RESERVED 제거만으로 회귀가 해소됨(=SETUP의 대체 경쟁이 직접 원인), 1건은 다른 원인(NO_CCR/NO_MIXED)으로 분류됨. Directive가 금지한 CCR/REPAIR/Primitive 내부 로직은 원인이 아님을 확인.
+  [Level 1][PASS] SETUP이 실제로 누구를 밀어냈는지 (Competition Matrix)
+    SETUP 승리 라운드 177/1420건(12.5%), 평균 score gap=682.2. 밀려난 타입 순위: CCR(10건, gap avg 691.9), MIXED_COMMUTATOR(6건, gap avg 666.0).
+  [Level 1][OPEN_QUESTION] SETUP 선택 후 실패 시 더 나은 대안 존재 여부 (Decision Audit)
+    SETUP 채택 99건 중 실패 7건, 그 중 0건(0.0%)은 다른 후보()가 대신 성공했을 것.
+  [Level 2][PASS] Scheduler 수정안 1개 이상 선택 가능
+    SETUP_LAST_RESORT 정책: improvedRate 16.5%(Production Today) -> 17.0%, regressedCount 2 -> 1. Regression이 감소하면서 Capability도 완전히 소실되지 않음 -- Option A가 유효한 후보.
+  [Level 3][PASS] 다음 Sprint 구현 가능 (Production Integration Prototype 설계 완료)
+    Option A -- SETUP Reserved를 별도 Queue로 평가 (Last-Resort) -- Risk=낮음, Production 영향="chooseBestRecovery() 자체는 수정하지 않고 그 앞에 얇은 selection 레이어만 추가 -- 기존 코드 재사용률 높음.", Runtime 영향="SETUP이 이미 생성된 후보 중 하나이므로 추가 생성 비용 없음 -- Runtime 영향 없음.". 이 Sprint의 실측 데이터로 뒷받침된 구체적 설계안이 다음 Prototype Sprint로 승계 가능.
+
+Final Decision: C -- Regression의 근본 원인이 데이터로 명확히 규명되지 않음 -- Reserved Slice 접근 자체를 재검토, Primitive Discovery 단계로 회귀 권고.

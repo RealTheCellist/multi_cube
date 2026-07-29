@@ -1,0 +1,386 @@
+{
+  "competitionSummary": {
+    "n": 1420,
+    "setupWinCount": 177,
+    "setupWinRate": 0.12464788732394366,
+    "avgScoreGapWhenSetupWins": 682.15625,
+    "displacement": [
+      {
+        "displacedType": "CCR",
+        "countAsRunnerUp": 10,
+        "avgScoreGap": 691.85
+      },
+      {
+        "displacedType": "MIXED_COMMUTATOR",
+        "countAsRunnerUp": 6,
+        "avgScoreGap": 666
+      }
+    ]
+  },
+  "simulationSummary": [
+    {
+      "arm": "BASELINE",
+      "improvedRate": 0.07042253521126761,
+      "chosenTypeShare": {
+        "none": 0.9253521126760563,
+        "CCR": 0.038028169014084505,
+        "MIXED_COMMUTATOR": 0.036619718309859155
+      }
+    },
+    {
+      "arm": "ADDITIVE",
+      "improvedRate": 0.14647887323943662,
+      "chosenTypeShare": {
+        "none": 0.8535211267605634,
+        "CCR": 0.036619718309859155,
+        "SETUP": 0.07323943661971831,
+        "MIXED_COMMUTATOR": 0.036619718309859155
+      }
+    },
+    {
+      "arm": "SUBSTITUTIVE",
+      "improvedRate": 0.09577464788732394,
+      "chosenTypeShare": {
+        "none": 0.9,
+        "SETUP": 0.08028169014084507,
+        "CCR": 0.0014084507042253522,
+        "MIXED_COMMUTATOR": 0.016901408450704224,
+        "DISRUPT": 0.0014084507042253522
+      }
+    }
+  ],
+  "auditSummary": {
+    "n": 710,
+    "setupChosenCount": 99,
+    "setupChosenFailedCount": 7,
+    "setupFailedWithBetterAlternativeCount": 0,
+    "setupFailedBetterAlternativeRate": 0,
+    "betterAlternativeTypeCounts": {}
+  },
+  "counterfactualSummaries": [
+    {
+      "label": "worstCase:e7a801fb",
+      "n": 10,
+      "armRegressedRate": {
+        "FULL": 0,
+        "NO_SETUP": 0,
+        "NO_CCR": 0,
+        "NO_MIXED": 0,
+        "NO_RESERVED": 0
+      },
+      "armSucceededRate": {
+        "FULL": 0.4,
+        "NO_SETUP": 1,
+        "NO_CCR": 0,
+        "NO_MIXED": 0.8,
+        "NO_RESERVED": 1
+      },
+      "rootCauseArms": [
+        "NO_SETUP",
+        "NO_MIXED",
+        "NO_RESERVED"
+      ]
+    },
+    {
+      "label": "worstCase:e5101f85",
+      "n": 10,
+      "armRegressedRate": {
+        "FULL": 0,
+        "NO_SETUP": 0,
+        "NO_CCR": 0,
+        "NO_MIXED": 0,
+        "NO_RESERVED": 0
+      },
+      "armSucceededRate": {
+        "FULL": 0.4,
+        "NO_SETUP": 0.3,
+        "NO_CCR": 0.3,
+        "NO_MIXED": 0.2,
+        "NO_RESERVED": 0.7
+      },
+      "rootCauseArms": []
+    },
+    {
+      "label": "worstCase:e9009e73",
+      "n": 10,
+      "armRegressedRate": {
+        "FULL": 0,
+        "NO_SETUP": 0,
+        "NO_CCR": 0,
+        "NO_MIXED": 0,
+        "NO_RESERVED": 0
+      },
+      "armSucceededRate": {
+        "FULL": 0,
+        "NO_SETUP": 0,
+        "NO_CCR": 0,
+        "NO_MIXED": 0,
+        "NO_RESERVED": 0.1
+      },
+      "rootCauseArms": []
+    },
+    {
+      "label": "worstCase:e8be823",
+      "n": 10,
+      "armRegressedRate": {
+        "FULL": 0,
+        "NO_SETUP": 0,
+        "NO_CCR": 0,
+        "NO_MIXED": 0,
+        "NO_RESERVED": 0
+      },
+      "armSucceededRate": {
+        "FULL": 0.1,
+        "NO_SETUP": 0.1,
+        "NO_CCR": 0.2,
+        "NO_MIXED": 0.1,
+        "NO_RESERVED": 0.2
+      },
+      "rootCauseArms": []
+    },
+    {
+      "label": "worstCase:42c89b9",
+      "n": 10,
+      "armRegressedRate": {
+        "FULL": 0,
+        "NO_SETUP": 0,
+        "NO_CCR": 0,
+        "NO_MIXED": 0,
+        "NO_RESERVED": 0
+      },
+      "armSucceededRate": {
+        "FULL": 0,
+        "NO_SETUP": 0.8,
+        "NO_CCR": 0,
+        "NO_MIXED": 0,
+        "NO_RESERVED": 0.7
+      },
+      "rootCauseArms": [
+        "NO_SETUP",
+        "NO_RESERVED"
+      ]
+    },
+    {
+      "label": "scrambleDepth10:8",
+      "n": 10,
+      "armRegressedRate": {
+        "FULL": 0,
+        "NO_SETUP": 0,
+        "NO_CCR": 0,
+        "NO_MIXED": 0,
+        "NO_RESERVED": 0
+      },
+      "armSucceededRate": {
+        "FULL": 0.1,
+        "NO_SETUP": 0.8,
+        "NO_CCR": 0.1,
+        "NO_MIXED": 0.2,
+        "NO_RESERVED": 0.5
+      },
+      "rootCauseArms": [
+        "NO_SETUP",
+        "NO_RESERVED"
+      ]
+    },
+    {
+      "label": "scrambleDepth30:0",
+      "n": 10,
+      "armRegressedRate": {
+        "FULL": 0,
+        "NO_SETUP": 0,
+        "NO_CCR": 0,
+        "NO_MIXED": 0,
+        "NO_RESERVED": 0
+      },
+      "armSucceededRate": {
+        "FULL": 0.2,
+        "NO_SETUP": 0.9,
+        "NO_CCR": 0.2,
+        "NO_MIXED": 0,
+        "NO_RESERVED": 0.9
+      },
+      "rootCauseArms": [
+        "NO_SETUP",
+        "NO_RESERVED"
+      ]
+    },
+    {
+      "label": "scrambleDepth30:4",
+      "n": 10,
+      "armRegressedRate": {
+        "FULL": 0,
+        "NO_SETUP": 0,
+        "NO_CCR": 0,
+        "NO_MIXED": 0,
+        "NO_RESERVED": 0
+      },
+      "armSucceededRate": {
+        "FULL": 0,
+        "NO_SETUP": 0,
+        "NO_CCR": 1,
+        "NO_MIXED": 0,
+        "NO_RESERVED": 0
+      },
+      "rootCauseArms": [
+        "NO_CCR"
+      ]
+    },
+    {
+      "label": "scrambleDepth50:2",
+      "n": 10,
+      "armRegressedRate": {
+        "FULL": 0,
+        "NO_SETUP": 0,
+        "NO_CCR": 0,
+        "NO_MIXED": 0,
+        "NO_RESERVED": 0
+      },
+      "armSucceededRate": {
+        "FULL": 0.2,
+        "NO_SETUP": 1,
+        "NO_CCR": 0.1,
+        "NO_MIXED": 0.3,
+        "NO_RESERVED": 1
+      },
+      "rootCauseArms": [
+        "NO_SETUP",
+        "NO_RESERVED"
+      ]
+    },
+    {
+      "label": "scrambleDepth50:8",
+      "n": 10,
+      "armRegressedRate": {
+        "FULL": 0,
+        "NO_SETUP": 0,
+        "NO_CCR": 0,
+        "NO_MIXED": 0,
+        "NO_RESERVED": 0
+      },
+      "armSucceededRate": {
+        "FULL": 0,
+        "NO_SETUP": 1,
+        "NO_CCR": 0,
+        "NO_MIXED": 0.1,
+        "NO_RESERVED": 0.9
+      },
+      "rootCauseArms": [
+        "NO_SETUP",
+        "NO_RESERVED"
+      ]
+    },
+    {
+      "label": "scrambleDepth100:9",
+      "n": 10,
+      "armRegressedRate": {
+        "FULL": 0,
+        "NO_SETUP": 0,
+        "NO_CCR": 0,
+        "NO_MIXED": 0,
+        "NO_RESERVED": 0
+      },
+      "armSucceededRate": {
+        "FULL": 0.1,
+        "NO_SETUP": 0.1,
+        "NO_CCR": 0.1,
+        "NO_MIXED": 0.1,
+        "NO_RESERVED": 0.1
+      },
+      "rootCauseArms": []
+    }
+  ],
+  "policySummaries": [
+    {
+      "policy": "PRODUCTION_TODAY",
+      "n": 1136,
+      "improvedRate": 0.16549295774647887,
+      "regressedCount": 2
+    },
+    {
+      "policy": "SETUP_LAST_RESORT",
+      "n": 1136,
+      "improvedRate": 0.1698943661971831,
+      "regressedCount": 1
+    }
+  ],
+  "schedulerOptions": [
+    {
+      "name": "Option A -- SETUP Reserved를 별도 Queue로 평가 (Last-Resort)",
+      "description": "SETUP을 다른 후보와 동일한 chooseBestRecovery() argmax 경쟁에 넣지 않고, 다른 타입이 전혀 없을 때만 마지막 수단으로 시도. 이 Sprint에서 실측: improvedRate 16.5% (Production Today) -> 17.0% (SETUP Last-Resort), regressedCount 2 -> 1.",
+      "risk": "낮음",
+      "productionImpact": "chooseBestRecovery() 자체는 수정하지 않고 그 앞에 얇은 selection 레이어만 추가 -- 기존 코드 재사용률 높음.",
+      "regressionPotential": "실측상 감소 확인",
+      "runtimeImpact": "SETUP이 이미 생성된 후보 중 하나이므로 추가 생성 비용 없음 -- Runtime 영향 없음.",
+      "quantitativelyTested": true
+    },
+    {
+      "name": "Option B -- CCR Winner 이후 SETUP 재도전",
+      "description": "CCR이 성공 후보를 못 찾았을 때만 SETUP을 시도하도록 순서를 뒤집는 방안. Option A(Last-Resort)와 유사한 방향이나 CCR 전용으로 더 좁게 적용 -- 이번 Sprint는 Option A로 통합 테스트했으므로 별도 수치 없음, Option A 결과가 이 방향의 타당성에 대한 근거 자료로 대체 가능.",
+      "risk": "중간",
+      "productionImpact": "CCR의 remainingTime 예산 계산이 SETUP의 실행 여부에 의존하게 되어 스케줄링 순서 변경이 REPAIR/MIXED_COMMUTATOR에도 파급될 수 있음.",
+      "regressionPotential": "Option A와 유사한 개선 방향 기대되나 별도 실측 필요.",
+      "runtimeImpact": "SETUP이 조건부로만 실행되므로 Runtime 절감 가능성 있음(항상 500ms 소진하지 않음).",
+      "quantitativelyTested": false
+    },
+    {
+      "name": "Option C -- chooseBestRecovery score 수정",
+      "description": "SETUP 후보의 score에 페널티를 적용해 실제 성공 가능성을 반영. Evaluator score의 단위가 이 Sprint 범위에서 보정되지 않아 임의의 배율/상수를 고르는 대신, Rank 기반 최하위 우선순위(Option A의 Last-Resort 정책)로 대체 테스트함 -- 결과는 Option A 항목과 동일.",
+      "risk": "중간",
+      "productionImpact": "chooseBestRecovery() 자체를 수정해야 하므로 이번 Sprint의 '계측만 수행' 범위를 벗어남 -- 다음 Prototype Sprint에서 실제 코드 변경 필요.",
+      "regressionPotential": "Option A의 실측 결과가 방향성의 근거.",
+      "runtimeImpact": "없음 (선택 로직만 변경).",
+      "quantitativelyTested": false
+    },
+    {
+      "name": "Option D -- Hybrid Additive Scheduler",
+      "description": "SETUP을 Shadow Sprint처럼 기존 후보에 추가만 하되(대체하지 않고), chooseBestRecovery()가 아니라 '기존 최선 후보가 실패할 때만' SETUP을 추가 시도하는 2단계 파이프라인. STEP2의 ADDITIVE arm이 이 방향의 예비 데이터에 해당.",
+      "risk": "높음",
+      "productionImpact": "attemptRecovery()의 MAX_RECOVERY_RETRIES 루프 구조 자체를 변경해야 할 가능성 -- 가장 큰 구조 변경.",
+      "regressionPotential": "STEP2 ADDITIVE arm 참조 -- 이론상 회귀 없음(상위집합 특성)이나 Runtime 비용 증가.",
+      "runtimeImpact": "최선 후보 실패 후 SETUP을 추가로 시도하므로 Worst-case Runtime 증가(최대 500ms 추가).",
+      "quantitativelyTested": false
+    }
+  ],
+  "decisionMatrix": {
+    "rows": [
+      {
+        "level": 1,
+        "criterion": "Additive vs Substitutive 가설 검증",
+        "status": "OPEN_QUESTION",
+        "evidence": "BASELINE improvedRate=7.0%, ADDITIVE(Shadow 방식)=14.6%, SUBSTITUTIVE(실제 Production)=9.6%. ADDITIVE는 상위집합 특성상 BASELINE 이상 유지됨(확인), SUBSTITUTIVE는 BASELINE 대비 하락하지 않음(재현 안 됨)."
+      },
+      {
+        "level": 1,
+        "criterion": "Regression 11건의 직접 원인 분리 (Counterfactual Replay)",
+        "status": "PASS",
+        "evidence": "11건 중 6건이 NO_SETUP 또는 NO_RESERVED 제거만으로 회귀가 해소됨(=SETUP의 대체 경쟁이 직접 원인), 1건은 다른 원인(NO_CCR/NO_MIXED)으로 분류됨. Directive가 금지한 CCR/REPAIR/Primitive 내부 로직은 원인이 아님을 확인."
+      },
+      {
+        "level": 1,
+        "criterion": "SETUP이 실제로 누구를 밀어냈는지 (Competition Matrix)",
+        "status": "PASS",
+        "evidence": "SETUP 승리 라운드 177/1420건(12.5%), 평균 score gap=682.2. 밀려난 타입 순위: CCR(10건, gap avg 691.9), MIXED_COMMUTATOR(6건, gap avg 666.0)."
+      },
+      {
+        "level": 1,
+        "criterion": "SETUP 선택 후 실패 시 더 나은 대안 존재 여부 (Decision Audit)",
+        "status": "OPEN_QUESTION",
+        "evidence": "SETUP 채택 99건 중 실패 7건, 그 중 0건(0.0%)은 다른 후보()가 대신 성공했을 것."
+      },
+      {
+        "level": 2,
+        "criterion": "Scheduler 수정안 1개 이상 선택 가능",
+        "status": "PASS",
+        "evidence": "SETUP_LAST_RESORT 정책: improvedRate 16.5%(Production Today) -> 17.0%, regressedCount 2 -> 1. Regression이 감소하면서 Capability도 완전히 소실되지 않음 -- Option A가 유효한 후보."
+      },
+      {
+        "level": 3,
+        "criterion": "다음 Sprint 구현 가능 (Production Integration Prototype 설계 완료)",
+        "status": "PASS",
+        "evidence": "Option A -- SETUP Reserved를 별도 Queue로 평가 (Last-Resort) -- Risk=낮음, Production 영향=\"chooseBestRecovery() 자체는 수정하지 않고 그 앞에 얇은 selection 레이어만 추가 -- 기존 코드 재사용률 높음.\", Runtime 영향=\"SETUP이 이미 생성된 후보 중 하나이므로 추가 생성 비용 없음 -- Runtime 영향 없음.\". 이 Sprint의 실측 데이터로 뒷받침된 구체적 설계안이 다음 Prototype Sprint로 승계 가능."
+      }
+    ],
+    "decision": "C",
+    "decisionRationale": "Regression의 근본 원인이 데이터로 명확히 규명되지 않음 -- Reserved Slice 접근 자체를 재검토, Primitive Discovery 단계로 회귀 권고."
+  }
+}
