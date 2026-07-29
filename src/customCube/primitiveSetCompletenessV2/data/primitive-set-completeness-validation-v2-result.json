@@ -1,0 +1,4480 @@
+{
+  "coverageRows": [
+    {
+      "label": "worstCase:45959141",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:46086463",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:64369533",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:68977335",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:84976575",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:f17d7eb9",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:70a5020b",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "worstCase:7541612b",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "worstCase:b714481",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:beb967ad",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:1e928fb1",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": true,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "CCR",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:4549b041",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "worstCase:1513fcff",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:d37ca819",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "worstCase:ae3d218b",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "worstCase:120fc3af",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:dd4d94fd",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": true,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:36336c1",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:ad12c377",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:e7a801fb",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": true,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:1af658ab",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "worstCase:4e27e5a1",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "worstCase:93b485f7",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:5e5b20b",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:e5101f85",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": true,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:4749cd9d",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:d27df773",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:c039e611",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:b2c9ceb9",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:589b0a25",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:cee673eb",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:e9009e73",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": true,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:e8be823",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:14f5293f",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:f776edb1",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:2db21feb",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:849509c9",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:c0277d5d",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:f5f1b8fd",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:a005d41f",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:224f6f8b",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:252f8891",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:5f7ee009",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:d3283799",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:710de4d1",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:5d189c1",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:669f43ff",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:42c89b9",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": true,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:3cece8ff",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "worstCase:44b9b619",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "snapshot335:12022029",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:27053491",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "snapshot335:45959141",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:46086463",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:64369533",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:68977335",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:84976575",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:f17d7eb9",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:a061555d",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:dda1453f",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:e7a801fb",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:1af658ab",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:70a5020b",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:56a8b82d",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:7541612b",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:b714481",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:beb967ad",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:1e928fb1",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:4549b041",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "snapshot335:4e27e5a1",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "snapshot335:d37ca819",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "snapshot335:93b485f7",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:5e5b20b",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "snapshot335:120fc3af",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:dd4d94fd",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": true,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:36336c1",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "snapshot335:ad12c377",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth10:0",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth10:1",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth10:2",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth10:4",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth10:5",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "scrambleDepth10:6",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "scrambleDepth10:8",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": true,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "CCR",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth10:9",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth20:0",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth20:1",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth20:2",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth20:3",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth20:4",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth20:5",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "scrambleDepth20:6",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth20:7",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth20:9",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth30:0",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth30:1",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth30:2",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth30:3",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "scrambleDepth30:4",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth30:5",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth30:6",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth30:7",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "scrambleDepth30:8",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth30:9",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth40:0",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth40:1",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth40:2",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth40:3",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth40:4",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "scrambleDepth40:5",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth40:6",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth40:8",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "scrambleDepth40:9",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "scrambleDepth50:0",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth50:1",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth50:2",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": true,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth50:3",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "scrambleDepth50:4",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth50:5",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth50:6",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth50:7",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth50:8",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": true,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth50:9",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth100:0",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth100:1",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth100:2",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "PARITY",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth100:3",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth100:4",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "MIXED_COMMUTATOR",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth100:6",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": false,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    },
+    {
+      "label": "scrambleDepth100:7",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "succeededBy": {
+        "BASE": false,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": false,
+        "CCR": false,
+        "MIXED_COMMUTATOR": false
+      },
+      "firstSuccessfulPrimitive": null,
+      "unionCovered": false
+    },
+    {
+      "label": "scrambleDepth100:9",
+      "succeededBy": {
+        "BASE": true,
+        "FLIP": false,
+        "CASE": false,
+        "PARITY": true,
+        "CCR": true,
+        "MIXED_COMMUTATOR": true
+      },
+      "firstSuccessfulPrimitive": "BASE",
+      "unionCovered": true
+    }
+  ],
+  "coverageSummary": {
+    "totalCases": 142,
+    "perPrimitiveSuccessCount": {
+      "BASE": 60,
+      "FLIP": 0,
+      "CASE": 0,
+      "PARITY": 80,
+      "CCR": 11,
+      "MIXED_COMMUTATOR": 86
+    },
+    "unionCoveredCount": 113,
+    "residualCount": 29
+  },
+  "residualFeatures": [
+    {
+      "label": "worstCase:70a5020b",
+      "hasParity": false,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 7,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.5714285714285714,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "hasParity": true,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 11,
+      "conflictEdgeCount": 9,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 9,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.09090909090909091,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 3,
+      "cycleEdgeCount": 0
+    },
+    {
+      "label": "worstCase:7541612b",
+      "hasParity": false,
+      "cycleCount": 1,
+      "cycleLength": 6,
+      "componentCount": 1,
+      "wrongWingCount": 6,
+      "conflictEdgeCount": 0,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 6,
+      "bridgeDistance": 0,
+      "branchingFactor": 1.1666666666666667,
+      "cycleTopology": {
+        "cycleCount": 1,
+        "cycleLengths": [
+          6
+        ],
+        "isSingleCycle": true,
+        "hasSwap": false
+      },
+      "pairCount": 6,
+      "cycleEdgeCount": 6
+    },
+    {
+      "label": "worstCase:4549b041",
+      "hasParity": false,
+      "cycleCount": 1,
+      "cycleLength": 4,
+      "componentCount": 1,
+      "wrongWingCount": 4,
+      "conflictEdgeCount": 0,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 4,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.5,
+      "cycleTopology": {
+        "cycleCount": 1,
+        "cycleLengths": [
+          4
+        ],
+        "isSingleCycle": true,
+        "hasSwap": false
+      },
+      "pairCount": 8,
+      "cycleEdgeCount": 4
+    },
+    {
+      "label": "worstCase:d37ca819",
+      "hasParity": false,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 7,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.2857142857142857,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0
+    },
+    {
+      "label": "worstCase:ae3d218b",
+      "hasParity": false,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 7,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.5714285714285714,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0
+    },
+    {
+      "label": "worstCase:1af658ab",
+      "hasParity": false,
+      "cycleCount": 1,
+      "cycleLength": 4,
+      "componentCount": 1,
+      "wrongWingCount": 4,
+      "conflictEdgeCount": 0,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 4,
+      "bridgeDistance": 0,
+      "branchingFactor": 0,
+      "cycleTopology": {
+        "cycleCount": 1,
+        "cycleLengths": [
+          4
+        ],
+        "isSingleCycle": true,
+        "hasSwap": false
+      },
+      "pairCount": 8,
+      "cycleEdgeCount": 4
+    },
+    {
+      "label": "worstCase:4e27e5a1",
+      "hasParity": true,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 8,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.625,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0
+    },
+    {
+      "label": "worstCase:f776edb1",
+      "hasParity": false,
+      "cycleCount": 1,
+      "cycleLength": 5,
+      "componentCount": 1,
+      "wrongWingCount": 5,
+      "conflictEdgeCount": 0,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 5,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.2,
+      "cycleTopology": {
+        "cycleCount": 1,
+        "cycleLengths": [
+          5
+        ],
+        "isSingleCycle": true,
+        "hasSwap": false
+      },
+      "pairCount": 7,
+      "cycleEdgeCount": 5
+    },
+    {
+      "label": "worstCase:44b9b619",
+      "hasParity": true,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 8,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0
+    },
+    {
+      "label": "snapshot335:27053491",
+      "hasParity": false,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 7,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.14285714285714285,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0
+    },
+    {
+      "label": "snapshot335:56a8b82d",
+      "hasParity": false,
+      "cycleCount": 1,
+      "cycleLength": 3,
+      "componentCount": 1,
+      "wrongWingCount": 3,
+      "conflictEdgeCount": 0,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 3,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.6666666666666666,
+      "cycleTopology": {
+        "cycleCount": 1,
+        "cycleLengths": [
+          3
+        ],
+        "isSingleCycle": true,
+        "hasSwap": false
+      },
+      "pairCount": 9,
+      "cycleEdgeCount": 3
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "hasParity": false,
+      "cycleCount": 1,
+      "cycleLength": 4,
+      "componentCount": 1,
+      "wrongWingCount": 4,
+      "conflictEdgeCount": 0,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 4,
+      "bridgeDistance": 0,
+      "branchingFactor": 1.5,
+      "cycleTopology": {
+        "cycleCount": 1,
+        "cycleLengths": [
+          4
+        ],
+        "isSingleCycle": true,
+        "hasSwap": false
+      },
+      "pairCount": 8,
+      "cycleEdgeCount": 4
+    },
+    {
+      "label": "snapshot335:4e27e5a1",
+      "hasParity": true,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 8,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.625,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0
+    },
+    {
+      "label": "snapshot335:d37ca819",
+      "hasParity": false,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 7,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.2857142857142857,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0
+    },
+    {
+      "label": "snapshot335:5e5b20b",
+      "hasParity": true,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 9,
+      "conflictEdgeCount": 8,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 8,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.7777777777777778,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 4,
+      "cycleEdgeCount": 0
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "hasParity": false,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 7,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.5714285714285714,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0
+    },
+    {
+      "label": "scrambleDepth10:2",
+      "hasParity": false,
+      "cycleCount": 1,
+      "cycleLength": 3,
+      "componentCount": 1,
+      "wrongWingCount": 3,
+      "conflictEdgeCount": 0,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 3,
+      "bridgeDistance": 0,
+      "branchingFactor": 1,
+      "cycleTopology": {
+        "cycleCount": 1,
+        "cycleLengths": [
+          3
+        ],
+        "isSingleCycle": true,
+        "hasSwap": false
+      },
+      "pairCount": 9,
+      "cycleEdgeCount": 3
+    },
+    {
+      "label": "scrambleDepth10:5",
+      "hasParity": false,
+      "cycleCount": 2,
+      "cycleLength": 4,
+      "componentCount": 2,
+      "wrongWingCount": 6,
+      "conflictEdgeCount": 0,
+      "swapEdgeCount": 2,
+      "dependencyDepth": 4,
+      "bridgeDistance": 1,
+      "branchingFactor": 0.3333333333333333,
+      "cycleTopology": {
+        "cycleCount": 2,
+        "cycleLengths": [
+          4,
+          2
+        ],
+        "isSingleCycle": false,
+        "hasSwap": true
+      },
+      "pairCount": 6,
+      "cycleEdgeCount": 4
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "hasParity": false,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 8,
+      "conflictEdgeCount": 8,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 8,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.625,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 4,
+      "cycleEdgeCount": 0
+    },
+    {
+      "label": "scrambleDepth20:5",
+      "hasParity": true,
+      "cycleCount": 1,
+      "cycleLength": 5,
+      "componentCount": 1,
+      "wrongWingCount": 6,
+      "conflictEdgeCount": 0,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 5,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.5,
+      "cycleTopology": {
+        "cycleCount": 1,
+        "cycleLengths": [
+          5
+        ],
+        "isSingleCycle": true,
+        "hasSwap": false
+      },
+      "pairCount": 7,
+      "cycleEdgeCount": 5
+    },
+    {
+      "label": "scrambleDepth30:3",
+      "hasParity": false,
+      "cycleCount": 1,
+      "cycleLength": 6,
+      "componentCount": 1,
+      "wrongWingCount": 6,
+      "conflictEdgeCount": 0,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 6,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.16666666666666666,
+      "cycleTopology": {
+        "cycleCount": 1,
+        "cycleLengths": [
+          6
+        ],
+        "isSingleCycle": true,
+        "hasSwap": false
+      },
+      "pairCount": 6,
+      "cycleEdgeCount": 6
+    },
+    {
+      "label": "scrambleDepth30:7",
+      "hasParity": false,
+      "cycleCount": 2,
+      "cycleLength": 4,
+      "componentCount": 2,
+      "wrongWingCount": 7,
+      "conflictEdgeCount": 0,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 4,
+      "bridgeDistance": 1,
+      "branchingFactor": 0.42857142857142855,
+      "cycleTopology": {
+        "cycleCount": 2,
+        "cycleLengths": [
+          4,
+          3
+        ],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 7
+    },
+    {
+      "label": "scrambleDepth40:4",
+      "hasParity": false,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 9,
+      "conflictEdgeCount": 9,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 9,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.1111111111111111,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 3,
+      "cycleEdgeCount": 0
+    },
+    {
+      "label": "scrambleDepth40:8",
+      "hasParity": false,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 7,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 1.5714285714285714,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0
+    },
+    {
+      "label": "scrambleDepth40:9",
+      "hasParity": false,
+      "cycleCount": 2,
+      "cycleLength": 3,
+      "componentCount": 2,
+      "wrongWingCount": 6,
+      "conflictEdgeCount": 0,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 3,
+      "bridgeDistance": 1,
+      "branchingFactor": 2.1666666666666665,
+      "cycleTopology": {
+        "cycleCount": 2,
+        "cycleLengths": [
+          3,
+          3
+        ],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 6,
+      "cycleEdgeCount": 6
+    },
+    {
+      "label": "scrambleDepth50:3",
+      "hasParity": true,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 8,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0
+    },
+    {
+      "label": "scrambleDepth100:7",
+      "hasParity": false,
+      "cycleCount": 0,
+      "cycleLength": 0,
+      "componentCount": 1,
+      "wrongWingCount": 7,
+      "conflictEdgeCount": 7,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 7,
+      "bridgeDistance": 0,
+      "branchingFactor": 0.2857142857142857,
+      "cycleTopology": {
+        "cycleCount": 0,
+        "cycleLengths": [],
+        "isSingleCycle": false,
+        "hasSwap": false
+      },
+      "pairCount": 5,
+      "cycleEdgeCount": 0
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "hasParity": false,
+      "cycleCount": 1,
+      "cycleLength": 5,
+      "componentCount": 1,
+      "wrongWingCount": 5,
+      "conflictEdgeCount": 0,
+      "swapEdgeCount": 0,
+      "dependencyDepth": 5,
+      "bridgeDistance": 0,
+      "branchingFactor": 1.4,
+      "cycleTopology": {
+        "cycleCount": 1,
+        "cycleLengths": [
+          5
+        ],
+        "isSingleCycle": true,
+        "hasSwap": false
+      },
+      "pairCount": 7,
+      "cycleEdgeCount": 5
+    }
+  ],
+  "residualClassified": [
+    {
+      "label": "worstCase:70a5020b",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "profile": {
+        "label": "worstCase:70a5020b",
+        "hasParity": false,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 7,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.5714285714285714,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0
+      }
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "profile": {
+        "label": "worstCase:56a8b82d",
+        "hasParity": true,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 11,
+        "conflictEdgeCount": 9,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 9,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.09090909090909091,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 3,
+        "cycleEdgeCount": 0
+      }
+    },
+    {
+      "label": "worstCase:7541612b",
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "profile": {
+        "label": "worstCase:7541612b",
+        "hasParity": false,
+        "cycleCount": 1,
+        "cycleLength": 6,
+        "componentCount": 1,
+        "wrongWingCount": 6,
+        "conflictEdgeCount": 0,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 6,
+        "bridgeDistance": 0,
+        "branchingFactor": 1.1666666666666667,
+        "cycleTopology": {
+          "cycleCount": 1,
+          "cycleLengths": [
+            6
+          ],
+          "isSingleCycle": true,
+          "hasSwap": false
+        },
+        "pairCount": 6,
+        "cycleEdgeCount": 6
+      }
+    },
+    {
+      "label": "worstCase:4549b041",
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "profile": {
+        "label": "worstCase:4549b041",
+        "hasParity": false,
+        "cycleCount": 1,
+        "cycleLength": 4,
+        "componentCount": 1,
+        "wrongWingCount": 4,
+        "conflictEdgeCount": 0,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 4,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.5,
+        "cycleTopology": {
+          "cycleCount": 1,
+          "cycleLengths": [
+            4
+          ],
+          "isSingleCycle": true,
+          "hasSwap": false
+        },
+        "pairCount": 8,
+        "cycleEdgeCount": 4
+      }
+    },
+    {
+      "label": "worstCase:d37ca819",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "profile": {
+        "label": "worstCase:d37ca819",
+        "hasParity": false,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 7,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.2857142857142857,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0
+      }
+    },
+    {
+      "label": "worstCase:ae3d218b",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "profile": {
+        "label": "worstCase:ae3d218b",
+        "hasParity": false,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 7,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.5714285714285714,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0
+      }
+    },
+    {
+      "label": "worstCase:1af658ab",
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "profile": {
+        "label": "worstCase:1af658ab",
+        "hasParity": false,
+        "cycleCount": 1,
+        "cycleLength": 4,
+        "componentCount": 1,
+        "wrongWingCount": 4,
+        "conflictEdgeCount": 0,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 4,
+        "bridgeDistance": 0,
+        "branchingFactor": 0,
+        "cycleTopology": {
+          "cycleCount": 1,
+          "cycleLengths": [
+            4
+          ],
+          "isSingleCycle": true,
+          "hasSwap": false
+        },
+        "pairCount": 8,
+        "cycleEdgeCount": 4
+      }
+    },
+    {
+      "label": "worstCase:4e27e5a1",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "profile": {
+        "label": "worstCase:4e27e5a1",
+        "hasParity": true,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 8,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.625,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0
+      }
+    },
+    {
+      "label": "worstCase:f776edb1",
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "profile": {
+        "label": "worstCase:f776edb1",
+        "hasParity": false,
+        "cycleCount": 1,
+        "cycleLength": 5,
+        "componentCount": 1,
+        "wrongWingCount": 5,
+        "conflictEdgeCount": 0,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 5,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.2,
+        "cycleTopology": {
+          "cycleCount": 1,
+          "cycleLengths": [
+            5
+          ],
+          "isSingleCycle": true,
+          "hasSwap": false
+        },
+        "pairCount": 7,
+        "cycleEdgeCount": 5
+      }
+    },
+    {
+      "label": "worstCase:44b9b619",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "profile": {
+        "label": "worstCase:44b9b619",
+        "hasParity": true,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 8,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0
+      }
+    },
+    {
+      "label": "snapshot335:27053491",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "profile": {
+        "label": "snapshot335:27053491",
+        "hasParity": false,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 7,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.14285714285714285,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0
+      }
+    },
+    {
+      "label": "snapshot335:56a8b82d",
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "profile": {
+        "label": "snapshot335:56a8b82d",
+        "hasParity": false,
+        "cycleCount": 1,
+        "cycleLength": 3,
+        "componentCount": 1,
+        "wrongWingCount": 3,
+        "conflictEdgeCount": 0,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 3,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.6666666666666666,
+        "cycleTopology": {
+          "cycleCount": 1,
+          "cycleLengths": [
+            3
+          ],
+          "isSingleCycle": true,
+          "hasSwap": false
+        },
+        "pairCount": 9,
+        "cycleEdgeCount": 3
+      }
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "profile": {
+        "label": "snapshot335:1513fcff",
+        "hasParity": false,
+        "cycleCount": 1,
+        "cycleLength": 4,
+        "componentCount": 1,
+        "wrongWingCount": 4,
+        "conflictEdgeCount": 0,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 4,
+        "bridgeDistance": 0,
+        "branchingFactor": 1.5,
+        "cycleTopology": {
+          "cycleCount": 1,
+          "cycleLengths": [
+            4
+          ],
+          "isSingleCycle": true,
+          "hasSwap": false
+        },
+        "pairCount": 8,
+        "cycleEdgeCount": 4
+      }
+    },
+    {
+      "label": "snapshot335:4e27e5a1",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "profile": {
+        "label": "snapshot335:4e27e5a1",
+        "hasParity": true,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 8,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.625,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0
+      }
+    },
+    {
+      "label": "snapshot335:d37ca819",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "profile": {
+        "label": "snapshot335:d37ca819",
+        "hasParity": false,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 7,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.2857142857142857,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0
+      }
+    },
+    {
+      "label": "snapshot335:5e5b20b",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "profile": {
+        "label": "snapshot335:5e5b20b",
+        "hasParity": true,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 9,
+        "conflictEdgeCount": 8,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 8,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.7777777777777778,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 4,
+        "cycleEdgeCount": 0
+      }
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "profile": {
+        "label": "snapshot335:ae3d218b",
+        "hasParity": false,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 7,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.5714285714285714,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0
+      }
+    },
+    {
+      "label": "scrambleDepth10:2",
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "profile": {
+        "label": "scrambleDepth10:2",
+        "hasParity": false,
+        "cycleCount": 1,
+        "cycleLength": 3,
+        "componentCount": 1,
+        "wrongWingCount": 3,
+        "conflictEdgeCount": 0,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 3,
+        "bridgeDistance": 0,
+        "branchingFactor": 1,
+        "cycleTopology": {
+          "cycleCount": 1,
+          "cycleLengths": [
+            3
+          ],
+          "isSingleCycle": true,
+          "hasSwap": false
+        },
+        "pairCount": 9,
+        "cycleEdgeCount": 3
+      }
+    },
+    {
+      "label": "scrambleDepth10:5",
+      "failureClass": "BRIDGE_MISSING",
+      "profile": {
+        "label": "scrambleDepth10:5",
+        "hasParity": false,
+        "cycleCount": 2,
+        "cycleLength": 4,
+        "componentCount": 2,
+        "wrongWingCount": 6,
+        "conflictEdgeCount": 0,
+        "swapEdgeCount": 2,
+        "dependencyDepth": 4,
+        "bridgeDistance": 1,
+        "branchingFactor": 0.3333333333333333,
+        "cycleTopology": {
+          "cycleCount": 2,
+          "cycleLengths": [
+            4,
+            2
+          ],
+          "isSingleCycle": false,
+          "hasSwap": true
+        },
+        "pairCount": 6,
+        "cycleEdgeCount": 4
+      }
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "profile": {
+        "label": "scrambleDepth10:7",
+        "hasParity": false,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 8,
+        "conflictEdgeCount": 8,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 8,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.625,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 4,
+        "cycleEdgeCount": 0
+      }
+    },
+    {
+      "label": "scrambleDepth20:5",
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "profile": {
+        "label": "scrambleDepth20:5",
+        "hasParity": true,
+        "cycleCount": 1,
+        "cycleLength": 5,
+        "componentCount": 1,
+        "wrongWingCount": 6,
+        "conflictEdgeCount": 0,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 5,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.5,
+        "cycleTopology": {
+          "cycleCount": 1,
+          "cycleLengths": [
+            5
+          ],
+          "isSingleCycle": true,
+          "hasSwap": false
+        },
+        "pairCount": 7,
+        "cycleEdgeCount": 5
+      }
+    },
+    {
+      "label": "scrambleDepth30:3",
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "profile": {
+        "label": "scrambleDepth30:3",
+        "hasParity": false,
+        "cycleCount": 1,
+        "cycleLength": 6,
+        "componentCount": 1,
+        "wrongWingCount": 6,
+        "conflictEdgeCount": 0,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 6,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.16666666666666666,
+        "cycleTopology": {
+          "cycleCount": 1,
+          "cycleLengths": [
+            6
+          ],
+          "isSingleCycle": true,
+          "hasSwap": false
+        },
+        "pairCount": 6,
+        "cycleEdgeCount": 6
+      }
+    },
+    {
+      "label": "scrambleDepth30:7",
+      "failureClass": "BRIDGE_MISSING",
+      "profile": {
+        "label": "scrambleDepth30:7",
+        "hasParity": false,
+        "cycleCount": 2,
+        "cycleLength": 4,
+        "componentCount": 2,
+        "wrongWingCount": 7,
+        "conflictEdgeCount": 0,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 4,
+        "bridgeDistance": 1,
+        "branchingFactor": 0.42857142857142855,
+        "cycleTopology": {
+          "cycleCount": 2,
+          "cycleLengths": [
+            4,
+            3
+          ],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 7
+      }
+    },
+    {
+      "label": "scrambleDepth40:4",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "profile": {
+        "label": "scrambleDepth40:4",
+        "hasParity": false,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 9,
+        "conflictEdgeCount": 9,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 9,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.1111111111111111,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 3,
+        "cycleEdgeCount": 0
+      }
+    },
+    {
+      "label": "scrambleDepth40:8",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "profile": {
+        "label": "scrambleDepth40:8",
+        "hasParity": false,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 7,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 1.5714285714285714,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0
+      }
+    },
+    {
+      "label": "scrambleDepth40:9",
+      "failureClass": "BRIDGE_MISSING",
+      "profile": {
+        "label": "scrambleDepth40:9",
+        "hasParity": false,
+        "cycleCount": 2,
+        "cycleLength": 3,
+        "componentCount": 2,
+        "wrongWingCount": 6,
+        "conflictEdgeCount": 0,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 3,
+        "bridgeDistance": 1,
+        "branchingFactor": 2.1666666666666665,
+        "cycleTopology": {
+          "cycleCount": 2,
+          "cycleLengths": [
+            3,
+            3
+          ],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 6,
+        "cycleEdgeCount": 6
+      }
+    },
+    {
+      "label": "scrambleDepth50:3",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "profile": {
+        "label": "scrambleDepth50:3",
+        "hasParity": true,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 8,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0
+      }
+    },
+    {
+      "label": "scrambleDepth100:7",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "profile": {
+        "label": "scrambleDepth100:7",
+        "hasParity": false,
+        "cycleCount": 0,
+        "cycleLength": 0,
+        "componentCount": 1,
+        "wrongWingCount": 7,
+        "conflictEdgeCount": 7,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 7,
+        "bridgeDistance": 0,
+        "branchingFactor": 0.2857142857142857,
+        "cycleTopology": {
+          "cycleCount": 0,
+          "cycleLengths": [],
+          "isSingleCycle": false,
+          "hasSwap": false
+        },
+        "pairCount": 5,
+        "cycleEdgeCount": 0
+      }
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "profile": {
+        "label": "scrambleDepth100:8",
+        "hasParity": false,
+        "cycleCount": 1,
+        "cycleLength": 5,
+        "componentCount": 1,
+        "wrongWingCount": 5,
+        "conflictEdgeCount": 0,
+        "swapEdgeCount": 0,
+        "dependencyDepth": 5,
+        "bridgeDistance": 0,
+        "branchingFactor": 1.4,
+        "cycleTopology": {
+          "cycleCount": 1,
+          "cycleLengths": [
+            5
+          ],
+          "isSingleCycle": true,
+          "hasSwap": false
+        },
+        "pairCount": 7,
+        "cycleEdgeCount": 5
+      }
+    }
+  ],
+  "residualClassSummaries": [
+    {
+      "failureClass": "BRIDGE_MISSING",
+      "n": 3,
+      "avgCycleLength": 3.6666666666666665,
+      "avgComponentCount": 2,
+      "avgConflictEdgeCount": 0,
+      "avgDependencyDepth": 3.6666666666666665,
+      "avgBranchingFactor": 0.9761904761904762,
+      "parityRate": 0,
+      "labels": [
+        "scrambleDepth10:5",
+        "scrambleDepth30:7",
+        "scrambleDepth40:9"
+      ]
+    },
+    {
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "n": 10,
+      "avgCycleLength": 4.5,
+      "avgComponentCount": 1,
+      "avgConflictEdgeCount": 0,
+      "avgDependencyDepth": 4.5,
+      "avgBranchingFactor": 0.71,
+      "parityRate": 0.1,
+      "labels": [
+        "worstCase:7541612b",
+        "worstCase:4549b041",
+        "worstCase:1af658ab",
+        "worstCase:f776edb1",
+        "snapshot335:56a8b82d",
+        "snapshot335:1513fcff",
+        "scrambleDepth10:2",
+        "scrambleDepth20:5",
+        "scrambleDepth30:3",
+        "scrambleDepth100:8"
+      ]
+    },
+    {
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "n": 16,
+      "avgCycleLength": 0,
+      "avgComponentCount": 1,
+      "avgConflictEdgeCount": 7.375,
+      "avgDependencyDepth": 7.375,
+      "avgBranchingFactor": 0.44628201659451655,
+      "parityRate": 0.375,
+      "labels": [
+        "worstCase:70a5020b",
+        "worstCase:56a8b82d",
+        "worstCase:d37ca819",
+        "worstCase:ae3d218b",
+        "worstCase:4e27e5a1",
+        "worstCase:44b9b619",
+        "snapshot335:27053491",
+        "snapshot335:4e27e5a1",
+        "snapshot335:d37ca819",
+        "snapshot335:5e5b20b",
+        "snapshot335:ae3d218b",
+        "scrambleDepth10:7",
+        "scrambleDepth40:4",
+        "scrambleDepth40:8",
+        "scrambleDepth50:3",
+        "scrambleDepth100:7"
+      ]
+    }
+  ],
+  "recoveryResults": [
+    {
+      "label": "worstCase:70a5020b",
+      "wrongWingBefore": 7,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 10,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "wrongWingBefore": 11,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 8,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "worstCase:7541612b",
+      "wrongWingBefore": 6,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 8,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "worstCase:4549b041",
+      "wrongWingBefore": 4,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 7,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "worstCase:d37ca819",
+      "wrongWingBefore": 7,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 5,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "worstCase:ae3d218b",
+      "wrongWingBefore": 7,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 10,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "worstCase:1af658ab",
+      "wrongWingBefore": 4,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 4,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "worstCase:4e27e5a1",
+      "wrongWingBefore": 8,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 7,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "worstCase:f776edb1",
+      "wrongWingBefore": 5,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 2,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "worstCase:44b9b619",
+      "wrongWingBefore": 8,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 6,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "snapshot335:27053491",
+      "wrongWingBefore": 7,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 10,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "snapshot335:56a8b82d",
+      "wrongWingBefore": 3,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 10,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "wrongWingBefore": 4,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 7,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "snapshot335:4e27e5a1",
+      "wrongWingBefore": 8,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 8,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "snapshot335:d37ca819",
+      "wrongWingBefore": 7,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 8,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "snapshot335:5e5b20b",
+      "wrongWingBefore": 9,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 5,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "wrongWingBefore": 7,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 10,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "scrambleDepth10:2",
+      "wrongWingBefore": 3,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 9,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "scrambleDepth10:5",
+      "wrongWingBefore": 6,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 9,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "wrongWingBefore": 8,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 4,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "scrambleDepth20:5",
+      "wrongWingBefore": 6,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 6,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "scrambleDepth30:3",
+      "wrongWingBefore": 6,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 10,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "scrambleDepth30:7",
+      "wrongWingBefore": 7,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 4,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "scrambleDepth40:4",
+      "wrongWingBefore": 9,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 9,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "scrambleDepth40:8",
+      "wrongWingBefore": 7,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 7,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "scrambleDepth40:9",
+      "wrongWingBefore": 6,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 10,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "scrambleDepth50:3",
+      "wrongWingBefore": 8,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 7,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "scrambleDepth100:7",
+      "wrongWingBefore": 7,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 4,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "wrongWingBefore": 5,
+      "attemptedBy": {
+        "DISRUPT": 10,
+        "SETUP": 4,
+        "REPAIR": 10,
+        "CCR": 10,
+        "MIXED_COMMUTATOR": 10
+      },
+      "producedBy": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecoveryCount": 0,
+      "chosenTypeCounts": {
+        "DISRUPT": 0,
+        "SETUP": 0,
+        "REPAIR": 0,
+        "CCR": 0,
+        "MIXED_COMMUTATOR": 0
+      },
+      "solvedByRecovery": false,
+      "recoveryType": null,
+      "recoveryAttempts": 10
+    }
+  ],
+  "recoveryCoverageSummary": {
+    "n": 29,
+    "solvedByRecoveryCount": 0,
+    "solvedByRecoveryRate": 0,
+    "attemptedRateByType": {
+      "DISRUPT": 1,
+      "SETUP": 1,
+      "REPAIR": 1,
+      "CCR": 1,
+      "MIXED_COMMUTATOR": 1
+    },
+    "producedRateByType": {
+      "DISRUPT": 0,
+      "SETUP": 0,
+      "REPAIR": 0,
+      "CCR": 0,
+      "MIXED_COMMUTATOR": 0
+    }
+  },
+  "familyTransition": [
+    {
+      "failureClass": "BRIDGE_MISSING",
+      "previousCount": 12,
+      "currentCount": 3,
+      "delta": -9
+    },
+    {
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "previousCount": 28,
+      "currentCount": 10,
+      "delta": -18
+    },
+    {
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "previousCount": 13,
+      "currentCount": 16,
+      "delta": 3
+    },
+    {
+      "failureClass": "LOCKED_PAIR_NO_CYCLE",
+      "previousCount": 0,
+      "currentCount": 0,
+      "delta": 0
+    },
+    {
+      "failureClass": "UNKNOWN",
+      "previousCount": 0,
+      "currentCount": 0,
+      "delta": 0
+    }
+  ],
+  "unknownSignature": {
+    "n": 0,
+    "isCoherentCluster": false,
+    "sharedDescription": "UNKNOWN 잔여 없음"
+  },
+  "closureRows": [
+    {
+      "label": "worstCase:70a5020b",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "worstCase:7541612b",
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "worstCase:4549b041",
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "worstCase:d37ca819",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "worstCase:ae3d218b",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "worstCase:1af658ab",
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "worstCase:4e27e5a1",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "worstCase:f776edb1",
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "worstCase:44b9b619",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "snapshot335:27053491",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "snapshot335:56a8b82d",
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "snapshot335:4e27e5a1",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "snapshot335:d37ca819",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "snapshot335:5e5b20b",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "scrambleDepth10:2",
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "scrambleDepth10:5",
+      "failureClass": "BRIDGE_MISSING",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "scrambleDepth20:5",
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "scrambleDepth30:3",
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "scrambleDepth30:7",
+      "failureClass": "BRIDGE_MISSING",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "scrambleDepth40:4",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "scrambleDepth40:8",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "scrambleDepth40:9",
+      "failureClass": "BRIDGE_MISSING",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "scrambleDepth50:3",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "scrambleDepth100:7",
+      "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+      "verdict": "A_EXPLAINABLE"
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "failureClass": "PURE_CYCLE_ISOLATION",
+      "verdict": "A_EXPLAINABLE"
+    }
+  ],
+  "closureSummary": {
+    "totalResiduals": 29,
+    "explainableCount": 29,
+    "explainableRate": 1,
+    "newFamilyCandidateCount": 0
+  },
+  "finalRecommendation": {
+    "conclusion": "A_DISCOVERY_CLOSED",
+    "conclusionLabel": "Conclusion A -- 잔여 대부분이 기존 Primitive Set으로 구조적으로 설명되며, 새로운 독립 Family는 관측되지 않음. Primitive Discovery 종료 가능.",
+    "explainableRate": 1,
+    "newFamilyFound": false,
+    "rationale": "explainableRate=100.0% >= 80% 기준 충족, newFamilyFound=false -- 이후 연구의 중심을 Primitive 발견에서 완전성 검증/엔지니어링 최적화로 이동 가능."
+  },
+  "v1Baseline": {
+    "residualCount": 53,
+    "totalCases": 142,
+    "residualClassSummaries": [
+      {
+        "failureClass": "BRIDGE_MISSING",
+        "n": 12,
+        "avgCycleLength": 4.333333333333333,
+        "avgComponentCount": 2.0833333333333335,
+        "avgConflictEdgeCount": 0,
+        "avgDependencyDepth": 4.333333333333333,
+        "avgBranchingFactor": 0.7834656084656085,
+        "parityRate": 0.3333333333333333,
+        "labels": [
+          "worstCase:45959141",
+          "worstCase:46086463",
+          "worstCase:f17d7eb9",
+          "worstCase:710de4d1",
+          "snapshot335:46086463",
+          "snapshot335:f17d7eb9",
+          "scrambleDepth10:5",
+          "scrambleDepth20:7",
+          "scrambleDepth30:7",
+          "scrambleDepth40:6",
+          "scrambleDepth50:6",
+          "scrambleDepth100:5"
+        ]
+      },
+      {
+        "failureClass": "PURE_CYCLE_ISOLATION",
+        "n": 28,
+        "avgCycleLength": 5,
+        "avgComponentCount": 1,
+        "avgConflictEdgeCount": 0,
+        "avgDependencyDepth": 5,
+        "avgBranchingFactor": 0.9517857142857143,
+        "parityRate": 0.10714285714285714,
+        "labels": [
+          "worstCase:84976575",
+          "worstCase:7541612b",
+          "worstCase:4549b041",
+          "worstCase:36336c1",
+          "worstCase:1af658ab",
+          "worstCase:589b0a25",
+          "worstCase:f776edb1",
+          "worstCase:de8abca9",
+          "snapshot335:45959141",
+          "snapshot335:1af658ab",
+          "snapshot335:56a8b82d",
+          "snapshot335:b714481",
+          "snapshot335:4549b041",
+          "snapshot335:1513fcff",
+          "snapshot335:120fc3af",
+          "snapshot335:36336c1",
+          "scrambleDepth10:0",
+          "scrambleDepth10:2",
+          "scrambleDepth10:3",
+          "scrambleDepth10:4",
+          "scrambleDepth20:5",
+          "scrambleDepth20:6",
+          "scrambleDepth20:8",
+          "scrambleDepth30:4",
+          "scrambleDepth40:0",
+          "scrambleDepth40:1",
+          "scrambleDepth100:2",
+          "scrambleDepth100:8"
+        ]
+      },
+      {
+        "failureClass": "CONFLICT_DEEP_DEPENDENCY",
+        "n": 13,
+        "avgCycleLength": 0,
+        "avgComponentCount": 1,
+        "avgConflictEdgeCount": 7.6923076923076925,
+        "avgDependencyDepth": 7.6923076923076925,
+        "avgBranchingFactor": 0.4810606060606061,
+        "parityRate": 0.46153846153846156,
+        "labels": [
+          "worstCase:56a8b82d",
+          "worstCase:d37ca819",
+          "worstCase:44b9b619",
+          "snapshot335:27053491",
+          "snapshot335:4e27e5a1",
+          "snapshot335:d37ca819",
+          "snapshot335:5e5b20b",
+          "snapshot335:ae3d218b",
+          "scrambleDepth10:7",
+          "scrambleDepth30:6",
+          "scrambleDepth40:4",
+          "scrambleDepth40:8",
+          "scrambleDepth50:3"
+        ]
+      }
+    ]
+  }
+}

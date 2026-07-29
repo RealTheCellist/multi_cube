@@ -1,0 +1,49 @@
+Solver Primitive Set Completeness Validation Sprint v2 -- Report
+Generated: 2026-07-29T02:35:09.206Z
+
+1. Residual Population Analysis (RQ-1)
+  Total cases: 142
+  BASE: 60/142 (42.3%)
+  FLIP: 0/142 (0.0%)
+  CASE: 0/142 (0.0%)
+  PARITY: 80/142 (56.3%)
+  CCR: 11/142 (7.7%)
+  MIXED_COMMUTATOR: 86/142 (60.6%)
+  Union Covered (any of 6): 113/142 (79.6%)
+  Residual (v2): 29/142 (20.4%)
+  Residual (v1 baseline, 5-primitive union): 53/142
+  Delta: -24 (-45.3% change), reductionRate=45.3%
+
+2. Failure Taxonomy v2 (RQ-2, reused classifyResidual unmodified)
+  BRIDGE_MISSING: n=3, avgCycleLength=3.67, avgComponentCount=2.00, avgConflictEdgeCount=0.00, avgDependencyDepth=3.67, avgBranchingFactor=0.98, parityRate=0.0%
+    labels: scrambleDepth10:5, scrambleDepth30:7, scrambleDepth40:9
+  PURE_CYCLE_ISOLATION: n=10, avgCycleLength=4.50, avgComponentCount=1.00, avgConflictEdgeCount=0.00, avgDependencyDepth=4.50, avgBranchingFactor=0.71, parityRate=10.0%
+    labels: worstCase:7541612b, worstCase:4549b041, worstCase:1af658ab, worstCase:f776edb1, snapshot335:56a8b82d, snapshot335:1513fcff, scrambleDepth10:2, scrambleDepth20:5, scrambleDepth30:3, scrambleDepth100:8
+  CONFLICT_DEEP_DEPENDENCY: n=16, avgCycleLength=0.00, avgComponentCount=1.00, avgConflictEdgeCount=7.38, avgDependencyDepth=7.38, avgBranchingFactor=0.45, parityRate=37.5%
+    labels: worstCase:70a5020b, worstCase:56a8b82d, worstCase:d37ca819, worstCase:ae3d218b, worstCase:4e27e5a1, worstCase:44b9b619, snapshot335:27053491, snapshot335:4e27e5a1, snapshot335:d37ca819, snapshot335:5e5b20b, snapshot335:ae3d218b, scrambleDepth10:7, scrambleDepth40:4, scrambleDepth40:8, scrambleDepth50:3, scrambleDepth100:7
+
+3. Family Transition Matrix (Previous v1 vs Current v2)
+  BRIDGE_MISSING: previous=12, current=3, delta=-9
+  PURE_CYCLE_ISOLATION: previous=28, current=10, delta=-18
+  CONFLICT_DEEP_DEPENDENCY: previous=13, current=16, delta=+3
+  LOCKED_PAIR_NO_CYCLE: previous=0, current=0, delta=+0
+  UNKNOWN: previous=0, current=0, delta=+0
+  UNKNOWN cluster signature check: n=0, isCoherentCluster=false
+  UNKNOWN 잔여 없음
+
+4. Primitive Coverage Analysis (RQ-4, real production Recovery layer, Gate C, N=10)
+  n=29, solvedByRecoveryCount=0 (0.0%)
+  DISRUPT: attemptedRate=100.0%, producedRate=0.0%
+  SETUP: attemptedRate=100.0%, producedRate=0.0%
+  REPAIR: attemptedRate=100.0%, producedRate=0.0%
+  CCR: attemptedRate=100.0%, producedRate=0.0%
+  MIXED_COMMUTATOR: attemptedRate=100.0%, producedRate=0.0%
+
+5. Structural Closure Assessment (RQ-5)
+  totalResiduals=29, explainableCount=29, explainableRate=100.0%
+  newFamilyCandidateCount=0
+
+6. Final Recommendation (Deliverable)
+  conclusion=A_DISCOVERY_CLOSED
+  conclusionLabel=Conclusion A -- 잔여 대부분이 기존 Primitive Set으로 구조적으로 설명되며, 새로운 독립 Family는 관측되지 않음. Primitive Discovery 종료 가능.
+  rationale: explainableRate=100.0% >= 80% 기준 충족, newFamilyFound=false -- 이후 연구의 중심을 Primitive 발견에서 완전성 검증/엔지니어링 최적화로 이동 가능.
