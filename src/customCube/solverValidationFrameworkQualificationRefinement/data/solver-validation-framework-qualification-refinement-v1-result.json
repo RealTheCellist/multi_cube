@@ -1,0 +1,660 @@
+{
+  "classificationRows": [
+    {
+      "sprintName": "CONFLICT_DEEP_DEPENDENCY Scheduler Prototype Sprint v1",
+      "assignedCategory": "D (Architecture Change)",
+      "stage": "prototype",
+      "minNRequired": 15,
+      "nUsed": 15,
+      "meetsMinN": true,
+      "status": "PASS",
+      "note": "이 Category의 prototype-stage 최소 N 기준(N>=15) 충족."
+    },
+    {
+      "sprintName": "CONFLICT_DEEP_DEPENDENCY Scheduler Production Integration Sprint v1",
+      "assignedCategory": "D (Architecture Change)",
+      "stage": "production",
+      "minNRequired": 30,
+      "nUsed": 30,
+      "meetsMinN": true,
+      "status": "PASS",
+      "note": "이 Category의 production-stage 최소 N 기준(N>=30) 충족."
+    },
+    {
+      "sprintName": "Incremental Recovery Production Integration Sprint v1",
+      "assignedCategory": "B (Performance Optimization)",
+      "stage": "production",
+      "minNRequired": 30,
+      "nUsed": 30,
+      "meetsMinN": true,
+      "status": "PASS",
+      "note": "이 Category의 production-stage 최소 N 기준(N>=30) 충족."
+    },
+    {
+      "sprintName": "Mixed Commutator Production Validation Sprint v1",
+      "assignedCategory": "C (New Primitive)",
+      "stage": "prototype",
+      "minNRequired": 10,
+      "nUsed": 10,
+      "meetsMinN": true,
+      "status": "PASS",
+      "note": "이 Category의 prototype-stage 최소 N 기준(N>=10) 충족."
+    },
+    {
+      "sprintName": "Mixed Commutator Production Validation Sprint v2",
+      "assignedCategory": "C (New Primitive)",
+      "stage": "prototype",
+      "minNRequired": 10,
+      "nUsed": 10,
+      "meetsMinN": true,
+      "status": "PASS",
+      "note": "이 Category의 prototype-stage 최소 N 기준(N>=10) 충족."
+    }
+  ],
+  "gateRows": [
+    {
+      "sprintName": "CONFLICT_DEEP_DEPENDENCY Scheduler Prototype Sprint v1",
+      "gates": [
+        {
+          "gate": "A",
+          "name": "Regression 증가 없음",
+          "status": "PASS",
+          "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+        },
+        {
+          "gate": "B",
+          "name": "Runtime 허용 범위",
+          "status": "OPEN_QUESTION",
+          "evidence": "Runtime diff mean=281.3ms, 95% CI=[271.4, 291.2] (허용 기준: Baseline p95=1200ms 대비 +15%=180ms 이내)."
+        },
+        {
+          "gate": "C",
+          "name": "Capability 감소 없음",
+          "status": "PASS",
+          "evidence": "성공 케이스 diff mean=1.93, 95% CI=[1.16, 2.71], Cohen's d_z=1.26(large). 유의미한 개선(YES) [strict mode: PASS]."
+        },
+        {
+          "gate": "D",
+          "name": "Operating Contract 유지",
+          "status": "PASS",
+          "evidence": "1개 Contract 전부 PASS."
+        },
+        {
+          "gate": "E",
+          "name": "Primitive Interaction 이상 없음",
+          "status": "PASS",
+          "evidence": "Duplicate=0건, Starved Type=0개."
+        }
+      ]
+    },
+    {
+      "sprintName": "CONFLICT_DEEP_DEPENDENCY Scheduler Production Integration Sprint v1",
+      "gates": [
+        {
+          "gate": "A",
+          "name": "Regression 증가 없음",
+          "status": "PASS",
+          "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+        },
+        {
+          "gate": "B",
+          "name": "Runtime 허용 범위",
+          "status": "PASS",
+          "evidence": "Runtime diff mean=0.0ms, 95% CI=[0.0, 0.0] (허용 기준: Baseline p95=1200ms 대비 +15%=180ms 이내)."
+        },
+        {
+          "gate": "C",
+          "name": "Capability 감소 없음",
+          "status": "PASS",
+          "evidence": "성공 케이스 diff mean=1.13, 95% CI=[0.60, 1.66], Cohen's d_z=0.77(medium). 유의미한 개선(YES) [strict mode: PASS]."
+        },
+        {
+          "gate": "D",
+          "name": "Operating Contract 유지",
+          "status": "PASS",
+          "evidence": "1개 Contract 전부 PASS."
+        },
+        {
+          "gate": "E",
+          "name": "Primitive Interaction 이상 없음",
+          "status": "PASS",
+          "evidence": "Duplicate=0건, Starved Type=0개."
+        }
+      ]
+    },
+    {
+      "sprintName": "Incremental Recovery Production Integration Sprint v1",
+      "gates": [
+        {
+          "gate": "A",
+          "name": "Regression 증가 없음",
+          "status": "PASS",
+          "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+        },
+        {
+          "gate": "B",
+          "name": "Runtime 허용 범위",
+          "status": "PASS",
+          "evidence": "Runtime diff mean=1.0ms, 95% CI=[-6.5, 8.5] (허용 기준: Baseline p95=1200ms 대비 +15%=180ms 이내)."
+        },
+        {
+          "gate": "C",
+          "name": "Capability 감소 없음",
+          "status": "OPEN_QUESTION",
+          "evidence": "성공 케이스 diff mean=-0.23, 95% CI=[-0.69, 0.22], Cohen's d_z=0.00(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요) [strict mode: OPEN_QUESTION]."
+        },
+        {
+          "gate": "D",
+          "name": "Operating Contract 유지",
+          "status": "PASS",
+          "evidence": "1개 Contract 전부 PASS."
+        },
+        {
+          "gate": "E",
+          "name": "Primitive Interaction 이상 없음",
+          "status": "PASS",
+          "evidence": "Duplicate=0건, Starved Type=0개."
+        }
+      ]
+    },
+    {
+      "sprintName": "Mixed Commutator Production Validation Sprint v1",
+      "gates": [
+        {
+          "gate": "A",
+          "name": "Regression 증가 없음",
+          "status": "PASS",
+          "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+        },
+        {
+          "gate": "B",
+          "name": "Runtime 허용 범위",
+          "status": "PASS",
+          "evidence": "Runtime diff mean=29.9ms, 95% CI=[25.3, 34.5] (허용 기준: Baseline p95=1200ms 대비 +15%=180ms 이내)."
+        },
+        {
+          "gate": "C",
+          "name": "Capability 감소 없음",
+          "status": "OPEN_QUESTION",
+          "evidence": "성공 케이스 diff mean=-0.10, 95% CI=[-1.42, 1.22], Cohen's d_z=-0.05(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요) [strict mode: OPEN_QUESTION]."
+        },
+        {
+          "gate": "D",
+          "name": "Operating Contract 유지",
+          "status": "PASS",
+          "evidence": "1개 Contract 전부 PASS."
+        },
+        {
+          "gate": "E",
+          "name": "Primitive Interaction 이상 없음",
+          "status": "PASS",
+          "evidence": "Duplicate=0건, Starved Type=0개."
+        }
+      ]
+    },
+    {
+      "sprintName": "Mixed Commutator Production Validation Sprint v2",
+      "gates": [
+        {
+          "gate": "A",
+          "name": "Regression 증가 없음",
+          "status": "PASS",
+          "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+        },
+        {
+          "gate": "B",
+          "name": "Runtime 허용 범위",
+          "status": "OPEN_QUESTION",
+          "evidence": "Runtime diff mean=229.1ms, 95% CI=[149.3, 308.9] (허용 기준: Baseline p95=1200ms 대비 +15%=180ms 이내)."
+        },
+        {
+          "gate": "C",
+          "name": "Capability 감소 없음",
+          "status": "PASS",
+          "evidence": "성공 케이스 diff mean=6.00, 95% CI=[6.00, 6.00], Cohen's d_z=0.00(negligible). 유의미한 개선(YES) [strict mode: PASS]."
+        },
+        {
+          "gate": "D",
+          "name": "Operating Contract 유지",
+          "status": "PASS",
+          "evidence": "1개 Contract 전부 PASS."
+        },
+        {
+          "gate": "E",
+          "name": "Primitive Interaction 이상 없음",
+          "status": "PASS",
+          "evidence": "Duplicate=0건, Starved Type=0개."
+        }
+      ]
+    }
+  ],
+  "decisionRows": [
+    {
+      "sprintName": "CONFLICT_DEEP_DEPENDENCY Scheduler Prototype Sprint v1",
+      "actualDecision": "A",
+      "frameworkDecision": "B",
+      "match": false,
+      "pipelineResult": {
+        "changeCategory": "D",
+        "categorySpec": {
+          "category": "D",
+          "name": "Architecture Change",
+          "description": "Scheduler Ordering, Budget Contract, Planner/Executor 경계 등 구조적 변경.",
+          "requiredGates": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "minN": 30,
+          "minNByStage": {
+            "prototype": 15,
+            "production": 30
+          },
+          "populationScope": "전체 Hole Dataset + 실 solve() E2E",
+          "requiresFullContractAudit": true
+        },
+        "nUsed": 15,
+        "meetsMinN": true,
+        "gateResults": [
+          {
+            "gate": "A",
+            "name": "Regression 증가 없음",
+            "status": "PASS",
+            "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+          },
+          {
+            "gate": "B",
+            "name": "Runtime 허용 범위",
+            "status": "OPEN_QUESTION",
+            "evidence": "Runtime diff mean=281.3ms, 95% CI=[271.4, 291.2] (허용 기준: Baseline p95=1200ms 대비 +15%=180ms 이내)."
+          },
+          {
+            "gate": "C",
+            "name": "Capability 감소 없음",
+            "status": "PASS",
+            "evidence": "성공 케이스 diff mean=1.93, 95% CI=[1.16, 2.71], Cohen's d_z=1.26(large). 유의미한 개선(YES) [strict mode: PASS]."
+          },
+          {
+            "gate": "D",
+            "name": "Operating Contract 유지",
+            "status": "PASS",
+            "evidence": "1개 Contract 전부 PASS."
+          },
+          {
+            "gate": "E",
+            "name": "Primitive Interaction 이상 없음",
+            "status": "PASS",
+            "evidence": "Duplicate=0건, Starved Type=0개."
+          }
+        ],
+        "decision": "B",
+        "decisionRationale": "필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장."
+      }
+    },
+    {
+      "sprintName": "CONFLICT_DEEP_DEPENDENCY Scheduler Production Integration Sprint v1",
+      "actualDecision": "A",
+      "frameworkDecision": "A",
+      "match": true,
+      "pipelineResult": {
+        "changeCategory": "D",
+        "categorySpec": {
+          "category": "D",
+          "name": "Architecture Change",
+          "description": "Scheduler Ordering, Budget Contract, Planner/Executor 경계 등 구조적 변경.",
+          "requiredGates": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "minN": 30,
+          "minNByStage": {
+            "prototype": 15,
+            "production": 30
+          },
+          "populationScope": "전체 Hole Dataset + 실 solve() E2E",
+          "requiresFullContractAudit": true
+        },
+        "nUsed": 30,
+        "meetsMinN": true,
+        "gateResults": [
+          {
+            "gate": "A",
+            "name": "Regression 증가 없음",
+            "status": "PASS",
+            "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+          },
+          {
+            "gate": "B",
+            "name": "Runtime 허용 범위",
+            "status": "PASS",
+            "evidence": "Runtime diff mean=0.0ms, 95% CI=[0.0, 0.0] (허용 기준: Baseline p95=1200ms 대비 +15%=180ms 이내)."
+          },
+          {
+            "gate": "C",
+            "name": "Capability 감소 없음",
+            "status": "PASS",
+            "evidence": "성공 케이스 diff mean=1.13, 95% CI=[0.60, 1.66], Cohen's d_z=0.77(medium). 유의미한 개선(YES) [strict mode: PASS]."
+          },
+          {
+            "gate": "D",
+            "name": "Operating Contract 유지",
+            "status": "PASS",
+            "evidence": "1개 Contract 전부 PASS."
+          },
+          {
+            "gate": "E",
+            "name": "Primitive Interaction 이상 없음",
+            "status": "PASS",
+            "evidence": "Duplicate=0건, Starved Type=0개."
+          }
+        ],
+        "decision": "A",
+        "decisionRationale": "Category D(Architecture Change)의 필수 Gate(A,B,C,D,E) 전부 PASS, N=30>=30(production-stage) 충족 -- Release 가능."
+      }
+    },
+    {
+      "sprintName": "Incremental Recovery Production Integration Sprint v1",
+      "actualDecision": "B",
+      "frameworkDecision": "B",
+      "match": true,
+      "pipelineResult": {
+        "changeCategory": "B",
+        "categorySpec": {
+          "category": "B",
+          "name": "Performance Optimization",
+          "description": "Runtime/Budget 조정 -- 알고리즘 결과 자체는 불변.",
+          "requiredGates": [
+            "A",
+            "B",
+            "C"
+          ],
+          "minN": 30,
+          "minNByStage": {
+            "prototype": 10,
+            "production": 30
+          },
+          "populationScope": "전체 Hole Dataset(142케이스)",
+          "requiresFullContractAudit": false
+        },
+        "nUsed": 30,
+        "meetsMinN": true,
+        "gateResults": [
+          {
+            "gate": "A",
+            "name": "Regression 증가 없음",
+            "status": "PASS",
+            "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+          },
+          {
+            "gate": "B",
+            "name": "Runtime 허용 범위",
+            "status": "PASS",
+            "evidence": "Runtime diff mean=1.0ms, 95% CI=[-6.5, 8.5] (허용 기준: Baseline p95=1200ms 대비 +15%=180ms 이내)."
+          },
+          {
+            "gate": "C",
+            "name": "Capability 감소 없음",
+            "status": "OPEN_QUESTION",
+            "evidence": "성공 케이스 diff mean=-0.23, 95% CI=[-0.69, 0.22], Cohen's d_z=0.00(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요) [strict mode: OPEN_QUESTION]."
+          },
+          {
+            "gate": "D",
+            "name": "Operating Contract 유지",
+            "status": "PASS",
+            "evidence": "1개 Contract 전부 PASS."
+          },
+          {
+            "gate": "E",
+            "name": "Primitive Interaction 이상 없음",
+            "status": "PASS",
+            "evidence": "Duplicate=0건, Starved Type=0개."
+          }
+        ],
+        "decision": "B",
+        "decisionRationale": "필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장."
+      }
+    },
+    {
+      "sprintName": "Mixed Commutator Production Validation Sprint v1",
+      "actualDecision": "B",
+      "frameworkDecision": "B",
+      "match": true,
+      "pipelineResult": {
+        "changeCategory": "C",
+        "categorySpec": {
+          "category": "C",
+          "name": "New Primitive",
+          "description": "새로운 Recovery/Solving Primitive 추가.",
+          "requiredGates": [
+            "A",
+            "B",
+            "C",
+            "E"
+          ],
+          "minN": 30,
+          "minNByStage": {
+            "prototype": 10,
+            "production": 30
+          },
+          "populationScope": "전체 Hole Dataset + 해당 Primitive의 Target Cluster",
+          "requiresFullContractAudit": false
+        },
+        "nUsed": 10,
+        "meetsMinN": true,
+        "gateResults": [
+          {
+            "gate": "A",
+            "name": "Regression 증가 없음",
+            "status": "PASS",
+            "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+          },
+          {
+            "gate": "B",
+            "name": "Runtime 허용 범위",
+            "status": "PASS",
+            "evidence": "Runtime diff mean=29.9ms, 95% CI=[25.3, 34.5] (허용 기준: Baseline p95=1200ms 대비 +15%=180ms 이내)."
+          },
+          {
+            "gate": "C",
+            "name": "Capability 감소 없음",
+            "status": "OPEN_QUESTION",
+            "evidence": "성공 케이스 diff mean=-0.10, 95% CI=[-1.42, 1.22], Cohen's d_z=-0.05(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요) [strict mode: OPEN_QUESTION]."
+          },
+          {
+            "gate": "D",
+            "name": "Operating Contract 유지",
+            "status": "PASS",
+            "evidence": "1개 Contract 전부 PASS."
+          },
+          {
+            "gate": "E",
+            "name": "Primitive Interaction 이상 없음",
+            "status": "PASS",
+            "evidence": "Duplicate=0건, Starved Type=0개."
+          }
+        ],
+        "decision": "B",
+        "decisionRationale": "필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장."
+      }
+    },
+    {
+      "sprintName": "Mixed Commutator Production Validation Sprint v2",
+      "actualDecision": "A",
+      "frameworkDecision": "B",
+      "match": false,
+      "pipelineResult": {
+        "changeCategory": "C",
+        "categorySpec": {
+          "category": "C",
+          "name": "New Primitive",
+          "description": "새로운 Recovery/Solving Primitive 추가.",
+          "requiredGates": [
+            "A",
+            "B",
+            "C",
+            "E"
+          ],
+          "minN": 30,
+          "minNByStage": {
+            "prototype": 10,
+            "production": 30
+          },
+          "populationScope": "전체 Hole Dataset + 해당 Primitive의 Target Cluster",
+          "requiresFullContractAudit": false
+        },
+        "nUsed": 10,
+        "meetsMinN": true,
+        "gateResults": [
+          {
+            "gate": "A",
+            "name": "Regression 증가 없음",
+            "status": "PASS",
+            "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+          },
+          {
+            "gate": "B",
+            "name": "Runtime 허용 범위",
+            "status": "OPEN_QUESTION",
+            "evidence": "Runtime diff mean=229.1ms, 95% CI=[149.3, 308.9] (허용 기준: Baseline p95=1200ms 대비 +15%=180ms 이내)."
+          },
+          {
+            "gate": "C",
+            "name": "Capability 감소 없음",
+            "status": "PASS",
+            "evidence": "성공 케이스 diff mean=6.00, 95% CI=[6.00, 6.00], Cohen's d_z=0.00(negligible). 유의미한 개선(YES) [strict mode: PASS]."
+          },
+          {
+            "gate": "D",
+            "name": "Operating Contract 유지",
+            "status": "PASS",
+            "evidence": "1개 Contract 전부 PASS."
+          },
+          {
+            "gate": "E",
+            "name": "Primitive Interaction 이상 없음",
+            "status": "PASS",
+            "evidence": "Duplicate=0건, Starved Type=0개."
+          }
+        ],
+        "decision": "B",
+        "decisionRationale": "필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장."
+      }
+    }
+  ],
+  "decisionSummary": {
+    "n": 5,
+    "matchCount": 3,
+    "matchRate": 0.6,
+    "mismatches": [
+      {
+        "sprintName": "CONFLICT_DEEP_DEPENDENCY Scheduler Prototype Sprint v1",
+        "actual": "A",
+        "framework": "B"
+      },
+      {
+        "sprintName": "Mixed Commutator Production Validation Sprint v2",
+        "actual": "A",
+        "framework": "B"
+      }
+    ]
+  },
+  "robustnessSummary": {
+    "falsePassCount": 0,
+    "falseFailCount": 2,
+    "ambiguousCount": 0,
+    "findings": [
+      {
+        "sprintName": "CONFLICT_DEEP_DEPENDENCY Scheduler Prototype Sprint v1",
+        "kind": "false_fail",
+        "detail": "Framework=B, 실제=A -- Framework가 실제보다 엄격하게 거부/보류."
+      },
+      {
+        "sprintName": "Mixed Commutator Production Validation Sprint v2",
+        "kind": "false_fail",
+        "detail": "Framework=B, 실제=A -- Framework가 실제보다 엄격하게 거부/보류."
+      }
+    ]
+  },
+  "ruleRegressionAudit": [
+    {
+      "sprintName": "CONFLICT_DEEP_DEPENDENCY Scheduler Production Integration Sprint v1",
+      "citedNumbers": "improvedCountDiff mean=1.13, 95% CI=[0.60, 1.66], d=0.77(medium)",
+      "strictGateC": {
+        "gate": "C",
+        "name": "Capability 감소 없음",
+        "status": "PASS",
+        "evidence": "성공 케이스 diff mean=1.13, 95% CI=[0.60, 1.66], Cohen's d_z=0.77(negligible). 유의미한 개선(YES) [strict mode: PASS]."
+      },
+      "originalDecisionUnaffected": true,
+      "note": "ciLower=0.60>0 -- isSignificantImprovement=true -- strict Gate C에서도 PASS. 원래 Decision A(Scheduler Ordering Release-ready) 불변."
+    },
+    {
+      "sprintName": "Production Integration Finalization Sprint v1",
+      "citedNumbers": "Primary improved count diff mean=1.167, 95% CI=[0.634, 1.699], d=0.784(medium)",
+      "strictGateC": {
+        "gate": "C",
+        "name": "Capability 감소 없음",
+        "status": "PASS",
+        "evidence": "성공 케이스 diff mean=1.17, 95% CI=[0.63, 1.70], Cohen's d_z=0.78(negligible). 유의미한 개선(YES) [strict mode: PASS]."
+      },
+      "originalDecisionUnaffected": true,
+      "note": "ciLower=0.634>0 -- isSignificantImprovement=true -- strict Gate C에서도 PASS. 원래 RELEASE 결론(및 이를 인용한 Production Integration Validation Sprint v1) 불변."
+    },
+    {
+      "sprintName": "Solver Release Readiness Validation Sprint v1 (ENDGAME axis 단독)",
+      "citedNumbers": "ENDGAME axis 단독 성공 케이스 diff mean=0.10, 95% CI=[-0.04, 0.24], d=0.25(small)",
+      "strictGateC": {
+        "gate": "C",
+        "name": "Capability 감소 없음",
+        "status": "OPEN_QUESTION",
+        "evidence": "성공 케이스 diff mean=0.10, 95% CI=[-0.04, 0.24], Cohen's d_z=0.25(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요) [strict mode: OPEN_QUESTION]."
+      },
+      "originalDecisionUnaffected": true,
+      "note": "ciLower=-0.04<=0 -- isSignificantImprovement=false -- 이 축 단독으로는 strict Gate C가 PASS에서 OPEN_QUESTION으로 낮아진다(notWorse는 유지되므로 FAIL은 아님). 그러나 이 Sprint의 실제 Decision A는 애초에 이 축 단독이 아니라 Scheduler axis(CI=[0.60,1.66])와 Finalization axis(CI=[0.634,1.699])의 보강 증거에 근거했으므로 Decision 자체는 영향받지 않는다. 또한 이 Sprint는 5개 Historical Qualification 대상에 포함되지 않아 decideFromGates()로 재계산되는 Decision이 애초에 없다 -- 이는 새 Rule의 도달 범위에 대한 사전 공개 한계로만 기록한다."
+    }
+  ],
+  "byCategory": {
+    "D": {
+      "n": 2,
+      "match": 1
+    },
+    "B": {
+      "n": 1,
+      "match": 1
+    },
+    "C": {
+      "n": 2,
+      "match": 1
+    }
+  },
+  "byStage": {
+    "prototype": {
+      "n": 3,
+      "match": 1
+    },
+    "production": {
+      "n": 2,
+      "match": 2
+    }
+  },
+  "before": {
+    "decisionMatchRate": 0.2,
+    "matchCount": 1,
+    "falsePassCount": 1,
+    "falseFailCount": 3,
+    "finalDecision": "B (수동 보정, 자동 산출 C)"
+  },
+  "levels": {
+    "level1": false,
+    "level2": true,
+    "level3": false,
+    "level4": true,
+    "level5": true
+  },
+  "finalDecision": "C"
+}

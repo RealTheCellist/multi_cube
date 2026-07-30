@@ -9,7 +9,8 @@
 // standardizes the SHAPE every Sprint's own driver should conform to, plus
 // the one truly generic piece: composing Gate results into a final
 // Decision (identical logic every Sprint in this arc has hand-rolled).
-import type { ChangeCategory, ChangeCategorySpec } from "./ChangeClassification";
+import type { ChangeCategory, ChangeCategorySpec, ValidationStage } from "./ChangeClassification";
+import { getMinNForStage } from "./ChangeClassification";
 import type { GateResult } from "./ReleaseGates";
 
 export type PipelineStage = "code_change" | "replay" | "metric_collection" | "statistical_validation" | "release_gate" | "decision";
@@ -41,8 +42,22 @@ export interface PipelineResult {
 // The one generic piece: given a change's own Category spec (which Gates
 // it must clear) and the Gate results a Sprint's own driver already
 // computed (via ReleaseGates.ts's evaluateGate*), decide.
-export function decideFromGates(categorySpec: ChangeCategorySpec, nUsed: number, gateResults: readonly GateResult[]): PipelineResult {
-  const meetsMinN = nUsed >= categorySpec.minN;
+//
+// `stage` (added by Solver Validation Framework Qualification Refinement
+// Sprint v1 STEP1) selects which tier of ChangeClassification.ts's
+// `minNByStage` applies -- defaults to "production", which is always
+// equal to the pre-existing `categorySpec.minN` value, so every caller
+// written against the original 3-arg v1 API (e.g. Solver Validation
+// Framework Qualification Sprint v1's own DecisionReplay.ts) keeps
+// compiling and reproduces the exact same result it originally did.
+export function decideFromGates(
+  categorySpec: ChangeCategorySpec,
+  nUsed: number,
+  gateResults: readonly GateResult[],
+  stage: ValidationStage = "production"
+): PipelineResult {
+  const minNRequired = getMinNForStage(categorySpec.category, stage);
+  const meetsMinN = nUsed >= minNRequired;
   const requiredResults = gateResults.filter((g) => categorySpec.requiredGates.includes(g.gate));
   const anyFail = requiredResults.some((g) => g.status === "FAIL") || !meetsMinN;
   const allPass = requiredResults.every((g) => g.status === "PASS") && meetsMinN;
@@ -52,11 +67,11 @@ export function decideFromGates(categorySpec: ChangeCategorySpec, nUsed: number,
   if (anyFail) {
     decision = "C";
     decisionRationale = !meetsMinN
-      ? `N=${nUsed}이 이 Category(${categorySpec.category})의 최소 기준 N>=${categorySpec.minN}에 미달 -- 재현성 부족, Release 불가.`
+      ? `N=${nUsed}이 이 Category(${categorySpec.category})의 ${stage}-stage 최소 기준 N>=${minNRequired}에 미달 -- 재현성 부족, Release 불가.`
       : `필수 Gate(${categorySpec.requiredGates.join(",")}) 중 하나 이상 FAIL -- Release Blocked.`;
   } else if (allPass) {
     decision = "A";
-    decisionRationale = `Category ${categorySpec.category}(${categorySpec.name})의 필수 Gate(${categorySpec.requiredGates.join(",")}) 전부 PASS, N=${nUsed}>=${categorySpec.minN} 충족 -- Release 가능.`;
+    decisionRationale = `Category ${categorySpec.category}(${categorySpec.name})의 필수 Gate(${categorySpec.requiredGates.join(",")}) 전부 PASS, N=${nUsed}>=${minNRequired}(${stage}-stage) 충족 -- Release 가능.`;
   } else {
     decision = "B";
     decisionRationale = `필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장.`;

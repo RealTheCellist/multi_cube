@@ -47,21 +47,32 @@ export function evaluateGateB(runtimeDiffMsEvaluation: MetricEvaluation, baselin
   };
 }
 
-// Gate C: Capability 감소 없음 (does NOT require significant improvement --
-// only that the diff isn't significantly negative; use
-// isSignificantImprovement separately if a Sprint additionally wants to
-// claim positive gain).
-export function evaluateGateC(improvedCountDiffEvaluation: MetricEvaluation): GateResult {
+// Gate C: Capability 감소 없음 (default, strict=false: does NOT require
+// significant improvement -- only that the diff isn't significantly
+// negative). Strict mode (strict=true, added by Solver Validation
+// Framework Qualification Refinement Sprint v1 STEP2) additionally
+// requires isSignificantImprovement() to reach PASS -- a "not worse but
+// not significantly better" result becomes OPEN_QUESTION rather than a
+// free PASS, closing the False PASS the Qualification Sprint found
+// (Incremental Recovery Production Integration Sprint v1: notWorse held
+// but isSignificantImprovement was false, and the real Sprint's own
+// Decision was B, not A). Reuses isSignificantImprovement() as instructed
+// -- no new statistical function.
+export function evaluateGateC(improvedCountDiffEvaluation: MetricEvaluation, strict = false): GateResult {
   const notWorse = improvedCountDiffEvaluation.stats.ciUpper >= 0 || improvedCountDiffEvaluation.stats.mean >= 0;
+  const significant = isSignificantImprovement(improvedCountDiffEvaluation);
+  const status: GateResult["status"] = strict ? (significant ? "PASS" : notWorse ? "OPEN_QUESTION" : "FAIL") : notWorse ? "PASS" : "FAIL";
   return {
     gate: "C",
     name: "Capability 감소 없음",
-    status: notWorse ? "PASS" : "FAIL",
+    status,
     evidence: `성공 케이스 diff mean=${improvedCountDiffEvaluation.stats.mean.toFixed(2)}, 95% CI=[${improvedCountDiffEvaluation.stats.ciLower.toFixed(
       2
     )}, ${improvedCountDiffEvaluation.stats.ciUpper.toFixed(2)}], Cohen's d_z=${improvedCountDiffEvaluation.effectSize.cohensD.toFixed(2)}(${
       improvedCountDiffEvaluation.effectSize.magnitude
-    }). 유의미한 개선(${isSignificantImprovement(improvedCountDiffEvaluation) ? "YES" : "no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요"}).`,
+    }). 유의미한 개선(${significant ? "YES" : "no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요"})${
+      strict ? ` [strict mode: ${status}]` : ""
+    }.`,
   };
 }
 
