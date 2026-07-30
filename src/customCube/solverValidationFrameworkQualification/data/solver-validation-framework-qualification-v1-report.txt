@@ -1,0 +1,89 @@
+Solver Validation Framework Qualification Sprint v1 -- Report
+Generated: 2026-07-30T07:53:33.483Z
+Population: 5 Historical Sprints (Bug Fix category: no historical example, see note)
+
+1. Historical Qualification Dataset (Deliverable #1)
+  CONFLICT_DEEP_DEPENDENCY Scheduler Prototype Sprint v1 (Category D, N=15) -- 실제 Decision: A
+    True Regression 감소, Architecture Sprint와 동일한 방향 재현... Option A를 Scheduler Contract로 채택.
+  CONFLICT_DEEP_DEPENDENCY Scheduler Production Integration Sprint v1 (Category D, N=30) -- 실제 Decision: A
+    Regression 증가 없음... Production Contract 확정, Scheduler Ordering Release-ready.
+  Incremental Recovery Production Integration Sprint v1 (Category B, N=30) -- 실제 Decision: B
+    Level3(FAIL) -- CI straddles zero. 실질적 whole-solve 효과 없음. Decision: B.
+  Mixed Commutator Production Validation Sprint v1 (Category C, N=10) -- 실제 Decision: B
+    Conclusion B -- Additional Refinement 권장. 두 CI 모두 0 포함, 통계적으로 구별되는 Solve Rate 증가 없음.
+  Mixed Commutator Production Validation Sprint v2 (Category C, N=10) -- 실제 Decision: A
+    Conclusion A -- Mixed Commutator Gate C를 포함한 현재 Production을 Release 승인.
+  [Category A Gap] 독립적인 Bug Fix Category 역사적 사례 없음 -- 이 연구 이력 전체에 순수 Bug-Fix급(신규 Primitive/Architecture 변경 없는) Solver 변경이 존재하지 않았기 때문. Framework의 결함이 아니라 데이터 공백으로 기록.
+
+2. Classification Replay (Deliverable #2)
+  [OPEN_QUESTION] CONFLICT_DEEP_DEPENDENCY Scheduler Prototype Sprint v1: D (Architecture Change), N=15(요구 N>=30)
+    이 Category(D)가 요구하는 N>=30에 미달(N=15) -- 분류 자체가 틀린 것이 아니라, 이 historical Sprint가 당시 Framework 기준(사후 확정)보다 낮은 표본으로 진행됐음을 보여준다.
+  [PASS] CONFLICT_DEEP_DEPENDENCY Scheduler Production Integration Sprint v1: D (Architecture Change), N=30(요구 N>=30)
+    이 Category의 최소 N 기준 충족.
+  [PASS] Incremental Recovery Production Integration Sprint v1: B (Performance Optimization), N=30(요구 N>=30)
+    이 Category의 최소 N 기준 충족.
+  [OPEN_QUESTION] Mixed Commutator Production Validation Sprint v1: C (New Primitive), N=10(요구 N>=30)
+    이 Category(C)가 요구하는 N>=30에 미달(N=10) -- 분류 자체가 틀린 것이 아니라, 이 historical Sprint가 당시 Framework 기준(사후 확정)보다 낮은 표본으로 진행됐음을 보여준다.
+  [OPEN_QUESTION] Mixed Commutator Production Validation Sprint v2: C (New Primitive), N=10(요구 N>=30)
+    이 Category(C)가 요구하는 N>=30에 미달(N=10) -- 분류 자체가 틀린 것이 아니라, 이 historical Sprint가 당시 Framework 기준(사후 확정)보다 낮은 표본으로 진행됐음을 보여준다.
+
+3. Release Gate Replay (Deliverable #3)
+  CONFLICT_DEEP_DEPENDENCY Scheduler Prototype Sprint v1:
+    [Gate A][PASS] Regression 증가 없음: True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000].
+    [Gate B][OPEN_QUESTION] Runtime 허용 범위: Runtime diff mean=281.3ms, 95% CI=[271.4, 291.2] (허용 기준: Baseline p95=1200ms 대비 +15%=180ms 이내).
+    [Gate C][PASS] Capability 감소 없음: 성공 케이스 diff mean=1.93, 95% CI=[1.16, 2.71], Cohen's d_z=1.26(large). 유의미한 개선(YES).
+    [Gate D][PASS] Operating Contract 유지: 1개 Contract 전부 PASS.
+    [Gate E][PASS] Primitive Interaction 이상 없음: Duplicate=0건, Starved Type=0개.
+  CONFLICT_DEEP_DEPENDENCY Scheduler Production Integration Sprint v1:
+    [Gate A][PASS] Regression 증가 없음: True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000].
+    [Gate B][PASS] Runtime 허용 범위: Runtime diff mean=0.0ms, 95% CI=[0.0, 0.0] (허용 기준: Baseline p95=1200ms 대비 +15%=180ms 이내).
+    [Gate C][PASS] Capability 감소 없음: 성공 케이스 diff mean=1.13, 95% CI=[0.60, 1.66], Cohen's d_z=0.77(medium). 유의미한 개선(YES).
+    [Gate D][PASS] Operating Contract 유지: 1개 Contract 전부 PASS.
+    [Gate E][PASS] Primitive Interaction 이상 없음: Duplicate=0건, Starved Type=0개.
+  Incremental Recovery Production Integration Sprint v1:
+    [Gate A][PASS] Regression 증가 없음: True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000].
+    [Gate B][PASS] Runtime 허용 범위: Runtime diff mean=1.0ms, 95% CI=[-6.5, 8.5] (허용 기준: Baseline p95=1200ms 대비 +15%=180ms 이내).
+    [Gate C][PASS] Capability 감소 없음: 성공 케이스 diff mean=-0.23, 95% CI=[-0.69, 0.22], Cohen's d_z=0.00(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요).
+    [Gate D][PASS] Operating Contract 유지: 1개 Contract 전부 PASS.
+    [Gate E][PASS] Primitive Interaction 이상 없음: Duplicate=0건, Starved Type=0개.
+  Mixed Commutator Production Validation Sprint v1:
+    [Gate A][PASS] Regression 증가 없음: True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000].
+    [Gate B][PASS] Runtime 허용 범위: Runtime diff mean=29.9ms, 95% CI=[25.3, 34.5] (허용 기준: Baseline p95=1200ms 대비 +15%=180ms 이내).
+    [Gate C][PASS] Capability 감소 없음: 성공 케이스 diff mean=-0.10, 95% CI=[-1.42, 1.22], Cohen's d_z=-0.05(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요).
+    [Gate D][PASS] Operating Contract 유지: 1개 Contract 전부 PASS.
+    [Gate E][PASS] Primitive Interaction 이상 없음: Duplicate=0건, Starved Type=0개.
+  Mixed Commutator Production Validation Sprint v2:
+    [Gate A][PASS] Regression 증가 없음: True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000].
+    [Gate B][OPEN_QUESTION] Runtime 허용 범위: Runtime diff mean=229.1ms, 95% CI=[149.3, 308.9] (허용 기준: Baseline p95=1200ms 대비 +15%=180ms 이내).
+    [Gate C][PASS] Capability 감소 없음: 성공 케이스 diff mean=6.00, 95% CI=[6.00, 6.00], Cohen's d_z=0.00(negligible). 유의미한 개선(YES).
+    [Gate D][PASS] Operating Contract 유지: 1개 Contract 전부 PASS.
+    [Gate E][PASS] Primitive Interaction 이상 없음: Duplicate=0건, Starved Type=0개.
+
+4. Decision Replay (Deliverable #4)
+  CONFLICT_DEEP_DEPENDENCY Scheduler Prototype Sprint v1: 실제=A, Framework=C -- MISMATCH
+    N=15이 이 Category(D)의 최소 기준 N>=30에 미달 -- 재현성 부족, Release 불가.
+  CONFLICT_DEEP_DEPENDENCY Scheduler Production Integration Sprint v1: 실제=A, Framework=A -- MATCH
+    Category D(Architecture Change)의 필수 Gate(A,B,C,D,E) 전부 PASS, N=30>=30 충족 -- Release 가능.
+  Incremental Recovery Production Integration Sprint v1: 실제=B, Framework=A -- MISMATCH
+    Category B(Performance Optimization)의 필수 Gate(A,B,C) 전부 PASS, N=30>=30 충족 -- Release 가능.
+  Mixed Commutator Production Validation Sprint v1: 실제=B, Framework=C -- MISMATCH
+    N=10이 이 Category(C)의 최소 기준 N>=30에 미달 -- 재현성 부족, Release 불가.
+  Mixed Commutator Production Validation Sprint v2: 실제=A, Framework=C -- MISMATCH
+    N=10이 이 Category(C)의 최소 기준 N>=30에 미달 -- 재현성 부족, Release 불가.
+  Decision Match Rate: 1/5 (20.0%)
+
+5. Qualification Matrix (Deliverable #5)
+  Historical Sprint 재현: 5건 완료
+  Classification 정합성: 2/5 PASS
+  Decision 일치율: 20.0%
+
+6. Failure Analysis (Deliverable #6)
+  False PASS: 1건, False FAIL: 3건, Ambiguous: 0건
+    [false_fail] CONFLICT_DEEP_DEPENDENCY Scheduler Prototype Sprint v1: Framework=C, 실제=A -- Framework가 실제보다 엄격하게 거부/보류.
+    [false_pass] Incremental Recovery Production Integration Sprint v1: Framework=A, 실제=B -- Framework가 실제보다 관대하게 승인. Gate C가 "감소 없음"만 확인하고 isSignificantImprovement(ciLower>0)를 별도로 요구하지 않기 때문(이 케이스의 improvedCountDiff CI=[-0.691, 0.224] -- isSignificantImprovement=false).
+    [false_fail] Mixed Commutator Production Validation Sprint v1: Framework=C, 실제=B -- Framework가 실제보다 엄격하게 거부/보류.
+    [false_fail] Mixed Commutator Production Validation Sprint v2: Framework=C, 실제=A -- Framework가 실제보다 엄격하게 거부/보류.
+
+7. Final Qualification (Deliverable #7)
+  Decision Match Rate=20.0%, Classification 정합성=2/5
+  Final Decision: C
