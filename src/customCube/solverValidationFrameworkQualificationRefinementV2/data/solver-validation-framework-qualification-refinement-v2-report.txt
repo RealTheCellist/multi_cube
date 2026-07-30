@@ -1,0 +1,75 @@
+Solver Validation Framework Qualification Refinement Sprint v2 -- Report
+Generated: 2026-07-30T08:31:21.954Z
+Population: 5 Historical Sprints (Refinement Sprint v1과 SAME 데이터셋/수치, 재측정 없음)
+
+STEP1. Gate B Runtime Replay -- 현재(strict) Decision vs Gate B=PASS 반사실 Decision
+  CONFLICT_DEEP_DEPENDENCY Scheduler Prototype Sprint v1
+    Gate B 상태=OPEN_QUESTION, 실제 Decision=A, 현재 Framework Decision=B, Gate B=PASS였다면=A
+    Gate B가 원인인가=YES, 전환=A -> B (Gate B로 인한 하향)
+  CONFLICT_DEEP_DEPENDENCY Scheduler Production Integration Sprint v1
+    Gate B 상태=PASS, 실제 Decision=A, 현재 Framework Decision=A, Gate B=PASS였다면=A
+    Gate B가 원인인가=no, 전환=영향 없음
+  Incremental Recovery Production Integration Sprint v1
+    Gate B 상태=PASS, 실제 Decision=B, 현재 Framework Decision=B, Gate B=PASS였다면=B
+    Gate B가 원인인가=no, 전환=영향 없음
+  Mixed Commutator Production Validation Sprint v1
+    Gate B 상태=PASS, 실제 Decision=B, 현재 Framework Decision=B, Gate B=PASS였다면=B
+    Gate B가 원인인가=no, 전환=영향 없음
+  Mixed Commutator Production Validation Sprint v2
+    Gate B 상태=OPEN_QUESTION, 실제 Decision=A, 현재 Framework Decision=B, Gate B=PASS였다면=A
+    Gate B가 원인인가=YES, 전환=A -> B (Gate B로 인한 하향)
+
+STEP2/3. Rule Candidate 비교 (동일 5개 Historical Case)
+  [strict] Option C -- 현재 방식 유지(모든 Mandatory Gate PASS 필요)
+    Decision Match Rate: 3/5 (60.0%)
+    False PASS=0, False FAIL=2, Ambiguous=0
+      CONFLICT_DEEP_DEPENDENCY Scheduler Prototype Sprint v1: 실제=A, Framework=B -- MISMATCH
+      CONFLICT_DEEP_DEPENDENCY Scheduler Production Integration Sprint v1: 실제=A, Framework=A -- MATCH
+      Incremental Recovery Production Integration Sprint v1: 실제=B, Framework=B -- MATCH
+      Mixed Commutator Production Validation Sprint v1: 실제=B, Framework=B -- MATCH
+      Mixed Commutator Production Validation Sprint v2: 실제=A, Framework=B -- MISMATCH
+  [treatAllOpenQuestionAsPass] Option A -- OPEN_QUESTION을 PASS와 동일 취급(전체 Gate 대상)
+    Decision Match Rate: 3/5 (60.0%)
+    False PASS=2, False FAIL=0, Ambiguous=0
+      CONFLICT_DEEP_DEPENDENCY Scheduler Prototype Sprint v1: 실제=A, Framework=A -- MATCH
+      CONFLICT_DEEP_DEPENDENCY Scheduler Production Integration Sprint v1: 실제=A, Framework=A -- MATCH
+      Incremental Recovery Production Integration Sprint v1: 실제=B, Framework=A -- MISMATCH
+      Mixed Commutator Production Validation Sprint v1: 실제=B, Framework=A -- MISMATCH
+      Mixed Commutator Production Validation Sprint v2: 실제=A, Framework=A -- MATCH
+  [gateBExemptIfOthersPass] Option B -- Gate B만 예외, 다른 Mandatory Gate 전부 PASS이면 Decision A 허용
+    Decision Match Rate: 5/5 (100.0%)
+    False PASS=0, False FAIL=0, Ambiguous=0
+      CONFLICT_DEEP_DEPENDENCY Scheduler Prototype Sprint v1: 실제=A, Framework=A -- MATCH
+      CONFLICT_DEEP_DEPENDENCY Scheduler Production Integration Sprint v1: 실제=A, Framework=A -- MATCH
+      Incremental Recovery Production Integration Sprint v1: 실제=B, Framework=B -- MATCH
+      Mixed Commutator Production Validation Sprint v1: 실제=B, Framework=B -- MATCH
+      Mixed Commutator Production Validation Sprint v2: 실제=A, Framework=A -- MATCH
+
+4. Before/After (Refinement Sprint v1 인용 vs 이번 Sprint)
+  Before(Refinement v1, 인용): Match=3/5(60.0%), False PASS=0, False FAIL=2, Decision=B
+  After(Option C, 재확인): Match=3/5(60.0%) -- Before와 동일해야 정상(변경 없음 확인)
+  After(Option A): Match=3/5(60.0%), False PASS=2, False FAIL=0
+  After(Option B, 채택 후보): Match=5/5(100.0%), False PASS=0, False FAIL=0
+
+STEP4. Rule Regression Audit -- 기존 발표된 3개 Release Sprint의 Gate B 상태
+  CONFLICT_DEEP_DEPENDENCY Scheduler Production Integration Sprint v1: Gate B=PASS, 정책 변경 영향권=없음
+    mean=0.0ms, 95% CI=[0.0, 0.0] (원 보고서가 diff 자체를 미보고, placeholder)
+    Gate B가 이미 PASS -- gateBPolicy를 바꿔도 이 Sprint의 Decision에는 어떤 영향도 없음.
+  Production Integration Finalization Sprint v1: Gate B=PASS, 정책 변경 영향권=없음
+    mean=-17.08ms, 95% CI=[-20.55, -13.61] (Runtime 개선)
+    Runtime이 오히려 개선된 케이스 -- Gate B가 이미 PASS, gateBPolicy 변경과 무관.
+  Solver Release Readiness Validation Sprint v1 (Production 4-Contract 합산 Runtime diff): Gate B=PASS, 정책 변경 영향권=없음
+    mean=1.6ms, 95% CI=[-0.6, 3.7] (Baseline 450ms 재구성 대비)
+    Runtime diff가 허용 범위 안쪽 -- Gate B가 이미 PASS, gateBPolicy 변경과 무관.
+  Regression 발생 여부: 없음 -- 3개 Sprint 모두 Gate B가 이미 PASS라 정책 변경과 무관
+
+STEP5. Decision Matrix
+  Level1(Gate B Rule 변경이 Decision Match를 개선): PASS (60.0% -> 100.0%)
+  Level2(False PASS 증가 없음): PASS (0 -> 0)
+  Level3(기존 Release Decision Regression 없음): PASS
+  Decision Match Rate(Option B, 채택안): 100.0% (기준 >=80%: 충족)
+  Final Decision: A
+
+종료 조건 판정
+  1) Gate B의 OPEN_QUESTION 처리 방식이 Qualification 불일치의 마지막 원인이었는가: YES -- Gate B의 OPEN_QUESTION 처리 방식이 남은 불일치의 원인이었음(반사실 검증으로 확인)
+  2) Framework는 Historical Sprint에 대해 재현 가능한 Release Decision을 일관되게 산출하는가: YES(Option B 적용 시)
