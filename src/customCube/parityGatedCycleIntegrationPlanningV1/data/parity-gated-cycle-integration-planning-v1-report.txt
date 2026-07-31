@@ -1,0 +1,68 @@
+=== Parity-Gated Cycle Production Integration Planning Sprint v1 -- Report ===
+
+STEP1. Recovery Pipeline Analysis (real instrumented replay, n=142)
+  [DISRUPT] generated=0/142(0.0%), empty=113, skipped=29, chosen=0, winRateAmongGenerated=0.0%, avgOwnMs=0.0
+  [SETUP] generated=7/142(4.9%), empty=124, skipped=11, chosen=7, winRateAmongGenerated=100.0%, avgOwnMs=284.0
+  [REPAIR] generated=0/142(0.0%), empty=142, skipped=0, chosen=0, winRateAmongGenerated=0.0%, avgOwnMs=0.0
+  [CCR] generated=5/142(3.5%), empty=137, skipped=0, chosen=5, winRateAmongGenerated=100.0%, avgOwnMs=931.0
+  [MIXED_COMMUTATOR] generated=6/142(4.2%), empty=35, skipped=101, chosen=6, winRateAmongGenerated=100.0%, avgOwnMs=297.7
+
+STEP2. Insertion Point Analysis (real Unknown Population, n=53 per position)
+  [before_REPAIR (shared genDeadline slice)] budget=75ms, produced=0/53(0.0%), wouldWin=0(0.0% of produced), avgWallMs=53, deadlineMiss=34
+  [after_REPAIR (reserved slice, REPAIR와 동일 크기)] budget=75ms, produced=0/53(0.0%), wouldWin=0(0.0% of produced), avgWallMs=53, deadlineMiss=34
+  [after_CCR (remainingTime 스타일, outer deadline 전체)] budget=1000ms, produced=2/53(3.8%), wouldWin=2(100.0% of produced), avgWallMs=717, deadlineMiss=29
+  [after_MIXED_COMMUTATOR (reserved slice, Mixed Commutator와 동일 크기)] budget=300ms, produced=0/53(0.0%), wouldWin=0(0.0% of produced), avgWallMs=206, deadlineMiss=34
+  [before_SETUP (reserved slice, SETUP와 동일 크기, last-resort)] budget=500ms, produced=0/53(0.0%), wouldWin=0(0.0% of produced), avgWallMs=447, deadlineMiss=34
+
+STEP3. Gate Design Comparison (full Hole Dataset, n=142)
+  [G0(현재, componentCount>1 AND cycleCount>=2 AND conflictEdgeCount===0)] coverage=45/142(31.7%), improved=10, precision=22.2%, avgRuntimeMsAmongMatched=1883
+  [G1(conflict 완화, componentCount>1 AND cycleCount>=2)] coverage=45/142(31.7%), improved=10, precision=22.2%, avgRuntimeMsAmongMatched=1863
+  [G2(cycleCount 완화, componentCount>1 AND conflictEdgeCount===0)] coverage=46/142(32.4%), improved=10, precision=21.7%, avgRuntimeMsAmongMatched=1920
+  [G3(componentCount만, componentCount>1)] coverage=49/142(34.5%), improved=11, precision=22.4%, avgRuntimeMsAmongMatched=1867
+
+STEP4. Budget Sweep (real Unknown Population, n=53)
+  [40ms] improved=0/53(0.0%), trueRegression=0, deadlineMiss=34, avgRuntimeMs=31.1
+  [80ms] improved=0/53(0.0%), trueRegression=0, deadlineMiss=34, avgRuntimeMs=55.3
+  [120ms] improved=0/53(0.0%), trueRegression=0, deadlineMiss=34, avgRuntimeMs=81.4
+  [160ms] improved=0/53(0.0%), trueRegression=0, deadlineMiss=34, avgRuntimeMs=108.8
+  [200ms] improved=0/53(0.0%), trueRegression=0, deadlineMiss=34, avgRuntimeMs=134.9
+
+STEP5. Competition Analysis (full Hole Dataset, n=142)
+  budget=300ms, avgScoreGap=0.00
+    [DISRUPT] offered=0, chosen=0, chosenRate=0.0%, starved=false, duplicate=0
+    [SETUP] offered=5, chosen=5, chosenRate=100.0%, starved=false, duplicate=0
+    [REPAIR] offered=0, chosen=0, chosenRate=0.0%, starved=false, duplicate=0
+    [CCR] offered=7, chosen=7, chosenRate=100.0%, starved=false, duplicate=0
+    [MIXED_COMMUTATOR] offered=6, chosen=6, chosenRate=100.0%, starved=false, duplicate=0
+    [PARITY_GATED_CYCLE] offered=0, chosen=0, chosenRate=0.0%, starved=false, duplicate=0
+  budget=500ms, avgScoreGap=0.00
+    [DISRUPT] offered=0, chosen=0, chosenRate=0.0%, starved=false, duplicate=0
+    [SETUP] offered=5, chosen=5, chosenRate=100.0%, starved=false, duplicate=0
+    [REPAIR] offered=0, chosen=0, chosenRate=0.0%, starved=false, duplicate=0
+    [CCR] offered=5, chosen=5, chosenRate=100.0%, starved=false, duplicate=0
+    [MIXED_COMMUTATOR] offered=5, chosen=5, chosenRate=100.0%, starved=false, duplicate=0
+    [PARITY_GATED_CYCLE] offered=0, chosen=0, chosenRate=0.0%, starved=false, duplicate=0
+
+STEP6. Integration Simulation + Statistical Validation
+  n=142, realistic budget=500ms
+  improvedCount paired-diff: mean=0.0000, 95% CI=[-0.0480, 0.0480], Cohen's dz=0.000
+  trueRegression paired-diff: mean=0.0000, 95% CI=[0.0000, 0.0000]
+  runtime paired-diff(ms): mean=172.23
+  gates: Regression 증가 없음=PASS, Runtime 허용 범위=PASS, Capability 감소 없음=OPEN_QUESTION, Primitive Interaction 이상 없음=PASS
+  pipeline decision=B, rationale=필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장.
+
+Level1-5 + Final Decision
+  Level1(Integration Position 확정): PASS -- 최고 rescueRate 위치="after_CCR (remainingTime 스타일, outer deadline 전체)" (rescueRate=3.8%, avgWallMs=717)
+  Level2(Gate 확정): PASS -- 최고 improvedCount Gate="G3(componentCount만, componentCount>1)" (coverage=34.5%, improvedCount=11, avgRuntimeMs=1867)
+  Level3(Budget 확정): FAIL -- Directive 테스트 범위(40/80/120/160/200ms) 내 어떤 budget도 rescue=0 -- Prototype 평균 Runtime(1271ms, Prototype Sprint v1 실측치)이 이 범위를 크게 초과하기 때문. Level3 FAIL은 "Budget 미확정"이 아니라 "이 범위 내에는 없다"는 실측 결론.
+  Level4(기존 Primitive와 경쟁 문제 없음): PASS -- starvedTypes=없음, duplicateCount 합계=0
+  Level5(Production Integration Contract 작성): PASS -- 아래 contract 필드에 STEP1-6 실측 결과를 그대로 기록. STEP6 Validation Framework 자체 판정: pipeline decision=B (n=142, improvedCount diff mean=0.000, 95% CI=[-0.048, 0.048]) -- 이 Sprint 고유의 Level1-5와는 별개 기준.
+  Decision: B
+  Rationale: 위치는 확정되었으나 (Directive 범위 내 Budget 미확정(더 큰 Budget 필요)) -- Integration Planning Refinement 필요.
+
+Integration Contract
+  position=after_CCR (remainingTime 스타일, outer deadline 전체)
+  gate=G3(componentCount만, componentCount>1)
+  budgetMs=미확정
+  priority=argmax(score) -- chooseBestRecovery()와 동일한 futurePotential-moveCost 공식, 기존 5개 타입과 동일 기준으로 경쟁
+  fallback=Gate 불일치 또는 Budget 내 미해결 시 후속 후보(SETUP 등)로 폴백 -- 기존 스케줄러의 인수 순서를 그대로 따름

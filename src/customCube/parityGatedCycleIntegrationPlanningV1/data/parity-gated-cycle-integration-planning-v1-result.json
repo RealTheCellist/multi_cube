@@ -1,0 +1,522 @@
+{
+  "typeSummaries": [
+    {
+      "type": "DISRUPT",
+      "generatedCount": 0,
+      "emptyCount": 113,
+      "skippedCount": 29,
+      "neverStartedCount": 0,
+      "generatedRate": 0,
+      "chosenCount": 0,
+      "winRateAmongGenerated": 0,
+      "avgOwnMsAmongGenerated": 0
+    },
+    {
+      "type": "SETUP",
+      "generatedCount": 7,
+      "emptyCount": 124,
+      "skippedCount": 11,
+      "neverStartedCount": 0,
+      "generatedRate": 0.04929577464788732,
+      "chosenCount": 7,
+      "winRateAmongGenerated": 1,
+      "avgOwnMsAmongGenerated": 284
+    },
+    {
+      "type": "REPAIR",
+      "generatedCount": 0,
+      "emptyCount": 142,
+      "skippedCount": 0,
+      "neverStartedCount": 0,
+      "generatedRate": 0,
+      "chosenCount": 0,
+      "winRateAmongGenerated": 0,
+      "avgOwnMsAmongGenerated": 0
+    },
+    {
+      "type": "CCR",
+      "generatedCount": 5,
+      "emptyCount": 137,
+      "skippedCount": 0,
+      "neverStartedCount": 0,
+      "generatedRate": 0.035211267605633804,
+      "chosenCount": 5,
+      "winRateAmongGenerated": 1,
+      "avgOwnMsAmongGenerated": 931
+    },
+    {
+      "type": "MIXED_COMMUTATOR",
+      "generatedCount": 6,
+      "emptyCount": 35,
+      "skippedCount": 101,
+      "neverStartedCount": 0,
+      "generatedRate": 0.04225352112676056,
+      "chosenCount": 6,
+      "winRateAmongGenerated": 1,
+      "avgOwnMsAmongGenerated": 297.6666666666667
+    }
+  ],
+  "positionSummaries": [
+    {
+      "position": "before_REPAIR (shared genDeadline slice)",
+      "budgetMs": 75,
+      "n": 53,
+      "producedCount": 0,
+      "rescueRate": 0,
+      "wouldWinCount": 0,
+      "winRateAmongProduced": 0,
+      "avgWallMs": 53.075471698113205,
+      "deadlineMissCount": 34
+    },
+    {
+      "position": "after_REPAIR (reserved slice, REPAIR와 동일 크기)",
+      "budgetMs": 75,
+      "n": 53,
+      "producedCount": 0,
+      "rescueRate": 0,
+      "wouldWinCount": 0,
+      "winRateAmongProduced": 0,
+      "avgWallMs": 52.905660377358494,
+      "deadlineMissCount": 34
+    },
+    {
+      "position": "after_CCR (remainingTime 스타일, outer deadline 전체)",
+      "budgetMs": 1000,
+      "n": 53,
+      "producedCount": 2,
+      "rescueRate": 0.03773584905660377,
+      "wouldWinCount": 2,
+      "winRateAmongProduced": 1,
+      "avgWallMs": 717.3584905660377,
+      "deadlineMissCount": 29
+    },
+    {
+      "position": "after_MIXED_COMMUTATOR (reserved slice, Mixed Commutator와 동일 크기)",
+      "budgetMs": 300,
+      "n": 53,
+      "producedCount": 0,
+      "rescueRate": 0,
+      "wouldWinCount": 0,
+      "winRateAmongProduced": 0,
+      "avgWallMs": 206.1320754716981,
+      "deadlineMissCount": 34
+    },
+    {
+      "position": "before_SETUP (reserved slice, SETUP와 동일 크기, last-resort)",
+      "budgetMs": 500,
+      "n": 53,
+      "producedCount": 0,
+      "rescueRate": 0,
+      "wouldWinCount": 0,
+      "winRateAmongProduced": 0,
+      "avgWallMs": 446.7169811320755,
+      "deadlineMissCount": 34
+    }
+  ],
+  "gateSummaries": [
+    {
+      "gate": "G0(현재, componentCount>1 AND cycleCount>=2 AND conflictEdgeCount===0)",
+      "n": 142,
+      "matchedCount": 45,
+      "coverage": 0.31690140845070425,
+      "improvedCount": 10,
+      "precisionAmongMatched": 0.2222222222222222,
+      "avgRuntimeMsAmongMatched": 1883.2444444444445
+    },
+    {
+      "gate": "G1(conflict 완화, componentCount>1 AND cycleCount>=2)",
+      "n": 142,
+      "matchedCount": 45,
+      "coverage": 0.31690140845070425,
+      "improvedCount": 10,
+      "precisionAmongMatched": 0.2222222222222222,
+      "avgRuntimeMsAmongMatched": 1862.9555555555555
+    },
+    {
+      "gate": "G2(cycleCount 완화, componentCount>1 AND conflictEdgeCount===0)",
+      "n": 142,
+      "matchedCount": 46,
+      "coverage": 0.323943661971831,
+      "improvedCount": 10,
+      "precisionAmongMatched": 0.21739130434782608,
+      "avgRuntimeMsAmongMatched": 1920.2173913043478
+    },
+    {
+      "gate": "G3(componentCount만, componentCount>1)",
+      "n": 142,
+      "matchedCount": 49,
+      "coverage": 0.34507042253521125,
+      "improvedCount": 11,
+      "precisionAmongMatched": 0.22448979591836735,
+      "avgRuntimeMsAmongMatched": 1867.3061224489795
+    }
+  ],
+  "budgetResults": [
+    {
+      "budgetMs": 40,
+      "summary": {
+        "configLabel": "budget=40ms",
+        "n": 53,
+        "gateMatchedCount": 34,
+        "coverage": 0.6415094339622641,
+        "solvedCount": 0,
+        "improvedCount": 0,
+        "rescueRate": 0,
+        "trueRegressionCount": 0,
+        "avgRuntimeMs": 31.132075471698112
+      },
+      "deadlineMissCount": 34
+    },
+    {
+      "budgetMs": 80,
+      "summary": {
+        "configLabel": "budget=80ms",
+        "n": 53,
+        "gateMatchedCount": 34,
+        "coverage": 0.6415094339622641,
+        "solvedCount": 0,
+        "improvedCount": 0,
+        "rescueRate": 0,
+        "trueRegressionCount": 0,
+        "avgRuntimeMs": 55.301886792452834
+      },
+      "deadlineMissCount": 34
+    },
+    {
+      "budgetMs": 120,
+      "summary": {
+        "configLabel": "budget=120ms",
+        "n": 53,
+        "gateMatchedCount": 34,
+        "coverage": 0.6415094339622641,
+        "solvedCount": 0,
+        "improvedCount": 0,
+        "rescueRate": 0,
+        "trueRegressionCount": 0,
+        "avgRuntimeMs": 81.43396226415095
+      },
+      "deadlineMissCount": 34
+    },
+    {
+      "budgetMs": 160,
+      "summary": {
+        "configLabel": "budget=160ms",
+        "n": 53,
+        "gateMatchedCount": 34,
+        "coverage": 0.6415094339622641,
+        "solvedCount": 0,
+        "improvedCount": 0,
+        "rescueRate": 0,
+        "trueRegressionCount": 0,
+        "avgRuntimeMs": 108.75471698113208
+      },
+      "deadlineMissCount": 34
+    },
+    {
+      "budgetMs": 200,
+      "summary": {
+        "configLabel": "budget=200ms",
+        "n": 53,
+        "gateMatchedCount": 34,
+        "coverage": 0.6415094339622641,
+        "solvedCount": 0,
+        "improvedCount": 0,
+        "rescueRate": 0,
+        "trueRegressionCount": 0,
+        "avgRuntimeMs": 134.88679245283018
+      },
+      "deadlineMissCount": 34
+    }
+  ],
+  "competitionByBudget": [
+    {
+      "budgetMs": 300,
+      "stats": [
+        {
+          "type": "DISRUPT",
+          "offeredCount": 0,
+          "chosenCount": 0,
+          "chosenRate": 0,
+          "starved": false,
+          "duplicateCount": 0
+        },
+        {
+          "type": "SETUP",
+          "offeredCount": 5,
+          "chosenCount": 5,
+          "chosenRate": 1,
+          "starved": false,
+          "duplicateCount": 0
+        },
+        {
+          "type": "REPAIR",
+          "offeredCount": 0,
+          "chosenCount": 0,
+          "chosenRate": 0,
+          "starved": false,
+          "duplicateCount": 0
+        },
+        {
+          "type": "CCR",
+          "offeredCount": 7,
+          "chosenCount": 7,
+          "chosenRate": 1,
+          "starved": false,
+          "duplicateCount": 0
+        },
+        {
+          "type": "MIXED_COMMUTATOR",
+          "offeredCount": 6,
+          "chosenCount": 6,
+          "chosenRate": 1,
+          "starved": false,
+          "duplicateCount": 0
+        },
+        {
+          "type": "PARITY_GATED_CYCLE",
+          "offeredCount": 0,
+          "chosenCount": 0,
+          "chosenRate": 0,
+          "starved": false,
+          "duplicateCount": 0
+        }
+      ],
+      "avgScoreGap": 0
+    },
+    {
+      "budgetMs": 500,
+      "stats": [
+        {
+          "type": "DISRUPT",
+          "offeredCount": 0,
+          "chosenCount": 0,
+          "chosenRate": 0,
+          "starved": false,
+          "duplicateCount": 0
+        },
+        {
+          "type": "SETUP",
+          "offeredCount": 5,
+          "chosenCount": 5,
+          "chosenRate": 1,
+          "starved": false,
+          "duplicateCount": 0
+        },
+        {
+          "type": "REPAIR",
+          "offeredCount": 0,
+          "chosenCount": 0,
+          "chosenRate": 0,
+          "starved": false,
+          "duplicateCount": 0
+        },
+        {
+          "type": "CCR",
+          "offeredCount": 5,
+          "chosenCount": 5,
+          "chosenRate": 1,
+          "starved": false,
+          "duplicateCount": 0
+        },
+        {
+          "type": "MIXED_COMMUTATOR",
+          "offeredCount": 5,
+          "chosenCount": 5,
+          "chosenRate": 1,
+          "starved": false,
+          "duplicateCount": 0
+        },
+        {
+          "type": "PARITY_GATED_CYCLE",
+          "offeredCount": 0,
+          "chosenCount": 0,
+          "chosenRate": 0,
+          "starved": false,
+          "duplicateCount": 0
+        }
+      ],
+      "avgScoreGap": 0
+    }
+  ],
+  "pairedComparison": {
+    "n": 142,
+    "improvedCountDiffEvaluation": {
+      "stats": {
+        "n": 142,
+        "mean": 0,
+        "stddev": 0.2917299829957891,
+        "coefficientOfVariation": 0,
+        "ci95Half": 0.04798361522371016,
+        "ciLower": -0.04798361522371016,
+        "ciUpper": 0.04798361522371016
+      },
+      "effectSize": {
+        "meanDiff": 0,
+        "variance": 0.0851063829787234,
+        "standardError": 0.02448143633862763,
+        "cohensD": 0,
+        "magnitude": "negligible"
+      },
+      "majorityVoteRate": 0.04225352112676056
+    },
+    "trueRegressionDiffEvaluation": {
+      "stats": {
+        "n": 142,
+        "mean": 0,
+        "stddev": 0,
+        "coefficientOfVariation": 0,
+        "ci95Half": 0,
+        "ciLower": 0,
+        "ciUpper": 0
+      },
+      "effectSize": {
+        "meanDiff": 0,
+        "variance": 0,
+        "standardError": 0,
+        "cohensD": 0,
+        "magnitude": "negligible"
+      },
+      "majorityVoteRate": 0
+    },
+    "runtimeDiffMsEvaluation": {
+      "stats": {
+        "n": 142,
+        "mean": 172.22535211267606,
+        "stddev": 369.37811249586764,
+        "coefficientOfVariation": 2.144737159568744,
+        "ci95Half": 60.75514432919248,
+        "ciLower": 111.47020778348357,
+        "ciUpper": 232.98049644186855
+      },
+      "effectSize": {
+        "meanDiff": 172.22535211267606,
+        "variance": 136440.18999100986,
+        "standardError": 30.997522616934944,
+        "cohensD": 0.466257599696308,
+        "magnitude": "small"
+      },
+      "majorityVoteRate": 0.6126760563380281
+    },
+    "baselineP95RuntimeMs": 1318
+  },
+  "gateResults": [
+    {
+      "gate": "A",
+      "name": "Regression 증가 없음",
+      "status": "PASS",
+      "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+    },
+    {
+      "gate": "B",
+      "name": "Runtime 허용 범위",
+      "status": "PASS",
+      "evidence": "Runtime diff mean=172.2ms, 95% CI=[111.5, 233.0] (허용 기준: Baseline p95=1318ms 대비 +15%=198ms 이내)."
+    },
+    {
+      "gate": "C",
+      "name": "Capability 감소 없음",
+      "status": "OPEN_QUESTION",
+      "evidence": "성공 케이스 diff mean=0.00, 95% CI=[-0.05, 0.05], Cohen's d_z=0.00(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요) [strict mode: OPEN_QUESTION]."
+    },
+    {
+      "gate": "E",
+      "name": "Primitive Interaction 이상 없음",
+      "status": "PASS",
+      "evidence": "Duplicate=0건, Starved Type=0개."
+    }
+  ],
+  "pipelineResult": {
+    "changeCategory": "C",
+    "categorySpec": {
+      "category": "C",
+      "name": "New Primitive",
+      "description": "새로운 Recovery/Solving Primitive 추가.",
+      "requiredGates": [
+        "A",
+        "B",
+        "C",
+        "E"
+      ],
+      "minN": 30,
+      "minNByStage": {
+        "prototype": 10,
+        "production": 30
+      },
+      "populationScope": "전체 Hole Dataset + 해당 Primitive의 Target Cluster",
+      "requiresFullContractAudit": false
+    },
+    "nUsed": 142,
+    "meetsMinN": true,
+    "gateResults": [
+      {
+        "gate": "A",
+        "name": "Regression 증가 없음",
+        "status": "PASS",
+        "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+      },
+      {
+        "gate": "B",
+        "name": "Runtime 허용 범위",
+        "status": "PASS",
+        "evidence": "Runtime diff mean=172.2ms, 95% CI=[111.5, 233.0] (허용 기준: Baseline p95=1318ms 대비 +15%=198ms 이내)."
+      },
+      {
+        "gate": "C",
+        "name": "Capability 감소 없음",
+        "status": "OPEN_QUESTION",
+        "evidence": "성공 케이스 diff mean=0.00, 95% CI=[-0.05, 0.05], Cohen's d_z=0.00(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요) [strict mode: OPEN_QUESTION]."
+      },
+      {
+        "gate": "E",
+        "name": "Primitive Interaction 이상 없음",
+        "status": "PASS",
+        "evidence": "Duplicate=0건, Starved Type=0개."
+      }
+    ],
+    "decision": "B",
+    "decisionRationale": "필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장."
+  },
+  "finalContract": {
+    "levels": [
+      {
+        "level": 1,
+        "label": "Integration Position 확정",
+        "pass": true,
+        "detail": "최고 rescueRate 위치=\"after_CCR (remainingTime 스타일, outer deadline 전체)\" (rescueRate=3.8%, avgWallMs=717)"
+      },
+      {
+        "level": 2,
+        "label": "Gate 확정",
+        "pass": true,
+        "detail": "최고 improvedCount Gate=\"G3(componentCount만, componentCount>1)\" (coverage=34.5%, improvedCount=11, avgRuntimeMs=1867)"
+      },
+      {
+        "level": 3,
+        "label": "Budget 확정",
+        "pass": false,
+        "detail": "Directive 테스트 범위(40/80/120/160/200ms) 내 어떤 budget도 rescue=0 -- Prototype 평균 Runtime(1271ms, Prototype Sprint v1 실측치)이 이 범위를 크게 초과하기 때문. Level3 FAIL은 \"Budget 미확정\"이 아니라 \"이 범위 내에는 없다\"는 실측 결론."
+      },
+      {
+        "level": 4,
+        "label": "기존 Primitive와 경쟁 문제 없음",
+        "pass": true,
+        "detail": "starvedTypes=없음, duplicateCount 합계=0"
+      },
+      {
+        "level": 5,
+        "label": "Production Integration Contract 작성",
+        "pass": true,
+        "detail": "아래 contract 필드에 STEP1-6 실측 결과를 그대로 기록. STEP6 Validation Framework 자체 판정: pipeline decision=B (n=142, improvedCount diff mean=0.000, 95% CI=[-0.048, 0.048]) -- 이 Sprint 고유의 Level1-5와는 별개 기준."
+      }
+    ],
+    "decision": "B",
+    "rationale": "위치는 확정되었으나 (Directive 범위 내 Budget 미확정(더 큰 Budget 필요)) -- Integration Planning Refinement 필요.",
+    "contract": {
+      "position": "after_CCR (remainingTime 스타일, outer deadline 전체)",
+      "gate": "G3(componentCount만, componentCount>1)",
+      "budgetMs": null,
+      "priority": "argmax(score) -- chooseBestRecovery()와 동일한 futurePotential-moveCost 공식, 기존 5개 타입과 동일 기준으로 경쟁",
+      "fallback": "Gate 불일치 또는 Budget 내 미해결 시 후속 후보(SETUP 등)로 폴백 -- 기존 스케줄러의 인수 순서를 그대로 따름"
+    }
+  }
+}
