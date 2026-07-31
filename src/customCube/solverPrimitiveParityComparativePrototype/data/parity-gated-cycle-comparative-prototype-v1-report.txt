@@ -1,0 +1,47 @@
+=== Parity-Gated Cycle Comparative Prototype Sprint v1 -- Report ===
+
+Hole Dataset n=142 (full population, real replay, 3 arms: Baseline/Dual Wing Bridge/Multi-Component Merge)
+
+STEP1-3. Capability Benchmark
+  dualImprovedCount=11/142, dualRegressionCount=0
+  multiImprovedCount=13/142, multiRegressionCount=0
+  dualAvgRuntimeMs=492.9, multiAvgRuntimeMs=528.5
+  dualAvgTraversalLeaves=3.1, multiAvgTraversalLeaves=3.2
+  dualMergeSuccessCount=11, multiMergeStepsSucceededTotal=12, multiComponentReductionTotal=0
+
+STEP4. Statistical Validation (paired-diff, 95% CI, Cohen's d)
+  [Dual Wing Bridge vs Baseline]
+    improvedCountDiff: mean=0.0775, stddev=0.2683, 95% CI=[0.0333, 0.1216]
+    Cohen's dz=0.289 (small)
+    regressionCountDiff: mean=0.0000, 95% CI=[0.0000, 0.0000]
+  [Multi-Component Merge vs Baseline]
+    improvedCountDiff: mean=0.0915, stddev=0.2894, 95% CI=[0.0439, 0.1392]
+    Cohen's dz=0.316 (small)
+    regressionCountDiff: mean=0.0000, 95% CI=[0.0000, 0.0000]
+  [Dual Wing Bridge vs Multi-Component Merge]
+    improvedCountDiff: mean=-0.0141, stddev=0.1183, 95% CI=[-0.0335, 0.0054]
+    Cohen's dz=-0.119 (negligible)
+    regressionCountDiff: mean=0.0000, 95% CI=[0.0000, 0.0000]
+
+STEP5. Architecture Impact
+  [Dual Wing Bridge]
+    newFileLineCount=170, reusesExistingCandidateGenerator=false
+    plannerFilesTouched=0, recoveryFilesTouched=0
+    avgRuntimeMs=492.9
+    실제 구현 결과 170줄, 기존 generateBridgeCandidates()를 그대로 쓸 수 없어 raw candidate finder(findRawBridgeMoves)를 별도 작성해야 했다 -- Planner/Recovery 레이어는 0건 변경(둘 다 genParityGatedCycle()과 동일한 단일 호출 구성 재사용). Production Integration 시 BridgeCandidateGeneration.ts에 신규 함수 1개 추가로 충분.
+  [Multi-Component Merge]
+    newFileLineCount=143, reusesExistingCandidateGenerator=true
+    plannerFilesTouched=0, recoveryFilesTouched=0
+    avgRuntimeMs=528.5
+    실제 구현 결과 143줄(Dual Wing Bridge보다 27줄 적음), 기존 generateBridgeCandidates()를 수정 없이 반복 호출하는 오케스트레이션만 추가 -- Planner/Recovery 레이어는 0건 변경. Production Integration 시 genParityGatedCycle() 자체를 반복 루프로 감싸는 정도의 변경이면 충분해 통합 난이도가 더 낮다.
+
+STEP6. Prototype Selection
+  dualSignificantlyBeatsBaseline=true
+  multiSignificantlyBeatsBaseline=true
+  dualVsMultiDistinguishable=false
+  winner=NONE
+  finalDecision=B_HYBRID_PRIMITIVE_BLUEPRINT
+  rationale: Dual/Multi 둘 다 Baseline 대비 유의미한 개선을 보이지만(또는 최소 하나가), Dual vs Multi 직접 비교의 95% CI=[-0.0335, 0.0054]가 0을 포함해 두 Prototype이 통계적으로 구분되지 않는다 -- Hybrid Primitive Blueprint Sprint v1(두 메커니즘을 결합하는 설계)로 진행을 제안한다.
+  Level1(두 Prototype 구현 완료)=PASS
+  Level2(통계적으로 비교 완료)=PASS
+  Level3(Production Integration 대상 하나 확정)=PARTIAL/FAIL(단일 후보로 확정되지 않음, rationale 참고)
