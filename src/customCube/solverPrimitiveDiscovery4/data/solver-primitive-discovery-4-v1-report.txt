@@ -1,0 +1,202 @@
+Solver Primitive Discovery Sprint #4 -- State Taxonomy Sprint v1 -- Report
+Generated: 2026-07-31T01:50:56.277Z
+Input population: 142 cases (same selection as Coverage Hole Discovery Sprint v1's own 142-case population)
+
+STEP1. Hole Dataset Regeneration (against CURRENT Release production)
+  Confirmed Hole cases (still stuck): 142
+  Failure modes -- noProgress(solve 실패)=22, partialImprove=120, timeout=114, plannerAbort=142
+
+STEP2. Existing Primitive Attribution (real solve() trace, 1 additional call per Hole)
+  Already Explained=0, Partially Explained=0, Completely Unknown=142
+  Mechanism frequency (Directive-naming reconciled):
+
+STEP3. Structural Feature Extraction (142 Completely-Unknown holes)
+  Features extracted: wrongWingCount, pairCount, cycleCount, cycleLength, componentCount, conflictEdgeCount, swapEdgeCount, mutualLockCount, bridgeCount, disconnectedGraph, parityState, deferredViolation, taxonomyClass
+
+STEP4. Clustering comparison (Manual Taxonomy vs Feature Similarity vs Graph Structure)
+  Manual Taxonomy: 4 clusters
+    [PARITY_GATED_CYCLE] n=72
+    [CYCLE_ISOLATION] n=36
+    [CONFLICT_DOMINANT] n=29
+    [LOCKED_PAIR] n=5
+  Feature Similarity: 49 clusters
+    [parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+] n=14
+    [parity=false|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=5-8] n=12
+    [parity=false|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8] n=10
+    [parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+] n=8
+    [parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+] n=7
+    [parity=false|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+] n=5
+    [parity=true|cycle=short(3-4)|cycleCount=1|conflict=true|swap=false|bridge=false|deferred=true|wrongWing=9+] n=5
+    [parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=9+] n=4
+    [parity=false|cycle=short(3-4)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=3-4] n=4
+    [parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8] n=4
+    [parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+] n=3
+    [parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+] n=3
+    [parity=false|cycle=swap(2)|cycleCount=1|conflict=true|swap=true|bridge=true|deferred=true|wrongWing=9+] n=3
+    [parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=5-8] n=3
+    [parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=5-8] n=3
+    [parity=true|cycle=short(3-4)|cycleCount=1|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+] n=3
+    [parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+] n=3
+    [parity=false|cycle=short(3-4)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=true|wrongWing=3-4] n=3
+    [parity=false|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+] n=2
+    [parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=5-8] n=2
+    [parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=5-8] n=2
+    [parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+] n=2
+    [parity=false|cycle=swap(2)|cycleCount=1|conflict=false|swap=true|bridge=false|deferred=true|wrongWing=1-2] n=2
+    [parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8] n=2
+    [parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=5-8] n=2
+    [parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+] n=2
+    [parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+] n=2
+    [parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+] n=2
+    [parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+] n=2
+    [parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=5-8] n=2
+    [parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8] n=2
+    [parity=true|cycle=swap(2)|cycleCount=1|conflict=true|swap=true|bridge=false|deferred=true|wrongWing=9+] n=2
+    [parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=true|deferred=false|wrongWing=9+] n=1
+    [parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+] n=1
+    [parity=true|cycle=long(5+)|cycleCount=2|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+] n=1
+    [parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8] n=1
+    [parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=5-8] n=1
+    [parity=true|cycle=short(3-4)|cycleCount=5|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+] n=1
+    [parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=5-8] n=1
+    [parity=true|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8] n=1
+    [parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+] n=1
+    [parity=false|cycle=long(5+)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+] n=1
+    [parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=9+] n=1
+    [parity=true|cycle=long(5+)|cycleCount=4|conflict=true|swap=true|bridge=false|deferred=false|wrongWing=9+] n=1
+    [parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+] n=1
+    [parity=true|cycle=short(3-4)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+] n=1
+    [parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8] n=1
+    [parity=true|cycle=swap(2)|cycleCount=2|conflict=true|swap=true|bridge=false|deferred=true|wrongWing=9+] n=1
+    [parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+] n=1
+  Graph Structure: 18 clusters
+    [component=1|cycle=long(5+)|parity=true] n=29
+    [component=1|cycle=none|parity=false] n=17
+    [component=2|cycle=short(3-4)|parity=true] n=16
+    [component=1|cycle=short(3-4)|parity=true] n=12
+    [component=2|cycle=long(5+)|parity=false] n=11
+    [component=1|cycle=none|parity=true] n=11
+    [component=1|cycle=long(5+)|parity=false] n=10
+    [component=2|cycle=long(5+)|parity=true] n=9
+    [component=1|cycle=short(3-4)|parity=false] n=7
+    [component=2|cycle=short(3-4)|parity=false] n=5
+    [component=2|cycle=swap(2)|parity=false] n=3
+    [component=1|cycle=swap(2)|parity=true] n=3
+    [component=3|cycle=short(3-4)|parity=false] n=2
+    [component=1|cycle=swap(2)|parity=false] n=2
+    [component=3|cycle=short(3-4)|parity=true] n=2
+    [component=2|cycle=none|parity=true] n=1
+    [component=3|cycle=long(5+)|parity=true] n=1
+    [component=3|cycle=long(5+)|parity=false] n=1
+
+STEP5. Existing Blueprint Mapping (per Feature-Similarity cluster)
+  [parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+] n=14 -- verdict=AMBIGUOUS, bestMatch=Deep Cycle (BP-1/REPAIR)(100%)
+  [parity=false|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=5-8] n=12 -- verdict=VARIANT_OF_EXISTING, bestMatch=Conflict-Breaking Sacrifice(100%)
+  [parity=false|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8] n=10 -- verdict=AMBIGUOUS, bestMatch=Deep Cycle (BP-1/REPAIR)(100%)
+  [parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+] n=8 -- verdict=VARIANT_OF_EXISTING, bestMatch=Conflict-Breaking Sacrifice(100%)
+  [parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+] n=7 -- verdict=VARIANT_OF_EXISTING, bestMatch=Bridge Injection(100%)
+  [parity=false|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+] n=5 -- verdict=VARIANT_OF_EXISTING, bestMatch=Conflict-Breaking Sacrifice(100%)
+  [parity=true|cycle=short(3-4)|cycleCount=1|conflict=true|swap=false|bridge=false|deferred=true|wrongWing=9+] n=5 -- verdict=VARIANT_OF_EXISTING, bestMatch=Parity-Cycle Specialist (BP-2)(100%)
+  [parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=9+] n=4 -- verdict=AMBIGUOUS, bestMatch=Bridge Injection(100%)
+  [parity=false|cycle=short(3-4)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=3-4] n=4 -- verdict=AMBIGUOUS, bestMatch=Deep Cycle (BP-1/REPAIR)(100%)
+  [parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8] n=4 -- verdict=AMBIGUOUS, bestMatch=Deep Cycle (BP-1/REPAIR)(100%)
+  [parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+] n=3 -- verdict=AMBIGUOUS, bestMatch=Bridge Injection(100%)
+  [parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+] n=3 -- verdict=AMBIGUOUS, bestMatch=Deep Cycle (BP-1/REPAIR)(100%)
+  [parity=false|cycle=swap(2)|cycleCount=1|conflict=true|swap=true|bridge=true|deferred=true|wrongWing=9+] n=3 -- verdict=VARIANT_OF_EXISTING, bestMatch=Bridge Injection(100%)
+  [parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=5-8] n=3 -- verdict=VARIANT_OF_EXISTING, bestMatch=Conflict-Breaking Sacrifice(100%)
+  [parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=5-8] n=3 -- verdict=VARIANT_OF_EXISTING, bestMatch=Bridge Injection(100%)
+  [parity=true|cycle=short(3-4)|cycleCount=1|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+] n=3 -- verdict=VARIANT_OF_EXISTING, bestMatch=Parity-Cycle Specialist (BP-2)(100%)
+  [parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+] n=3 -- verdict=AMBIGUOUS, bestMatch=Bridge Injection(100%)
+  [parity=false|cycle=short(3-4)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=true|wrongWing=3-4] n=3 -- verdict=VARIANT_OF_EXISTING, bestMatch=Multi-Hop Bridge(100%)
+  [parity=false|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+] n=2 -- verdict=VARIANT_OF_EXISTING, bestMatch=Bridge Injection(100%)
+  [parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=5-8] n=2 -- verdict=VARIANT_OF_EXISTING, bestMatch=Bridge Injection(100%)
+  [parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=5-8] n=2 -- verdict=VARIANT_OF_EXISTING, bestMatch=Bridge Injection(100%)
+  [parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+] n=2 -- verdict=AMBIGUOUS, bestMatch=Bridge Injection(100%)
+  [parity=false|cycle=swap(2)|cycleCount=1|conflict=false|swap=true|bridge=false|deferred=true|wrongWing=1-2] n=2 -- verdict=VARIANT_OF_EXISTING, bestMatch=Multi-Hop Bridge(100%)
+  [parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8] n=2 -- verdict=AMBIGUOUS, bestMatch=Bridge Injection(100%)
+  [parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=5-8] n=2 -- verdict=AMBIGUOUS, bestMatch=Bridge Injection(100%)
+  [parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+] n=2 -- verdict=AMBIGUOUS, bestMatch=Bridge Injection(100%)
+  [parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+] n=2 -- verdict=AMBIGUOUS, bestMatch=Bridge Injection(100%)
+  [parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+] n=2 -- verdict=AMBIGUOUS, bestMatch=Deep Cycle (BP-1/REPAIR)(100%)
+  [parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+] n=2 -- verdict=AMBIGUOUS, bestMatch=Deep Cycle (BP-1/REPAIR)(100%)
+  [parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=5-8] n=2 -- verdict=AMBIGUOUS, bestMatch=Deep Cycle (BP-1/REPAIR)(100%)
+  [parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8] n=2 -- verdict=AMBIGUOUS, bestMatch=Deep Cycle (BP-1/REPAIR)(100%)
+  [parity=true|cycle=swap(2)|cycleCount=1|conflict=true|swap=true|bridge=false|deferred=true|wrongWing=9+] n=2 -- verdict=VARIANT_OF_EXISTING, bestMatch=Parity-Cycle Specialist (BP-2)(100%)
+  [parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=true|deferred=false|wrongWing=9+] n=1 -- verdict=AMBIGUOUS, bestMatch=Bridge Injection(100%)
+  [parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+] n=1 -- verdict=AMBIGUOUS, bestMatch=Bridge Injection(100%)
+  [parity=true|cycle=long(5+)|cycleCount=2|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+] n=1 -- verdict=VARIANT_OF_EXISTING, bestMatch=Parity-Cycle Specialist (BP-2)(100%)
+  [parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8] n=1 -- verdict=VARIANT_OF_EXISTING, bestMatch=Bridge Injection(100%)
+  [parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=5-8] n=1 -- verdict=AMBIGUOUS, bestMatch=Bridge Injection(100%)
+  [parity=true|cycle=short(3-4)|cycleCount=5|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+] n=1 -- verdict=AMBIGUOUS, bestMatch=Bridge Injection(100%)
+  [parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=5-8] n=1 -- verdict=AMBIGUOUS, bestMatch=Bridge Injection(100%)
+  [parity=true|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8] n=1 -- verdict=AMBIGUOUS, bestMatch=Deep Cycle (BP-1/REPAIR)(100%)
+  [parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+] n=1 -- verdict=AMBIGUOUS, bestMatch=Bridge Injection(100%)
+  [parity=false|cycle=long(5+)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+] n=1 -- verdict=VARIANT_OF_EXISTING, bestMatch=Bridge Injection(100%)
+  [parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=9+] n=1 -- verdict=AMBIGUOUS, bestMatch=Bridge Injection(100%)
+  [parity=true|cycle=long(5+)|cycleCount=4|conflict=true|swap=true|bridge=false|deferred=false|wrongWing=9+] n=1 -- verdict=VARIANT_OF_EXISTING, bestMatch=Parity-Cycle Specialist (BP-2)(100%)
+  [parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+] n=1 -- verdict=AMBIGUOUS, bestMatch=Bridge Injection(100%)
+  [parity=true|cycle=short(3-4)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+] n=1 -- verdict=AMBIGUOUS, bestMatch=Bridge Injection(100%)
+  [parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8] n=1 -- verdict=VARIANT_OF_EXISTING, bestMatch=Bridge Injection(100%)
+  [parity=true|cycle=swap(2)|cycleCount=2|conflict=true|swap=true|bridge=false|deferred=true|wrongWing=9+] n=1 -- verdict=VARIANT_OF_EXISTING, bestMatch=Parity-Cycle Specialist (BP-2)(100%)
+  [parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+] n=1 -- verdict=AMBIGUOUS, bestMatch=Deep Cycle (BP-1/REPAIR)(100%)
+
+STEP6. Primitive Opportunity Map
+| Cluster | Cases | Existing Primitive | New Mechanism Needed |
+|---|---:|---|---|
+| parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+ | 14 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%) |
+| parity=false|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=5-8 | 12 | Conflict-Breaking Sacrifice (100% match) | no |
+| parity=false|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8 | 10 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%) |
+| parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+ | 8 | Conflict-Breaking Sacrifice (100% match) | no |
+| parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+ | 7 | Bridge Injection (100% match) | no |
+| parity=false|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+ | 5 | Conflict-Breaking Sacrifice (100% match) | no |
+| parity=true|cycle=short(3-4)|cycleCount=1|conflict=true|swap=false|bridge=false|deferred=true|wrongWing=9+ | 5 | Parity-Cycle Specialist (BP-2) (100% match) | no |
+| parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=9+ | 4 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%) |
+| parity=false|cycle=short(3-4)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=3-4 | 4 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%) |
+| parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8 | 4 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%) |
+| parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+ | 3 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%) |
+| parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+ | 3 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%) |
+| parity=false|cycle=swap(2)|cycleCount=1|conflict=true|swap=true|bridge=true|deferred=true|wrongWing=9+ | 3 | Bridge Injection (100% match) | no |
+| parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=5-8 | 3 | Conflict-Breaking Sacrifice (100% match) | no |
+| parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=5-8 | 3 | Bridge Injection (100% match) | no |
+| parity=true|cycle=short(3-4)|cycleCount=1|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+ | 3 | Parity-Cycle Specialist (BP-2) (100% match) | no |
+| parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+ | 3 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%) |
+| parity=false|cycle=short(3-4)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=true|wrongWing=3-4 | 3 | Multi-Hop Bridge (100% match) | no |
+| parity=false|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+ | 2 | Bridge Injection (100% match) | no |
+| parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=5-8 | 2 | Bridge Injection (100% match) | no |
+| parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=5-8 | 2 | Bridge Injection (100% match) | no |
+| parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+ | 2 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%) |
+| parity=false|cycle=swap(2)|cycleCount=1|conflict=false|swap=true|bridge=false|deferred=true|wrongWing=1-2 | 2 | Multi-Hop Bridge (100% match) | no |
+| parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8 | 2 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%) |
+| parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=5-8 | 2 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%) |
+| parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+ | 2 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%) |
+| parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+ | 2 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%) |
+| parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+ | 2 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%) |
+| parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+ | 2 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%) |
+| parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=5-8 | 2 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%) |
+| parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8 | 2 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%) |
+| parity=true|cycle=swap(2)|cycleCount=1|conflict=true|swap=true|bridge=false|deferred=true|wrongWing=9+ | 2 | Parity-Cycle Specialist (BP-2) (100% match) | no |
+| parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=true|deferred=false|wrongWing=9+ | 1 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%) |
+| parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+ | 1 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%) |
+| parity=true|cycle=long(5+)|cycleCount=2|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+ | 1 | Parity-Cycle Specialist (BP-2) (100% match) | no |
+| parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8 | 1 | Bridge Injection (100% match) | no |
+| parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=5-8 | 1 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%) |
+| parity=true|cycle=short(3-4)|cycleCount=5|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+ | 1 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%) |
+| parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=5-8 | 1 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%) |
+| parity=true|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8 | 1 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%) |
+| parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+ | 1 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%) |
+| parity=false|cycle=long(5+)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+ | 1 | Bridge Injection (100% match) | no |
+| parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=9+ | 1 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%) |
+| parity=true|cycle=long(5+)|cycleCount=4|conflict=true|swap=true|bridge=false|deferred=false|wrongWing=9+ | 1 | Parity-Cycle Specialist (BP-2) (100% match) | no |
+| parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+ | 1 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%) |
+| parity=true|cycle=short(3-4)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+ | 1 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%) |
+| parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8 | 1 | Bridge Injection (100% match) | no |
+| parity=true|cycle=swap(2)|cycleCount=2|conflict=true|swap=true|bridge=false|deferred=true|wrongWing=9+ | 1 | Parity-Cycle Specialist (BP-2) (100% match) | no |
+| parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+ | 1 | - | AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%) |
+
+  Clusters: total=49, new-mechanism=0(0 cases), variant-of-existing=21, ambiguous=28
+
+Success Criteria
+  Level1(Hole State 재현 가능하게 수집): PASS (142건)
+  Level2(Unknown Cluster >=1개): PASS (142건 Unknown, 49개 클러스터)
+  Level3(Primitive Blueprint 후보 도출 가능): PASS
+  Decision: B

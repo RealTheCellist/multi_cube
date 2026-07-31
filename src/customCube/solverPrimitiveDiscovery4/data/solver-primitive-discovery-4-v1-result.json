@@ -1,0 +1,1924 @@
+{
+  "holeCount": 142,
+  "failureModeSummary": {
+    "totalCases": 142,
+    "noProgressCount": 22,
+    "partialImproveCount": 120,
+    "timeoutCount": 114,
+    "plannerAbortCount": 142
+  },
+  "attributionSummary": {
+    "totalCases": 142,
+    "alreadyExplainedCount": 0,
+    "partiallyExplainedCount": 0,
+    "completelyUnknownCount": 142,
+    "mechanismFrequency": {}
+  },
+  "unknownCount": 142,
+  "clustering": {
+    "manualTaxonomy": [
+      {
+        "key": "PARITY_GATED_CYCLE",
+        "memberLabels": [
+          "worstCase:46086463",
+          "worstCase:84976575",
+          "worstCase:1e928fb1",
+          "worstCase:dd4d94fd",
+          "worstCase:5e5b20b",
+          "worstCase:4749cd9d",
+          "worstCase:c039e611",
+          "worstCase:b2c9ceb9",
+          "worstCase:cee673eb",
+          "worstCase:e9009e73",
+          "worstCase:e8be823",
+          "worstCase:14f5293f",
+          "worstCase:de8abca9",
+          "worstCase:c0277d5d",
+          "worstCase:a005d41f",
+          "worstCase:252f8891",
+          "worstCase:d3283799",
+          "worstCase:710de4d1",
+          "worstCase:5d189c1",
+          "worstCase:42c89b9",
+          "snapshot335:46086463",
+          "snapshot335:84976575",
+          "snapshot335:dda1453f",
+          "snapshot335:e7a801fb",
+          "snapshot335:56a8b82d",
+          "snapshot335:60b5c3b1",
+          "snapshot335:7541612b",
+          "snapshot335:b714481",
+          "snapshot335:1513fcff",
+          "snapshot335:d37ca819",
+          "snapshot335:ae3d218b",
+          "snapshot335:120fc3af",
+          "snapshot335:36336c1",
+          "scrambleDepth10:1",
+          "scrambleDepth10:3",
+          "scrambleDepth10:4",
+          "scrambleDepth10:6",
+          "scrambleDepth10:7",
+          "scrambleDepth10:8",
+          "scrambleDepth10:9",
+          "scrambleDepth20:1",
+          "scrambleDepth20:2",
+          "scrambleDepth20:3",
+          "scrambleDepth20:4",
+          "scrambleDepth20:5",
+          "scrambleDepth20:6",
+          "scrambleDepth20:7",
+          "scrambleDepth20:8",
+          "scrambleDepth30:0",
+          "scrambleDepth30:1",
+          "scrambleDepth30:2",
+          "scrambleDepth30:3",
+          "scrambleDepth30:8",
+          "scrambleDepth30:9",
+          "scrambleDepth40:0",
+          "scrambleDepth40:1",
+          "scrambleDepth40:2",
+          "scrambleDepth40:4",
+          "scrambleDepth40:6",
+          "scrambleDepth40:7",
+          "scrambleDepth40:8",
+          "scrambleDepth50:0",
+          "scrambleDepth50:1",
+          "scrambleDepth50:2",
+          "scrambleDepth50:5",
+          "scrambleDepth100:0",
+          "scrambleDepth100:2",
+          "scrambleDepth100:3",
+          "scrambleDepth100:4",
+          "scrambleDepth100:5",
+          "scrambleDepth100:7",
+          "scrambleDepth100:8"
+        ],
+        "size": 72
+      },
+      {
+        "key": "CYCLE_ISOLATION",
+        "memberLabels": [
+          "worstCase:45959141",
+          "worstCase:64369533",
+          "worstCase:f17d7eb9",
+          "worstCase:7541612b",
+          "worstCase:b714481",
+          "worstCase:beb967ad",
+          "worstCase:4549b041",
+          "worstCase:120fc3af",
+          "worstCase:36336c1",
+          "worstCase:e7a801fb",
+          "worstCase:e5101f85",
+          "worstCase:f776edb1",
+          "worstCase:849509c9",
+          "worstCase:3cece8ff",
+          "worstCase:44b9b619",
+          "snapshot335:27053491",
+          "snapshot335:45959141",
+          "snapshot335:64369533",
+          "snapshot335:f17d7eb9",
+          "snapshot335:a061555d",
+          "snapshot335:1af658ab",
+          "snapshot335:beb967ad",
+          "snapshot335:4549b041",
+          "snapshot335:4e27e5a1",
+          "scrambleDepth10:0",
+          "scrambleDepth10:5",
+          "scrambleDepth20:0",
+          "scrambleDepth20:9",
+          "scrambleDepth30:6",
+          "scrambleDepth30:7",
+          "scrambleDepth40:5",
+          "scrambleDepth50:3",
+          "scrambleDepth50:4",
+          "scrambleDepth50:6",
+          "scrambleDepth50:7",
+          "scrambleDepth100:6"
+        ],
+        "size": 36
+      },
+      {
+        "key": "CONFLICT_DOMINANT",
+        "memberLabels": [
+          "worstCase:68977335",
+          "worstCase:70a5020b",
+          "worstCase:56a8b82d",
+          "worstCase:1513fcff",
+          "worstCase:d37ca819",
+          "worstCase:ae3d218b",
+          "worstCase:4e27e5a1",
+          "worstCase:93b485f7",
+          "worstCase:d27df773",
+          "worstCase:2db21feb",
+          "worstCase:f5f1b8fd",
+          "worstCase:224f6f8b",
+          "worstCase:5f7ee009",
+          "worstCase:669f43ff",
+          "snapshot335:12022029",
+          "snapshot335:68977335",
+          "snapshot335:70a5020b",
+          "snapshot335:1e928fb1",
+          "snapshot335:93b485f7",
+          "snapshot335:5e5b20b",
+          "snapshot335:dd4d94fd",
+          "snapshot335:ad12c377",
+          "scrambleDepth10:2",
+          "scrambleDepth30:4",
+          "scrambleDepth30:5",
+          "scrambleDepth40:9",
+          "scrambleDepth50:8",
+          "scrambleDepth50:9",
+          "scrambleDepth100:1"
+        ],
+        "size": 29
+      },
+      {
+        "key": "LOCKED_PAIR",
+        "memberLabels": [
+          "worstCase:ad12c377",
+          "worstCase:1af658ab",
+          "worstCase:589b0a25",
+          "scrambleDepth40:3",
+          "scrambleDepth100:9"
+        ],
+        "size": 5
+      }
+    ],
+    "featureSimilarity": [
+      {
+        "key": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "worstCase:b2c9ceb9",
+          "worstCase:cee673eb",
+          "worstCase:5d189c1",
+          "snapshot335:1513fcff",
+          "snapshot335:120fc3af",
+          "scrambleDepth10:3",
+          "scrambleDepth10:6",
+          "scrambleDepth10:7",
+          "scrambleDepth20:4",
+          "scrambleDepth20:7",
+          "scrambleDepth30:2",
+          "scrambleDepth30:9",
+          "scrambleDepth100:2",
+          "scrambleDepth100:4"
+        ],
+        "size": 14
+      },
+      {
+        "key": "parity=false|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+        "memberLabels": [
+          "worstCase:68977335",
+          "worstCase:70a5020b",
+          "worstCase:1513fcff",
+          "worstCase:d37ca819",
+          "worstCase:ae3d218b",
+          "worstCase:d27df773",
+          "worstCase:5f7ee009",
+          "snapshot335:68977335",
+          "snapshot335:70a5020b",
+          "scrambleDepth10:2",
+          "scrambleDepth30:4",
+          "scrambleDepth100:1"
+        ],
+        "size": 12
+      },
+      {
+        "key": "parity=false|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+        "memberLabels": [
+          "worstCase:7541612b",
+          "worstCase:b714481",
+          "worstCase:44b9b619",
+          "snapshot335:4549b041",
+          "snapshot335:4e27e5a1",
+          "scrambleDepth10:5",
+          "scrambleDepth20:0",
+          "scrambleDepth50:3",
+          "scrambleDepth50:7",
+          "scrambleDepth100:6"
+        ],
+        "size": 10
+      },
+      {
+        "key": "parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "worstCase:2db21feb",
+          "worstCase:669f43ff",
+          "snapshot335:12022029",
+          "snapshot335:1e928fb1",
+          "snapshot335:5e5b20b",
+          "snapshot335:dd4d94fd",
+          "snapshot335:ad12c377",
+          "scrambleDepth40:9"
+        ],
+        "size": 8
+      },
+      {
+        "key": "parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "worstCase:45959141",
+          "worstCase:f17d7eb9",
+          "worstCase:beb967ad",
+          "snapshot335:45959141",
+          "snapshot335:f17d7eb9",
+          "snapshot335:beb967ad",
+          "scrambleDepth10:0"
+        ],
+        "size": 7
+      },
+      {
+        "key": "parity=false|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "worstCase:93b485f7",
+          "worstCase:224f6f8b",
+          "snapshot335:93b485f7",
+          "scrambleDepth50:8",
+          "scrambleDepth50:9"
+        ],
+        "size": 5
+      },
+      {
+        "key": "parity=true|cycle=short(3-4)|cycleCount=1|conflict=true|swap=false|bridge=false|deferred=true|wrongWing=9+",
+        "memberLabels": [
+          "worstCase:4749cd9d",
+          "worstCase:252f8891",
+          "scrambleDepth20:3",
+          "scrambleDepth30:1",
+          "scrambleDepth40:6"
+        ],
+        "size": 5
+      },
+      {
+        "key": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=9+",
+        "memberLabels": [
+          "worstCase:84976575",
+          "snapshot335:84976575",
+          "scrambleDepth50:2",
+          "scrambleDepth50:5"
+        ],
+        "size": 4
+      },
+      {
+        "key": "parity=false|cycle=short(3-4)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=3-4",
+        "memberLabels": [
+          "worstCase:36336c1",
+          "worstCase:e7a801fb",
+          "snapshot335:1af658ab",
+          "scrambleDepth40:5"
+        ],
+        "size": 4
+      },
+      {
+        "key": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+        "memberLabels": [
+          "worstCase:5e5b20b",
+          "worstCase:de8abca9",
+          "scrambleDepth10:8",
+          "scrambleDepth100:5"
+        ],
+        "size": 4
+      },
+      {
+        "key": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "worstCase:46086463",
+          "snapshot335:46086463",
+          "scrambleDepth20:2"
+        ],
+        "size": 3
+      },
+      {
+        "key": "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "worstCase:1e928fb1",
+          "worstCase:710de4d1",
+          "snapshot335:e7a801fb"
+        ],
+        "size": 3
+      },
+      {
+        "key": "parity=false|cycle=swap(2)|cycleCount=1|conflict=true|swap=true|bridge=true|deferred=true|wrongWing=9+",
+        "memberLabels": [
+          "worstCase:ad12c377",
+          "scrambleDepth40:3",
+          "scrambleDepth100:9"
+        ],
+        "size": 3
+      },
+      {
+        "key": "parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+        "memberLabels": [
+          "worstCase:4e27e5a1",
+          "worstCase:f5f1b8fd",
+          "scrambleDepth30:5"
+        ],
+        "size": 3
+      },
+      {
+        "key": "parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=5-8",
+        "memberLabels": [
+          "worstCase:e5101f85",
+          "snapshot335:27053491",
+          "scrambleDepth30:6"
+        ],
+        "size": 3
+      },
+      {
+        "key": "parity=true|cycle=short(3-4)|cycleCount=1|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "worstCase:e8be823",
+          "snapshot335:d37ca819",
+          "scrambleDepth40:2"
+        ],
+        "size": 3
+      },
+      {
+        "key": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "worstCase:14f5293f",
+          "scrambleDepth10:1",
+          "scrambleDepth40:1"
+        ],
+        "size": 3
+      },
+      {
+        "key": "parity=false|cycle=short(3-4)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=true|wrongWing=3-4",
+        "memberLabels": [
+          "worstCase:f776edb1",
+          "worstCase:3cece8ff",
+          "scrambleDepth50:6"
+        ],
+        "size": 3
+      },
+      {
+        "key": "parity=false|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "worstCase:64369533",
+          "snapshot335:64369533"
+        ],
+        "size": 2
+      },
+      {
+        "key": "parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=5-8",
+        "memberLabels": [
+          "worstCase:4549b041",
+          "scrambleDepth20:9"
+        ],
+        "size": 2
+      },
+      {
+        "key": "parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=5-8",
+        "memberLabels": [
+          "worstCase:120fc3af",
+          "worstCase:849509c9"
+        ],
+        "size": 2
+      },
+      {
+        "key": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "worstCase:dd4d94fd",
+          "snapshot335:7541612b"
+        ],
+        "size": 2
+      },
+      {
+        "key": "parity=false|cycle=swap(2)|cycleCount=1|conflict=false|swap=true|bridge=false|deferred=true|wrongWing=1-2",
+        "memberLabels": [
+          "worstCase:1af658ab",
+          "worstCase:589b0a25"
+        ],
+        "size": 2
+      },
+      {
+        "key": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8",
+        "memberLabels": [
+          "worstCase:c039e611",
+          "scrambleDepth100:3"
+        ],
+        "size": 2
+      },
+      {
+        "key": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=5-8",
+        "memberLabels": [
+          "worstCase:a005d41f",
+          "worstCase:d3283799"
+        ],
+        "size": 2
+      },
+      {
+        "key": "parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "worstCase:42c89b9",
+          "scrambleDepth50:1"
+        ],
+        "size": 2
+      },
+      {
+        "key": "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "snapshot335:dda1453f",
+          "scrambleDepth30:8"
+        ],
+        "size": 2
+      },
+      {
+        "key": "parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "snapshot335:60b5c3b1",
+          "snapshot335:ae3d218b"
+        ],
+        "size": 2
+      },
+      {
+        "key": "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "scrambleDepth10:4",
+          "scrambleDepth100:0"
+        ],
+        "size": 2
+      },
+      {
+        "key": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=5-8",
+        "memberLabels": [
+          "scrambleDepth10:9",
+          "scrambleDepth20:8"
+        ],
+        "size": 2
+      },
+      {
+        "key": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+        "memberLabels": [
+          "scrambleDepth20:1",
+          "scrambleDepth50:0"
+        ],
+        "size": 2
+      },
+      {
+        "key": "parity=true|cycle=swap(2)|cycleCount=1|conflict=true|swap=true|bridge=false|deferred=true|wrongWing=9+",
+        "memberLabels": [
+          "scrambleDepth20:5",
+          "scrambleDepth30:0"
+        ],
+        "size": 2
+      },
+      {
+        "key": "parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=true|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "worstCase:56a8b82d"
+        ],
+        "size": 1
+      },
+      {
+        "key": "parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "worstCase:e9009e73"
+        ],
+        "size": 1
+      },
+      {
+        "key": "parity=true|cycle=long(5+)|cycleCount=2|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "worstCase:c0277d5d"
+        ],
+        "size": 1
+      },
+      {
+        "key": "parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8",
+        "memberLabels": [
+          "snapshot335:a061555d"
+        ],
+        "size": 1
+      },
+      {
+        "key": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=5-8",
+        "memberLabels": [
+          "snapshot335:56a8b82d"
+        ],
+        "size": 1
+      },
+      {
+        "key": "parity=true|cycle=short(3-4)|cycleCount=5|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "snapshot335:b714481"
+        ],
+        "size": 1
+      },
+      {
+        "key": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=5-8",
+        "memberLabels": [
+          "snapshot335:36336c1"
+        ],
+        "size": 1
+      },
+      {
+        "key": "parity=true|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+        "memberLabels": [
+          "scrambleDepth20:6"
+        ],
+        "size": 1
+      },
+      {
+        "key": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "scrambleDepth30:3"
+        ],
+        "size": 1
+      },
+      {
+        "key": "parity=false|cycle=long(5+)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "scrambleDepth30:7"
+        ],
+        "size": 1
+      },
+      {
+        "key": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=9+",
+        "memberLabels": [
+          "scrambleDepth40:0"
+        ],
+        "size": 1
+      },
+      {
+        "key": "parity=true|cycle=long(5+)|cycleCount=4|conflict=true|swap=true|bridge=false|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "scrambleDepth40:4"
+        ],
+        "size": 1
+      },
+      {
+        "key": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "scrambleDepth40:7"
+        ],
+        "size": 1
+      },
+      {
+        "key": "parity=true|cycle=short(3-4)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "scrambleDepth40:8"
+        ],
+        "size": 1
+      },
+      {
+        "key": "parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8",
+        "memberLabels": [
+          "scrambleDepth50:4"
+        ],
+        "size": 1
+      },
+      {
+        "key": "parity=true|cycle=swap(2)|cycleCount=2|conflict=true|swap=true|bridge=false|deferred=true|wrongWing=9+",
+        "memberLabels": [
+          "scrambleDepth100:7"
+        ],
+        "size": 1
+      },
+      {
+        "key": "parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+",
+        "memberLabels": [
+          "scrambleDepth100:8"
+        ],
+        "size": 1
+      }
+    ],
+    "graphStructure": [
+      {
+        "key": "component=1|cycle=long(5+)|parity=true",
+        "memberLabels": [
+          "worstCase:1e928fb1",
+          "worstCase:b2c9ceb9",
+          "worstCase:cee673eb",
+          "worstCase:c0277d5d",
+          "worstCase:710de4d1",
+          "worstCase:5d189c1",
+          "snapshot335:e7a801fb",
+          "snapshot335:60b5c3b1",
+          "snapshot335:1513fcff",
+          "snapshot335:ae3d218b",
+          "snapshot335:120fc3af",
+          "scrambleDepth10:3",
+          "scrambleDepth10:4",
+          "scrambleDepth10:6",
+          "scrambleDepth10:7",
+          "scrambleDepth10:9",
+          "scrambleDepth20:1",
+          "scrambleDepth20:4",
+          "scrambleDepth20:6",
+          "scrambleDepth20:7",
+          "scrambleDepth20:8",
+          "scrambleDepth30:2",
+          "scrambleDepth30:9",
+          "scrambleDepth40:4",
+          "scrambleDepth50:0",
+          "scrambleDepth100:0",
+          "scrambleDepth100:2",
+          "scrambleDepth100:4",
+          "scrambleDepth100:8"
+        ],
+        "size": 29
+      },
+      {
+        "key": "component=1|cycle=none|parity=false",
+        "memberLabels": [
+          "worstCase:68977335",
+          "worstCase:70a5020b",
+          "worstCase:1513fcff",
+          "worstCase:d37ca819",
+          "worstCase:ae3d218b",
+          "worstCase:93b485f7",
+          "worstCase:d27df773",
+          "worstCase:224f6f8b",
+          "worstCase:5f7ee009",
+          "snapshot335:68977335",
+          "snapshot335:70a5020b",
+          "snapshot335:93b485f7",
+          "scrambleDepth10:2",
+          "scrambleDepth30:4",
+          "scrambleDepth50:8",
+          "scrambleDepth50:9",
+          "scrambleDepth100:1"
+        ],
+        "size": 17
+      },
+      {
+        "key": "component=2|cycle=short(3-4)|parity=true",
+        "memberLabels": [
+          "worstCase:84976575",
+          "worstCase:c039e611",
+          "worstCase:14f5293f",
+          "worstCase:a005d41f",
+          "worstCase:d3283799",
+          "snapshot335:84976575",
+          "snapshot335:56a8b82d",
+          "snapshot335:36336c1",
+          "scrambleDepth30:3",
+          "scrambleDepth40:0",
+          "scrambleDepth40:1",
+          "scrambleDepth40:7",
+          "scrambleDepth40:8",
+          "scrambleDepth50:2",
+          "scrambleDepth50:5",
+          "scrambleDepth100:3"
+        ],
+        "size": 16
+      },
+      {
+        "key": "component=1|cycle=short(3-4)|parity=true",
+        "memberLabels": [
+          "worstCase:5e5b20b",
+          "worstCase:4749cd9d",
+          "worstCase:e8be823",
+          "worstCase:de8abca9",
+          "worstCase:252f8891",
+          "snapshot335:d37ca819",
+          "scrambleDepth10:8",
+          "scrambleDepth20:3",
+          "scrambleDepth30:1",
+          "scrambleDepth40:2",
+          "scrambleDepth40:6",
+          "scrambleDepth100:5"
+        ],
+        "size": 12
+      },
+      {
+        "key": "component=2|cycle=long(5+)|parity=false",
+        "memberLabels": [
+          "worstCase:45959141",
+          "worstCase:f17d7eb9",
+          "worstCase:beb967ad",
+          "worstCase:e5101f85",
+          "snapshot335:27053491",
+          "snapshot335:45959141",
+          "snapshot335:f17d7eb9",
+          "snapshot335:beb967ad",
+          "scrambleDepth10:0",
+          "scrambleDepth30:6",
+          "scrambleDepth50:4"
+        ],
+        "size": 11
+      },
+      {
+        "key": "component=1|cycle=none|parity=true",
+        "memberLabels": [
+          "worstCase:4e27e5a1",
+          "worstCase:2db21feb",
+          "worstCase:f5f1b8fd",
+          "worstCase:669f43ff",
+          "snapshot335:12022029",
+          "snapshot335:1e928fb1",
+          "snapshot335:5e5b20b",
+          "snapshot335:dd4d94fd",
+          "snapshot335:ad12c377",
+          "scrambleDepth30:5",
+          "scrambleDepth40:9"
+        ],
+        "size": 11
+      },
+      {
+        "key": "component=1|cycle=long(5+)|parity=false",
+        "memberLabels": [
+          "worstCase:7541612b",
+          "worstCase:b714481",
+          "worstCase:44b9b619",
+          "snapshot335:4549b041",
+          "snapshot335:4e27e5a1",
+          "scrambleDepth10:5",
+          "scrambleDepth20:0",
+          "scrambleDepth50:3",
+          "scrambleDepth50:7",
+          "scrambleDepth100:6"
+        ],
+        "size": 10
+      },
+      {
+        "key": "component=2|cycle=long(5+)|parity=true",
+        "memberLabels": [
+          "worstCase:46086463",
+          "worstCase:dd4d94fd",
+          "worstCase:e9009e73",
+          "snapshot335:46086463",
+          "snapshot335:dda1453f",
+          "snapshot335:7541612b",
+          "scrambleDepth20:2",
+          "scrambleDepth30:8",
+          "scrambleDepth50:1"
+        ],
+        "size": 9
+      },
+      {
+        "key": "component=1|cycle=short(3-4)|parity=false",
+        "memberLabels": [
+          "worstCase:36336c1",
+          "worstCase:e7a801fb",
+          "worstCase:f776edb1",
+          "worstCase:3cece8ff",
+          "snapshot335:1af658ab",
+          "scrambleDepth40:5",
+          "scrambleDepth50:6"
+        ],
+        "size": 7
+      },
+      {
+        "key": "component=2|cycle=short(3-4)|parity=false",
+        "memberLabels": [
+          "worstCase:4549b041",
+          "worstCase:120fc3af",
+          "worstCase:849509c9",
+          "snapshot335:a061555d",
+          "scrambleDepth20:9"
+        ],
+        "size": 5
+      },
+      {
+        "key": "component=2|cycle=swap(2)|parity=false",
+        "memberLabels": [
+          "worstCase:ad12c377",
+          "scrambleDepth40:3",
+          "scrambleDepth100:9"
+        ],
+        "size": 3
+      },
+      {
+        "key": "component=1|cycle=swap(2)|parity=true",
+        "memberLabels": [
+          "scrambleDepth20:5",
+          "scrambleDepth30:0",
+          "scrambleDepth100:7"
+        ],
+        "size": 3
+      },
+      {
+        "key": "component=3|cycle=short(3-4)|parity=false",
+        "memberLabels": [
+          "worstCase:64369533",
+          "snapshot335:64369533"
+        ],
+        "size": 2
+      },
+      {
+        "key": "component=1|cycle=swap(2)|parity=false",
+        "memberLabels": [
+          "worstCase:1af658ab",
+          "worstCase:589b0a25"
+        ],
+        "size": 2
+      },
+      {
+        "key": "component=3|cycle=short(3-4)|parity=true",
+        "memberLabels": [
+          "snapshot335:b714481",
+          "scrambleDepth10:1"
+        ],
+        "size": 2
+      },
+      {
+        "key": "component=2|cycle=none|parity=true",
+        "memberLabels": [
+          "worstCase:56a8b82d"
+        ],
+        "size": 1
+      },
+      {
+        "key": "component=3|cycle=long(5+)|parity=true",
+        "memberLabels": [
+          "worstCase:42c89b9"
+        ],
+        "size": 1
+      },
+      {
+        "key": "component=3|cycle=long(5+)|parity=false",
+        "memberLabels": [
+          "scrambleDepth30:7"
+        ],
+        "size": 1
+      }
+    ]
+  },
+  "blueprintMappings": [
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+",
+      "size": 14,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Deep Cycle (BP-1/REPAIR)",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=false|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 12,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 1,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "bestMatch": "Conflict-Breaking Sacrifice",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=false|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 10,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 1,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "bestMatch": "Deep Cycle (BP-1/REPAIR)",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+",
+      "size": 8,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 1,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "bestMatch": "Conflict-Breaking Sacrifice",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 7,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=false|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+",
+      "size": 5,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 1,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "bestMatch": "Conflict-Breaking Sacrifice",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=1|conflict=true|swap=false|bridge=false|deferred=true|wrongWing=9+",
+      "size": 5,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Parity-Cycle Specialist (BP-2)",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=9+",
+      "size": 4,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=false|cycle=short(3-4)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=3-4",
+      "size": 4,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 1,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "bestMatch": "Deep Cycle (BP-1/REPAIR)",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 4,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Deep Cycle (BP-1/REPAIR)",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 3,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+",
+      "size": 3,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Deep Cycle (BP-1/REPAIR)",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=false|cycle=swap(2)|cycleCount=1|conflict=true|swap=true|bridge=true|deferred=true|wrongWing=9+",
+      "size": 3,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 3,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 1,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "bestMatch": "Conflict-Breaking Sacrifice",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=5-8",
+      "size": 3,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=1|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+",
+      "size": 3,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Parity-Cycle Specialist (BP-2)",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 3,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=false|cycle=short(3-4)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=true|wrongWing=3-4",
+      "size": 3,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 1,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "bestMatch": "Multi-Hop Bridge",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=false|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 2,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=5-8",
+      "size": 2,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=5-8",
+      "size": 2,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 2,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=false|cycle=swap(2)|cycleCount=1|conflict=false|swap=true|bridge=false|deferred=true|wrongWing=1-2",
+      "size": 2,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 1,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "bestMatch": "Multi-Hop Bridge",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8",
+      "size": 2,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=5-8",
+      "size": 2,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 2,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 2,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+",
+      "size": 2,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Deep Cycle (BP-1/REPAIR)",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+",
+      "size": 2,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Deep Cycle (BP-1/REPAIR)",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 2,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Deep Cycle (BP-1/REPAIR)",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 2,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Deep Cycle (BP-1/REPAIR)",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=true|cycle=swap(2)|cycleCount=1|conflict=true|swap=true|bridge=false|deferred=true|wrongWing=9+",
+      "size": 2,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Parity-Cycle Specialist (BP-2)",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 1,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+",
+      "size": 1,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Parity-Cycle Specialist (BP-2)",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8",
+      "size": 1,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=5-8",
+      "size": 1,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=5|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=5-8",
+      "size": 1,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 1,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 1,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Deep Cycle (BP-1/REPAIR)",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=false|cycle=long(5+)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=9+",
+      "size": 1,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=4|conflict=true|swap=true|bridge=false|deferred=false|wrongWing=9+",
+      "size": 1,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Parity-Cycle Specialist (BP-2)",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    },
+    {
+      "clusterKey": "parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8",
+      "size": 1,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "bestMatch": "Bridge Injection",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=true|cycle=swap(2)|cycleCount=2|conflict=true|swap=true|bridge=false|deferred=true|wrongWing=9+",
+      "size": 1,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Parity-Cycle Specialist (BP-2)",
+      "bestMatchRate": 1,
+      "verdict": "VARIANT_OF_EXISTING"
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+",
+      "size": 1,
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "bestMatch": "Deep Cycle (BP-1/REPAIR)",
+      "bestMatchRate": 1,
+      "verdict": "AMBIGUOUS"
+    }
+  ],
+  "opportunityRows": [
+    {
+      "cluster": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+",
+      "cases": 14,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%)"
+    },
+    {
+      "cluster": "parity=false|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "cases": 12,
+      "existingPrimitive": "Conflict-Breaking Sacrifice (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=false|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "cases": 10,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%)"
+    },
+    {
+      "cluster": "parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+",
+      "cases": 8,
+      "existingPrimitive": "Conflict-Breaking Sacrifice (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "cases": 7,
+      "existingPrimitive": "Bridge Injection (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=false|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+",
+      "cases": 5,
+      "existingPrimitive": "Conflict-Breaking Sacrifice (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=true|cycle=short(3-4)|cycleCount=1|conflict=true|swap=false|bridge=false|deferred=true|wrongWing=9+",
+      "cases": 5,
+      "existingPrimitive": "Parity-Cycle Specialist (BP-2) (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=9+",
+      "cases": 4,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%)"
+    },
+    {
+      "cluster": "parity=false|cycle=short(3-4)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=3-4",
+      "cases": 4,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%)"
+    },
+    {
+      "cluster": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "cases": 4,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%)"
+    },
+    {
+      "cluster": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "cases": 3,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%)"
+    },
+    {
+      "cluster": "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+",
+      "cases": 3,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%)"
+    },
+    {
+      "cluster": "parity=false|cycle=swap(2)|cycleCount=1|conflict=true|swap=true|bridge=true|deferred=true|wrongWing=9+",
+      "cases": 3,
+      "existingPrimitive": "Bridge Injection (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "cases": 3,
+      "existingPrimitive": "Conflict-Breaking Sacrifice (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=5-8",
+      "cases": 3,
+      "existingPrimitive": "Bridge Injection (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=true|cycle=short(3-4)|cycleCount=1|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+",
+      "cases": 3,
+      "existingPrimitive": "Parity-Cycle Specialist (BP-2) (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "cases": 3,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%)"
+    },
+    {
+      "cluster": "parity=false|cycle=short(3-4)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=true|wrongWing=3-4",
+      "cases": 3,
+      "existingPrimitive": "Multi-Hop Bridge (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=false|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "cases": 2,
+      "existingPrimitive": "Bridge Injection (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=5-8",
+      "cases": 2,
+      "existingPrimitive": "Bridge Injection (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=5-8",
+      "cases": 2,
+      "existingPrimitive": "Bridge Injection (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "cases": 2,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%)"
+    },
+    {
+      "cluster": "parity=false|cycle=swap(2)|cycleCount=1|conflict=false|swap=true|bridge=false|deferred=true|wrongWing=1-2",
+      "cases": 2,
+      "existingPrimitive": "Multi-Hop Bridge (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8",
+      "cases": 2,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%)"
+    },
+    {
+      "cluster": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=5-8",
+      "cases": 2,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%)"
+    },
+    {
+      "cluster": "parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "cases": 2,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%)"
+    },
+    {
+      "cluster": "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "cases": 2,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%)"
+    },
+    {
+      "cluster": "parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+",
+      "cases": 2,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%)"
+    },
+    {
+      "cluster": "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+",
+      "cases": 2,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%)"
+    },
+    {
+      "cluster": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=5-8",
+      "cases": 2,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%)"
+    },
+    {
+      "cluster": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "cases": 2,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%)"
+    },
+    {
+      "cluster": "parity=true|cycle=swap(2)|cycleCount=1|conflict=true|swap=true|bridge=false|deferred=true|wrongWing=9+",
+      "cases": 2,
+      "existingPrimitive": "Parity-Cycle Specialist (BP-2) (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "cases": 1,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%)"
+    },
+    {
+      "cluster": "parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "cases": 1,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%)"
+    },
+    {
+      "cluster": "parity=true|cycle=long(5+)|cycleCount=2|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+",
+      "cases": 1,
+      "existingPrimitive": "Parity-Cycle Specialist (BP-2) (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8",
+      "cases": 1,
+      "existingPrimitive": "Bridge Injection (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=5-8",
+      "cases": 1,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%)"
+    },
+    {
+      "cluster": "parity=true|cycle=short(3-4)|cycleCount=5|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "cases": 1,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%)"
+    },
+    {
+      "cluster": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=5-8",
+      "cases": 1,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%)"
+    },
+    {
+      "cluster": "parity=true|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "cases": 1,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%)"
+    },
+    {
+      "cluster": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "cases": 1,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%)"
+    },
+    {
+      "cluster": "parity=false|cycle=long(5+)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "cases": 1,
+      "existingPrimitive": "Bridge Injection (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=9+",
+      "cases": 1,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%)"
+    },
+    {
+      "cluster": "parity=true|cycle=long(5+)|cycleCount=4|conflict=true|swap=true|bridge=false|deferred=false|wrongWing=9+",
+      "cases": 1,
+      "existingPrimitive": "Parity-Cycle Specialist (BP-2) (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "cases": 1,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%)"
+    },
+    {
+      "cluster": "parity=true|cycle=short(3-4)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "cases": 1,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Bridge Injection @ 100%)"
+    },
+    {
+      "cluster": "parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8",
+      "cases": 1,
+      "existingPrimitive": "Bridge Injection (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=true|cycle=swap(2)|cycleCount=2|conflict=true|swap=true|bridge=false|deferred=true|wrongWing=9+",
+      "cases": 1,
+      "existingPrimitive": "Parity-Cycle Specialist (BP-2) (100% match)",
+      "newMechanismNeeded": "no"
+    },
+    {
+      "cluster": "parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+",
+      "cases": 1,
+      "existingPrimitive": "-",
+      "newMechanismNeeded": "AMBIGUOUS -- multiple Blueprints both clear majority (best=Deep Cycle (BP-1/REPAIR) @ 100%)"
+    }
+  ],
+  "opportunitySummary": {
+    "totalClusters": 49,
+    "newMechanismClusterCount": 0,
+    "newMechanismCaseCount": 0,
+    "variantClusterCount": 21,
+    "ambiguousClusterCount": 28
+  },
+  "levels": {
+    "level1": true,
+    "level2": true,
+    "level3": true
+  },
+  "decision": "B"
+}
