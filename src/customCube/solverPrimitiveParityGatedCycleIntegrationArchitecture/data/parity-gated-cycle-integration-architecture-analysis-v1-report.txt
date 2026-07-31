@@ -1,0 +1,48 @@
+=== Parity-Gated Cycle Integration Architecture Analysis Sprint v1 -- Report ===
+
+Hole Dataset n=142
+
+STEP1/2. Recovery Timeline + Budget Consumption Attribution
+  RecoveryType candidates measured: DISRUPT, SETUP, REPAIR, CCR, MIXED_COMMUTATOR, PARITY_GATED_CYCLE
+  [DISRUPT] started=142, avgRuntimeMs=95.9, p95RuntimeMs=209.0, avgRemainingTimeAfterMs=788.0, budgetSharePercent=10.00%
+  [SETUP] started=122, avgRuntimeMs=235.0, p95RuntimeMs=637.0, avgRemainingTimeAfterMs=32.6, budgetSharePercent=24.50%
+  [REPAIR] started=142, avgRuntimeMs=35.7, p95RuntimeMs=187.0, avgRemainingTimeAfterMs=752.3, budgetSharePercent=3.72%
+  [CCR] started=142, avgRuntimeMs=300.7, p95RuntimeMs=914.0, avgRemainingTimeAfterMs=451.5, budgetSharePercent=31.35%
+  [MIXED_COMMUTATOR] started=142, avgRuntimeMs=48.7, p95RuntimeMs=302.0, avgRemainingTimeAfterMs=242.8, budgetSharePercent=5.08%
+  [PARITY_GATED_CYCLE] started=142, avgRuntimeMs=160.0, p95RuntimeMs=811.0, avgRemainingTimeAfterMs=291.5, budgetSharePercent=16.68%
+
+STEP3. Counterfactual Scheduler Replay (real re-execution, same wall-clock budgets, order only varies)
+  [A_current] parityOffered=4/142, parityChosen=4/142, avgExpectedImprovement=-176.81, avgRuntimeMs=602.1
+  [B_repair_parity_ccr] parityOffered=8/142, parityChosen=8/142, avgExpectedImprovement=-179.11, avgRuntimeMs=600.4
+  [C_parity_repair_ccr] parityOffered=9/142, parityChosen=9/142, avgExpectedImprovement=-171.24, avgRuntimeMs=607.0
+
+STEP4. Dedicated Budget Simulation (position fixed at real production order, PARITY budget policy swept)
+  [policy=500] parityOffered=1/142, parityChosen=1/142
+  [policy=1000] parityOffered=4/142, parityChosen=4/142
+  [policy=1500] parityOffered=4/142, parityChosen=4/142
+  [policy=2000] parityOffered=4/142, parityChosen=4/142
+  [policy=remainingTime] parityOffered=4/142, parityChosen=4/142
+
+STEP5. Gate Audit Funnel
+  totalCases=142
+  gatePassCount(componentCount>1)=49
+  offeredCount(=Primitive 성공, see GateAudit.ts disclosure)=2
+  budgetInsufficientCount(remainingTimeBefore<500ms)=16
+  primitiveFailureCount(remainingTimeBefore>=500ms, still not offered)=31
+  chosenCount=2
+
+STEP6. Root Cause Matrix
+  totalCases=142, deficiencyPopulation(=totalCases-RESOLVED)=140
+  [GATE_MISS] count=93, %ofTotal=65.5%
+  [RESOLVED] count=2, %ofTotal=1.4%
+  [CANDIDATE_SELECTION] count=0, %ofTotal=0.0%
+  [SCHEDULER_ORDERING] count=6, %ofTotal=4.2%
+  [BUDGET_STARVATION] count=0, %ofTotal=0.0%
+  [PRIMITIVE_FAILURE] count=41, %ofTotal=28.9%
+  %ofDeficiency (excludes RESOLVED):
+    [GATE_MISS] 66.4%
+    [CANDIDATE_SELECTION] 0.0%
+    [SCHEDULER_ORDERING] 4.3%
+    [BUDGET_STARVATION] 0.0%
+    [PRIMITIVE_FAILURE] 29.3%
+  dominantDeficiencyCause=GATE_MISS
