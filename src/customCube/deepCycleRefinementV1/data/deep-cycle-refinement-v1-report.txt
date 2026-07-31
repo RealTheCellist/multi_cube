@@ -1,0 +1,58 @@
+Solver Primitive Refinement Sprint #2 -- Deep Cycle Refinement Sprint v1 -- Report
+Generated: 2026-07-31T03:39:42.062Z
+Population: 142 cases (v4, unmodified) -- target(Deep Cycle Primary Cluster)=30, rest=112
+
+STEP1. Baseline Reproduction (real BoundedResolver.ts entry tryBoundedMultiCycleResolver(), unmodified)
+  Target cluster(n=30): Coverage=100.0%, Precision=20.0%, Gap Rescue=20.0%, avgRuntime=417.0ms, trueRegression=0
+  Full population(n=142): Coverage=59.9%, Gap Rescue=7.0%, trueRegression=0
+
+STEP2. Gate Sweep (target cluster, Search Contract held at baseline)
+  [baseline(BoundedResolver real)] Coverage=100.0%, Precision=20.0%, Gap Rescue=20.0%, avgRuntime=410.7ms | full population Gap Rescue=7.7%, trueRegression=0
+  [minCycleLength=3(cycleLength 하한 완화)] Coverage=100.0%, Precision=23.3%, Gap Rescue=23.3%, avgRuntime=400.1ms | full population Gap Rescue=11.3%, trueRegression=0
+  [minCycleLength=5(minimumCycleSize 상향)] Coverage=86.7%, Precision=23.1%, Gap Rescue=20.0%, avgRuntime=432.7ms | full population Gap Rescue=5.6%, trueRegression=0
+  [maxCycleLength=6(maximumCycleSize 상한 신설)] Coverage=100.0%, Precision=23.3%, Gap Rescue=23.3%, avgRuntime=418.6ms | full population Gap Rescue=6.3%, trueRegression=0
+  [cycleCount===1 required(dependencyDepth proxy)] Coverage=0.0%, Precision=0.0%, Gap Rescue=0.0%, avgRuntime=0.0ms | full population Gap Rescue=0.7%, trueRegression=0
+  [cycleCount>=2 required(dependencyDepth proxy)] Coverage=100.0%, Precision=23.3%, Gap Rescue=23.3%, avgRuntime=410.2ms | full population Gap Rescue=5.6%, trueRegression=0
+  [conflictEdgeCount===0 required] Coverage=100.0%, Precision=20.0%, Gap Rescue=20.0%, avgRuntime=414.6ms | full population Gap Rescue=6.3%, trueRegression=0
+  [conflictEdgeCount>0 required] Coverage=0.0%, Precision=0.0%, Gap Rescue=0.0%, avgRuntime=0.0ms | full population Gap Rescue=0.7%, trueRegression=0
+  [pairCount>=2 required(pairThreshold)] Coverage=100.0%, Precision=20.0%, Gap Rescue=20.0%, avgRuntime=418.1ms | full population Gap Rescue=5.6%, trueRegression=0
+  [pairCount>=5 required(pairThreshold)] Coverage=40.0%, Precision=0.0%, Gap Rescue=0.0%, avgRuntime=378.2ms | full population Gap Rescue=0.0%, trueRegression=0
+  Best: minCycleLength=3(cycleLength 하한 완화)
+
+STEP3. Search Contract Sweep (target cluster, Gate held at baseline)
+  [baseline(BoundedResolver real)] Coverage=100.0%, Precision=16.7%, Gap Rescue=16.7%, avgRuntime=424.2ms | full population Gap Rescue=6.3%, trueRegression=0
+  [maxCandidatesPerHop=1] Coverage=100.0%, Precision=10.0%, Gap Rescue=10.0%, avgRuntime=201.8ms | full population Gap Rescue=2.8%, trueRegression=0
+  [maxCandidatesPerHop=3] Coverage=100.0%, Precision=16.7%, Gap Rescue=16.7%, avgRuntime=427.1ms | full population Gap Rescue=6.3%, trueRegression=0
+  [maxCandidatesPerHop=4] Coverage=100.0%, Precision=13.3%, Gap Rescue=13.3%, avgRuntime=437.7ms | full population Gap Rescue=5.6%, trueRegression=0
+  [maxLeavesExplored=32] Coverage=100.0%, Precision=16.7%, Gap Rescue=16.7%, avgRuntime=443.5ms | full population Gap Rescue=6.3%, trueRegression=0
+  [maxLeavesExplored=128] Coverage=100.0%, Precision=16.7%, Gap Rescue=16.7%, avgRuntime=441.4ms | full population Gap Rescue=6.3%, trueRegression=0
+  [maxLeavesExplored=256] Coverage=100.0%, Precision=20.0%, Gap Rescue=20.0%, avgRuntime=434.0ms | full population Gap Rescue=6.3%, trueRegression=0
+  [perHopDeadlineMs=30] Coverage=100.0%, Precision=16.7%, Gap Rescue=16.7%, avgRuntime=387.1ms | full population Gap Rescue=6.3%, trueRegression=0
+  [perHopDeadlineMs=120] Coverage=100.0%, Precision=16.7%, Gap Rescue=16.7%, avgRuntime=428.4ms | full population Gap Rescue=4.9%, trueRegression=0
+  [candidateOrdering=byPairCountGain] Coverage=100.0%, Precision=10.0%, Gap Rescue=10.0%, avgRuntime=428.0ms | full population Gap Rescue=7.0%, trueRegression=0
+  Best: maxLeavesExplored=256
+
+STEP4. Capability Benchmark (Baseline vs Candidate=Best Gate + Best Search Contract, full 142-population)
+  Baseline:  Coverage=59.9%, Precision=11.8%, Gap Rescue=7.0%, avgRuntime=388.5ms, trueRegression=0
+  Candidate: Coverage=73.9%, Precision=14.3%, Gap Rescue=10.6%, avgRuntime=381.2ms, trueRegression=0
+
+STEP5. Statistical Validation (paired-diff, n=142 -- deterministic mechanism, disclosed: population IS the N, exceeds Directive's own N>=15 floor)
+  improvedCountDiff(Candidate-Baseline): mean=0.0352, 95% CI=[-0.0010, 0.0714], Cohen's d_z=0.160(negligible)
+  runtimeDiffMs(Candidate-Baseline): mean=49.26, 95% CI=[32.41, 66.11]
+  trueRegressionDiff(Candidate-Baseline): mean=0.0000
+  [Gate A][PASS] Regression 증가 없음: True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000].
+  [Gate B][PASS] Runtime 허용 범위: Runtime diff mean=49.3ms, 95% CI=[32.4, 66.1] (허용 기준: Baseline p95=550ms 대비 +15%=82ms 이내).
+  [Gate C][OPEN_QUESTION] Capability 감소 없음: 성공 케이스 diff mean=0.04, 95% CI=[-0.00, 0.07], Cohen's d_z=0.16(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요) [strict mode: OPEN_QUESTION].
+  [Gate E][PASS] Primitive Interaction 이상 없음: Duplicate=0건, Starved Type=0개.
+  Category C(Refinement)/prototype-stage Pipeline Decision: B -- 필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장.
+
+STEP6. Refinement Decision + Root Cause Analysis
+  Level1(Gap Rescue 증가, Δ>0): PASS
+  Level2(Regression 증가 없음): PASS
+  Level3(통계적 유의성, 95% CI 하한>0): FAIL
+  Level4(Root Cause 규명): PASS(GATE_IMPROVEMENT)
+    Gate 단독 개선(full population Gap Rescue delta): 4.23%p
+    Search Contract 단독 개선(full population Gap Rescue delta): -0.70%p
+    결합 Candidate 개선(full population Gap Rescue delta): 3.52%p
+    Gate 축 단독 개선(4.23%p)이 결합 Candidate의 개선폭(3.52%p)을 대부분 설명한다. Search Contract 축 단독 개선은 -0.70%p로 무의미했다 -- 개선의 원천은 "어떤 상태를 시도할지"(Gate)이지 "어떻게 탐색할지"(Search Contract)가 아니다.
+  Decision: B

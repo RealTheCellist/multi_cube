@@ -1,0 +1,738 @@
+{
+  "targetLabels": [
+    "worstCase:1e928fb1",
+    "worstCase:5e5b20b",
+    "worstCase:b2c9ceb9",
+    "worstCase:cee673eb",
+    "worstCase:de8abca9",
+    "worstCase:710de4d1",
+    "worstCase:5d189c1",
+    "snapshot335:e7a801fb",
+    "snapshot335:60b5c3b1",
+    "snapshot335:1513fcff",
+    "snapshot335:ae3d218b",
+    "snapshot335:120fc3af",
+    "scrambleDepth10:3",
+    "scrambleDepth10:4",
+    "scrambleDepth10:6",
+    "scrambleDepth10:7",
+    "scrambleDepth10:8",
+    "scrambleDepth10:9",
+    "scrambleDepth20:1",
+    "scrambleDepth20:4",
+    "scrambleDepth20:7",
+    "scrambleDepth20:8",
+    "scrambleDepth30:2",
+    "scrambleDepth30:9",
+    "scrambleDepth50:0",
+    "scrambleDepth100:0",
+    "scrambleDepth100:2",
+    "scrambleDepth100:4",
+    "scrambleDepth100:5",
+    "scrambleDepth100:8"
+  ],
+  "baselineSummaryTarget": {
+    "configLabel": "baseline(BoundedResolver real)",
+    "n": 30,
+    "gateMatchedCount": 30,
+    "coverage": 1,
+    "improvedCount": 6,
+    "precision": 0.2,
+    "gapRescueRate": 0.2,
+    "avgRuntimeMsAmongMatched": 417.03333333333336,
+    "trueRegressionCount": 0
+  },
+  "baselineSummaryFull": {
+    "configLabel": "baseline(BoundedResolver real)",
+    "n": 142,
+    "gateMatchedCount": 85,
+    "coverage": 0.5985915492957746,
+    "improvedCount": 10,
+    "precision": 0.11764705882352941,
+    "gapRescueRate": 0.07042253521126761,
+    "avgRuntimeMsAmongMatched": 388.52941176470586,
+    "trueRegressionCount": 0
+  },
+  "gateSweepResults": [
+    {
+      "label": "baseline(BoundedResolver real)",
+      "target": {
+        "configLabel": "baseline(BoundedResolver real)",
+        "n": 30,
+        "gateMatchedCount": 30,
+        "coverage": 1,
+        "improvedCount": 6,
+        "precision": 0.2,
+        "gapRescueRate": 0.2,
+        "avgRuntimeMsAmongMatched": 410.7,
+        "trueRegressionCount": 0
+      },
+      "full": {
+        "configLabel": "baseline(BoundedResolver real)",
+        "n": 142,
+        "gateMatchedCount": 85,
+        "coverage": 0.5985915492957746,
+        "improvedCount": 11,
+        "precision": 0.12941176470588237,
+        "gapRescueRate": 0.07746478873239436,
+        "avgRuntimeMsAmongMatched": 392.43529411764706,
+        "trueRegressionCount": 0
+      }
+    },
+    {
+      "label": "minCycleLength=3(cycleLength 하한 완화)",
+      "target": {
+        "configLabel": "minCycleLength=3(cycleLength 하한 완화)",
+        "n": 30,
+        "gateMatchedCount": 30,
+        "coverage": 1,
+        "improvedCount": 7,
+        "precision": 0.23333333333333334,
+        "gapRescueRate": 0.23333333333333334,
+        "avgRuntimeMsAmongMatched": 400.06666666666666,
+        "trueRegressionCount": 0
+      },
+      "full": {
+        "configLabel": "minCycleLength=3(cycleLength 하한 완화)",
+        "n": 142,
+        "gateMatchedCount": 105,
+        "coverage": 0.7394366197183099,
+        "improvedCount": 16,
+        "precision": 0.1523809523809524,
+        "gapRescueRate": 0.11267605633802817,
+        "avgRuntimeMsAmongMatched": 366.8666666666667,
+        "trueRegressionCount": 0
+      }
+    },
+    {
+      "label": "minCycleLength=5(minimumCycleSize 상향)",
+      "target": {
+        "configLabel": "minCycleLength=5(minimumCycleSize 상향)",
+        "n": 30,
+        "gateMatchedCount": 26,
+        "coverage": 0.8666666666666667,
+        "improvedCount": 6,
+        "precision": 0.23076923076923078,
+        "gapRescueRate": 0.2,
+        "avgRuntimeMsAmongMatched": 432.6923076923077,
+        "trueRegressionCount": 0
+      },
+      "full": {
+        "configLabel": "minCycleLength=5(minimumCycleSize 상향)",
+        "n": 142,
+        "gateMatchedCount": 61,
+        "coverage": 0.4295774647887324,
+        "improvedCount": 8,
+        "precision": 0.13114754098360656,
+        "gapRescueRate": 0.056338028169014086,
+        "avgRuntimeMsAmongMatched": 411.655737704918,
+        "trueRegressionCount": 0
+      }
+    },
+    {
+      "label": "maxCycleLength=6(maximumCycleSize 상한 신설)",
+      "target": {
+        "configLabel": "maxCycleLength=6(maximumCycleSize 상한 신설)",
+        "n": 30,
+        "gateMatchedCount": 30,
+        "coverage": 1,
+        "improvedCount": 7,
+        "precision": 0.23333333333333334,
+        "gapRescueRate": 0.23333333333333334,
+        "avgRuntimeMsAmongMatched": 418.6,
+        "trueRegressionCount": 0
+      },
+      "full": {
+        "configLabel": "maxCycleLength=6(maximumCycleSize 상한 신설)",
+        "n": 142,
+        "gateMatchedCount": 85,
+        "coverage": 0.5985915492957746,
+        "improvedCount": 9,
+        "precision": 0.10588235294117647,
+        "gapRescueRate": 0.06338028169014084,
+        "avgRuntimeMsAmongMatched": 398.11764705882354,
+        "trueRegressionCount": 0
+      }
+    },
+    {
+      "label": "cycleCount===1 required(dependencyDepth proxy)",
+      "target": {
+        "configLabel": "cycleCount===1 required(dependencyDepth proxy)",
+        "n": 30,
+        "gateMatchedCount": 0,
+        "coverage": 0,
+        "improvedCount": 0,
+        "precision": 0,
+        "gapRescueRate": 0,
+        "avgRuntimeMsAmongMatched": 0,
+        "trueRegressionCount": 0
+      },
+      "full": {
+        "configLabel": "cycleCount===1 required(dependencyDepth proxy)",
+        "n": 142,
+        "gateMatchedCount": 18,
+        "coverage": 0.1267605633802817,
+        "improvedCount": 1,
+        "precision": 0.05555555555555555,
+        "gapRescueRate": 0.007042253521126761,
+        "avgRuntimeMsAmongMatched": 374.05555555555554,
+        "trueRegressionCount": 0
+      }
+    },
+    {
+      "label": "cycleCount>=2 required(dependencyDepth proxy)",
+      "target": {
+        "configLabel": "cycleCount>=2 required(dependencyDepth proxy)",
+        "n": 30,
+        "gateMatchedCount": 30,
+        "coverage": 1,
+        "improvedCount": 7,
+        "precision": 0.23333333333333334,
+        "gapRescueRate": 0.23333333333333334,
+        "avgRuntimeMsAmongMatched": 410.1666666666667,
+        "trueRegressionCount": 0
+      },
+      "full": {
+        "configLabel": "cycleCount>=2 required(dependencyDepth proxy)",
+        "n": 142,
+        "gateMatchedCount": 67,
+        "coverage": 0.47183098591549294,
+        "improvedCount": 8,
+        "precision": 0.11940298507462686,
+        "gapRescueRate": 0.056338028169014086,
+        "avgRuntimeMsAmongMatched": 407.8358208955224,
+        "trueRegressionCount": 0
+      }
+    },
+    {
+      "label": "conflictEdgeCount===0 required",
+      "target": {
+        "configLabel": "conflictEdgeCount===0 required",
+        "n": 30,
+        "gateMatchedCount": 30,
+        "coverage": 1,
+        "improvedCount": 6,
+        "precision": 0.2,
+        "gapRescueRate": 0.2,
+        "avgRuntimeMsAmongMatched": 414.56666666666666,
+        "trueRegressionCount": 0
+      },
+      "full": {
+        "configLabel": "conflictEdgeCount===0 required",
+        "n": 142,
+        "gateMatchedCount": 80,
+        "coverage": 0.5633802816901409,
+        "improvedCount": 9,
+        "precision": 0.1125,
+        "gapRescueRate": 0.06338028169014084,
+        "avgRuntimeMsAmongMatched": 388.475,
+        "trueRegressionCount": 0
+      }
+    },
+    {
+      "label": "conflictEdgeCount>0 required",
+      "target": {
+        "configLabel": "conflictEdgeCount>0 required",
+        "n": 30,
+        "gateMatchedCount": 0,
+        "coverage": 0,
+        "improvedCount": 0,
+        "precision": 0,
+        "gapRescueRate": 0,
+        "avgRuntimeMsAmongMatched": 0,
+        "trueRegressionCount": 0
+      },
+      "full": {
+        "configLabel": "conflictEdgeCount>0 required",
+        "n": 142,
+        "gateMatchedCount": 5,
+        "coverage": 0.035211267605633804,
+        "improvedCount": 1,
+        "precision": 0.2,
+        "gapRescueRate": 0.007042253521126761,
+        "avgRuntimeMsAmongMatched": 548.6,
+        "trueRegressionCount": 0
+      }
+    },
+    {
+      "label": "pairCount>=2 required(pairThreshold)",
+      "target": {
+        "configLabel": "pairCount>=2 required(pairThreshold)",
+        "n": 30,
+        "gateMatchedCount": 30,
+        "coverage": 1,
+        "improvedCount": 6,
+        "precision": 0.2,
+        "gapRescueRate": 0.2,
+        "avgRuntimeMsAmongMatched": 418.1,
+        "trueRegressionCount": 0
+      },
+      "full": {
+        "configLabel": "pairCount>=2 required(pairThreshold)",
+        "n": 142,
+        "gateMatchedCount": 79,
+        "coverage": 0.5563380281690141,
+        "improvedCount": 8,
+        "precision": 0.10126582278481013,
+        "gapRescueRate": 0.056338028169014086,
+        "avgRuntimeMsAmongMatched": 409.9746835443038,
+        "trueRegressionCount": 0
+      }
+    },
+    {
+      "label": "pairCount>=5 required(pairThreshold)",
+      "target": {
+        "configLabel": "pairCount>=5 required(pairThreshold)",
+        "n": 30,
+        "gateMatchedCount": 12,
+        "coverage": 0.4,
+        "improvedCount": 0,
+        "precision": 0,
+        "gapRescueRate": 0,
+        "avgRuntimeMsAmongMatched": 378.1666666666667,
+        "trueRegressionCount": 0
+      },
+      "full": {
+        "configLabel": "pairCount>=5 required(pairThreshold)",
+        "n": 142,
+        "gateMatchedCount": 34,
+        "coverage": 0.23943661971830985,
+        "improvedCount": 0,
+        "precision": 0,
+        "gapRescueRate": 0,
+        "avgRuntimeMsAmongMatched": 364.20588235294116,
+        "trueRegressionCount": 0
+      }
+    }
+  ],
+  "searchSweepResults": [
+    {
+      "label": "baseline(BoundedResolver real)",
+      "target": {
+        "configLabel": "baseline(BoundedResolver real)",
+        "n": 30,
+        "gateMatchedCount": 30,
+        "coverage": 1,
+        "improvedCount": 5,
+        "precision": 0.16666666666666666,
+        "gapRescueRate": 0.16666666666666666,
+        "avgRuntimeMsAmongMatched": 424.2,
+        "trueRegressionCount": 0
+      },
+      "full": {
+        "configLabel": "baseline(BoundedResolver real)",
+        "n": 142,
+        "gateMatchedCount": 85,
+        "coverage": 0.5985915492957746,
+        "improvedCount": 9,
+        "precision": 0.10588235294117647,
+        "gapRescueRate": 0.06338028169014084,
+        "avgRuntimeMsAmongMatched": 416.81176470588235,
+        "trueRegressionCount": 0
+      }
+    },
+    {
+      "label": "maxCandidatesPerHop=1",
+      "target": {
+        "configLabel": "maxCandidatesPerHop=1",
+        "n": 30,
+        "gateMatchedCount": 30,
+        "coverage": 1,
+        "improvedCount": 3,
+        "precision": 0.1,
+        "gapRescueRate": 0.1,
+        "avgRuntimeMsAmongMatched": 201.83333333333334,
+        "trueRegressionCount": 0
+      },
+      "full": {
+        "configLabel": "maxCandidatesPerHop=1",
+        "n": 142,
+        "gateMatchedCount": 85,
+        "coverage": 0.5985915492957746,
+        "improvedCount": 4,
+        "precision": 0.047058823529411764,
+        "gapRescueRate": 0.028169014084507043,
+        "avgRuntimeMsAmongMatched": 172.35294117647058,
+        "trueRegressionCount": 0
+      }
+    },
+    {
+      "label": "maxCandidatesPerHop=3",
+      "target": {
+        "configLabel": "maxCandidatesPerHop=3",
+        "n": 30,
+        "gateMatchedCount": 30,
+        "coverage": 1,
+        "improvedCount": 5,
+        "precision": 0.16666666666666666,
+        "gapRescueRate": 0.16666666666666666,
+        "avgRuntimeMsAmongMatched": 427.1333333333333,
+        "trueRegressionCount": 0
+      },
+      "full": {
+        "configLabel": "maxCandidatesPerHop=3",
+        "n": 142,
+        "gateMatchedCount": 85,
+        "coverage": 0.5985915492957746,
+        "improvedCount": 9,
+        "precision": 0.10588235294117647,
+        "gapRescueRate": 0.06338028169014084,
+        "avgRuntimeMsAmongMatched": 426.21176470588233,
+        "trueRegressionCount": 0
+      }
+    },
+    {
+      "label": "maxCandidatesPerHop=4",
+      "target": {
+        "configLabel": "maxCandidatesPerHop=4",
+        "n": 30,
+        "gateMatchedCount": 30,
+        "coverage": 1,
+        "improvedCount": 4,
+        "precision": 0.13333333333333333,
+        "gapRescueRate": 0.13333333333333333,
+        "avgRuntimeMsAmongMatched": 437.6666666666667,
+        "trueRegressionCount": 0
+      },
+      "full": {
+        "configLabel": "maxCandidatesPerHop=4",
+        "n": 142,
+        "gateMatchedCount": 85,
+        "coverage": 0.5985915492957746,
+        "improvedCount": 8,
+        "precision": 0.09411764705882353,
+        "gapRescueRate": 0.056338028169014086,
+        "avgRuntimeMsAmongMatched": 429.2352941176471,
+        "trueRegressionCount": 0
+      }
+    },
+    {
+      "label": "maxLeavesExplored=32",
+      "target": {
+        "configLabel": "maxLeavesExplored=32",
+        "n": 30,
+        "gateMatchedCount": 30,
+        "coverage": 1,
+        "improvedCount": 5,
+        "precision": 0.16666666666666666,
+        "gapRescueRate": 0.16666666666666666,
+        "avgRuntimeMsAmongMatched": 443.46666666666664,
+        "trueRegressionCount": 0
+      },
+      "full": {
+        "configLabel": "maxLeavesExplored=32",
+        "n": 142,
+        "gateMatchedCount": 85,
+        "coverage": 0.5985915492957746,
+        "improvedCount": 9,
+        "precision": 0.10588235294117647,
+        "gapRescueRate": 0.06338028169014084,
+        "avgRuntimeMsAmongMatched": 415.0470588235294,
+        "trueRegressionCount": 0
+      }
+    },
+    {
+      "label": "maxLeavesExplored=128",
+      "target": {
+        "configLabel": "maxLeavesExplored=128",
+        "n": 30,
+        "gateMatchedCount": 30,
+        "coverage": 1,
+        "improvedCount": 5,
+        "precision": 0.16666666666666666,
+        "gapRescueRate": 0.16666666666666666,
+        "avgRuntimeMsAmongMatched": 441.3666666666667,
+        "trueRegressionCount": 0
+      },
+      "full": {
+        "configLabel": "maxLeavesExplored=128",
+        "n": 142,
+        "gateMatchedCount": 85,
+        "coverage": 0.5985915492957746,
+        "improvedCount": 9,
+        "precision": 0.10588235294117647,
+        "gapRescueRate": 0.06338028169014084,
+        "avgRuntimeMsAmongMatched": 412.8,
+        "trueRegressionCount": 0
+      }
+    },
+    {
+      "label": "maxLeavesExplored=256",
+      "target": {
+        "configLabel": "maxLeavesExplored=256",
+        "n": 30,
+        "gateMatchedCount": 30,
+        "coverage": 1,
+        "improvedCount": 6,
+        "precision": 0.2,
+        "gapRescueRate": 0.2,
+        "avgRuntimeMsAmongMatched": 434,
+        "trueRegressionCount": 0
+      },
+      "full": {
+        "configLabel": "maxLeavesExplored=256",
+        "n": 142,
+        "gateMatchedCount": 85,
+        "coverage": 0.5985915492957746,
+        "improvedCount": 9,
+        "precision": 0.10588235294117647,
+        "gapRescueRate": 0.06338028169014084,
+        "avgRuntimeMsAmongMatched": 408.4470588235294,
+        "trueRegressionCount": 0
+      }
+    },
+    {
+      "label": "perHopDeadlineMs=30",
+      "target": {
+        "configLabel": "perHopDeadlineMs=30",
+        "n": 30,
+        "gateMatchedCount": 30,
+        "coverage": 1,
+        "improvedCount": 5,
+        "precision": 0.16666666666666666,
+        "gapRescueRate": 0.16666666666666666,
+        "avgRuntimeMsAmongMatched": 387.1,
+        "trueRegressionCount": 0
+      },
+      "full": {
+        "configLabel": "perHopDeadlineMs=30",
+        "n": 142,
+        "gateMatchedCount": 85,
+        "coverage": 0.5985915492957746,
+        "improvedCount": 9,
+        "precision": 0.10588235294117647,
+        "gapRescueRate": 0.06338028169014084,
+        "avgRuntimeMsAmongMatched": 389.5176470588235,
+        "trueRegressionCount": 0
+      }
+    },
+    {
+      "label": "perHopDeadlineMs=120",
+      "target": {
+        "configLabel": "perHopDeadlineMs=120",
+        "n": 30,
+        "gateMatchedCount": 30,
+        "coverage": 1,
+        "improvedCount": 5,
+        "precision": 0.16666666666666666,
+        "gapRescueRate": 0.16666666666666666,
+        "avgRuntimeMsAmongMatched": 428.3666666666667,
+        "trueRegressionCount": 0
+      },
+      "full": {
+        "configLabel": "perHopDeadlineMs=120",
+        "n": 142,
+        "gateMatchedCount": 85,
+        "coverage": 0.5985915492957746,
+        "improvedCount": 7,
+        "precision": 0.08235294117647059,
+        "gapRescueRate": 0.04929577464788732,
+        "avgRuntimeMsAmongMatched": 412.01176470588234,
+        "trueRegressionCount": 0
+      }
+    },
+    {
+      "label": "candidateOrdering=byPairCountGain",
+      "target": {
+        "configLabel": "candidateOrdering=byPairCountGain",
+        "n": 30,
+        "gateMatchedCount": 30,
+        "coverage": 1,
+        "improvedCount": 3,
+        "precision": 0.1,
+        "gapRescueRate": 0.1,
+        "avgRuntimeMsAmongMatched": 427.96666666666664,
+        "trueRegressionCount": 0
+      },
+      "full": {
+        "configLabel": "candidateOrdering=byPairCountGain",
+        "n": 142,
+        "gateMatchedCount": 85,
+        "coverage": 0.5985915492957746,
+        "improvedCount": 10,
+        "precision": 0.11764705882352941,
+        "gapRescueRate": 0.07042253521126761,
+        "avgRuntimeMsAmongMatched": 417.9647058823529,
+        "trueRegressionCount": 0
+      }
+    }
+  ],
+  "bestGateConfig": {
+    "label": "minCycleLength=3(cycleLength 하한 완화)",
+    "minCycleLength": 3,
+    "maxCycleLength": null,
+    "cycleCountRequirement": "any",
+    "conflictRequirement": "any",
+    "minPairCount": 0
+  },
+  "bestSearchConfig": {
+    "label": "maxLeavesExplored=256",
+    "maxCandidatesPerHop": 2,
+    "maxLeavesExplored": 256,
+    "perHopDeadlineMs": 60,
+    "candidateOrdering": "asReturned"
+  },
+  "candidateSummaryFull": {
+    "configLabel": "combined(minCycleLength=3(cycleLength 하한 완화) + maxLeavesExplored=256)",
+    "n": 142,
+    "gateMatchedCount": 105,
+    "coverage": 0.7394366197183099,
+    "improvedCount": 15,
+    "precision": 0.14285714285714285,
+    "gapRescueRate": 0.1056338028169014,
+    "avgRuntimeMsAmongMatched": 381.15238095238095,
+    "trueRegressionCount": 0
+  },
+  "comparison": {
+    "n": 142,
+    "improvedCountDiffEvaluation": {
+      "stats": {
+        "n": 142,
+        "mean": 0.035211267605633804,
+        "stddev": 0.21999264433176827,
+        "coefficientOfVariation": 6.247791099022218,
+        "ci95Half": 0.03618429031278029,
+        "ciLower": -0.0009730227071464842,
+        "ciUpper": 0.0713955579184141
+      },
+      "effectSize": {
+        "meanDiff": 0.035211267605633804,
+        "variance": 0.04839676356008389,
+        "standardError": 0.01846137260856137,
+        "cohensD": 0.16005656785747852,
+        "magnitude": "negligible"
+      },
+      "majorityVoteRate": 0.04225352112676056
+    },
+    "trueRegressionDiffEvaluation": {
+      "stats": {
+        "n": 142,
+        "mean": 0,
+        "stddev": 0,
+        "coefficientOfVariation": 0,
+        "ci95Half": 0,
+        "ciLower": 0,
+        "ciUpper": 0
+      },
+      "effectSize": {
+        "meanDiff": 0,
+        "variance": 0,
+        "standardError": 0,
+        "cohensD": 0,
+        "magnitude": "negligible"
+      },
+      "majorityVoteRate": 0
+    },
+    "runtimeDiffMsEvaluation": {
+      "stats": {
+        "n": 142,
+        "mean": 49.26056338028169,
+        "stddev": 102.4213020546701,
+        "coefficientOfVariation": 2.0791743948196073,
+        "ci95Half": 16.84620928584369,
+        "ciLower": 32.414354094437996,
+        "ciUpper": 66.10677266612538
+      },
+      "effectSize": {
+        "meanDiff": 49.26056338028169,
+        "variance": 10490.123114573968,
+        "standardError": 8.595004737675353,
+        "cohensD": 0.48096013614421296,
+        "magnitude": "small"
+      },
+      "majorityVoteRate": 0.6549295774647887
+    },
+    "baselineP95RuntimeMs": 550
+  },
+  "gateResults": [
+    {
+      "gate": "A",
+      "name": "Regression 증가 없음",
+      "status": "PASS",
+      "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+    },
+    {
+      "gate": "B",
+      "name": "Runtime 허용 범위",
+      "status": "PASS",
+      "evidence": "Runtime diff mean=49.3ms, 95% CI=[32.4, 66.1] (허용 기준: Baseline p95=550ms 대비 +15%=82ms 이내)."
+    },
+    {
+      "gate": "C",
+      "name": "Capability 감소 없음",
+      "status": "OPEN_QUESTION",
+      "evidence": "성공 케이스 diff mean=0.04, 95% CI=[-0.00, 0.07], Cohen's d_z=0.16(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요) [strict mode: OPEN_QUESTION]."
+    },
+    {
+      "gate": "E",
+      "name": "Primitive Interaction 이상 없음",
+      "status": "PASS",
+      "evidence": "Duplicate=0건, Starved Type=0개."
+    }
+  ],
+  "pipelineResult": {
+    "changeCategory": "C",
+    "categorySpec": {
+      "category": "C",
+      "name": "New Primitive",
+      "description": "새로운 Recovery/Solving Primitive 추가.",
+      "requiredGates": [
+        "A",
+        "B",
+        "C",
+        "E"
+      ],
+      "minN": 30,
+      "minNByStage": {
+        "prototype": 10,
+        "production": 30
+      },
+      "populationScope": "전체 Hole Dataset + 해당 Primitive의 Target Cluster",
+      "requiresFullContractAudit": false
+    },
+    "nUsed": 142,
+    "meetsMinN": true,
+    "gateResults": [
+      {
+        "gate": "A",
+        "name": "Regression 증가 없음",
+        "status": "PASS",
+        "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+      },
+      {
+        "gate": "B",
+        "name": "Runtime 허용 범위",
+        "status": "PASS",
+        "evidence": "Runtime diff mean=49.3ms, 95% CI=[32.4, 66.1] (허용 기준: Baseline p95=550ms 대비 +15%=82ms 이내)."
+      },
+      {
+        "gate": "C",
+        "name": "Capability 감소 없음",
+        "status": "OPEN_QUESTION",
+        "evidence": "성공 케이스 diff mean=0.04, 95% CI=[-0.00, 0.07], Cohen's d_z=0.16(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요) [strict mode: OPEN_QUESTION]."
+      },
+      {
+        "gate": "E",
+        "name": "Primitive Interaction 이상 없음",
+        "status": "PASS",
+        "evidence": "Duplicate=0건, Starved Type=0개."
+      }
+    ],
+    "decision": "B",
+    "decisionRationale": "필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장."
+  },
+  "rootCause": {
+    "rootCause": "GATE_IMPROVEMENT",
+    "gateOnlyDelta": 0.04225352112676056,
+    "searchOnlyDelta": -0.007042253521126765,
+    "combinedDelta": 0.0352112676056338,
+    "explanation": "Gate 축 단독 개선(4.23%p)이 결합 Candidate의 개선폭(3.52%p)을 대부분 설명한다. Search Contract 축 단독 개선은 -0.70%p로 무의미했다 -- 개선의 원천은 \"어떤 상태를 시도할지\"(Gate)이지 \"어떻게 탐색할지\"(Search Contract)가 아니다."
+  },
+  "levels": {
+    "level1": true,
+    "level2": true,
+    "level3": false,
+    "level4": true
+  },
+  "decision": "B"
+}
