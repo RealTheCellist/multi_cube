@@ -1,0 +1,63 @@
+=== Multi-Component Merge Production Integration Planning Sprint v1 -- Report ===
+
+Hole Dataset n=142 (real production functions, read-only); Comparative Prototype Sprint v1의 실측 Replay 결과 재사용 (새 Replay 없음)
+
+STEP1. Integration Position Analysis
+  parityGatedCycleGeneratedRate=1.4% (componentCount>1 실측 비율)
+  finalCandidatesEmptyRate=83.8% (pipeline_last 도달 가능성)
+  [AFTER_REPAIR] after_REPAIR (REPAIR 직후, CCR보다 먼저) (budgetMs=2000)
+    REPAIR(cycleLength 2~4 AND conflictEdgeCount>0) 직후에 삽입 -- REPAIR과 Gate가 겹치지 않으므로(REPAIR은 conflictEdgeCount>0 요구, MCM 후보 Gate인 componentCount>=3 케이스는 실측상 전부 conflictEdgeCount=0) REPAIR과의 직접 경쟁은 없다. 다만 CCR(cycleLength 5~6 AND conflictEdgeCount===0)보다 먼저 실행되므로, componentCount>=3이면서 CCR Gate도 만족하는 케이스(실측 2/9, 22.2%)에서 CCR의 기회를 선점하게 된다.
+  [AFTER_CCR] after_CCR (CCR 직후, PARITY_GATED_CYCLE보다 먼저) (budgetMs=2000)
+    CCR 직후에 삽입 -- CCR이 먼저 실행되도록 순서를 보존해 CCR과의 경쟁을 피한다. 오늘 실제 프로덕션 순서 (DISRUPT,DISRUPT,REPAIR,CCR,PARITY_GATED_CYCLE,MIXED_COMMUTATOR,SETUP)에서 CCR과 PARITY_GATED_CYCLE 사이에는 아무 것도 없으므로, 이 위치는 아래 before_PARITY와 물리적으로 동일한 슬롯이다.
+  [BEFORE_PARITY] before_PARITY (PARITY_GATED_CYCLE 직전) (budgetMs=2000)
+    PARITY_GATED_CYCLE(componentCount>1 Gate, 단일 Bridge) 직전에 삽입 -- MCM의 componentCount>=3 Gate가 PARITY_GATED_CYCLE의 Gate(componentCount>1)의 부분집합이므로, MCM이 먼저 componentCount>=3 케이스를 가로채면 PARITY_GATED_CYCLE은 사실상 componentCount==2 케이스만 남아서 처리하게 되어 두 Primitive의 Gate가 상호 배타적으로 분리된다 -- 오늘 실제 순서에서 after_CCR과 물리적으로 동일한 슬롯.
+  [PIPELINE_LAST] pipeline_last (SETUP 이후, 절대 마지막) (budgetMs=500)
+    모든 기존 Primitive가 실패했을 때만(candidates.length===0) 시도되는 최후 수단 위치 -- SchedulerProdIntegration Sprint v1이 이미 확립한 SETUP_RESERVED_SLICE_MS(500ms)와 동일한 last-resort 계약을 재사용한다. 이 위치는 PARITY_GATED_CYCLE이 먼저 componentCount>=3 케이스를 (단일 Bridge로, 부분적으로만) 건드린 이후의 상태를 물려받으므로, MCM 자신의 componentCount>=3 Gate가 더 이상 매치되지 않을 위험이 있다(PARITY_GATED_CYCLE의 단일 Bridge가 이미 컴포넌트 수를 줄여놨을 수 있음).
+  recommendedPosition=BEFORE_PARITY
+
+STEP2. Gate Design
+  [COMPONENT_COUNT_GE3] componentCount>=3 (Directive 예시 Gate)
+    coverage=6.3% (9/142), newCapabilityCount=4, duplicateOfProductionCount=0, precisionNewCapability=44.4%
+  [PARITY_SATISFIED] paritySatisfied (wrongWingCount 짝수)
+    coverage=52.8% (75/142), newCapabilityCount=3, duplicateOfProductionCount=4, precisionNewCapability=4.0%
+  [BRIDGE_CANDIDATE_EXISTS] bridgeCandidateExists (generateBridgeCandidates 결과 존재)
+    coverage=8.5% (12/142), newCapabilityCount=0, duplicateOfProductionCount=2, precisionNewCapability=0.0%
+  [CYCLE_COUNT_GE2] cycleCount>=2 (cycleLength 조건)
+    coverage=45.8% (65/142), newCapabilityCount=4, duplicateOfProductionCount=8, precisionNewCapability=6.2%
+
+STEP3. Budget Contract
+  [REMAINING_TIME] Remaining Time
+    CCR과 동일한 스타일 -- 앞선 단계(REPAIR/CCR)가 남긴 시간을 그대로 MCM에 넘긴다(자체 상한 없음).
+    pros: 예산 낭비가 없다 -- 남은 시간을 최대한 활용.
+    cons: Integration Architecture Analysis Sprint v1이 CCR의 remainingTime 계약이 뒤따르는 Primitive를 굶기는 근본 원인임을 이미 실측으로 확인했다 -- MCM에도 동일한 위험이 재현된다. MCM은 componentCount>=3(실측 9/142, 6.3%)에서만 발동하므로 REPAIR/CCR이 이미 대부분의 시간을 소비한 뒤에는 MCM 자신의 avgRuntimeMs(528.5ms)조차 확보 못 할 위험.
+  [FIXED_BUDGET] Fixed Budget
+    MCM 전용 고정 슬라이스를 부여한다 -- 실측 avgRuntimeMs(528.5ms)를 반올림한 600ms 제안.
+    pros: 예측 가능성이 높고, PARITY_GATED_CYCLE_RESERVED_SLICE_MS(2000ms)보다 훨씬 작아 Outer Deadline(1000ms) 전체를 침해할 위험이 낮다.
+    cons: componentCount>=3 케이스 중 MAX_SEQUENTIAL_MERGES=4번의 병합 시도가 모두 필요한 극단적 케이스에서는 600ms가 부족할 수 있다(4번의 BRIDGE_SUB_BUDGET_MS=300ms 순차 시도만으로도 이론상 최대 1200ms).
+  [DEDICATED_SLICE] Dedicated Slice
+    PARITY_GATED_CYCLE_RESERVED_SLICE_MS(2000ms)를 그대로 재사용 -- MultiComponentMergePrototype.ts의 runMultiComponentMergePipeline()이 이미 이 값을 자신의 deadline으로 쓰고 있다(코드 변경 없이 그대로 재사용 가능).
+    pros: 실제 Prototype 코드가 이미 이 예산 계약으로 실측(avgRuntimeMs=528.5ms, 2000ms 예산의 26.4%만 사용)됐으므로 추가 검증 없이 그대로 채택 가능 -- 구현 복잡도가 가장 낮다.
+    cons: PARITY_GATED_CYCLE도 이미 동일한 2000ms 슬라이스를 쓰고 있어, STEP1의 BEFORE_PARITY 위치와 결합하면 MCM+PARITY_GATED_CYCLE 합산 Worst-Case가 4000ms까지 늘어날 수 있다(다만 MCM Gate가 componentCount>=3일 때만 발동하고, 그 경우 PARITY_GATED_CYCLE은 componentCount==2 케이스만 남으므로 두 슬라이스가 같은 케이스에서 동시에 전부 소진되는 일은 Gate 설계상 없다 -- STEP2/STEP6 Gate 배타성 참고).
+  [SHARED_SLICE] Shared Slice
+    MCM이 PARITY_GATED_CYCLE_RESERVED_SLICE_MS(2000ms)를 PARITY_GATED_CYCLE과 공유한다(둘 중 먼저 실행되는 쪽이 남긴 시간만큼만 뒤쪽이 쓴다).
+    pros: 새 예산 상수를 도입하지 않아도 된다.
+    cons: Hybrid Primitive Blueprint Sprint v1의 STEP3(BudgetArchitecture.ts, Shared Budget 옵션)가 이미 같은 결론을 냈다 -- 공유 예산에서는 먼저 실행되는 쪽이 뒤쪽을 굶긴다(Budget Starvation). STEP2/STEP6 Gate 배타성으로 두 Primitive가 같은 케이스에서 동시에 실행될 일이 없다면 이 리스크 자체가 발생하지 않지만, 그 전제가 깨지면(예: Gate 완화) 즉시 재현되는 구조적 취약점이다.
+
+STEP4. Counterfactual Integration Simulation
+  expectedInvocationCount=9 (6.3%), expectedRescueCount=4 (2.8%)
+  duplicateSuccessCount=0
+  runtimeCostTotalMs=4756.2, runtimeCostPerRescueMs=1189.0
+  ccrOverlap=2/9 (22.2%), repairOverlap=0/9 (0.0%)
+
+STEP5. Risk Assessment
+  regressionRisk=LOW: Comparative Prototype Sprint v1 실측: Multi-Component Merge의 전체 142-case Regression=0건 -- validateDeferred가 모든 결과를 최종 검증하므로 componentCount>=3 Gate로 좁혀도 이 보장은 그대로 유지된다.
+  runtimeRisk=MEDIUM: runtimeCostPerRescueMs=1189ms -- 단일 Dedicated Slice(2000ms) 안에는 들어오지만, expectedRescueCount(4건)가 expectedInvocationCount(9건)보다 훨씬 작아 비용 대비 rescue 효율이 낮다.
+  schedulerRisk=LOW: STEP1 실측: MCM은 genParityGatedCycle()과 동일한 단일 호출 구성(Bridge->Traversal->Cleanup->Final Validation)을 재사용하므로 새 Scheduler 메커니즘 없이 generateRecoveryStrategies()의 기존 순차 호출 목록에 한 단계만 추가하면 된다 -- REPAIR/CCR의 기존 순서에도 영향 없음.
+  budgetRisk=LOW: STEP2/STEP6 Gate 설계(componentCount>=3)가 PARITY_GATED_CYCLE의 Gate(componentCount>1)와 상호 배타적으로 분리되므로, STEP3의 Dedicated Slice(PARITY_GATED_CYCLE_RESERVED_SLICE_MS=2000ms 재사용) 정책 하에서 두 Primitive가 같은 케이스에서 동시에 예산을 소진하는 일은 Gate 설계상 발생하지 않는다 -- Shared Slice/Remaining Time 정책을 채택할 경우에만 이 결론이 무효화되고 Budget Starvation 위험이 재현된다(STEP3 자체 disclosure).
+  primitiveInteractionRisk=MEDIUM: 실측 ccrOverlapRate=22.2%(2/9) -- CCR과 chooseBestRecovery() 단계에서 경쟁하지만, REPAIR와의 겹침은 실측 0%(0/9)이며, 두 후보 모두 독립적으로 생성되어 점수만 비교되므로(둘 다 존재 자체는 상호 배타적이지 않음) 이 자체가 Regression을 유발한 실측 사례는 없다.
+
+STEP6. Production Integration Contract
+  position=BEFORE_PARITY, gate=COMPONENT_COUNT_GE3, budget=DEDICATED_SLICE
+  schedulingRule: generateRecoveryStrategies()의 genCCR() 다음, genParityGatedCycle() 이전에 genMultiComponentMerge()를 추가한다 -- componentCount>=3일 때만 시도(componentCount==2는 PARITY_GATED_CYCLE에게 그대로 맡긴다). Budget은 PARITY_GATED_CYCLE_RESERVED_SLICE_MS(2000ms)를 그대로 재사용하는 Dedicated Slice. schedulingStrategy(A/B) 옵션과는 독립적으로 항상 이 위치에 삽입한다 -- CCR/MIXED_COMMUTATOR Integration Point가 REPAIR A/B 스케줄링 질문과 무관하게 항상 고정 위치였던 것과 동일한 원칙.
+  decision=A_PRODUCTION_INTEGRATION_SPRINT
+  rationale: Position(BEFORE_PARITY)/Gate(COMPONENT_COUNT_GE3)/Budget(DEDICATED_SLICE) 모두 실측 데이터로 확정되었고, 위험도는 High 0건, Medium 2건(Low 위주)이며, expectedRescueCount=4건(2.8%)의 실질적이나 제한적인 신규 Capability가 확인된다 -- Integration Contract가 명확히 확정되었으므로 Production Integration Sprint로 진행한다. 다만 신규 Capability 규모가 작으므로(2.8%), 다음 Sprint의 성공 기준은 이 규모에 맞게 보정되어야 한다.

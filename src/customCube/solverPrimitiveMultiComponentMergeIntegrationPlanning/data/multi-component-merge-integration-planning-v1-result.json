@@ -1,0 +1,109 @@
+{
+  "populationN": 142,
+  "pipelineSummary": {
+    "n": 142,
+    "parityGatedCycleGeneratedCount": 2,
+    "parityGatedCycleGeneratedRate": 0.014084507042253521,
+    "finalCandidatesEmptyCount": 119,
+    "finalCandidatesEmptyRate": 0.8380281690140845
+  },
+  "recommendedPosition": "BEFORE_PARITY",
+  "gateSummaries": [
+    {
+      "gate": "COMPONENT_COUNT_GE3",
+      "label": "componentCount>=3 (Directive 예시 Gate)",
+      "n": 142,
+      "matchedCount": 9,
+      "coverage": 0.06338028169014084,
+      "newCapabilityCount": 4,
+      "duplicateOfProductionCount": 0,
+      "precisionNewCapabilityAmongMatched": 0.4444444444444444
+    },
+    {
+      "gate": "PARITY_SATISFIED",
+      "label": "paritySatisfied (wrongWingCount 짝수)",
+      "n": 142,
+      "matchedCount": 75,
+      "coverage": 0.528169014084507,
+      "newCapabilityCount": 3,
+      "duplicateOfProductionCount": 4,
+      "precisionNewCapabilityAmongMatched": 0.04
+    },
+    {
+      "gate": "BRIDGE_CANDIDATE_EXISTS",
+      "label": "bridgeCandidateExists (generateBridgeCandidates 결과 존재)",
+      "n": 142,
+      "matchedCount": 12,
+      "coverage": 0.08450704225352113,
+      "newCapabilityCount": 0,
+      "duplicateOfProductionCount": 2,
+      "precisionNewCapabilityAmongMatched": 0
+    },
+    {
+      "gate": "CYCLE_COUNT_GE2",
+      "label": "cycleCount>=2 (cycleLength 조건)",
+      "n": 142,
+      "matchedCount": 65,
+      "coverage": 0.45774647887323944,
+      "newCapabilityCount": 4,
+      "duplicateOfProductionCount": 8,
+      "precisionNewCapabilityAmongMatched": 0.06153846153846154
+    }
+  ],
+  "interaction": {
+    "gateMatchedCount": 9,
+    "ccrOverlapCount": 2,
+    "ccrOverlapRate": 0.2222222222222222,
+    "repairOverlapCount": 0,
+    "repairOverlapRate": 0
+  },
+  "counterfactual": {
+    "populationN": 142,
+    "expectedInvocationCount": 9,
+    "expectedInvocationRate": 0.06338028169014084,
+    "expectedRescueCount": 4,
+    "expectedRescueRate": 0.028169014084507043,
+    "duplicateSuccessCount": 0,
+    "runtimeCostTotalMs": 4756.183098591549,
+    "runtimeCostPerRescueMs": 1189.0457746478874,
+    "interaction": {
+      "gateMatchedCount": 9,
+      "ccrOverlapCount": 2,
+      "ccrOverlapRate": 0.2222222222222222,
+      "repairOverlapCount": 0,
+      "repairOverlapRate": 0
+    }
+  },
+  "risk": {
+    "regressionRisk": {
+      "level": "LOW",
+      "rationale": "Comparative Prototype Sprint v1 실측: Multi-Component Merge의 전체 142-case Regression=0건 -- validateDeferred가 모든 결과를 최종 검증하므로 componentCount>=3 Gate로 좁혀도 이 보장은 그대로 유지된다."
+    },
+    "runtimeRisk": {
+      "level": "MEDIUM",
+      "rationale": "runtimeCostPerRescueMs=1189ms -- 단일 Dedicated Slice(2000ms) 안에는 들어오지만, expectedRescueCount(4건)가 expectedInvocationCount(9건)보다 훨씬 작아 비용 대비 rescue 효율이 낮다."
+    },
+    "schedulerRisk": {
+      "level": "LOW",
+      "rationale": "STEP1 실측: MCM은 genParityGatedCycle()과 동일한 단일 호출 구성(Bridge->Traversal->Cleanup->Final Validation)을 재사용하므로 새 Scheduler 메커니즘 없이 generateRecoveryStrategies()의 기존 순차 호출 목록에 한 단계만 추가하면 된다 -- REPAIR/CCR의 기존 순서에도 영향 없음."
+    },
+    "budgetRisk": {
+      "level": "LOW",
+      "rationale": "STEP2/STEP6 Gate 설계(componentCount>=3)가 PARITY_GATED_CYCLE의 Gate(componentCount>1)와 상호 배타적으로 분리되므로, STEP3의 Dedicated Slice(PARITY_GATED_CYCLE_RESERVED_SLICE_MS=2000ms 재사용) 정책 하에서 두 Primitive가 같은 케이스에서 동시에 예산을 소진하는 일은 Gate 설계상 발생하지 않는다 -- Shared Slice/Remaining Time 정책을 채택할 경우에만 이 결론이 무효화되고 Budget Starvation 위험이 재현된다(STEP3 자체 disclosure)."
+    },
+    "primitiveInteractionRisk": {
+      "level": "MEDIUM",
+      "rationale": "실측 ccrOverlapRate=22.2%(2/9) -- CCR과 chooseBestRecovery() 단계에서 경쟁하지만, REPAIR와의 겹침은 실측 0%(0/9)이며, 두 후보 모두 독립적으로 생성되어 점수만 비교되므로(둘 다 존재 자체는 상호 배타적이지 않음) 이 자체가 Regression을 유발한 실측 사례는 없다."
+    }
+  },
+  "contractDecision": {
+    "decision": "A_PRODUCTION_INTEGRATION_SPRINT",
+    "rationale": "Position(BEFORE_PARITY)/Gate(COMPONENT_COUNT_GE3)/Budget(DEDICATED_SLICE) 모두 실측 데이터로 확정되었고, 위험도는 High 0건, Medium 2건(Low 위주)이며, expectedRescueCount=4건(2.8%)의 실질적이나 제한적인 신규 Capability가 확인된다 -- Integration Contract가 명확히 확정되었으므로 Production Integration Sprint로 진행한다. 다만 신규 Capability 규모가 작으므로(2.8%), 다음 Sprint의 성공 기준은 이 규모에 맞게 보정되어야 한다.",
+    "contract": {
+      "position": "BEFORE_PARITY",
+      "gate": "COMPONENT_COUNT_GE3",
+      "budget": "DEDICATED_SLICE",
+      "schedulingRule": "generateRecoveryStrategies()의 genCCR() 다음, genParityGatedCycle() 이전에 genMultiComponentMerge()를 추가한다 -- componentCount>=3일 때만 시도(componentCount==2는 PARITY_GATED_CYCLE에게 그대로 맡긴다). Budget은 PARITY_GATED_CYCLE_RESERVED_SLICE_MS(2000ms)를 그대로 재사용하는 Dedicated Slice. schedulingStrategy(A/B) 옵션과는 독립적으로 항상 이 위치에 삽입한다 -- CCR/MIXED_COMMUTATOR Integration Point가 REPAIR A/B 스케줄링 질문과 무관하게 항상 고정 위치였던 것과 동일한 원칙."
+    }
+  }
+}
