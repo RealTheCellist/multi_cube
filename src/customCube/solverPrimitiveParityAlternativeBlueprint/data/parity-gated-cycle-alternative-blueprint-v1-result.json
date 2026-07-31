@@ -1,0 +1,314 @@
+{
+  "pipelineStages": [
+    {
+      "name": "Input (componentCount>1 Gate)",
+      "description": "componentCount>1 여부만 확인 -- 통과해야 이후 단계가 시작된다.",
+      "realFailureSharePercent": 65.5,
+      "failureShareSource": "Integration Architecture Analysis Sprint v1 STEP6 RootCauseMatrix: GATE_MISS=65.5% of all 142 cases (Primitive가 애초에 시도되지 않는 비율)"
+    },
+    {
+      "name": "Single Wing Selection",
+      "description": "compSource의 wrong wing 최대 5개, compTarget slot 최대 5개를 선택(각 방향, 양방향 시도).",
+      "realFailureSharePercent": null,
+      "failureShareSource": "Prototype Refinement Sprint v1 STEP4: 이 bound를 무제한으로 넓혀도 회복률 0% -- 이 단계 자체의 CAP은 병목이 아님이 실측으로 확인됨"
+    },
+    {
+      "name": "Bridge Candidate (BFS 경로)",
+      "description": "bfsMoveWingToPosition으로 선택된 wing을 target slot으로 옮기는 실제 이동 경로를 탐색.",
+      "realFailureSharePercent": null,
+      "failureShareSource": "Prototype Refinement Sprint v1 STEP2: avgPairsAttempted=20.2 중 대부분에서 물리적 경로 자체는 발견됨(직접 확인) -- 이 단계는 병목이 아님"
+    },
+    {
+      "name": "Validation (targetedComponentsMerged)",
+      "description": "이동 후 compSource/compTarget에 속했던 슬롯들이 실제로 하나의 Component로 합쳐졌는지 확인.",
+      "realFailureSharePercent": 75.6,
+      "failureShareSource": "Prototype Refinement Sprint v1 STEP1/STEP2: CANDIDATE_GENERATION_FAILURE=75.6%(31/41), avgValidCount=0.37/attempted 20.2 -- 이 단계에서 대부분의 시도가 REJECT됨. 핵심 병목."
+    },
+    {
+      "name": "Multi-Cycle Traversal",
+      "description": "Bridge 이후 병합된 그래프에서 모든 cycle을 concat해 resolveBoundedMultiCycle로 해소.",
+      "realFailureSharePercent": 19.5,
+      "failureShareSource": "Prototype Refinement Sprint v1 STEP1: TRAVERSAL_FAILURE=19.5%(8/41), STEP3: hitCapOrDeadlineCount=0/41(탐색 예산 소진 아님) -- Traversal 알고리즘 자체의 한계"
+    },
+    {
+      "name": "Cleanup (bestEffortCleanup)",
+      "description": "잔여 wrong wing 1개에 대해 tryFixWing 1회 시도.",
+      "realFailureSharePercent": null,
+      "failureShareSource": "별도 측정 없음 -- Traversal 단계 이후 소규모 정리 단계, 독립적 실패율 미측정"
+    },
+    {
+      "name": "Final Validation (validateDeferred)",
+      "description": "Bridge+Traversal+Cleanup 전체 이동 결과가 원본 대비 순net-개선인지 최종 확인.",
+      "realFailureSharePercent": 0,
+      "failureShareSource": "Prototype Refinement Sprint v1 STEP1: VALIDATION_FAILURE=0%(0/41) -- 이 단계는 실측상 원인이 아님"
+    }
+  ],
+  "failureModelSummary": "현재 Primitive의 실패는 압도적으로 'Validation(targetedComponentsMerged)' 단계에 집중된다(75.6%): BFS는 물리적 이동 경로를 찾아내지만(Bridge Candidate 단계는 병목이 아님), 그 이동이 실제로 의도한 두 Component를 병합하는지 확인하는 단계에서 대부분 실패한다. 이는 단일 face turn이 겨냥한 wing 외의 다른 wing들도 함께 이동시켜, 의도치 않은 collateral effect가 병합을 방해하기 때문으로 추정된다(파일 헤더 disclosure, BridgeCandidateGeneration.ts 참고). Traversal 단계도 부차적 원인(19.5%)이나, 탐색 예산/bound 문제가 아니라(hitCapOrDeadlineCount=0/41) 알고리즘 자체의 구조적 한계다.",
+  "alternativeMechanisms": [
+    {
+      "id": "DUAL_WING_BRIDGE",
+      "name": "Dual Wing Bridge",
+      "description": "compSource와 compTarget 사이에서 wing 1개가 아니라 2개를 동시에(같은 move sequence 안에서) 재배치한다 -- 예: compSource의 wing A를 compTarget의 slot으로, compTarget의 wing B를 compSource의 slot으로 동시에 교환.",
+      "mechanismDifference": "현재는 1개 wing만 이동시켜 targetedComponentsMerged()가 그 1건의 collateral 효과에 좌우된다. 2개를 동시에 옮기면 두 컴포넌트 사이에 2개의 새 WANTS edge가 생겨, 1개가 collateral로 무효화되어도 나머지 1개가 병합을 완성할 수 있는 '이중 보험' 구조가 된다.",
+      "expectedEffect": "STEP2(Prototype Refinement Sprint)의 실측: 단일 이동의 targetedComponentsMerged() 통과율은 avgValidCount=0.37/attempted 20.2(약 1.8%)로 극히 낮았다. 두 독립 시도 중 최소 1개가 성공할 확률은 단순 독립 가정 시 1-(1-0.018)^2 ≈ 3.6%로 이론상 약 2배 개선 -- 이 자체는 크지 않지만, 두 이동이 실제로는 독립이 아니라 서로의 collateral을 상쇄할 수 있다는 점(같은 컴포넌트 쌍에 대한 2번째 이동이 1번째가 만든 새 구조를 활용)이 정성적으로 더 중요한 기대 효과다.",
+      "complexityNote": "BFS를 2회 순차 실행 + 병합 결과를 2-move 조합 단위로 검증 -- 탐색 공간이 조합적으로 커짐(O(n^2))."
+    },
+    {
+      "id": "BRIDGE_CHAIN",
+      "name": "Bridge Chain",
+      "description": "단일 Bridge 시도가 실패(targetedComponentsMerged 통과 실패)하면, 그 결과 상태에서 다시 새로운 Bridge 후보를 생성해 재시도한다 -- 즉 Bridge를 1회성이 아니라 여러 번 연쇄적으로 시도.",
+      "mechanismDifference": "현재 genParityGatedCycle()은 Bridge 후보 목록(bridgeCandidates)을 순회하며 '최선의 1개'만 채택하고, 실패한 이동들은 상태에 반영되지 않은 채 버려진다. Chain은 실패한 이동도 실제로 적용한 뒤 그 새로운 상태에서 다시 Bridge를 시도해, 여러 번의 재배치가 누적되도록 한다.",
+      "expectedEffect": "STEP2 실측에서 rejectedCount가 매우 컸다(avgRejectedCount=19.3) -- 이 각각의 '실패한' 이동이 그래도 그래프 구조를 조금씩 바꾸므로, 연쇄적으로 여러 번 시도하면 결국 병합에 성공하는 경로가 존재할 가능성이 있다. 다만 이는 검증되지 않은 가설이며(STEP4에서 이론적 추정만 가능, 실측 불가), 매 단계가 실제로 구조를 '병합에 유리한 방향'으로 옮긴다는 보장이 없다.",
+      "complexityNote": "매 단계마다 실제로 이동을 적용하고 재평가해야 하므로 순차적 O(chain depth) 배 비용. 무한 루프 방지용 visited-state 체크 필요."
+    },
+    {
+      "id": "TEMPORARY_EXPANSION",
+      "name": "Temporary Expansion",
+      "description": "targetedComponentsMerged()의 '즉시 병합' 요구를 일시적으로 완화해, 병합에 실패해도 Component 수가 일시적으로 늘어나는 중간 상태를 허용한다 -- 이후 별도 단계에서 그 늘어난 Component들을 정리.",
+      "mechanismDifference": "현재는 즉시 병합(같은 move 안에서 componentOfSlot이 동일해짐)만 성공으로 인정한다. Temporary Expansion은 '지금 당장 병합되지 않아도, 구조가 병합에 더 가까워졌으면' 받아들이고 여러 스텝에 걸쳐 점진적으로 병합을 완성한다.",
+      "expectedEffect": "정성적으로는 Bridge Chain과 유사한 방향이지만, '병합 성공/실패'라는 이진 판정 대신 '병합까지의 거리'를 측정하는 새로운 척도가 필요하다 -- 이 척도 자체를 설계하지 않으면 이 메커니즘은 구현 불가능하다. 이론적 상한은 Bridge Chain과 같은 수준으로 추정되나, 실질적으로는 '거리' 척도의 품질에 전적으로 좌우된다.",
+      "complexityNote": "가장 높은 설계 복잡도 -- 병합까지의 거리를 정의하는 새 evaluator가 필요하고, 언제 '충분히 가까워졌다'고 멈출지 판단 기준도 새로 설계해야 한다."
+    },
+    {
+      "id": "MULTI_COMPONENT_MERGE",
+      "name": "Multi-Component Merge",
+      "description": "2개 컴포넌트가 아니라 3개 이상의 컴포넌트를 한 번에(또는 순차적으로 빠르게) 병합 대상으로 삼는다.",
+      "mechanismDifference": "현재는 항상 가장 큰 2개(또는 가장 작은 2개, largestTwo/smallestTwo 전략) 컴포넌트만 짝지어 시도한다. Multi-Component Merge는 componentCount>2인 상태에서 여러 컴포넌트를 동시에 겨냥한다.",
+      "expectedEffect": "실측(이번 Sprint STEP4 그라운딩): 41개 실패 케이스 중 componentCount>2인 케이스는 단 6건(14.6%), CANDIDATE_GENERATION_FAILURE 31건 중에서도 6건(19.4%)뿐이다 -- 이 메커니즘이 원천적으로 다룰 수 있는 모집단 자체가 작다. 나머지 85.4%(정확히 2-컴포넌트)에는 적용 대상이 아니다.",
+      "complexityNote": "3개 이상을 동시에 다루려면 그래프 병합 판정 로직 자체를 일반화해야 함 -- Dual Wing Bridge/Bridge Chain보다 구현 범위가 크지만 적용 대상 모집단은 가장 작다."
+    }
+  ],
+  "structuralFeasibility": [
+    {
+      "mechanismId": "DUAL_WING_BRIDGE",
+      "layerImpacts": [
+        {
+          "layer": "Planner",
+          "impact": "none",
+          "note": "Planner는 Task 단위만 다루고 Recovery 내부 후보 생성 방식에는 관여하지 않는다 -- 영향 없음."
+        },
+        {
+          "layer": "Recovery",
+          "impact": "low",
+          "note": "genParityGatedCycle() 자체(fiveByFiveEdgeRecovery.ts)는 Bridge 후보를 그대로 소비하므로, Bridge 후보의 '내용'만 2-move 조합으로 바뀌면 Recovery 레이어 자체는 무변경 가능."
+        },
+        {
+          "layer": "Primitive",
+          "impact": "high",
+          "note": "BridgeCandidateGeneration.ts의 candidatesForDirection 자체를 재작성 -- source wing 2개 조합 x target slot 조합 탐색으로 확장 필요."
+        },
+        {
+          "layer": "BFS",
+          "impact": "medium",
+          "note": "bfsMoveWingToPosition을 2회 순차 호출하거나, 2-wing 동시 목표를 지원하는 새 BFS 변형이 필요할 수 있음(현재 함수는 단일 wing 목표만 지원)."
+        }
+      ],
+      "productionModificationScope": [
+        "parityGatedCyclePrototypeV1/BridgeCandidateGeneration.ts (신규 Prototype 파일로 별도 구현 가능 -- Production 자체는 무변경 가능)"
+      ],
+      "feasibilitySummary": "가장 구현 범위가 작다 -- 기존 Prototype 디렉토리에 새 Candidate Generation 함수만 추가하면 되고, Recovery/Planner 레이어는 그대로 재사용 가능."
+    },
+    {
+      "mechanismId": "BRIDGE_CHAIN",
+      "layerImpacts": [
+        {
+          "layer": "Planner",
+          "impact": "none",
+          "note": "영향 없음."
+        },
+        {
+          "layer": "Recovery",
+          "impact": "medium",
+          "note": "genParityGatedCycle()의 단일 순회 루프를 반복 루프로 바꿔야 함 -- MAX_RECOVERY_RETRIES와 유사한 반복 상한 및 visited-state 체크 필요."
+        },
+        {
+          "layer": "Primitive",
+          "impact": "medium",
+          "note": "Bridge 실패 시에도 상태를 실제로 적용하고 재평가하는 상위 오케스트레이션 로직이 필요 -- BridgeCandidateGeneration.ts 자체는 무변경 가능."
+        },
+        {
+          "layer": "BFS",
+          "impact": "none",
+          "note": "BFS 자체는 무변경 -- 매 chain 단계에서 기존 BFS를 그대로 재호출."
+        }
+      ],
+      "productionModificationScope": [
+        "fiveByFiveEdgeRecovery.ts (반복 루프 도입 시 -- 이번 Sprint는 미변경, 향후 Sprint 범위)"
+      ],
+      "feasibilitySummary": "Primitive 로직은 크게 안 바뀌지만 오케스트레이션(반복/종료 조건) 설계가 새로 필요 -- 무한 루프 위험을 막을 안전장치 설계가 핵심 과제."
+    },
+    {
+      "mechanismId": "TEMPORARY_EXPANSION",
+      "layerImpacts": [
+        {
+          "layer": "Planner",
+          "impact": "low",
+          "note": "'병합까지의 거리'가 여러 단계에 걸쳐 유지되어야 한다면 Planner의 Task 판단 기준에도 간접 영향 가능."
+        },
+        {
+          "layer": "Recovery",
+          "impact": "high",
+          "note": "'즉시 성공/실패' 이진 판정 대신 '거리' 기반 판정으로 Recovery의 candidate 채택 로직 자체를 재설계해야 함."
+        },
+        {
+          "layer": "Primitive",
+          "impact": "high",
+          "note": "새로운 evaluator(병합까지의 거리 척도)를 처음부터 설계해야 함 -- 기존 어떤 Primitive에도 없는 새 개념."
+        },
+        {
+          "layer": "BFS",
+          "impact": "low",
+          "note": "BFS 자체보다는 그 결과를 평가하는 방식이 바뀜."
+        }
+      ],
+      "productionModificationScope": [
+        "신규 evaluator 모듈 필요(기존 fiveByFiveEdgeEvaluator.ts와 별도) -- 설계 자체가 아직 없어 Production 파일 특정 불가"
+      ],
+      "feasibilitySummary": "4개 후보 중 설계 성숙도가 가장 낮다 -- '거리' 척도 자체가 정의되지 않아 Structural Feasibility를 구체적으로 논하기 어렵다."
+    },
+    {
+      "mechanismId": "MULTI_COMPONENT_MERGE",
+      "layerImpacts": [
+        {
+          "layer": "Planner",
+          "impact": "none",
+          "note": "영향 없음."
+        },
+        {
+          "layer": "Recovery",
+          "impact": "low",
+          "note": "genParityGatedCycle()의 largestTwo/smallestTwo 전략 선택 부분만 다중 컴포넌트 선택으로 확장."
+        },
+        {
+          "layer": "Primitive",
+          "impact": "high",
+          "note": "ComponentDetection.ts의 결과(components 배열)에서 2개가 아니라 N개를 선택하는 전략과, targetedComponentsMerged()를 N개 컴포넌트 병합 판정으로 일반화해야 함."
+        },
+        {
+          "layer": "BFS",
+          "impact": "medium",
+          "note": "여러 컴포넌트를 동시에 겨냥하는 BFS 목표 설계가 필요."
+        }
+      ],
+      "productionModificationScope": [
+        "parityGatedCyclePrototypeV1/BridgeCandidateGeneration.ts, ComponentDetection.ts 관련 Prototype 확장 (Production 자체는 무변경 가능)"
+      ],
+      "feasibilitySummary": "구현 범위는 중간이지만, 적용 대상 모집단이 작다(componentCount>2인 6/41=14.6%) -- ROI 관점에서 우선순위가 낮다."
+    }
+  ],
+  "structuralGrounding": {
+    "totalFailureCases": 41,
+    "exactlyTwoComponentsCount": 35,
+    "moreThanTwoComponentsCount": 6,
+    "candidateGenerationFailureCount": 31,
+    "candidateGenerationFailureExactlyTwoCount": 25,
+    "candidateGenerationFailureMoreThanTwoCount": 6,
+    "avgSmallestComponentSize": 2.682926829268293,
+    "avgLargestComponentSize": 4.585365853658536,
+    "observedSingleWingValidRate": 0.018137847642079805
+  },
+  "capabilityEstimates": [
+    {
+      "mechanismId": "DUAL_WING_BRIDGE",
+      "applicablePopulationPercent": 100,
+      "estimatedResolutionPercentRange": [
+        3.594671376707237,
+        15
+      ],
+      "confidenceLevel": "qualitative",
+      "rationale": "단순 독립 시행 가정 시 이론적 하한은 1-(1-0.0181)^2 ≈ 3.6% (단일 이동 성공률의 약 2배) -- 이는 최소 추정치이며, 실제로는 두 이동이 서로의 collateral을 상쇄할 가능성이 있어 상한은 정성적으로만 \"15% 내외\"로 잡았다(실측 없이는 검증 불가, \"qualitative\" 신뢰도)."
+    },
+    {
+      "mechanismId": "BRIDGE_CHAIN",
+      "applicablePopulationPercent": 100,
+      "estimatedResolutionPercentRange": [
+        0,
+        20
+      ],
+      "confidenceLevel": "speculative",
+      "rationale": "매 단계가 실제로 병합에 '더 가까워지는 방향'으로 상태를 옮긴다는 보장이 전혀 없다 -- 반복이 오히려 상태를 더 나쁘게 만들 수도 있다(rejected 이동도 다른 wing을 shuffle함). 그라운딩 데이터가 없어 상한/하한 모두 speculative -- 구현 후 실측이 필수."
+    },
+    {
+      "mechanismId": "TEMPORARY_EXPANSION",
+      "applicablePopulationPercent": 100,
+      "estimatedResolutionPercentRange": [
+        0,
+        20
+      ],
+      "confidenceLevel": "speculative",
+      "rationale": "'병합까지의 거리' 척도 자체가 설계되지 않아 이론적 추정이 사실상 불가능하다 -- Bridge Chain과 같은 상한을 잠정 적용했으나 근거는 없음(척도 설계 이전에는 Level4 분석 자체가 성립하지 않음)."
+    },
+    {
+      "mechanismId": "MULTI_COMPONENT_MERGE",
+      "applicablePopulationPercent": 14.634146341463413,
+      "estimatedResolutionPercentRange": [
+        0,
+        14.634146341463413
+      ],
+      "confidenceLevel": "grounded",
+      "rationale": "실측(이번 Sprint 그라운딩): componentCount>2인 실패 케이스는 6/41(14.6%)뿐이다 -- 이 메커니즘이 원천적으로 다룰 수 있는 케이스 자체가 이 비율로 상한이 정해진다(설령 100% 성공해도 14.6% 초과 불가능)."
+    }
+  ],
+  "costBenefitMatrix": [
+    {
+      "mechanismId": "DUAL_WING_BRIDGE",
+      "capabilityScore": 9.297335688353618,
+      "complexityScore": 6,
+      "riskScore": 2,
+      "productionImpactScore": 0,
+      "loopOrDivergenceRisk": false
+    },
+    {
+      "mechanismId": "BRIDGE_CHAIN",
+      "capabilityScore": 10,
+      "complexityScore": 4,
+      "riskScore": 4,
+      "productionImpactScore": 2,
+      "loopOrDivergenceRisk": true
+    },
+    {
+      "mechanismId": "TEMPORARY_EXPANSION",
+      "capabilityScore": 10,
+      "complexityScore": 8,
+      "riskScore": 4,
+      "productionImpactScore": 1,
+      "loopOrDivergenceRisk": true
+    },
+    {
+      "mechanismId": "MULTI_COMPONENT_MERGE",
+      "capabilityScore": 7.317073170731707,
+      "complexityScore": 6,
+      "riskScore": 1,
+      "productionImpactScore": 0,
+      "loopOrDivergenceRisk": false
+    }
+  ],
+  "pareto": {
+    "frontier": [
+      "DUAL_WING_BRIDGE",
+      "BRIDGE_CHAIN",
+      "TEMPORARY_EXPANSION",
+      "MULTI_COMPONENT_MERGE"
+    ],
+    "dominatedBy": {}
+  },
+  "selection": {
+    "paretoFrontierSize": 4,
+    "frontierMechanisms": [
+      "DUAL_WING_BRIDGE",
+      "BRIDGE_CHAIN",
+      "TEMPORARY_EXPANSION",
+      "MULTI_COMPONENT_MERGE"
+    ],
+    "recommendedForComparativeSprint": [
+      "MULTI_COMPONENT_MERGE",
+      "DUAL_WING_BRIDGE"
+    ],
+    "finalDecision": "B_COMPARATIVE_PROTOTYPE_SPRINT",
+    "finalDecisionRationale": "Pareto Frontier에 4개 후보(DUAL_WING_BRIDGE, BRIDGE_CHAIN, TEMPORARY_EXPANSION, MULTI_COMPONENT_MERGE)가 모두 남아 -- 어느 하나도 다른 후보를 전 축에서 지배하지 못한다(Capability/Complexity/Risk/Production Impact 사이의 실제 tradeoff). risk+productionImpact 합산이 가장 낮은 2개(MULTI_COMPONENT_MERGE, DUAL_WING_BRIDGE)를 Comparative Prototype Sprint에서 우선 비교할 것을 제안한다.",
+    "level1MechanismCount": 4,
+    "level1Pass": true,
+    "level2StructuralComparisonDone": true,
+    "level3SingleTargetConfirmed": false
+  }
+}
