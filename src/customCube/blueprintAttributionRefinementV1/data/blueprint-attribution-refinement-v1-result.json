@@ -1,0 +1,1993 @@
+{
+  "ambiguousClusters": [
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+",
+      "size": 14,
+      "memberLabels": [
+        "worstCase:b2c9ceb9",
+        "worstCase:cee673eb",
+        "worstCase:5d189c1",
+        "snapshot335:1513fcff",
+        "snapshot335:120fc3af",
+        "scrambleDepth10:3",
+        "scrambleDepth10:6",
+        "scrambleDepth10:7",
+        "scrambleDepth20:4",
+        "scrambleDepth20:7",
+        "scrambleDepth30:2",
+        "scrambleDepth30:9",
+        "scrambleDepth100:2",
+        "scrambleDepth100:4"
+      ],
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=false|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 10,
+      "memberLabels": [
+        "worstCase:7541612b",
+        "worstCase:b714481",
+        "worstCase:44b9b619",
+        "snapshot335:4549b041",
+        "snapshot335:4e27e5a1",
+        "scrambleDepth10:5",
+        "scrambleDepth20:0",
+        "scrambleDepth50:3",
+        "scrambleDepth50:7",
+        "scrambleDepth100:6"
+      ],
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "CCR"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 1,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 0
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=9+",
+      "size": 4,
+      "memberLabels": [
+        "worstCase:84976575",
+        "snapshot335:84976575",
+        "scrambleDepth50:2",
+        "scrambleDepth50:5"
+      ],
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=false|cycle=short(3-4)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=3-4",
+      "size": 4,
+      "memberLabels": [
+        "worstCase:36336c1",
+        "worstCase:e7a801fb",
+        "snapshot335:1af658ab",
+        "scrambleDepth40:5"
+      ],
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "CCR"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 1,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 0
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 4,
+      "memberLabels": [
+        "worstCase:5e5b20b",
+        "worstCase:de8abca9",
+        "scrambleDepth10:8",
+        "scrambleDepth100:5"
+      ],
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 3,
+      "memberLabels": [
+        "worstCase:46086463",
+        "snapshot335:46086463",
+        "scrambleDepth20:2"
+      ],
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+",
+      "size": 3,
+      "memberLabels": [
+        "worstCase:1e928fb1",
+        "worstCase:710de4d1",
+        "snapshot335:e7a801fb"
+      ],
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 3,
+      "memberLabels": [
+        "worstCase:14f5293f",
+        "scrambleDepth10:1",
+        "scrambleDepth40:1"
+      ],
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 2,
+      "memberLabels": [
+        "worstCase:dd4d94fd",
+        "snapshot335:7541612b"
+      ],
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8",
+      "size": 2,
+      "memberLabels": [
+        "worstCase:c039e611",
+        "scrambleDepth100:3"
+      ],
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=5-8",
+      "size": 2,
+      "memberLabels": [
+        "worstCase:a005d41f",
+        "worstCase:d3283799"
+      ],
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 2,
+      "memberLabels": [
+        "worstCase:42c89b9",
+        "scrambleDepth50:1"
+      ],
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 2,
+      "memberLabels": [
+        "snapshot335:dda1453f",
+        "scrambleDepth30:8"
+      ],
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+",
+      "size": 2,
+      "memberLabels": [
+        "snapshot335:60b5c3b1",
+        "snapshot335:ae3d218b"
+      ],
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+",
+      "size": 2,
+      "memberLabels": [
+        "scrambleDepth10:4",
+        "scrambleDepth100:0"
+      ],
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 2,
+      "memberLabels": [
+        "scrambleDepth10:9",
+        "scrambleDepth20:8"
+      ],
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 2,
+      "memberLabels": [
+        "scrambleDepth20:1",
+        "scrambleDepth50:0"
+      ],
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "memberLabels": [
+        "worstCase:56a8b82d"
+      ],
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Conflict-Breaking Sacrifice"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 1,
+        "Parity-Cycle Specialist (BP-2)": 0
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "memberLabels": [
+        "worstCase:e9009e73"
+      ],
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=5-8",
+      "size": 1,
+      "memberLabels": [
+        "snapshot335:56a8b82d"
+      ],
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=5|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "memberLabels": [
+        "snapshot335:b714481"
+      ],
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=5-8",
+      "size": 1,
+      "memberLabels": [
+        "snapshot335:36336c1"
+      ],
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 1,
+      "memberLabels": [
+        "scrambleDepth20:6"
+      ],
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "CCR",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 1,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "memberLabels": [
+        "scrambleDepth30:3"
+      ],
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=9+",
+      "size": 1,
+      "memberLabels": [
+        "scrambleDepth40:0"
+      ],
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "memberLabels": [
+        "scrambleDepth40:7"
+      ],
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "memberLabels": [
+        "scrambleDepth40:8"
+      ],
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+",
+      "size": 1,
+      "memberLabels": [
+        "scrambleDepth100:8"
+      ],
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "matchRatesByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      }
+    }
+  ],
+  "specificities": [
+    {
+      "name": "Deep Cycle (BP-1/REPAIR)",
+      "conditionCount": 4,
+      "globalMatchCount": 45,
+      "globalMatchRate": 0.31690140845070425,
+      "specificity": 0.6830985915492958,
+      "conditionRestrictiveness": [
+        {
+          "conditionName": "cycleCount>0",
+          "ablatedMatchRate": 0.31690140845070425,
+          "restrictiveness": 0
+        },
+        {
+          "conditionName": "cycleLength>=4",
+          "ablatedMatchRate": 0.352112676056338,
+          "restrictiveness": 0.035211267605633756
+        },
+        {
+          "conditionName": "componentCount===1",
+          "ablatedMatchRate": 0.5633802816901409,
+          "restrictiveness": 0.24647887323943662
+        },
+        {
+          "conditionName": "conflictEdgeCount===0",
+          "ablatedMatchRate": 0.352112676056338,
+          "restrictiveness": 0.035211267605633756
+        }
+      ]
+    },
+    {
+      "name": "CCR",
+      "conditionCount": 4,
+      "globalMatchCount": 15,
+      "globalMatchRate": 0.1056338028169014,
+      "specificity": 0.8943661971830986,
+      "conditionRestrictiveness": [
+        {
+          "conditionName": "componentCount===1",
+          "ablatedMatchRate": 0.1056338028169014,
+          "restrictiveness": 0
+        },
+        {
+          "conditionName": "conflictEdgeCount===0",
+          "ablatedMatchRate": 0.1267605633802817,
+          "restrictiveness": 0.02112676056338028
+        },
+        {
+          "conditionName": "cycleCount===1",
+          "ablatedMatchRate": 0.31690140845070425,
+          "restrictiveness": 0.21126760563380284
+        },
+        {
+          "conditionName": "cycleLength in [4,6]",
+          "ablatedMatchRate": 0.14084507042253522,
+          "restrictiveness": 0.03521126760563381
+        }
+      ]
+    },
+    {
+      "name": "Multi-Hop Bridge",
+      "conditionCount": 3,
+      "globalMatchCount": 5,
+      "globalMatchRate": 0.035211267605633804,
+      "specificity": 0.9647887323943662,
+      "conditionRestrictiveness": [
+        {
+          "conditionName": "componentCount===1",
+          "ablatedMatchRate": 0.11971830985915492,
+          "restrictiveness": 0.08450704225352113
+        },
+        {
+          "conditionName": "conflictEdgeCount===0",
+          "ablatedMatchRate": 0.09154929577464789,
+          "restrictiveness": 0.056338028169014086
+        },
+        {
+          "conditionName": "deferredViolation",
+          "ablatedMatchRate": 0.352112676056338,
+          "restrictiveness": 0.3169014084507042
+        }
+      ]
+    },
+    {
+      "name": "Bridge Injection",
+      "conditionCount": 1,
+      "globalMatchCount": 51,
+      "globalMatchRate": 0.3591549295774648,
+      "specificity": 0.6408450704225352,
+      "conditionRestrictiveness": [
+        {
+          "conditionName": "disconnectedGraph",
+          "ablatedMatchRate": 1,
+          "restrictiveness": 0.6408450704225352
+        }
+      ]
+    },
+    {
+      "name": "Conflict-Breaking Sacrifice",
+      "conditionCount": 2,
+      "globalMatchCount": 29,
+      "globalMatchRate": 0.20422535211267606,
+      "specificity": 0.795774647887324,
+      "conditionRestrictiveness": [
+        {
+          "conditionName": "conflictEdgeCount>0",
+          "ablatedMatchRate": 0.20422535211267606,
+          "restrictiveness": 0
+        },
+        {
+          "conditionName": "cycleCount===0",
+          "ablatedMatchRate": 0.31690140845070425,
+          "restrictiveness": 0.11267605633802819
+        }
+      ]
+    },
+    {
+      "name": "Parity-Cycle Specialist (BP-2)",
+      "conditionCount": 2,
+      "globalMatchCount": 72,
+      "globalMatchRate": 0.5070422535211268,
+      "specificity": 0.49295774647887325,
+      "conditionRestrictiveness": [
+        {
+          "conditionName": "parityState",
+          "ablatedMatchRate": 0.795774647887324,
+          "restrictiveness": 0.28873239436619724
+        },
+        {
+          "conditionName": "cycleCount>0",
+          "ablatedMatchRate": 0.5915492957746479,
+          "restrictiveness": 0.08450704225352113
+        }
+      ]
+    }
+  ],
+  "resolutions": [
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+",
+      "size": 14,
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Deep Cycle (BP-1/REPAIR)",
+          "specificity": 0.6830985915492958,
+          "conditionCount": 4
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Deep Cycle (BP-1/REPAIR)",
+      "primarySpecificity": 0.6830985915492958,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.1901408450704225,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=false|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 10,
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "CCR"
+      ],
+      "ranked": [
+        {
+          "name": "CCR",
+          "specificity": 0.8943661971830986,
+          "conditionCount": 4
+        },
+        {
+          "name": "Deep Cycle (BP-1/REPAIR)",
+          "specificity": 0.6830985915492958,
+          "conditionCount": 4
+        }
+      ],
+      "primaryAttribution": "CCR",
+      "primarySpecificity": 0.8943661971830986,
+      "runnerUp": "Deep Cycle (BP-1/REPAIR)",
+      "runnerUpSpecificity": 0.6830985915492958,
+      "margin": 0.21126760563380287,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=9+",
+      "size": 4,
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Bridge Injection",
+          "specificity": 0.6408450704225352,
+          "conditionCount": 1
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Bridge Injection",
+      "primarySpecificity": 0.6408450704225352,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.147887323943662,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=false|cycle=short(3-4)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=3-4",
+      "size": 4,
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "CCR"
+      ],
+      "ranked": [
+        {
+          "name": "CCR",
+          "specificity": 0.8943661971830986,
+          "conditionCount": 4
+        },
+        {
+          "name": "Deep Cycle (BP-1/REPAIR)",
+          "specificity": 0.6830985915492958,
+          "conditionCount": 4
+        }
+      ],
+      "primaryAttribution": "CCR",
+      "primarySpecificity": 0.8943661971830986,
+      "runnerUp": "Deep Cycle (BP-1/REPAIR)",
+      "runnerUpSpecificity": 0.6830985915492958,
+      "margin": 0.21126760563380287,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 4,
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Deep Cycle (BP-1/REPAIR)",
+          "specificity": 0.6830985915492958,
+          "conditionCount": 4
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Deep Cycle (BP-1/REPAIR)",
+      "primarySpecificity": 0.6830985915492958,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.1901408450704225,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 3,
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Bridge Injection",
+          "specificity": 0.6408450704225352,
+          "conditionCount": 1
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Bridge Injection",
+      "primarySpecificity": 0.6408450704225352,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.147887323943662,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+",
+      "size": 3,
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Deep Cycle (BP-1/REPAIR)",
+          "specificity": 0.6830985915492958,
+          "conditionCount": 4
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Deep Cycle (BP-1/REPAIR)",
+      "primarySpecificity": 0.6830985915492958,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.1901408450704225,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 3,
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Bridge Injection",
+          "specificity": 0.6408450704225352,
+          "conditionCount": 1
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Bridge Injection",
+      "primarySpecificity": 0.6408450704225352,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.147887323943662,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 2,
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Bridge Injection",
+          "specificity": 0.6408450704225352,
+          "conditionCount": 1
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Bridge Injection",
+      "primarySpecificity": 0.6408450704225352,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.147887323943662,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8",
+      "size": 2,
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Bridge Injection",
+          "specificity": 0.6408450704225352,
+          "conditionCount": 1
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Bridge Injection",
+      "primarySpecificity": 0.6408450704225352,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.147887323943662,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=5-8",
+      "size": 2,
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Bridge Injection",
+          "specificity": 0.6408450704225352,
+          "conditionCount": 1
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Bridge Injection",
+      "primarySpecificity": 0.6408450704225352,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.147887323943662,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 2,
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Bridge Injection",
+          "specificity": 0.6408450704225352,
+          "conditionCount": 1
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Bridge Injection",
+      "primarySpecificity": 0.6408450704225352,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.147887323943662,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 2,
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Bridge Injection",
+          "specificity": 0.6408450704225352,
+          "conditionCount": 1
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Bridge Injection",
+      "primarySpecificity": 0.6408450704225352,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.147887323943662,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+",
+      "size": 2,
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Deep Cycle (BP-1/REPAIR)",
+          "specificity": 0.6830985915492958,
+          "conditionCount": 4
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Deep Cycle (BP-1/REPAIR)",
+      "primarySpecificity": 0.6830985915492958,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.1901408450704225,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+",
+      "size": 2,
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Deep Cycle (BP-1/REPAIR)",
+          "specificity": 0.6830985915492958,
+          "conditionCount": 4
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Deep Cycle (BP-1/REPAIR)",
+      "primarySpecificity": 0.6830985915492958,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.1901408450704225,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 2,
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Deep Cycle (BP-1/REPAIR)",
+          "specificity": 0.6830985915492958,
+          "conditionCount": 4
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Deep Cycle (BP-1/REPAIR)",
+      "primarySpecificity": 0.6830985915492958,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.1901408450704225,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 2,
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Deep Cycle (BP-1/REPAIR)",
+          "specificity": 0.6830985915492958,
+          "conditionCount": 4
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Deep Cycle (BP-1/REPAIR)",
+      "primarySpecificity": 0.6830985915492958,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.1901408450704225,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Conflict-Breaking Sacrifice"
+      ],
+      "ranked": [
+        {
+          "name": "Conflict-Breaking Sacrifice",
+          "specificity": 0.795774647887324,
+          "conditionCount": 2
+        },
+        {
+          "name": "Bridge Injection",
+          "specificity": 0.6408450704225352,
+          "conditionCount": 1
+        }
+      ],
+      "primaryAttribution": "Conflict-Breaking Sacrifice",
+      "primarySpecificity": 0.795774647887324,
+      "runnerUp": "Bridge Injection",
+      "runnerUpSpecificity": 0.6408450704225352,
+      "margin": 0.15492957746478875,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Bridge Injection",
+          "specificity": 0.6408450704225352,
+          "conditionCount": 1
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Bridge Injection",
+      "primarySpecificity": 0.6408450704225352,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.147887323943662,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=5-8",
+      "size": 1,
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Bridge Injection",
+          "specificity": 0.6408450704225352,
+          "conditionCount": 1
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Bridge Injection",
+      "primarySpecificity": 0.6408450704225352,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.147887323943662,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=5|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Bridge Injection",
+          "specificity": 0.6408450704225352,
+          "conditionCount": 1
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Bridge Injection",
+      "primarySpecificity": 0.6408450704225352,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.147887323943662,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=5-8",
+      "size": 1,
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Bridge Injection",
+          "specificity": 0.6408450704225352,
+          "conditionCount": 1
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Bridge Injection",
+      "primarySpecificity": 0.6408450704225352,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.147887323943662,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 1,
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "CCR",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "CCR",
+          "specificity": 0.8943661971830986,
+          "conditionCount": 4
+        },
+        {
+          "name": "Deep Cycle (BP-1/REPAIR)",
+          "specificity": 0.6830985915492958,
+          "conditionCount": 4
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "CCR",
+      "primarySpecificity": 0.8943661971830986,
+      "runnerUp": "Deep Cycle (BP-1/REPAIR)",
+      "runnerUpSpecificity": 0.6830985915492958,
+      "margin": 0.21126760563380287,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Bridge Injection",
+          "specificity": 0.6408450704225352,
+          "conditionCount": 1
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Bridge Injection",
+      "primarySpecificity": 0.6408450704225352,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.147887323943662,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=9+",
+      "size": 1,
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Bridge Injection",
+          "specificity": 0.6408450704225352,
+          "conditionCount": 1
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Bridge Injection",
+      "primarySpecificity": 0.6408450704225352,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.147887323943662,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Bridge Injection",
+          "specificity": 0.6408450704225352,
+          "conditionCount": 1
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Bridge Injection",
+      "primarySpecificity": 0.6408450704225352,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.147887323943662,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "tiedBlueprints": [
+        "Bridge Injection",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Bridge Injection",
+          "specificity": 0.6408450704225352,
+          "conditionCount": 1
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Bridge Injection",
+      "primarySpecificity": 0.6408450704225352,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.147887323943662,
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+",
+      "size": 1,
+      "tiedBlueprints": [
+        "Deep Cycle (BP-1/REPAIR)",
+        "Parity-Cycle Specialist (BP-2)"
+      ],
+      "ranked": [
+        {
+          "name": "Deep Cycle (BP-1/REPAIR)",
+          "specificity": 0.6830985915492958,
+          "conditionCount": 4
+        },
+        {
+          "name": "Parity-Cycle Specialist (BP-2)",
+          "specificity": 0.49295774647887325,
+          "conditionCount": 2
+        }
+      ],
+      "primaryAttribution": "Deep Cycle (BP-1/REPAIR)",
+      "primarySpecificity": 0.6830985915492958,
+      "runnerUp": "Parity-Cycle Specialist (BP-2)",
+      "runnerUpSpecificity": 0.49295774647887325,
+      "margin": 0.1901408450704225,
+      "marginal": false
+    }
+  ],
+  "overlapMatrix": [
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+",
+      "size": 14,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Deep Cycle (BP-1/REPAIR)",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=false|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 10,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 1,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "primaryAttribution": "CCR",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=9+",
+      "size": 4,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Bridge Injection",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=false|cycle=short(3-4)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=3-4",
+      "size": 4,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 1,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "primaryAttribution": "CCR",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 4,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Deep Cycle (BP-1/REPAIR)",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 3,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Bridge Injection",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+",
+      "size": 3,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Deep Cycle (BP-1/REPAIR)",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 3,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Bridge Injection",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 2,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Bridge Injection",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8",
+      "size": 2,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Bridge Injection",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=5-8",
+      "size": 2,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Bridge Injection",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 2,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Bridge Injection",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 2,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Bridge Injection",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+",
+      "size": 2,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Deep Cycle (BP-1/REPAIR)",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+",
+      "size": 2,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Deep Cycle (BP-1/REPAIR)",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 2,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Deep Cycle (BP-1/REPAIR)",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 2,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Deep Cycle (BP-1/REPAIR)",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 1,
+        "Parity-Cycle Specialist (BP-2)": 0
+      },
+      "primaryAttribution": "Conflict-Breaking Sacrifice",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Bridge Injection",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=5-8",
+      "size": 1,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Bridge Injection",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=5|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Bridge Injection",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=5-8",
+      "size": 1,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Bridge Injection",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+      "size": 1,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 1,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "CCR",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Bridge Injection",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=9+",
+      "size": 1,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Bridge Injection",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Bridge Injection",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=short(3-4)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+      "size": 1,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 0,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 1,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Bridge Injection",
+      "marginal": false
+    },
+    {
+      "clusterKey": "parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+",
+      "size": 1,
+      "confidenceByBlueprint": {
+        "Deep Cycle (BP-1/REPAIR)": 1,
+        "CCR": 0,
+        "Multi-Hop Bridge": 0,
+        "Bridge Injection": 0,
+        "Conflict-Breaking Sacrifice": 0,
+        "Parity-Cycle Specialist (BP-2)": 1
+      },
+      "primaryAttribution": "Deep Cycle (BP-1/REPAIR)",
+      "marginal": false
+    }
+  ],
+  "priority": [
+    {
+      "blueprint": "Bridge Injection",
+      "caseCount": 50,
+      "clusterCount": 25,
+      "fromUnambiguous": 22,
+      "fromResolvedAmbiguous": 28
+    },
+    {
+      "blueprint": "Deep Cycle (BP-1/REPAIR)",
+      "caseCount": 30,
+      "clusterCount": 8,
+      "fromUnambiguous": 0,
+      "fromResolvedAmbiguous": 30
+    },
+    {
+      "blueprint": "Conflict-Breaking Sacrifice",
+      "caseCount": 29,
+      "clusterCount": 5,
+      "fromUnambiguous": 28,
+      "fromResolvedAmbiguous": 1
+    },
+    {
+      "blueprint": "CCR",
+      "caseCount": 15,
+      "clusterCount": 3,
+      "fromUnambiguous": 0,
+      "fromResolvedAmbiguous": 15
+    },
+    {
+      "blueprint": "Parity-Cycle Specialist (BP-2)",
+      "caseCount": 13,
+      "clusterCount": 6,
+      "fromUnambiguous": 13,
+      "fromResolvedAmbiguous": 0
+    },
+    {
+      "blueprint": "Multi-Hop Bridge",
+      "caseCount": 5,
+      "clusterCount": 2,
+      "fromUnambiguous": 5,
+      "fromResolvedAmbiguous": 0
+    }
+  ],
+  "opportunityMap": [
+    {
+      "blueprint": "Bridge Injection",
+      "targetClusters": [
+        "parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+        "parity=false|cycle=swap(2)|cycleCount=1|conflict=true|swap=true|bridge=true|deferred=true|wrongWing=9+",
+        "parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=5-8",
+        "parity=false|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+        "parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=5-8",
+        "parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=5-8",
+        "parity=false|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8",
+        "parity=false|cycle=long(5+)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+        "parity=false|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8",
+        "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=9+",
+        "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+        "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+        "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+        "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8",
+        "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=5-8",
+        "parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+        "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+        "parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+        "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=5-8",
+        "parity=true|cycle=short(3-4)|cycleCount=5|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+",
+        "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=5-8",
+        "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+        "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=9+",
+        "parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+",
+        "parity=true|cycle=short(3-4)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+"
+      ],
+      "expectedGain": 50,
+      "priority": 1
+    },
+    {
+      "blueprint": "Deep Cycle (BP-1/REPAIR)",
+      "targetClusters": [
+        "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+",
+        "parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+        "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+",
+        "parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+",
+        "parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+",
+        "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=5-8",
+        "parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+        "parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+"
+      ],
+      "expectedGain": 30,
+      "priority": 2
+    },
+    {
+      "blueprint": "Conflict-Breaking Sacrifice",
+      "targetClusters": [
+        "parity=false|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+        "parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+",
+        "parity=false|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+",
+        "parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+        "parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=true|deferred=false|wrongWing=9+"
+      ],
+      "expectedGain": 29,
+      "priority": 3
+    },
+    {
+      "blueprint": "CCR",
+      "targetClusters": [
+        "parity=false|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8",
+        "parity=false|cycle=short(3-4)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=3-4",
+        "parity=true|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8"
+      ],
+      "expectedGain": 15,
+      "priority": 4
+    },
+    {
+      "blueprint": "Parity-Cycle Specialist (BP-2)",
+      "targetClusters": [
+        "parity=true|cycle=short(3-4)|cycleCount=1|conflict=true|swap=false|bridge=false|deferred=true|wrongWing=9+",
+        "parity=true|cycle=short(3-4)|cycleCount=1|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+",
+        "parity=true|cycle=swap(2)|cycleCount=1|conflict=true|swap=true|bridge=false|deferred=true|wrongWing=9+",
+        "parity=true|cycle=long(5+)|cycleCount=2|conflict=true|swap=false|bridge=false|deferred=false|wrongWing=9+",
+        "parity=true|cycle=long(5+)|cycleCount=4|conflict=true|swap=true|bridge=false|deferred=false|wrongWing=9+",
+        "parity=true|cycle=swap(2)|cycleCount=2|conflict=true|swap=true|bridge=false|deferred=true|wrongWing=9+"
+      ],
+      "expectedGain": 13,
+      "priority": 5
+    },
+    {
+      "blueprint": "Multi-Hop Bridge",
+      "targetClusters": [
+        "parity=false|cycle=short(3-4)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=true|wrongWing=3-4",
+        "parity=false|cycle=swap(2)|cycleCount=1|conflict=false|swap=true|bridge=false|deferred=true|wrongWing=1-2"
+      ],
+      "expectedGain": 5,
+      "priority": 6
+    }
+  ],
+  "levels": {
+    "level1": true,
+    "level2": true,
+    "level3": true
+  },
+  "confidentFraction": 1,
+  "decision": "A"
+}

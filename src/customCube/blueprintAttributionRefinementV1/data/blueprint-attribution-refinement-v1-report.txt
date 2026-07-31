@@ -1,0 +1,201 @@
+Solver Primitive Discovery Sprint #4 -- Blueprint Attribution Refinement Sprint v1 -- Report
+Generated: 2026-07-31T02:34:01.249Z
+Population: 142 cases (Discovery Sprint #4의 49개 클러스터 재사용, 재측정 없음)
+
+STEP1. Ambiguous Cluster 추출
+  AMBIGUOUS 클러스터: 28개, 총 74건
+
+STEP2. Blueprint별 Global Specificity (전체 142-population 기준)
+  Deep Cycle (BP-1/REPAIR): globalMatchRate=31.7%(45/142), specificity=0.683, 조건 수=4
+    Gate 제거 시["cycleCount>0"]: matchRate 31.7% -> 31.7% (restrictiveness=0.000)
+    Gate 제거 시["cycleLength>=4"]: matchRate 31.7% -> 35.2% (restrictiveness=0.035)
+    Gate 제거 시["componentCount===1"]: matchRate 31.7% -> 56.3% (restrictiveness=0.246)
+    Gate 제거 시["conflictEdgeCount===0"]: matchRate 31.7% -> 35.2% (restrictiveness=0.035)
+  CCR: globalMatchRate=10.6%(15/142), specificity=0.894, 조건 수=4
+    Gate 제거 시["componentCount===1"]: matchRate 10.6% -> 10.6% (restrictiveness=0.000)
+    Gate 제거 시["conflictEdgeCount===0"]: matchRate 10.6% -> 12.7% (restrictiveness=0.021)
+    Gate 제거 시["cycleCount===1"]: matchRate 10.6% -> 31.7% (restrictiveness=0.211)
+    Gate 제거 시["cycleLength in [4,6]"]: matchRate 10.6% -> 14.1% (restrictiveness=0.035)
+  Multi-Hop Bridge: globalMatchRate=3.5%(5/142), specificity=0.965, 조건 수=3
+    Gate 제거 시["componentCount===1"]: matchRate 3.5% -> 12.0% (restrictiveness=0.085)
+    Gate 제거 시["conflictEdgeCount===0"]: matchRate 3.5% -> 9.2% (restrictiveness=0.056)
+    Gate 제거 시["deferredViolation"]: matchRate 3.5% -> 35.2% (restrictiveness=0.317)
+  Bridge Injection: globalMatchRate=35.9%(51/142), specificity=0.641, 조건 수=1
+    Gate 제거 시["disconnectedGraph"]: matchRate 35.9% -> 100.0% (restrictiveness=0.641)
+  Conflict-Breaking Sacrifice: globalMatchRate=20.4%(29/142), specificity=0.796, 조건 수=2
+    Gate 제거 시["conflictEdgeCount>0"]: matchRate 20.4% -> 20.4% (restrictiveness=0.000)
+    Gate 제거 시["cycleCount===0"]: matchRate 20.4% -> 31.7% (restrictiveness=0.113)
+  Parity-Cycle Specialist (BP-2): globalMatchRate=50.7%(72/142), specificity=0.493, 조건 수=2
+    Gate 제거 시["parityState"]: matchRate 50.7% -> 79.6% (restrictiveness=0.289)
+    Gate 제거 시["cycleCount>0"]: matchRate 50.7% -> 59.2% (restrictiveness=0.085)
+
+STEP3. Counterfactual Attribution (Specificity 기반 Primary Attribution 결정)
+  [parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+] n=14
+    Tied: Deep Cycle (BP-1/REPAIR), Parity-Cycle Specialist (BP-2)
+    Ranked: Deep Cycle (BP-1/REPAIR)(spec=0.683) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Deep Cycle (BP-1/REPAIR)
+  [parity=false|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8] n=10
+    Tied: Deep Cycle (BP-1/REPAIR), CCR
+    Ranked: CCR(spec=0.894) > Deep Cycle (BP-1/REPAIR)(spec=0.683)
+    Primary Attribution: CCR
+  [parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=9+] n=4
+    Tied: Bridge Injection, Parity-Cycle Specialist (BP-2)
+    Ranked: Bridge Injection(spec=0.641) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Bridge Injection
+  [parity=false|cycle=short(3-4)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=3-4] n=4
+    Tied: Deep Cycle (BP-1/REPAIR), CCR
+    Ranked: CCR(spec=0.894) > Deep Cycle (BP-1/REPAIR)(spec=0.683)
+    Primary Attribution: CCR
+  [parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8] n=4
+    Tied: Deep Cycle (BP-1/REPAIR), Parity-Cycle Specialist (BP-2)
+    Ranked: Deep Cycle (BP-1/REPAIR)(spec=0.683) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Deep Cycle (BP-1/REPAIR)
+  [parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+] n=3
+    Tied: Bridge Injection, Parity-Cycle Specialist (BP-2)
+    Ranked: Bridge Injection(spec=0.641) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Bridge Injection
+  [parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+] n=3
+    Tied: Deep Cycle (BP-1/REPAIR), Parity-Cycle Specialist (BP-2)
+    Ranked: Deep Cycle (BP-1/REPAIR)(spec=0.683) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Deep Cycle (BP-1/REPAIR)
+  [parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+] n=3
+    Tied: Bridge Injection, Parity-Cycle Specialist (BP-2)
+    Ranked: Bridge Injection(spec=0.641) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Bridge Injection
+  [parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+] n=2
+    Tied: Bridge Injection, Parity-Cycle Specialist (BP-2)
+    Ranked: Bridge Injection(spec=0.641) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Bridge Injection
+  [parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8] n=2
+    Tied: Bridge Injection, Parity-Cycle Specialist (BP-2)
+    Ranked: Bridge Injection(spec=0.641) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Bridge Injection
+  [parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=5-8] n=2
+    Tied: Bridge Injection, Parity-Cycle Specialist (BP-2)
+    Ranked: Bridge Injection(spec=0.641) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Bridge Injection
+  [parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+] n=2
+    Tied: Bridge Injection, Parity-Cycle Specialist (BP-2)
+    Ranked: Bridge Injection(spec=0.641) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Bridge Injection
+  [parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+] n=2
+    Tied: Bridge Injection, Parity-Cycle Specialist (BP-2)
+    Ranked: Bridge Injection(spec=0.641) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Bridge Injection
+  [parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+] n=2
+    Tied: Deep Cycle (BP-1/REPAIR), Parity-Cycle Specialist (BP-2)
+    Ranked: Deep Cycle (BP-1/REPAIR)(spec=0.683) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Deep Cycle (BP-1/REPAIR)
+  [parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+] n=2
+    Tied: Deep Cycle (BP-1/REPAIR), Parity-Cycle Specialist (BP-2)
+    Ranked: Deep Cycle (BP-1/REPAIR)(spec=0.683) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Deep Cycle (BP-1/REPAIR)
+  [parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=5-8] n=2
+    Tied: Deep Cycle (BP-1/REPAIR), Parity-Cycle Specialist (BP-2)
+    Ranked: Deep Cycle (BP-1/REPAIR)(spec=0.683) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Deep Cycle (BP-1/REPAIR)
+  [parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8] n=2
+    Tied: Deep Cycle (BP-1/REPAIR), Parity-Cycle Specialist (BP-2)
+    Ranked: Deep Cycle (BP-1/REPAIR)(spec=0.683) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Deep Cycle (BP-1/REPAIR)
+  [parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=true|deferred=false|wrongWing=9+] n=1
+    Tied: Bridge Injection, Conflict-Breaking Sacrifice
+    Ranked: Conflict-Breaking Sacrifice(spec=0.796) > Bridge Injection(spec=0.641)
+    Primary Attribution: Conflict-Breaking Sacrifice
+  [parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+] n=1
+    Tied: Bridge Injection, Parity-Cycle Specialist (BP-2)
+    Ranked: Bridge Injection(spec=0.641) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Bridge Injection
+  [parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=5-8] n=1
+    Tied: Bridge Injection, Parity-Cycle Specialist (BP-2)
+    Ranked: Bridge Injection(spec=0.641) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Bridge Injection
+  [parity=true|cycle=short(3-4)|cycleCount=5|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+] n=1
+    Tied: Bridge Injection, Parity-Cycle Specialist (BP-2)
+    Ranked: Bridge Injection(spec=0.641) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Bridge Injection
+  [parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=5-8] n=1
+    Tied: Bridge Injection, Parity-Cycle Specialist (BP-2)
+    Ranked: Bridge Injection(spec=0.641) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Bridge Injection
+  [parity=true|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8] n=1
+    Tied: Deep Cycle (BP-1/REPAIR), CCR, Parity-Cycle Specialist (BP-2)
+    Ranked: CCR(spec=0.894) > Deep Cycle (BP-1/REPAIR)(spec=0.683) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: CCR
+  [parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+] n=1
+    Tied: Bridge Injection, Parity-Cycle Specialist (BP-2)
+    Ranked: Bridge Injection(spec=0.641) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Bridge Injection
+  [parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=9+] n=1
+    Tied: Bridge Injection, Parity-Cycle Specialist (BP-2)
+    Ranked: Bridge Injection(spec=0.641) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Bridge Injection
+  [parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+] n=1
+    Tied: Bridge Injection, Parity-Cycle Specialist (BP-2)
+    Ranked: Bridge Injection(spec=0.641) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Bridge Injection
+  [parity=true|cycle=short(3-4)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+] n=1
+    Tied: Bridge Injection, Parity-Cycle Specialist (BP-2)
+    Ranked: Bridge Injection(spec=0.641) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Bridge Injection
+  [parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+] n=1
+    Tied: Deep Cycle (BP-1/REPAIR), Parity-Cycle Specialist (BP-2)
+    Ranked: Deep Cycle (BP-1/REPAIR)(spec=0.683) > Parity-Cycle Specialist (BP-2)(spec=0.493)
+    Primary Attribution: Deep Cycle (BP-1/REPAIR)
+
+STEP4. Overlap Matrix
+| Cluster | Deep Cycle (BP-1/REPAIR) | CCR | Multi-Hop Bridge | Bridge Injection | Conflict-Breaking Sacrifice | Parity-Cycle Specialist (BP-2) | Primary Attribution |
+|---|---|---|---|---|---|---|---|
+| parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+ | 1 | 0 | 0 | 0 | 0 | 1 | Deep Cycle (BP-1/REPAIR) |
+| parity=false|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8 | 1 | 1 | 0 | 0 | 0 | 0 | CCR |
+| parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=9+ | 0 | 0 | 0 | 1 | 0 | 1 | Bridge Injection |
+| parity=false|cycle=short(3-4)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=3-4 | 1 | 1 | 0 | 0 | 0 | 0 | CCR |
+| parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8 | 1 | 0 | 0 | 0 | 0 | 1 | Deep Cycle (BP-1/REPAIR) |
+| parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+ | 0 | 0 | 0 | 1 | 0 | 1 | Bridge Injection |
+| parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+ | 1 | 0 | 0 | 0 | 0 | 1 | Deep Cycle (BP-1/REPAIR) |
+| parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+ | 0 | 0 | 0 | 1 | 0 | 1 | Bridge Injection |
+| parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+ | 0 | 0 | 0 | 1 | 0 | 1 | Bridge Injection |
+| parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=5-8 | 0 | 0 | 0 | 1 | 0 | 1 | Bridge Injection |
+| parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=true|wrongWing=5-8 | 0 | 0 | 0 | 1 | 0 | 1 | Bridge Injection |
+| parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+ | 0 | 0 | 0 | 1 | 0 | 1 | Bridge Injection |
+| parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+ | 0 | 0 | 0 | 1 | 0 | 1 | Bridge Injection |
+| parity=true|cycle=long(5+)|cycleCount=4|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+ | 1 | 0 | 0 | 0 | 0 | 1 | Deep Cycle (BP-1/REPAIR) |
+| parity=true|cycle=long(5+)|cycleCount=3|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=9+ | 1 | 0 | 0 | 0 | 0 | 1 | Deep Cycle (BP-1/REPAIR) |
+| parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=5-8 | 1 | 0 | 0 | 0 | 0 | 1 | Deep Cycle (BP-1/REPAIR) |
+| parity=true|cycle=long(5+)|cycleCount=2|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8 | 1 | 0 | 0 | 0 | 0 | 1 | Deep Cycle (BP-1/REPAIR) |
+| parity=true|cycle=none|cycleCount=0|conflict=true|swap=false|bridge=true|deferred=false|wrongWing=9+ | 0 | 0 | 0 | 1 | 1 | 0 | Conflict-Breaking Sacrifice |
+| parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+ | 0 | 0 | 0 | 1 | 0 | 1 | Bridge Injection |
+| parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=5-8 | 0 | 0 | 0 | 1 | 0 | 1 | Bridge Injection |
+| parity=true|cycle=short(3-4)|cycleCount=5|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+ | 0 | 0 | 0 | 1 | 0 | 1 | Bridge Injection |
+| parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=5-8 | 0 | 0 | 0 | 1 | 0 | 1 | Bridge Injection |
+| parity=true|cycle=long(5+)|cycleCount=1|conflict=false|swap=false|bridge=false|deferred=false|wrongWing=5-8 | 1 | 1 | 0 | 0 | 0 | 1 | CCR |
+| parity=true|cycle=short(3-4)|cycleCount=2|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+ | 0 | 0 | 0 | 1 | 0 | 1 | Bridge Injection |
+| parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=true|bridge=true|deferred=true|wrongWing=9+ | 0 | 0 | 0 | 1 | 0 | 1 | Bridge Injection |
+| parity=true|cycle=short(3-4)|cycleCount=3|conflict=false|swap=false|bridge=true|deferred=false|wrongWing=9+ | 0 | 0 | 0 | 1 | 0 | 1 | Bridge Injection |
+| parity=true|cycle=short(3-4)|cycleCount=4|conflict=false|swap=true|bridge=true|deferred=false|wrongWing=9+ | 0 | 0 | 0 | 1 | 0 | 1 | Bridge Injection |
+| parity=true|cycle=long(5+)|cycleCount=5|conflict=false|swap=true|bridge=false|deferred=false|wrongWing=9+ | 1 | 0 | 0 | 0 | 0 | 1 | Deep Cycle (BP-1/REPAIR) |
+
+STEP5. Blueprint Priority
+  Bridge Injection: 50 (기존 확정 22 + 이번에 해소 28), 25개 클러스터
+  Deep Cycle (BP-1/REPAIR): 30 (기존 확정 0 + 이번에 해소 30), 8개 클러스터
+  Conflict-Breaking Sacrifice: 29 (기존 확정 28 + 이번에 해소 1), 5개 클러스터
+  CCR: 15 (기존 확정 0 + 이번에 해소 15), 3개 클러스터
+  Parity-Cycle Specialist (BP-2): 13 (기존 확정 13 + 이번에 해소 0), 6개 클러스터
+  Multi-Hop Bridge: 5 (기존 확정 5 + 이번에 해소 0), 2개 클러스터
+
+STEP6. Primitive Refinement Opportunity Map
+| Blueprint | Target Cluster | Expected Gain | Priority |
+|---|---|---:|---:|
+| Bridge Injection | 25개 클러스터 | 50 | 1 |
+| Deep Cycle (BP-1/REPAIR) | 8개 클러스터 | 30 | 2 |
+| Conflict-Breaking Sacrifice | 5개 클러스터 | 29 | 3 |
+| CCR | 3개 클러스터 | 15 | 4 |
+| Parity-Cycle Specialist (BP-2) | 6개 클러스터 | 13 | 5 |
+| Multi-Hop Bridge | 2개 클러스터 | 5 | 6 |
+
+성공 기준
+  Level1(28개 Cluster 전부 Attribution 완료): PASS (28/28)
+  Level2(Blueprint 우선순위 확정): PASS
+  Level3(다음 Primitive Refinement 대상 확정): PASS
+  확신도(marginal 아닌 비율): 28/28 (100.0%)
+  Decision: A
