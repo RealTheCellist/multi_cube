@@ -38,7 +38,15 @@ export function decideRootCause(
   const validationShare = n > 0 ? taxonomy.counts.VALIDATION_FAILURE / n : 0;
 
   const widiningRecoversNothing = candidateInjection.recoveryRatePercent === 0;
-  const benchmarkShowsNoGain = benchmark.injectedImprovedCount <= benchmark.currentImprovedCount;
+  // A raw improvedCount comparison (injected vs current) is NOT enough --
+  // it can show a nonzero difference that is neither statistically
+  // significant nor practically meaningful. Use the paired-diff 95% CI
+  // and Cohen's d_z (computeStats/analyzeEffectSize, this arc's own
+  // Standard Evaluation Protocol) instead: if the CI includes 0 OR the
+  // effect magnitude is "negligible", there is no real gain from widening.
+  const ci = benchmark.improvedCountDiffStats;
+  const ciIncludesZero = ci.ciLower <= 0 && ci.ciUpper >= 0;
+  const benchmarkShowsNoGain = ciIncludesZero || benchmark.improvedCountDiffEffectSize.magnitude === "negligible";
 
   let rootCause: RootCause;
   let rootCauseRationale: string;

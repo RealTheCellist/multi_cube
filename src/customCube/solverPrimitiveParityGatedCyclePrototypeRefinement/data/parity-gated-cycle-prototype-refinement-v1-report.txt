@@ -1,0 +1,45 @@
+=== Parity-Gated Cycle Primitive Prototype Refinement Sprint v1 -- Report ===
+
+Population: n=41 (the prior Architecture Analysis Sprint's own 41 real PRIMITIVE_FAILURE cases)
+
+STEP1. Primitive Failure Taxonomy
+  [CANDIDATE_GENERATION_FAILURE] count=31, %=75.6%
+  [SEARCH_EXHAUSTION] count=2, %=4.9%
+  [TRAVERSAL_FAILURE] count=8, %=19.5%
+  [VALIDATION_FAILURE] count=0, %=0.0%
+
+STEP2. Candidate Generation Audit
+  avgPairsAttempted=20.2
+  avgValidCount=0.37
+  avgRejectedCount=19.3
+  avgDuplicateRatio=0.000
+  neverGeneratesAnyBridge=31/41 (75.6%)
+
+STEP3. Multi-Cycle Traversal analysis
+  avgLeavesExplored=10.1
+  avgMaxDepthReached=5.6
+  hitCapOrDeadlineCount=0/41
+  improvingLeafFoundCount=4/41
+
+STEP4. Counterfactual Candidate Injection (widened search)
+  originalZeroCandidateCount=31/41
+  recoveredByWideningCount=0
+  recoveryRatePercent=0.0%
+
+STEP5. Capability Benchmark (3-arm real replay)
+  n=41
+  currentImprovedCount=5, currentRegressionCount=0
+  injectedImprovedCount=6, injectedRegressionCount=0
+  currentAvgRuntimeMs=1311.4, injectedAvgRuntimeMs=1228.3
+  currentAvgTraversalCount=0.37, injectedAvgTraversalCount=0.39
+  improvedCountDiff (Injection - Current): mean=0.0244, stddev=0.1562, 95% CI=[-0.0234, 0.0722]
+  Cohen's dz=0.156 (negligible)
+
+STEP6. Root Cause Decision
+  rootCause=NEW_PRIMITIVE_NEEDED
+  rootCauseRationale: Candidate Generation Failure가 전체의 75.6%로 최다지만, 후보 폭을 무제한으로 넓혀도(STEP4) 회복률 0.0%, 3-arm Benchmark(STEP5)에서도 improved 개선 없음(current=5, injected=6, paired-diff 95% CI=[-0.0234, 0.0722]로 0 포함, Cohen's dz=0.156로 negligible) -- 탐색 폭/budget 문제가 아니라 "단일 wing 재배치"라는 현재 Bridge 메커니즘 자체가 이 케이스들의 그래프 구조를 해결할 수 없음을 뜻한다.
+  finalDecision=C_NEW_PRIMITIVE_BLUEPRINT
+  finalDecisionRationale: Primitive 자체(Bridge 메커니즘)의 구조적 한계가 확인됨 -- 새로운 Primitive Blueprint 작성으로 회귀.
+  Level1(원인 분리)=PASS
+  Level2(기여도 정량화)=PASS
+  Level3(방향 확정)=PASS
