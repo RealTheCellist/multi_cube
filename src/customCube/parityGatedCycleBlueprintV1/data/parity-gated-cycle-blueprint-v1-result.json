@@ -1,0 +1,495 @@
+{
+  "unknownLabels": [
+    {
+      "label": "worstCase:45959141",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:46086463",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:64369533",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:84976575",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:f17d7eb9",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:beb967ad",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:1e928fb1",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "worstCase:4549b041",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:120fc3af",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:ad12c377",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:5e5b20b",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "worstCase:c039e611",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:b2c9ceb9",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "worstCase:cee673eb",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "worstCase:14f5293f",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "worstCase:849509c9",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:a005d41f",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:5d189c1",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "snapshot335:27053491",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:45959141",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:46086463",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:64369533",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:84976575",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:f17d7eb9",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:a061555d",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:7541612b",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:b714481",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:beb967ad",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "snapshot335:36336c1",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth10:0",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "scrambleDepth20:1",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "scrambleDepth20:2",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "scrambleDepth20:9",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth30:3",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth30:6",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth30:7",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth30:9",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "scrambleDepth40:1",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth50:0",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "scrambleDepth50:2",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth50:4",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth50:5",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth100:4",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "sourceBlueprint": "Deep Cycle"
+    }
+  ],
+  "causal": [
+    {
+      "name": "parityState",
+      "coverageInUnknown": 0.6415094339622641,
+      "baselineInFullPopulation": 0.5915492957746479,
+      "lift": 1.0844564240790655,
+      "ablationGap": 0.3584905660377359
+    },
+    {
+      "name": "cycleCount>=2(dependencyDepth proxy)",
+      "coverageInUnknown": 0.9622641509433962,
+      "baselineInFullPopulation": 0.5633802816901409,
+      "lift": 1.7080188679245283,
+      "ablationGap": 0.037735849056603765
+    },
+    {
+      "name": "cycleLength>=4",
+      "coverageInUnknown": 0.7924528301886793,
+      "baselineInFullPopulation": 0.5985915492957746,
+      "lift": 1.3238623751387348,
+      "ablationGap": 0.2075471698113207
+    },
+    {
+      "name": "conflictEdgeCount===0",
+      "coverageInUnknown": 0.9622641509433962,
+      "baselineInFullPopulation": 0.6830985915492958,
+      "lift": 1.4086753549893019,
+      "ablationGap": 0.037735849056603765
+    },
+    {
+      "name": "articulationPointCount===0(single biconnected block)",
+      "coverageInUnknown": 0.5471698113207547,
+      "baselineInFullPopulation": 0.6197183098591549,
+      "lift": 0.8829331046312179,
+      "ablationGap": 0.4528301886792453
+    },
+    {
+      "name": "componentCount===1",
+      "coverageInUnknown": 0.32075471698113206,
+      "baselineInFullPopulation": 0.6408450704225352,
+      "lift": 0.5005183495749533,
+      "ablationGap": 0.679245283018868
+    },
+    {
+      "name": "parityState AND cycleCount>=2",
+      "coverageInUnknown": 0.6226415094339622,
+      "baselineInFullPopulation": 0.4295774647887324,
+      "lift": 1.4494277760593877,
+      "ablationGap": 0.37735849056603776
+    },
+    {
+      "name": "parityState AND cycleLength>=4",
+      "coverageInUnknown": 0.5283018867924528,
+      "baselineInFullPopulation": 0.39436619718309857,
+      "lift": 1.339622641509434,
+      "ablationGap": 0.4716981132075472
+    },
+    {
+      "name": "parityState AND conflictEdgeCount===0",
+      "coverageInUnknown": 0.6226415094339622,
+      "baselineInFullPopulation": 0.4154929577464789,
+      "lift": 1.4985609210105533,
+      "ablationGap": 0.37735849056603776
+    },
+    {
+      "name": "parityState AND cycleCount>=2 AND conflictEdgeCount===0",
+      "coverageInUnknown": 0.6226415094339622,
+      "baselineInFullPopulation": 0.4084507042253521,
+      "lift": 1.5243981782693559,
+      "ablationGap": 0.37735849056603776
+    }
+  ],
+  "projection": [
+    {
+      "primitiveName": "Deep Cycle (BP-1/REPAIR)",
+      "structurallyEligibleCount": 17,
+      "structurallyEligibleFraction": 0.32075471698113206,
+      "failingConditions": {
+        "cycleCount>0": 1,
+        "cycleLength>=4": 11,
+        "componentCount===1": 36,
+        "conflictEdgeCount===0": 2
+      }
+    },
+    {
+      "primitiveName": "CCR",
+      "structurallyEligibleCount": 0,
+      "structurallyEligibleFraction": 0,
+      "failingConditions": {
+        "componentCount===1": 36,
+        "conflictEdgeCount===0": 2,
+        "cycleCount===1": 52,
+        "cycleLength in [4,6]": 11
+      }
+    },
+    {
+      "primitiveName": "Multi-Hop Bridge",
+      "structurallyEligibleCount": 0,
+      "structurallyEligibleFraction": 0,
+      "failingConditions": {
+        "componentCount===1": 36,
+        "conflictEdgeCount===0": 2,
+        "deferredViolation": 43
+      }
+    },
+    {
+      "primitiveName": "Bridge Injection",
+      "structurallyEligibleCount": 36,
+      "structurallyEligibleFraction": 0.6792452830188679,
+      "failingConditions": {
+        "disconnectedGraph": 17
+      }
+    },
+    {
+      "primitiveName": "Conflict-Breaking Sacrifice",
+      "structurallyEligibleCount": 1,
+      "structurallyEligibleFraction": 0.018867924528301886,
+      "failingConditions": {
+        "conflictEdgeCount>0": 51,
+        "cycleCount===0": 52
+      }
+    },
+    {
+      "primitiveName": "Parity-Cycle Specialist (BP-2)",
+      "structurallyEligibleCount": 33,
+      "structurallyEligibleFraction": 0.6226415094339622,
+      "failingConditions": {
+        "parityState": 19,
+        "cycleCount>0": 1
+      }
+    },
+    {
+      "primitiveName": "Mixed Commutator",
+      "structurallyEligibleCount": 52,
+      "structurallyEligibleFraction": 0.9811320754716981,
+      "failingConditions": {
+        "cycleCount>0": 1
+      }
+    }
+  ],
+  "candidates": [
+    {
+      "id": "A",
+      "name": "Cross-Component Bridge Cycle Resolver",
+      "targetState": "componentCount>1인 WANTS 그래프에서, 서로 분리된 컴포넌트에 걸쳐 존재하는 cycleCount>=2개의 다중 사이클을 컴포넌트를 실제로 연결한 뒤 순회 해소한다.",
+      "gate": {
+        "name": "Cross-Component Bridge Cycle Resolver",
+        "conditions": [
+          {
+            "name": "componentCount>1"
+          },
+          {
+            "name": "cycleCount>=2"
+          },
+          {
+            "name": "conflictEdgeCount===0"
+          }
+        ]
+      },
+      "expectedPrimitiveBehavior": "(1) 두 컴포넌트를 잇는 최소 비용의 bridge wing 이동을 먼저 탐색해 componentCount를 실질적으로 1로 낮추는 setup 단계, (2) 그 결과 상태 위에서 BoundedResolver류의 다중 사이클 순회 탐색(모든 cycleCount개 사이클을 이어서)을 실행하는 2단계 파이프라인.",
+      "differenceFromExisting": "MultiHopBridge/BP-1/CCR 전부 componentCount===1을 명시적으로 요구하거나(BP-1/CCR) 아예 확인하지 않고 우연히 통과하는 것뿐(MultiHopBridge) -- '컴포넌트를 실제로 연결하는' setup 로직은 이 아크 전체에서 단 한 번도 구현된 적이 없다(Bridge Injection Refinement Sprint v1이 이미 disclosed한 그 공백을 정면으로 겨냥한다)."
+    },
+    {
+      "id": "B",
+      "name": "Multi-Cycle CCR Extension (componentCount=1 subset)",
+      "targetState": "componentCount===1인 하나의 연결된 컴포넌트 안에 cycleCount>=2개의 독립 사이클이 동시에 존재하는 상태를 전부 순회 해소한다.",
+      "gate": {
+        "name": "Multi-Cycle CCR Extension",
+        "conditions": [
+          {
+            "name": "componentCount===1"
+          },
+          {
+            "name": "cycleCount>=2"
+          },
+          {
+            "name": "conflictEdgeCount===0"
+          }
+        ]
+      },
+      "expectedPrimitiveBehavior": "CCRPrototype.ts가 이미 보유한 strategy=\"multiCycle\"(모든 분리 사이클의 노드를 이어붙여 한 번의 bounded search로 순회)을 그대로 호출.",
+      "differenceFromExisting": "사실상 차이가 거의 없다 -- 새 Primitive가 아니라 기존 CCR 코드의 미시험 옵션(strategy=\"multiCycle\")일 가능성이 높다. blueprintAttributionRefinementV1의 CCR Gate 정의(cycleCount===1)가 실제 CCRPrototype.ts 코드의 능력보다 보수적으로 좁혀져 있었다는 것 자체가 이번 Sprint의 발견이다."
+    },
+    {
+      "id": "C",
+      "name": "Unified Parity-Gated Multi-Cycle Resolver",
+      "targetState": "componentCount에 관계없이(1이든 1보다 크든) cycleCount>=2 AND conflictEdgeCount===0인 모든 상태를 단일 메커니즘으로 순회 해소한다 -- Candidate A+B를 하나의 Primitive로 통합.",
+      "gate": {
+        "name": "Unified Parity-Gated Multi-Cycle Resolver",
+        "conditions": [
+          {
+            "name": "cycleCount>=2"
+          },
+          {
+            "name": "conflictEdgeCount===0"
+          }
+        ]
+      },
+      "expectedPrimitiveBehavior": "Gate 통과 시 componentCount를 먼저 검사해 1보다 크면 Candidate A의 bridge setup을 조건부로 실행한 뒤, 공통된 다중 사이클 순회 탐색 코어로 이어지는 분기형 파이프라인.",
+      "differenceFromExisting": "Candidate A와 B를 합친 상위집합 -- 새 코드 자체는 Candidate A와 사실상 동일하지만(B는 기존 CCR 재사용), 하나의 진입점 안에 조건부 분기를 넣어야 하므로 복잡도와 회귀 위험이 A보다 크다."
+    }
+  ],
+  "evaluations": [
+    {
+      "candidateId": "A",
+      "candidateName": "Cross-Component Bridge Cycle Resolver",
+      "explainedCount": 34,
+      "explainedFraction": 0.6415094339622641,
+      "duplicationOverlapFraction": 1,
+      "duplicationOverlapFractionExcludingMixedCommutator": 0.47058823529411764,
+      "qualitative": {
+        "complexity": "HIGH",
+        "complexityRationale": "새로운 2단계(setup bridge + 다중 사이클 순회) 탐색 코어를 처음부터 설계해야 한다 -- 이 아크에서 한 번도 구현된 적 없는 진짜 새 메커니즘.",
+        "productionRisk": "MEDIUM",
+        "productionRiskRationale": "새 코드지만 기존 아크의 disclosed-duplicate 패턴(BoundedResolver DFS 재사용)을 따를 수 있어 완전한 백지 설계는 아니다. Recovery 레이어 경쟁 매트릭스에 새 항목이 추가되는 정도의 위험."
+      }
+    },
+    {
+      "candidateId": "B",
+      "candidateName": "Multi-Cycle CCR Extension (componentCount=1 subset)",
+      "explainedCount": 17,
+      "explainedFraction": 0.32075471698113206,
+      "duplicationOverlapFraction": 1,
+      "duplicationOverlapFractionExcludingMixedCommutator": 1,
+      "qualitative": {
+        "complexity": "LOW",
+        "complexityRationale": "새 코드가 거의 없다 -- CCRPrototype.ts의 기존 strategy=\"multiCycle\" 옵션을 호출부만 바꿔 시험하면 된다.",
+        "productionRisk": "LOW",
+        "productionRiskRationale": "기존 CCR 코드 경로를 그대로 타므로 회귀 위험이 낮다. 다만 Blueprint로서의 '신규성'이 낮아 이번 Sprint의 목적(새 Primitive Blueprint 확정)과는 다소 어긋난다."
+      }
+    },
+    {
+      "candidateId": "C",
+      "candidateName": "Unified Parity-Gated Multi-Cycle Resolver",
+      "explainedCount": 51,
+      "explainedFraction": 0.9622641509433962,
+      "duplicationOverlapFraction": 1,
+      "duplicationOverlapFractionExcludingMixedCommutator": 0.6470588235294118,
+      "qualitative": {
+        "complexity": "HIGH",
+        "complexityRationale": "Candidate A의 전체 복잡도에 componentCount 분기 로직까지 추가되므로 A보다 복잡도가 같거나 더 높다.",
+        "productionRisk": "HIGH",
+        "productionRiskRationale": "하나의 진입점 안에서 서로 다른 두 경로(A의 새 코드 / B의 기존 CCR 재사용)를 분기해야 하므로 테스트 표면이 넓고, 두 경로 중 하나에서 생긴 회귀가 다른 경로처럼 보일 위험이 있다."
+      }
+    }
+  ],
+  "selection": {
+    "candidateLevels": [
+      {
+        "candidateId": "A",
+        "level1Pass": true,
+        "level2Pass": true,
+        "level3Pass": true,
+        "level4Pass": true,
+        "allPass": true
+      },
+      {
+        "candidateId": "B",
+        "level1Pass": false,
+        "level2Pass": false,
+        "level3Pass": true,
+        "level4Pass": true,
+        "allPass": false
+      },
+      {
+        "candidateId": "C",
+        "level1Pass": true,
+        "level2Pass": false,
+        "level3Pass": false,
+        "level4Pass": true,
+        "allPass": false
+      }
+    ],
+    "selectedCandidateIds": [
+      "A"
+    ],
+    "decision": "A",
+    "rationale": "A 후보가 4개 Level 모두 PASS했다 -- Parity-Gated Cycle Prototype Sprint v1로 진행할 근거가 충분하다."
+  }
+}

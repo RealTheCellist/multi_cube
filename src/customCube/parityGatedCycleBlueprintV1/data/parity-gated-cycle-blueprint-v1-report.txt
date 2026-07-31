@@ -1,0 +1,79 @@
+Solver Primitive Discovery Sprint #6 -- Parity-Gated Cycle Blueprint Sprint v1 -- Report
+Generated: 2026-07-31T04:32:04.121Z
+Unknown population: 53 cases (TRULY_UNKNOWN from Unresolved Mechanism Validation Sprint v1, reused unmodified)
+
+STEP2. Structural Causality Analysis (Ablation)
+  [parityState] coverage=64.2%, baseline(full 142)=59.2%, lift=1.08, ablationGap=35.8%
+  [cycleCount>=2(dependencyDepth proxy)] coverage=96.2%, baseline(full 142)=56.3%, lift=1.71, ablationGap=3.8%
+  [cycleLength>=4] coverage=79.2%, baseline(full 142)=59.9%, lift=1.32, ablationGap=20.8%
+  [conflictEdgeCount===0] coverage=96.2%, baseline(full 142)=68.3%, lift=1.41, ablationGap=3.8%
+  [articulationPointCount===0(single biconnected block)] coverage=54.7%, baseline(full 142)=62.0%, lift=0.88, ablationGap=45.3%
+  [componentCount===1] coverage=32.1%, baseline(full 142)=64.1%, lift=0.50, ablationGap=67.9%
+  [parityState AND cycleCount>=2] coverage=62.3%, baseline(full 142)=43.0%, lift=1.45, ablationGap=37.7%
+  [parityState AND cycleLength>=4] coverage=52.8%, baseline(full 142)=39.4%, lift=1.34, ablationGap=47.2%
+  [parityState AND conflictEdgeCount===0] coverage=62.3%, baseline(full 142)=41.5%, lift=1.50, ablationGap=37.7%
+  [parityState AND cycleCount>=2 AND conflictEdgeCount===0] coverage=62.3%, baseline(full 142)=40.8%, lift=1.52, ablationGap=37.7%
+
+STEP3. Existing Primitive Projection (structure-only, no solve() calls)
+  [Deep Cycle (BP-1/REPAIR)] structurallyEligible=17/53 (32.1%)
+      fails "cycleCount>0": 1/53
+      fails "cycleLength>=4": 11/53
+      fails "componentCount===1": 36/53
+      fails "conflictEdgeCount===0": 2/53
+  [CCR] structurallyEligible=0/53 (0.0%)
+      fails "componentCount===1": 36/53
+      fails "conflictEdgeCount===0": 2/53
+      fails "cycleCount===1": 52/53
+      fails "cycleLength in [4,6]": 11/53
+  [Multi-Hop Bridge] structurallyEligible=0/53 (0.0%)
+      fails "componentCount===1": 36/53
+      fails "conflictEdgeCount===0": 2/53
+      fails "deferredViolation": 43/53
+  [Bridge Injection] structurallyEligible=36/53 (67.9%)
+      fails "disconnectedGraph": 17/53
+  [Conflict-Breaking Sacrifice] structurallyEligible=1/53 (1.9%)
+      fails "conflictEdgeCount>0": 51/53
+      fails "cycleCount===0": 52/53
+  [Parity-Cycle Specialist (BP-2)] structurallyEligible=33/53 (62.3%)
+      fails "parityState": 19/53
+      fails "cycleCount>0": 1/53
+  [Mixed Commutator] structurallyEligible=52/53 (98.1%)
+      fails "cycleCount>0": 1/53
+
+STEP4. Blueprint Candidates
+  Candidate A: Cross-Component Bridge Cycle Resolver
+    목표 상태: componentCount>1인 WANTS 그래프에서, 서로 분리된 컴포넌트에 걸쳐 존재하는 cycleCount>=2개의 다중 사이클을 컴포넌트를 실제로 연결한 뒤 순회 해소한다.
+    Gate: componentCount>1 AND cycleCount>=2 AND conflictEdgeCount===0
+    예상 동작: (1) 두 컴포넌트를 잇는 최소 비용의 bridge wing 이동을 먼저 탐색해 componentCount를 실질적으로 1로 낮추는 setup 단계, (2) 그 결과 상태 위에서 BoundedResolver류의 다중 사이클 순회 탐색(모든 cycleCount개 사이클을 이어서)을 실행하는 2단계 파이프라인.
+    기존과 차이: MultiHopBridge/BP-1/CCR 전부 componentCount===1을 명시적으로 요구하거나(BP-1/CCR) 아예 확인하지 않고 우연히 통과하는 것뿐(MultiHopBridge) -- '컴포넌트를 실제로 연결하는' setup 로직은 이 아크 전체에서 단 한 번도 구현된 적이 없다(Bridge Injection Refinement Sprint v1이 이미 disclosed한 그 공백을 정면으로 겨냥한다).
+  Candidate B: Multi-Cycle CCR Extension (componentCount=1 subset)
+    목표 상태: componentCount===1인 하나의 연결된 컴포넌트 안에 cycleCount>=2개의 독립 사이클이 동시에 존재하는 상태를 전부 순회 해소한다.
+    Gate: componentCount===1 AND cycleCount>=2 AND conflictEdgeCount===0
+    예상 동작: CCRPrototype.ts가 이미 보유한 strategy="multiCycle"(모든 분리 사이클의 노드를 이어붙여 한 번의 bounded search로 순회)을 그대로 호출.
+    기존과 차이: 사실상 차이가 거의 없다 -- 새 Primitive가 아니라 기존 CCR 코드의 미시험 옵션(strategy="multiCycle")일 가능성이 높다. blueprintAttributionRefinementV1의 CCR Gate 정의(cycleCount===1)가 실제 CCRPrototype.ts 코드의 능력보다 보수적으로 좁혀져 있었다는 것 자체가 이번 Sprint의 발견이다.
+  Candidate C: Unified Parity-Gated Multi-Cycle Resolver
+    목표 상태: componentCount에 관계없이(1이든 1보다 크든) cycleCount>=2 AND conflictEdgeCount===0인 모든 상태를 단일 메커니즘으로 순회 해소한다 -- Candidate A+B를 하나의 Primitive로 통합.
+    Gate: cycleCount>=2 AND conflictEdgeCount===0
+    예상 동작: Gate 통과 시 componentCount를 먼저 검사해 1보다 크면 Candidate A의 bridge setup을 조건부로 실행한 뒤, 공통된 다중 사이클 순회 탐색 코어로 이어지는 분기형 파이프라인.
+    기존과 차이: Candidate A와 B를 합친 상위집합 -- 새 코드 자체는 Candidate A와 사실상 동일하지만(B는 기존 CCR 재사용), 하나의 진입점 안에 조건부 분기를 넣어야 하므로 복잡도와 회귀 위험이 A보다 크다.
+
+STEP5. Blueprint Evaluation
+  | Candidate | Explained | Duplication(all) | Duplication(excl.MixedCommutator) | Complexity | Production Risk |
+  |---|---:|---:|---:|---|---|
+  | A | 34/53(64.2%) | 100.0% | 47.1% | HIGH | MEDIUM |
+  | B | 17/53(32.1%) | 100.0% | 100.0% | LOW | LOW |
+  | C | 51/53(96.2%) | 100.0% | 64.7% | HIGH | HIGH |
+  [Candidate A] complexityRationale: 새로운 2단계(setup bridge + 다중 사이클 순회) 탐색 코어를 처음부터 설계해야 한다 -- 이 아크에서 한 번도 구현된 적 없는 진짜 새 메커니즘.
+  [Candidate A] productionRiskRationale: 새 코드지만 기존 아크의 disclosed-duplicate 패턴(BoundedResolver DFS 재사용)을 따를 수 있어 완전한 백지 설계는 아니다. Recovery 레이어 경쟁 매트릭스에 새 항목이 추가되는 정도의 위험.
+  [Candidate B] complexityRationale: 새 코드가 거의 없다 -- CCRPrototype.ts의 기존 strategy="multiCycle" 옵션을 호출부만 바꿔 시험하면 된다.
+  [Candidate B] productionRiskRationale: 기존 CCR 코드 경로를 그대로 타므로 회귀 위험이 낮다. 다만 Blueprint로서의 '신규성'이 낮아 이번 Sprint의 목적(새 Primitive Blueprint 확정)과는 다소 어긋난다.
+  [Candidate C] complexityRationale: Candidate A의 전체 복잡도에 componentCount 분기 로직까지 추가되므로 A보다 복잡도가 같거나 더 높다.
+  [Candidate C] productionRiskRationale: 하나의 진입점 안에서 서로 다른 두 경로(A의 새 코드 / B의 기존 CCR 재사용)를 분기해야 하므로 테스트 표면이 넓고, 두 경로 중 하나에서 생긴 회귀가 다른 경로처럼 보일 위험이 있다.
+
+STEP6. Final Blueprint Selection
+  Level1 threshold=60%, Level2 duplication threshold=<50%
+  [Candidate A] Level1=PASS, Level2=PASS, Level3=PASS, Level4=PASS => ALL PASS
+  [Candidate B] Level1=FAIL, Level2=FAIL, Level3=PASS, Level4=PASS => not all pass
+  [Candidate C] Level1=PASS, Level2=FAIL, Level3=FAIL, Level4=PASS => not all pass
+  Decision: A
+  Rationale: A 후보가 4개 Level 모두 PASS했다 -- Parity-Gated Cycle Prototype Sprint v1로 진행할 근거가 충분하다.
