@@ -98,7 +98,14 @@ export interface SolveStrategy {
 // Production Integration Blueprint Sprint v1, REMOVED by Gate Production
 // Integration Sprint v1 per Gate Refinement Sprint v1's own measured
 // recommendation -- see mixedCommutatorPrototype/MixedCommutatorPrototype.ts).
-export type RecoveryType = "DISRUPT" | "SETUP" | "REPAIR" | "CCR" | "MIXED_COMMUTATOR";
+// "PARITY_GATED_CYCLE" (Parity-Gated Cycle Production Integration Sprint
+// v1) added the same way -- Gate: componentCount>1 (broader than the
+// Prototype's own hardcoded internal Gate, componentCount>1 AND
+// cycleCount>=2 AND conflictEdgeCount===0; Integration Planning Sprint
+// v1's own Decision), Budget 2000ms (Integration Planning Refinement
+// Sprint v1's own Decision A), Integration Point "after_CCR" -- see
+// fiveByFiveEdgeRecovery.ts's own genParityGatedCycle().
+export type RecoveryType = "DISRUPT" | "SETUP" | "REPAIR" | "CCR" | "MIXED_COMMUTATOR" | "PARITY_GATED_CYCLE";
 
 export interface RecoveryStrategy {
   id: number;

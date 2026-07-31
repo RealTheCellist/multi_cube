@@ -45,7 +45,7 @@ export interface RecoveryAttemptResult {
 }
 
 function zeroRecord(): Record<RecoveryType, number> {
-  return { DISRUPT: 0, SETUP: 0, REPAIR: 0, CCR: 0, MIXED_COMMUTATOR: 0 };
+  return { DISRUPT: 0, SETUP: 0, REPAIR: 0, CCR: 0, MIXED_COMMUTATOR: 0, PARITY_GATED_CYCLE: 0 };
 }
 
 export function probeRecoveryAttempts(cubies: Cubie[], label: string, libs: ExecutorLibraries, nRepeats: number = RECOVERY_ATTEMPT_REPEATS): RecoveryAttemptResult {

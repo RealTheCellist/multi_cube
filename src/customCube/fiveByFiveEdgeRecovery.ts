@@ -47,6 +47,29 @@ import { runCCRPrototype } from "./solverPrimitiveCCRPrototype/CCRPrototype";
 import { tryMixedCommutatorPrototype } from "./mixedCommutatorPrototype/MixedCommutatorPrototype";
 import { buildStateGraph } from "./capabilityAnalysis/stateGraphBuilder";
 import { analyzeConstraints } from "./capabilityAnalysis/constraintAnalyzer";
+// Parity-Gated Cycle Production Integration Sprint v1: Integration Point
+// "after_CCR" (Integration Planning Sprint v1's own Decision), Budget
+// 2000ms (Integration Planning Refinement Sprint v1's own Decision A).
+// The Prototype's own tryCrossComponentBridgeCycleResolverConfigured
+// hardcodes its internal Gate (componentCount>1 AND cycleCount>=2 AND
+// conflictEdgeCount===0) and cannot be swapped without modifying the
+// Prototype algorithm itself (never done, per every prior Sprint's own
+// "Prototype 알고리즘은 수정하지 않는다" principle) -- so genParityGatedCycle()
+// below reproduces that SAME function's own orchestration (bridge
+// candidates -> pick the lowest-wrongWing result -> validateDeferred)
+// directly against its already-exported building blocks, with the
+// confirmed, broader Gate (componentCount>1, G3 -- Integration Planning
+// Sprint v1's own Decision) as the ONLY Gate check. This is the identical
+// disclosed-duplicate pattern Integration Planning Sprint v1's own
+// GateAnalysis.ts and Integration Planning Refinement Sprint v1's own
+// BudgetSweep.ts already established for testing a Gate other than the
+// Prototype's own hardcoded one -- not a new mechanism, not a
+// modification of any Prototype file.
+import { detectComponents } from "./parityGatedCyclePrototypeV1/ComponentDetection";
+import { generateBridgeCandidates } from "./parityGatedCyclePrototypeV1/BridgeCandidateGeneration";
+import { traverseAllCycles } from "./parityGatedCyclePrototypeV1/MultiCycleTraversal";
+import { bestEffortCleanup } from "./parityGatedCyclePrototypeV1/BridgeRemoval";
+import { validateDeferred } from "./solverV2Prototype/DeferredValidator";
 
 // Section 13's Time Budget table gives Recovery its own small sub-budgets
 // (생성 50ms / Simulation 50ms / Retry 150ms) -- these are PER-TASK budgets
@@ -112,6 +135,18 @@ const MIXED_COMMUTATOR_RESERVED_SLICE_MS = 300;
 // tested size -- so only SETUP gets a reserved slice here, DISRUPT keeps
 // sharing genDeadline exactly as before.
 const SETUP_RESERVED_SLICE_MS = 500;
+
+// Parity-Gated Cycle Production Integration Sprint v1: PARITY_GATED_CYCLE's
+// own reserved slice, off the OUTER deadline exactly like REPAIR_RESERVED_SLICE_MS/
+// MIXED_COMMUTATOR_RESERVED_SLICE_MS/SETUP_RESERVED_SLICE_MS -- never the
+// shared genDeadline DISRUPT/SETUP compete over. Sized per Integration
+// Planning Refinement Sprint v1's own Budget Sweep (500/750/.../2000ms):
+// rescueRate climbed monotonically the whole tested range with 0
+// regressions (500ms:0.0% -> 2000ms:24.5% of the Unknown Population),
+// never plateauing -- 2000ms is the best value found within that Sprint's
+// own tested ceiling, disclosed there as not a confirmed true saturation
+// point.
+const PARITY_GATED_CYCLE_RESERVED_SLICE_MS = 2000;
 
 // Instrumentation hook for Integration Refinement Sprint v1's own STEP1/
 // STEP2 scheduling-verification measurements (matched/skipped/budget-
@@ -195,7 +230,17 @@ export function generateRecoveryStrategies(
   // behavior (SETUP sharing genDeadline with DISRUPT via slice(), gated by
   // `Date.now() < genDeadline` like before) for the Capability/Regression
   // Validation's Baseline arm, never real product callers.
-  useSetupReservedSlice = true
+  useSetupReservedSlice = true,
+  // Parity-Gated Cycle Production Integration Sprint v1: mirrors
+  // includeCCR/includeMixedCommutator's own pattern exactly. Defaults to
+  // true (PARITY_GATED_CYCLE included) for real production use --
+  // fiveByFiveEdgeExecutor.ts's own executeTask() is never modified and
+  // never passes this new trailing parameter, so the real production call
+  // site automatically gets PARITY_GATED_CYCLE via this default with ZERO
+  // Executor changes, the same mechanism CCR/MIXED_COMMUTATOR's own
+  // integration already relies on. `false` reconstructs the pre-this-
+  // Sprint baseline for this Sprint's own before/after Production Replay.
+  includeParityGatedCycle = true
 ): RecoveryStrategy[] {
   const { lib, flipLib, caseLib } = libs;
   const genDeadline = Math.min(deadline, Date.now() + RECOVERY_GEN_BUDGET_MS);
@@ -384,6 +429,59 @@ export function generateRecoveryStrategies(
     onEvent?.({ candidateType: "MIXED_COMMUTATOR", phase: added ? "generated" : "empty", atMs: Date.now() });
   };
 
+  // Parity-Gated Cycle Production Integration Sprint v1: Integration
+  // Point "after_CCR" (Integration Planning Sprint v1's own Decision) --
+  // always generated right after genCCR, regardless of schedulingStrategy
+  // (same reasoning as genCCR/genMixedCommutator's own comments: the
+  // REPAIR A/B scheduling question is unrelated to this candidate's own
+  // placement). Gate: componentCount>1 (G3, broader than the Prototype's
+  // own hardcoded internal Gate -- Integration Planning Sprint v1's own
+  // Decision, confirmed by Integration Planning Refinement Sprint v1's
+  // own Decision A). Budget: PARITY_GATED_CYCLE_RESERVED_SLICE_MS(2000ms)
+  // reserved slice off the OUTER deadline, exactly like REPAIR/
+  // MIXED_COMMUTATOR/SETUP's own reservedBudget mechanism.
+  const genParityGatedCycle = () => {
+    if (!includeParityGatedCycle) return;
+    onEvent?.({ candidateType: "PARITY_GATED_CYCLE", phase: "start", atMs: Date.now() });
+    const stats = analyzeConstraints(buildStateGraph(cubies));
+    if (stats.componentCount <= 1) {
+      onEvent?.({ candidateType: "PARITY_GATED_CYCLE", phase: "skipped", atMs: Date.now() });
+      return;
+    }
+    const d = Math.min(deadline, Date.now() + PARITY_GATED_CYCLE_RESERVED_SLICE_MS);
+    const components = detectComponents(cubies);
+    const bridgeDeadline = Math.min(d, Date.now() + 300);
+    let bridgeCandidates: { moves: Move[] }[] = [{ moves: [] }];
+    const generated = generateBridgeCandidates(cubies, components, bridgeDeadline, "largestTwo");
+    if (generated.length > 0) bridgeCandidates = generated;
+
+    let best: { moves: Move[]; wrong: number } | null = null;
+    for (const bridge of bridgeCandidates) {
+      if (Date.now() > d) break;
+      const afterBridge = cloneCubies(cubies);
+      if (bridge.moves.length) applySeq(afterBridge, bridge.moves);
+      const traversal = traverseAllCycles(afterBridge, lib, d);
+      const traversalMoves = traversal.moves ?? [];
+      const afterTraversal = cloneCubies(afterBridge);
+      if (traversalMoves.length) applySeq(afterTraversal, traversalMoves);
+      const cleanupMoves = bestEffortCleanup(afterTraversal, lib, d);
+      const finalState = cloneCubies(afterTraversal);
+      if (cleanupMoves.length) applySeq(finalState, cleanupMoves);
+      const wrong = wrongWingCount5(finalState);
+      if (!best || wrong < best.wrong) best = { moves: [...bridge.moves, ...traversalMoves, ...cleanupMoves], wrong };
+    }
+
+    let finalMoves: Move[] | null = null;
+    if (best && best.moves.length > 0) {
+      const afterState = cloneCubies(cubies);
+      applySeq(afterState, best.moves);
+      const validation = validateDeferred(cubies, afterState);
+      finalMoves = validation.accepted ? best.moves : null;
+    }
+    const added = add("PARITY_GATED_CYCLE", "Cross-Component Bridge Cycle Resolver (componentCount>1 Gate, after_CCR reserved-slice scheduling, Budget=2000ms)", finalMoves);
+    onEvent?.({ candidateType: "PARITY_GATED_CYCLE", phase: added ? "generated" : "empty", atMs: Date.now() });
+  };
+
   // baseline keeps the ORIGINAL DISRUPT,DISRUPT,SETUP,REPAIR order;
   // priorityGate (Strategy A) tries REPAIR FIRST, using the exact same
   // shared-genDeadline mechanism as baseline, simply given first crack at
@@ -406,10 +504,10 @@ export function generateRecoveryStrategies(
   // branch under test.
   const order =
     schedulingStrategy === "priorityGate"
-      ? [genRepair, genDisrupt1, genDisrupt2, genSetup, genCCR, genMixedCommutator]
+      ? [genRepair, genDisrupt1, genDisrupt2, genSetup, genCCR, genParityGatedCycle, genMixedCommutator]
       : schedulingStrategy === "reservedBudget" && useSetupReservedSlice
-        ? [genDisrupt1, genDisrupt2, genRepair, genCCR, genMixedCommutator, genSetup]
-        : [genDisrupt1, genDisrupt2, genSetup, genRepair, genCCR, genMixedCommutator];
+        ? [genDisrupt1, genDisrupt2, genRepair, genCCR, genParityGatedCycle, genMixedCommutator, genSetup]
+        : [genDisrupt1, genDisrupt2, genSetup, genRepair, genCCR, genParityGatedCycle, genMixedCommutator];
   for (const step of order) step();
 
   return candidates;
@@ -482,7 +580,12 @@ export function attemptRecovery(
   // v1: threaded through to generateRecoveryStrategies -- see that
   // function's own useSetupReservedSlice comment. Defaults to true
   // (SETUP's reserved slice active) for real production use.
-  useSetupReservedSlice = true
+  useSetupReservedSlice = true,
+  // Parity-Gated Cycle Production Integration Sprint v1: threaded through
+  // to generateRecoveryStrategies -- see that function's own
+  // includeParityGatedCycle comment. Defaults to true (PARITY_GATED_CYCLE
+  // included) for real production use.
+  includeParityGatedCycle = true
 ): Move[] {
   const log = (label: string, detail?: string) => trace?.push({ at: Date.now(), label, detail });
   const visited = new Set<number>();
@@ -505,7 +608,7 @@ export function attemptRecovery(
   for (let round = 0; round < MAX_RECOVERY_RETRIES; round++) {
     if (Date.now() > deadline) break;
 
-    const candidates = generateRecoveryStrategies(scratch, libs, deadline, weights, includeRepair, schedulingStrategy, undefined, includeCCR, includeMixedCommutator, useSetupReservedSlice);
+    const candidates = generateRecoveryStrategies(scratch, libs, deadline, weights, includeRepair, schedulingStrategy, undefined, includeCCR, includeMixedCommutator, useSetupReservedSlice, includeParityGatedCycle);
     if (candidates.length === 0) {
       log("recovery-no-candidates", `${round + 1}회차: Recovery 후보를 찾지 못함`);
       break;
@@ -539,14 +642,15 @@ export function attemptRecovery(
     );
 
     // CCR Production Integration Sprint v1 / Mixed Commutator Production
-    // Integration Sprint v1: CCR's and MIXED_COMMUTATOR's own moves
-    // (runCCRPrototype / tryMixedCommutatorPrototype -> each one's own
-    // internal validateDeferred gate, byte-identical invariant to REPAIR's
-    // runSuccessV2) are ALSO already guaranteed net-improving by the time
-    // they reach here -- the same reasoning this short-circuit already
-    // relies on for REPAIR, extended to the other candidate types that
-    // share the exact same guarantee.
-    if ((best.type === "REPAIR" || best.type === "CCR" || best.type === "MIXED_COMMUTATOR") && shortCircuitRepair && afterDisrupt < originalBaseline) {
+    // Integration Sprint v1 / Parity-Gated Cycle Production Integration
+    // Sprint v1: CCR's, MIXED_COMMUTATOR's, and PARITY_GATED_CYCLE's own
+    // moves (runCCRPrototype / tryMixedCommutatorPrototype / this file's
+    // own genParityGatedCycle -> each one's own validateDeferred call,
+    // byte-identical invariant to REPAIR's runSuccessV2) are ALSO already
+    // guaranteed net-improving by the time they reach here -- the same
+    // reasoning this short-circuit already relies on for REPAIR, extended
+    // to the other candidate types that share the exact same guarantee.
+    if ((best.type === "REPAIR" || best.type === "CCR" || best.type === "MIXED_COMMUTATOR" || best.type === "PARITY_GATED_CYCLE") && shortCircuitRepair && afterDisrupt < originalBaseline) {
       log("recovery-repair-short-circuit", `${best.type}가 이미 net-improvement 검증됨(wrongWing ${originalBaseline} -> ${afterDisrupt}) -- retryTask 생략`);
       applySeq(cubies, applied);
       return applied;

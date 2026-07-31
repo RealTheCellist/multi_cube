@@ -1,0 +1,44 @@
+=== Parity-Gated Cycle Production Integration Sprint v1 -- Report ===
+
+Hole Dataset n=142
+
+STEP2. Contract Audit
+  Position(after_CCR): true -- CCR -> PARITY_GATED_CYCLE -> MIXED_COMMUTATOR 순서 확인됨 (after_CCR 위치 확인)
+  Gate(componentCount>1): true -- worstCase:4749cd9d (componentCount=2, cycleCount=0, conflictEdgeCount=7, G0 불일치)에서 PARITY_GATED_CYCLE이 skip되지 않고 실제 시도됨 -- Gate=G3(componentCount>1) 확인
+  Budget(2000ms clamping): true -- outer deadline=50ms일 때 실제 소요=167ms (2000ms 전체를 그대로 쓰지 않고 outer deadline에 clamp됨 확인, pass=true)
+
+STEP3/4. Production Replay + KPI (real attemptRecovery(), Baseline vs Integrated)
+  n=142
+  baselineImproved=17, integratedImproved=14, netNewRescue=3
+  baselineRegression=0, integratedRegression=0
+  runtimeMeanMs: baseline=976.1, integrated=1019.9
+  runtimeP95Ms: baseline=1249.0, integrated=1242.0
+  deadlineMissCount: baseline=87, integrated=105
+  PARITY_GATED_CYCLE: offered=0, chosen=0, winRate=0.0%, duplicateCount=0, starved=false
+
+STEP5. Competition Analysis (real 6-way RecoveryType competition)
+  [DISRUPT] offered=1, chosen=1, chosenRate=100.0%, replacedByPGC=0
+  [SETUP] offered=6, chosen=6, chosenRate=100.0%, replacedByPGC=0
+  [REPAIR] offered=0, chosen=0, chosenRate=0.0%, replacedByPGC=0
+  [CCR] offered=6, chosen=6, chosenRate=100.0%, replacedByPGC=0
+  [MIXED_COMMUTATOR] offered=6, chosen=5, chosenRate=83.3%, replacedByPGC=0
+  [PARITY_GATED_CYCLE] offered=0, chosen=0, chosenRate=0.0%, replacedByPGC=0
+  avgScoreGapWhenParityGatedCycleChosen=0.00
+  avgScoreGapWhenParityGatedCycleLost=0.00
+
+STEP6. Statistical Validation
+  improvedCount paired-diff: mean=-0.0211, 95% CI=[-0.0625, 0.0203], Cohen's dz=-0.084
+  trueRegression paired-diff: mean=0.0000, 95% CI=[0.0000, 0.0000]
+  runtime paired-diff(ms): mean=43.76
+  gates: Regression 증가 없음=PASS, Runtime 허용 범위=PASS, Capability 감소 없음=OPEN_QUESTION, Primitive Interaction 이상 없음=PASS
+  pipeline decision=B, rationale=필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장.
+
+Level1-6 + Final Decision
+  Level1(Production Contract 정확히 구현): PASS -- Position=true, Gate=true, Budget=true
+  Level2(Regression 증가 없음): PASS -- baselineRegression=0, integratedRegression=0 (n=142)
+  Level3(Capability 통계적으로 유의한 개선): FAIL -- improvedCount paired-diff 95% CI=[-0.0625, 0.0203], netNewRescueCount=3/142
+  Level4(Runtime 허용 범위): PASS -- runtimeMeanMs baseline=976 -> integrated=1020, p95 baseline=1249 -> integrated=1242, Gate B=PASS
+  Level5(Primitive Interaction 문제 없음): PASS -- duplicateCount=0, starved=false, winRate=0.0%, avgScoreGapWhenChosen=0.0, avgScoreGapWhenLost=0.0
+  Level6(Validation Framework Decision A): FAIL -- pipeline decision=B, rationale=필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장.
+  Decision: B
+  Rationale: Contract는 유효하나 (Capability 통계적으로 유의하지 않음(CI가 0 포함), Validation Framework Decision이 A가 아님) -- Production Integration Refinement 필요.
