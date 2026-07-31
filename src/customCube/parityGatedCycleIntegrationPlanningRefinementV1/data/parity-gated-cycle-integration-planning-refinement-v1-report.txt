@@ -1,0 +1,54 @@
+=== Parity-Gated Cycle Integration Planning Refinement Sprint v1 -- Report ===
+
+Unknown Population n=53, Gate G3(componentCount>1) matched=36 (fixed from Integration Planning Sprint v1)
+
+STEP1/2. Budget Sweep (Capability Curve, 7 points, no interpolation)
+  [500ms] gateMatched=36, improved=0/53(0.0%), trueRegression=0, deadlineMiss=36, avgRuntimeMsAmongMatched=620
+  [750ms] gateMatched=36, improved=1/53(1.9%), trueRegression=0, deadlineMiss=31, avgRuntimeMsAmongMatched=820
+  [1000ms] gateMatched=36, improved=5/53(9.4%), trueRegression=0, deadlineMiss=31, avgRuntimeMsAmongMatched=1066
+  [1250ms] gateMatched=36, improved=7/53(13.2%), trueRegression=0, deadlineMiss=29, avgRuntimeMsAmongMatched=1231
+  [1500ms] gateMatched=36, improved=10/53(18.9%), trueRegression=0, deadlineMiss=25, avgRuntimeMsAmongMatched=1418
+  [1750ms] gateMatched=36, improved=12/53(22.6%), trueRegression=0, deadlineMiss=24, avgRuntimeMsAmongMatched=1585
+  [2000ms] gateMatched=36, improved=13/53(24.5%), trueRegression=0, deadlineMiss=23, avgRuntimeMsAmongMatched=1738
+
+STEP3. Dose-Response Analysis
+  [500ms -> 750ms] incrementalGain=1, marginalImprovementPerMs=0.0040, plateaued=false
+  [750ms -> 1000ms] incrementalGain=4, marginalImprovementPerMs=0.0160, plateaued=false
+  [1000ms -> 1250ms] incrementalGain=2, marginalImprovementPerMs=0.0080, plateaued=false
+  [1250ms -> 1500ms] incrementalGain=3, marginalImprovementPerMs=0.0120, plateaued=false
+  [1500ms -> 1750ms] incrementalGain=2, marginalImprovementPerMs=0.0080, plateaued=false
+  [1750ms -> 2000ms] incrementalGain=1, marginalImprovementPerMs=0.0040, plateaued=false
+  anyImprovementAcrossWholeRange=true, monotonicNonDecreasing=true, plateauStartsAtBudgetMs=없음
+
+STEP4. Pareto Frontier
+  [500ms] improved=0, avgRuntimeMsAmongMatched=620, paretoEfficient=true
+  [750ms] improved=1, avgRuntimeMsAmongMatched=820, paretoEfficient=true
+  [1000ms] improved=5, avgRuntimeMsAmongMatched=1066, paretoEfficient=true
+  [1250ms] improved=7, avgRuntimeMsAmongMatched=1231, paretoEfficient=true
+  [1500ms] improved=10, avgRuntimeMsAmongMatched=1418, paretoEfficient=true
+  [1750ms] improved=12, avgRuntimeMsAmongMatched=1585, paretoEfficient=true
+  [2000ms] improved=13, avgRuntimeMsAmongMatched=1738, paretoEfficient=true
+  top 3 candidates: 2000ms, 1750ms, 1500ms
+
+STEP5. Statistical Validation (vs no-op Baseline)
+  [2000ms] n=53, improvedCount diff mean=0.2453, 95% CI=[0.1283, 0.3622], Cohen's dz=0.565
+    gates: Regression 증가 없음=PASS, Runtime 허용 범위=OPEN_QUESTION, Capability 감소 없음=PASS, Primitive Interaction 이상 없음=PASS, pipeline decision=B
+  [1750ms] n=53, improvedCount diff mean=0.2264, 95% CI=[0.1127, 0.3402], Cohen's dz=0.536
+    gates: Regression 증가 없음=PASS, Runtime 허용 범위=OPEN_QUESTION, Capability 감소 없음=PASS, Primitive Interaction 이상 없음=PASS, pipeline decision=B
+  [1500ms] n=53, improvedCount diff mean=0.1887, 95% CI=[0.0823, 0.2950], Cohen's dz=0.478
+    gates: Regression 증가 없음=PASS, Runtime 허용 범위=OPEN_QUESTION, Capability 감소 없음=PASS, Primitive Interaction 이상 없음=PASS, pipeline decision=B
+
+STEP6. Level1-5 + Final Decision
+  Level1(Budget Sweep 완료): PASS -- 실측 완료 Budget 지점 수=7/7 (500/750/1000/1250/1500/1750/2000ms, 보간 없음)
+  Level2(Pareto Budget 존재): PASS -- Pareto-efficient budget 수=7/7: 500ms(improved=0,runtime=620ms), 750ms(improved=1,runtime=820ms), 1000ms(improved=5,runtime=1066ms), 1250ms(improved=7,runtime=1231ms), 1500ms(improved=10,runtime=1418ms), 1750ms(improved=12,runtime=1585ms), 2000ms(improved=13,runtime=1738ms)
+  Level3(Capability 개선 통계적으로 유의): PASS -- 유의미한 Pareto 후보 Budget: 2000ms, 1750ms, 1500ms
+  Level4(Regression 없음): PASS -- Gate A(Regression) PASS 후보 수=3/3
+  Level5(Operating Contract 확정): PASS -- 확정 Budget=2000ms
+  Decision: A
+  Rationale: Level1-5 전부 PASS -- Budget=2000ms로 Operating Contract 확정. 다음 Sprint는 Parity-Gated Cycle Production Integration Sprint v1.
+
+Operating Contract
+  position=after_CCR (remainingTime Budget Contract, Integration Planning Sprint v1 확정)
+  gate=componentCount>1 (G3, Integration Planning Sprint v1 확정)
+  budgetMs=2000
+  fallback=Gate 불일치 또는 Budget 내 미해결 시 SETUP 등 후속 후보로 폴백 -- 기존 스케줄러의 인수 순서를 그대로 따름 (continue Recovery)

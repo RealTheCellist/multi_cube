@@ -1,0 +1,718 @@
+{
+  "populationN": 53,
+  "g3Count": 36,
+  "budgetResults": [
+    {
+      "budgetMs": 500,
+      "summary": {
+        "budgetMs": 500,
+        "n": 53,
+        "gateMatchedCount": 36,
+        "improvedCount": 0,
+        "rescueRate": 0,
+        "trueRegressionCount": 0,
+        "avgRuntimeMsAmongMatched": 619.8888888888889,
+        "deadlineMissCount": 36
+      }
+    },
+    {
+      "budgetMs": 750,
+      "summary": {
+        "budgetMs": 750,
+        "n": 53,
+        "gateMatchedCount": 36,
+        "improvedCount": 1,
+        "rescueRate": 0.018867924528301886,
+        "trueRegressionCount": 0,
+        "avgRuntimeMsAmongMatched": 819.8888888888889,
+        "deadlineMissCount": 31
+      }
+    },
+    {
+      "budgetMs": 1000,
+      "summary": {
+        "budgetMs": 1000,
+        "n": 53,
+        "gateMatchedCount": 36,
+        "improvedCount": 5,
+        "rescueRate": 0.09433962264150944,
+        "trueRegressionCount": 0,
+        "avgRuntimeMsAmongMatched": 1065.861111111111,
+        "deadlineMissCount": 31
+      }
+    },
+    {
+      "budgetMs": 1250,
+      "summary": {
+        "budgetMs": 1250,
+        "n": 53,
+        "gateMatchedCount": 36,
+        "improvedCount": 7,
+        "rescueRate": 0.1320754716981132,
+        "trueRegressionCount": 0,
+        "avgRuntimeMsAmongMatched": 1231.2222222222222,
+        "deadlineMissCount": 29
+      }
+    },
+    {
+      "budgetMs": 1500,
+      "summary": {
+        "budgetMs": 1500,
+        "n": 53,
+        "gateMatchedCount": 36,
+        "improvedCount": 10,
+        "rescueRate": 0.18867924528301888,
+        "trueRegressionCount": 0,
+        "avgRuntimeMsAmongMatched": 1418.0833333333333,
+        "deadlineMissCount": 25
+      }
+    },
+    {
+      "budgetMs": 1750,
+      "summary": {
+        "budgetMs": 1750,
+        "n": 53,
+        "gateMatchedCount": 36,
+        "improvedCount": 12,
+        "rescueRate": 0.22641509433962265,
+        "trueRegressionCount": 0,
+        "avgRuntimeMsAmongMatched": 1584.861111111111,
+        "deadlineMissCount": 24
+      }
+    },
+    {
+      "budgetMs": 2000,
+      "summary": {
+        "budgetMs": 2000,
+        "n": 53,
+        "gateMatchedCount": 36,
+        "improvedCount": 13,
+        "rescueRate": 0.24528301886792453,
+        "trueRegressionCount": 0,
+        "avgRuntimeMsAmongMatched": 1737.9166666666667,
+        "deadlineMissCount": 23
+      }
+    }
+  ],
+  "doseResponse": {
+    "curve": [
+      {
+        "budgetMs": 500,
+        "improvedCount": 0,
+        "rescueRate": 0,
+        "rescueEfficiency": 0
+      },
+      {
+        "budgetMs": 750,
+        "improvedCount": 1,
+        "rescueRate": 0.018867924528301886,
+        "rescueEfficiency": 0.0012196774630708767
+      },
+      {
+        "budgetMs": 1000,
+        "improvedCount": 5,
+        "rescueRate": 0.09433962264150944,
+        "rescueEfficiency": 0.0046910427145500505
+      },
+      {
+        "budgetMs": 1250,
+        "improvedCount": 7,
+        "rescueRate": 0.1320754716981132,
+        "rescueEfficiency": 0.005685407454200884
+      },
+      {
+        "budgetMs": 1500,
+        "improvedCount": 10,
+        "rescueRate": 0.18867924528301888,
+        "rescueEfficiency": 0.007051771757654111
+      },
+      {
+        "budgetMs": 1750,
+        "improvedCount": 12,
+        "rescueRate": 0.22641509433962265,
+        "rescueEfficiency": 0.007571641398650425
+      },
+      {
+        "budgetMs": 2000,
+        "improvedCount": 13,
+        "rescueRate": 0.24528301886792453,
+        "rescueEfficiency": 0.007480220570606569
+      }
+    ],
+    "deltas": [
+      {
+        "fromBudgetMs": 500,
+        "toBudgetMs": 750,
+        "incrementalGain": 1,
+        "marginalImprovementPerMs": 0.004,
+        "plateaued": false
+      },
+      {
+        "fromBudgetMs": 750,
+        "toBudgetMs": 1000,
+        "incrementalGain": 4,
+        "marginalImprovementPerMs": 0.016,
+        "plateaued": false
+      },
+      {
+        "fromBudgetMs": 1000,
+        "toBudgetMs": 1250,
+        "incrementalGain": 2,
+        "marginalImprovementPerMs": 0.008,
+        "plateaued": false
+      },
+      {
+        "fromBudgetMs": 1250,
+        "toBudgetMs": 1500,
+        "incrementalGain": 3,
+        "marginalImprovementPerMs": 0.012,
+        "plateaued": false
+      },
+      {
+        "fromBudgetMs": 1500,
+        "toBudgetMs": 1750,
+        "incrementalGain": 2,
+        "marginalImprovementPerMs": 0.008,
+        "plateaued": false
+      },
+      {
+        "fromBudgetMs": 1750,
+        "toBudgetMs": 2000,
+        "incrementalGain": 1,
+        "marginalImprovementPerMs": 0.004,
+        "plateaued": false
+      }
+    ],
+    "anyImprovementAcrossWholeRange": true,
+    "monotonicNonDecreasing": true,
+    "plateauStartsAtBudgetMs": null
+  },
+  "paretoFrontier": [
+    {
+      "budgetMs": 500,
+      "improvedCount": 0,
+      "avgRuntimeMsAmongMatched": 619.8888888888889,
+      "paretoEfficient": true
+    },
+    {
+      "budgetMs": 750,
+      "improvedCount": 1,
+      "avgRuntimeMsAmongMatched": 819.8888888888889,
+      "paretoEfficient": true
+    },
+    {
+      "budgetMs": 1000,
+      "improvedCount": 5,
+      "avgRuntimeMsAmongMatched": 1065.861111111111,
+      "paretoEfficient": true
+    },
+    {
+      "budgetMs": 1250,
+      "improvedCount": 7,
+      "avgRuntimeMsAmongMatched": 1231.2222222222222,
+      "paretoEfficient": true
+    },
+    {
+      "budgetMs": 1500,
+      "improvedCount": 10,
+      "avgRuntimeMsAmongMatched": 1418.0833333333333,
+      "paretoEfficient": true
+    },
+    {
+      "budgetMs": 1750,
+      "improvedCount": 12,
+      "avgRuntimeMsAmongMatched": 1584.861111111111,
+      "paretoEfficient": true
+    },
+    {
+      "budgetMs": 2000,
+      "improvedCount": 13,
+      "avgRuntimeMsAmongMatched": 1737.9166666666667,
+      "paretoEfficient": true
+    }
+  ],
+  "topCandidates": [
+    {
+      "budgetMs": 2000,
+      "improvedCount": 13,
+      "avgRuntimeMsAmongMatched": 1737.9166666666667,
+      "paretoEfficient": true
+    },
+    {
+      "budgetMs": 1750,
+      "improvedCount": 12,
+      "avgRuntimeMsAmongMatched": 1584.861111111111,
+      "paretoEfficient": true
+    },
+    {
+      "budgetMs": 1500,
+      "improvedCount": 10,
+      "avgRuntimeMsAmongMatched": 1418.0833333333333,
+      "paretoEfficient": true
+    }
+  ],
+  "candidateFrameworks": [
+    {
+      "comparison": {
+        "budgetMs": 2000,
+        "n": 53,
+        "improvedCountDiffEvaluation": {
+          "stats": {
+            "n": 53,
+            "mean": 0.24528301886792453,
+            "stddev": 0.4343722427630693,
+            "coefficientOfVariation": 1.7709022204955902,
+            "ci95Half": 0.11694460781000042,
+            "ciLower": 0.1283384110579241,
+            "ciUpper": 0.36222762667792496
+          },
+          "effectSize": {
+            "meanDiff": 0.24528301886792453,
+            "variance": 0.1886792452830188,
+            "standardError": 0.05966561622959205,
+            "cohensD": 0.5646839155919903,
+            "magnitude": "medium"
+          },
+          "majorityVoteRate": 0.24528301886792453
+        },
+        "trueRegressionDiffEvaluation": {
+          "stats": {
+            "n": 53,
+            "mean": 0,
+            "stddev": 0,
+            "coefficientOfVariation": 0,
+            "ci95Half": 0,
+            "ciLower": 0,
+            "ciUpper": 0
+          },
+          "effectSize": {
+            "meanDiff": 0,
+            "variance": 0,
+            "standardError": 0,
+            "cohensD": 0,
+            "magnitude": "negligible"
+          },
+          "majorityVoteRate": 0
+        },
+        "runtimeDiffMsEvaluation": {
+          "stats": {
+            "n": 53,
+            "mean": 1180.4716981132076,
+            "stddev": 940.5082628307049,
+            "coefficientOfVariation": 0.7967224155682467,
+            "ci95Half": 253.20994094642182,
+            "ciLower": 927.2617571667857,
+            "ciUpper": 1433.6816390596293
+          },
+          "effectSize": {
+            "meanDiff": 1180.4716981132076,
+            "variance": 884555.7924528302,
+            "standardError": 129.18874538082747,
+            "cohensD": 1.2551422935512233,
+            "magnitude": "large"
+          },
+          "majorityVoteRate": 0.6792452830188679
+        }
+      },
+      "gateResults": [
+        {
+          "gate": "A",
+          "name": "Regression 증가 없음",
+          "status": "PASS",
+          "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+        },
+        {
+          "gate": "B",
+          "name": "Runtime 허용 범위",
+          "status": "OPEN_QUESTION",
+          "evidence": "Runtime diff mean=1180.5ms, 95% CI=[927.3, 1433.7] (허용 기준: Baseline p95=1ms 대비 +15%=0ms 이내)."
+        },
+        {
+          "gate": "C",
+          "name": "Capability 감소 없음",
+          "status": "PASS",
+          "evidence": "성공 케이스 diff mean=0.25, 95% CI=[0.13, 0.36], Cohen's d_z=0.56(medium). 유의미한 개선(YES) [strict mode: PASS]."
+        },
+        {
+          "gate": "E",
+          "name": "Primitive Interaction 이상 없음",
+          "status": "PASS",
+          "evidence": "Duplicate=0건, Starved Type=0개."
+        }
+      ],
+      "pipelineResult": {
+        "changeCategory": "C",
+        "categorySpec": {
+          "category": "C",
+          "name": "New Primitive",
+          "description": "새로운 Recovery/Solving Primitive 추가.",
+          "requiredGates": [
+            "A",
+            "B",
+            "C",
+            "E"
+          ],
+          "minN": 30,
+          "minNByStage": {
+            "prototype": 10,
+            "production": 30
+          },
+          "populationScope": "전체 Hole Dataset + 해당 Primitive의 Target Cluster",
+          "requiresFullContractAudit": false
+        },
+        "nUsed": 53,
+        "meetsMinN": true,
+        "gateResults": [
+          {
+            "gate": "A",
+            "name": "Regression 증가 없음",
+            "status": "PASS",
+            "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+          },
+          {
+            "gate": "B",
+            "name": "Runtime 허용 범위",
+            "status": "OPEN_QUESTION",
+            "evidence": "Runtime diff mean=1180.5ms, 95% CI=[927.3, 1433.7] (허용 기준: Baseline p95=1ms 대비 +15%=0ms 이내)."
+          },
+          {
+            "gate": "C",
+            "name": "Capability 감소 없음",
+            "status": "PASS",
+            "evidence": "성공 케이스 diff mean=0.25, 95% CI=[0.13, 0.36], Cohen's d_z=0.56(medium). 유의미한 개선(YES) [strict mode: PASS]."
+          },
+          {
+            "gate": "E",
+            "name": "Primitive Interaction 이상 없음",
+            "status": "PASS",
+            "evidence": "Duplicate=0건, Starved Type=0개."
+          }
+        ],
+        "decision": "B",
+        "decisionRationale": "필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장."
+      }
+    },
+    {
+      "comparison": {
+        "budgetMs": 1750,
+        "n": 53,
+        "improvedCountDiffEvaluation": {
+          "stats": {
+            "n": 53,
+            "mean": 0.22641509433962265,
+            "stddev": 0.4225157909639982,
+            "coefficientOfVariation": 1.8661114100909921,
+            "ci95Half": 0.11375253435512075,
+            "ciLower": 0.11266255998450189,
+            "ciUpper": 0.3401676286947434
+          },
+          "effectSize": {
+            "meanDiff": 0.22641509433962265,
+            "variance": 0.17851959361393305,
+            "standardError": 0.058037007324041205,
+            "cohensD": 0.5358736861006813,
+            "magnitude": "medium"
+          },
+          "majorityVoteRate": 0.22641509433962265
+        },
+        "trueRegressionDiffEvaluation": {
+          "stats": {
+            "n": 53,
+            "mean": 0,
+            "stddev": 0,
+            "coefficientOfVariation": 0,
+            "ci95Half": 0,
+            "ciLower": 0,
+            "ciUpper": 0
+          },
+          "effectSize": {
+            "meanDiff": 0,
+            "variance": 0,
+            "standardError": 0,
+            "cohensD": 0,
+            "magnitude": "negligible"
+          },
+          "majorityVoteRate": 0
+        },
+        "runtimeDiffMsEvaluation": {
+          "stats": {
+            "n": 53,
+            "mean": 1076.5094339622642,
+            "stddev": 837.2176590129565,
+            "coefficientOfVariation": 0.7777151157249442,
+            "ci95Half": 225.40135198804902,
+            "ciLower": 851.1080819742152,
+            "ciUpper": 1301.9107859503133
+          },
+          "effectSize": {
+            "meanDiff": 1076.5094339622642,
+            "variance": 700933.4085631351,
+            "standardError": 115.00068978982092,
+            "cohensD": 1.2858178782700576,
+            "magnitude": "large"
+          },
+          "majorityVoteRate": 0.6792452830188679
+        }
+      },
+      "gateResults": [
+        {
+          "gate": "A",
+          "name": "Regression 증가 없음",
+          "status": "PASS",
+          "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+        },
+        {
+          "gate": "B",
+          "name": "Runtime 허용 범위",
+          "status": "OPEN_QUESTION",
+          "evidence": "Runtime diff mean=1076.5ms, 95% CI=[851.1, 1301.9] (허용 기준: Baseline p95=1ms 대비 +15%=0ms 이내)."
+        },
+        {
+          "gate": "C",
+          "name": "Capability 감소 없음",
+          "status": "PASS",
+          "evidence": "성공 케이스 diff mean=0.23, 95% CI=[0.11, 0.34], Cohen's d_z=0.54(medium). 유의미한 개선(YES) [strict mode: PASS]."
+        },
+        {
+          "gate": "E",
+          "name": "Primitive Interaction 이상 없음",
+          "status": "PASS",
+          "evidence": "Duplicate=0건, Starved Type=0개."
+        }
+      ],
+      "pipelineResult": {
+        "changeCategory": "C",
+        "categorySpec": {
+          "category": "C",
+          "name": "New Primitive",
+          "description": "새로운 Recovery/Solving Primitive 추가.",
+          "requiredGates": [
+            "A",
+            "B",
+            "C",
+            "E"
+          ],
+          "minN": 30,
+          "minNByStage": {
+            "prototype": 10,
+            "production": 30
+          },
+          "populationScope": "전체 Hole Dataset + 해당 Primitive의 Target Cluster",
+          "requiresFullContractAudit": false
+        },
+        "nUsed": 53,
+        "meetsMinN": true,
+        "gateResults": [
+          {
+            "gate": "A",
+            "name": "Regression 증가 없음",
+            "status": "PASS",
+            "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+          },
+          {
+            "gate": "B",
+            "name": "Runtime 허용 범위",
+            "status": "OPEN_QUESTION",
+            "evidence": "Runtime diff mean=1076.5ms, 95% CI=[851.1, 1301.9] (허용 기준: Baseline p95=1ms 대비 +15%=0ms 이내)."
+          },
+          {
+            "gate": "C",
+            "name": "Capability 감소 없음",
+            "status": "PASS",
+            "evidence": "성공 케이스 diff mean=0.23, 95% CI=[0.11, 0.34], Cohen's d_z=0.54(medium). 유의미한 개선(YES) [strict mode: PASS]."
+          },
+          {
+            "gate": "E",
+            "name": "Primitive Interaction 이상 없음",
+            "status": "PASS",
+            "evidence": "Duplicate=0건, Starved Type=0개."
+          }
+        ],
+        "decision": "B",
+        "decisionRationale": "필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장."
+      }
+    },
+    {
+      "comparison": {
+        "budgetMs": 1500,
+        "n": 53,
+        "improvedCountDiffEvaluation": {
+          "stats": {
+            "n": 53,
+            "mean": 0.18867924528301888,
+            "stddev": 0.3949977494378391,
+            "coefficientOfVariation": 2.093488072020547,
+            "ci95Half": 0.1063439426976393,
+            "ciLower": 0.08233530258537958,
+            "ciUpper": 0.2950231879806582
+          },
+          "effectSize": {
+            "meanDiff": 0.18867924528301888,
+            "variance": 0.15602322206095792,
+            "standardError": 0.054257113621244545,
+            "cohensD": 0.4776716969945961,
+            "magnitude": "small"
+          },
+          "majorityVoteRate": 0.18867924528301888
+        },
+        "trueRegressionDiffEvaluation": {
+          "stats": {
+            "n": 53,
+            "mean": 0,
+            "stddev": 0,
+            "coefficientOfVariation": 0,
+            "ci95Half": 0,
+            "ciLower": 0,
+            "ciUpper": 0
+          },
+          "effectSize": {
+            "meanDiff": 0,
+            "variance": 0,
+            "standardError": 0,
+            "cohensD": 0,
+            "magnitude": "negligible"
+          },
+          "majorityVoteRate": 0
+        },
+        "runtimeDiffMsEvaluation": {
+          "stats": {
+            "n": 53,
+            "mean": 963.2264150943396,
+            "stddev": 731.677988270519,
+            "coefficientOfVariation": 0.7596116310814187,
+            "ci95Half": 196.9872541514543,
+            "ciLower": 766.2391609428853,
+            "ciUpper": 1160.2136692457939
+          },
+          "effectSize": {
+            "meanDiff": 963.2264150943396,
+            "variance": 535352.6785195938,
+            "standardError": 100.50370109768076,
+            "cohensD": 1.3164622013177354,
+            "magnitude": "large"
+          },
+          "majorityVoteRate": 0.6792452830188679
+        }
+      },
+      "gateResults": [
+        {
+          "gate": "A",
+          "name": "Regression 증가 없음",
+          "status": "PASS",
+          "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+        },
+        {
+          "gate": "B",
+          "name": "Runtime 허용 범위",
+          "status": "OPEN_QUESTION",
+          "evidence": "Runtime diff mean=963.2ms, 95% CI=[766.2, 1160.2] (허용 기준: Baseline p95=1ms 대비 +15%=0ms 이내)."
+        },
+        {
+          "gate": "C",
+          "name": "Capability 감소 없음",
+          "status": "PASS",
+          "evidence": "성공 케이스 diff mean=0.19, 95% CI=[0.08, 0.30], Cohen's d_z=0.48(small). 유의미한 개선(YES) [strict mode: PASS]."
+        },
+        {
+          "gate": "E",
+          "name": "Primitive Interaction 이상 없음",
+          "status": "PASS",
+          "evidence": "Duplicate=0건, Starved Type=0개."
+        }
+      ],
+      "pipelineResult": {
+        "changeCategory": "C",
+        "categorySpec": {
+          "category": "C",
+          "name": "New Primitive",
+          "description": "새로운 Recovery/Solving Primitive 추가.",
+          "requiredGates": [
+            "A",
+            "B",
+            "C",
+            "E"
+          ],
+          "minN": 30,
+          "minNByStage": {
+            "prototype": 10,
+            "production": 30
+          },
+          "populationScope": "전체 Hole Dataset + 해당 Primitive의 Target Cluster",
+          "requiresFullContractAudit": false
+        },
+        "nUsed": 53,
+        "meetsMinN": true,
+        "gateResults": [
+          {
+            "gate": "A",
+            "name": "Regression 증가 없음",
+            "status": "PASS",
+            "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+          },
+          {
+            "gate": "B",
+            "name": "Runtime 허용 범위",
+            "status": "OPEN_QUESTION",
+            "evidence": "Runtime diff mean=963.2ms, 95% CI=[766.2, 1160.2] (허용 기준: Baseline p95=1ms 대비 +15%=0ms 이내)."
+          },
+          {
+            "gate": "C",
+            "name": "Capability 감소 없음",
+            "status": "PASS",
+            "evidence": "성공 케이스 diff mean=0.19, 95% CI=[0.08, 0.30], Cohen's d_z=0.48(small). 유의미한 개선(YES) [strict mode: PASS]."
+          },
+          {
+            "gate": "E",
+            "name": "Primitive Interaction 이상 없음",
+            "status": "PASS",
+            "evidence": "Duplicate=0건, Starved Type=0개."
+          }
+        ],
+        "decision": "B",
+        "decisionRationale": "필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장."
+      }
+    }
+  ],
+  "finalContract": {
+    "levels": [
+      {
+        "level": 1,
+        "label": "Budget Sweep 완료",
+        "pass": true,
+        "detail": "실측 완료 Budget 지점 수=7/7 (500/750/1000/1250/1500/1750/2000ms, 보간 없음)"
+      },
+      {
+        "level": 2,
+        "label": "Pareto Budget 존재",
+        "pass": true,
+        "detail": "Pareto-efficient budget 수=7/7: 500ms(improved=0,runtime=620ms), 750ms(improved=1,runtime=820ms), 1000ms(improved=5,runtime=1066ms), 1250ms(improved=7,runtime=1231ms), 1500ms(improved=10,runtime=1418ms), 1750ms(improved=12,runtime=1585ms), 2000ms(improved=13,runtime=1738ms)"
+      },
+      {
+        "level": 3,
+        "label": "Capability 개선 통계적으로 유의",
+        "pass": true,
+        "detail": "유의미한 Pareto 후보 Budget: 2000ms, 1750ms, 1500ms"
+      },
+      {
+        "level": 4,
+        "label": "Regression 없음",
+        "pass": true,
+        "detail": "Gate A(Regression) PASS 후보 수=3/3"
+      },
+      {
+        "level": 5,
+        "label": "Operating Contract 확정",
+        "pass": true,
+        "detail": "확정 Budget=2000ms"
+      }
+    ],
+    "decision": "A",
+    "rationale": "Level1-5 전부 PASS -- Budget=2000ms로 Operating Contract 확정. 다음 Sprint는 Parity-Gated Cycle Production Integration Sprint v1.",
+    "contract": {
+      "position": "after_CCR (remainingTime Budget Contract, Integration Planning Sprint v1 확정)",
+      "gate": "componentCount>1 (G3, Integration Planning Sprint v1 확정)",
+      "budgetMs": 2000,
+      "fallback": "Gate 불일치 또는 Budget 내 미해결 시 SETUP 등 후속 후보로 폴백 -- 기존 스케줄러의 인수 순서를 그대로 따름 (continue Recovery)"
+    }
+  }
+}
