@@ -1,0 +1,1240 @@
+{
+  "targetLabels": [
+    "worstCase:1e928fb1",
+    "worstCase:5e5b20b",
+    "worstCase:b2c9ceb9",
+    "worstCase:cee673eb",
+    "worstCase:de8abca9",
+    "worstCase:710de4d1",
+    "worstCase:5d189c1",
+    "snapshot335:e7a801fb",
+    "snapshot335:60b5c3b1",
+    "snapshot335:1513fcff",
+    "snapshot335:ae3d218b",
+    "snapshot335:120fc3af",
+    "scrambleDepth10:3",
+    "scrambleDepth10:4",
+    "scrambleDepth10:6",
+    "scrambleDepth10:7",
+    "scrambleDepth10:8",
+    "scrambleDepth10:9",
+    "scrambleDepth20:1",
+    "scrambleDepth20:4",
+    "scrambleDepth20:7",
+    "scrambleDepth20:8",
+    "scrambleDepth30:2",
+    "scrambleDepth30:9",
+    "scrambleDepth50:0",
+    "scrambleDepth100:0",
+    "scrambleDepth100:2",
+    "scrambleDepth100:4",
+    "scrambleDepth100:5",
+    "scrambleDepth100:8"
+  ],
+  "features": [
+    {
+      "label": "worstCase:1e928fb1",
+      "cycleCount": 3,
+      "cycleLength": 5,
+      "pairCount": 5,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 0,
+      "biconnectedComponentCount": 1,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.4166666666666667
+    },
+    {
+      "label": "worstCase:5e5b20b",
+      "cycleCount": 2,
+      "cycleLength": 4,
+      "pairCount": 5,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.4166666666666667
+    },
+    {
+      "label": "worstCase:b2c9ceb9",
+      "cycleCount": 2,
+      "cycleLength": 6,
+      "pairCount": 2,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.16666666666666666
+    },
+    {
+      "label": "worstCase:cee673eb",
+      "cycleCount": 2,
+      "cycleLength": 6,
+      "pairCount": 4,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.3333333333333333
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "cycleCount": 2,
+      "cycleLength": 4,
+      "pairCount": 5,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.4166666666666667
+    },
+    {
+      "label": "worstCase:710de4d1",
+      "cycleCount": 3,
+      "cycleLength": 6,
+      "pairCount": 3,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 2,
+      "biconnectedComponentCount": 3,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.25
+    },
+    {
+      "label": "worstCase:5d189c1",
+      "cycleCount": 2,
+      "cycleLength": 5,
+      "pairCount": 4,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.3333333333333333
+    },
+    {
+      "label": "snapshot335:e7a801fb",
+      "cycleCount": 3,
+      "cycleLength": 6,
+      "pairCount": 5,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.4166666666666667
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "cycleCount": 4,
+      "cycleLength": 6,
+      "pairCount": 2,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 3,
+      "biconnectedComponentCount": 4,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.16666666666666666
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "cycleCount": 2,
+      "cycleLength": 6,
+      "pairCount": 4,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.3333333333333333
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "cycleCount": 4,
+      "cycleLength": 6,
+      "pairCount": 2,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.16666666666666666
+    },
+    {
+      "label": "snapshot335:120fc3af",
+      "cycleCount": 2,
+      "cycleLength": 5,
+      "pairCount": 4,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.3333333333333333
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "cycleCount": 2,
+      "cycleLength": 6,
+      "pairCount": 4,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.3333333333333333
+    },
+    {
+      "label": "scrambleDepth10:4",
+      "cycleCount": 3,
+      "cycleLength": 5,
+      "pairCount": 3,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 2,
+      "biconnectedComponentCount": 3,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.25
+    },
+    {
+      "label": "scrambleDepth10:6",
+      "cycleCount": 2,
+      "cycleLength": 6,
+      "pairCount": 4,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.3333333333333333
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "cycleCount": 2,
+      "cycleLength": 6,
+      "pairCount": 3,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.25
+    },
+    {
+      "label": "scrambleDepth10:8",
+      "cycleCount": 2,
+      "cycleLength": 4,
+      "pairCount": 5,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.4166666666666667
+    },
+    {
+      "label": "scrambleDepth10:9",
+      "cycleCount": 2,
+      "cycleLength": 6,
+      "pairCount": 5,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.4166666666666667
+    },
+    {
+      "label": "scrambleDepth20:1",
+      "cycleCount": 2,
+      "cycleLength": 5,
+      "pairCount": 5,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.4166666666666667
+    },
+    {
+      "label": "scrambleDepth20:4",
+      "cycleCount": 2,
+      "cycleLength": 5,
+      "pairCount": 4,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.3333333333333333
+    },
+    {
+      "label": "scrambleDepth20:7",
+      "cycleCount": 2,
+      "cycleLength": 5,
+      "pairCount": 4,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.3333333333333333
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "cycleCount": 2,
+      "cycleLength": 6,
+      "pairCount": 5,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.4166666666666667
+    },
+    {
+      "label": "scrambleDepth30:2",
+      "cycleCount": 2,
+      "cycleLength": 6,
+      "pairCount": 3,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.25
+    },
+    {
+      "label": "scrambleDepth30:9",
+      "cycleCount": 2,
+      "cycleLength": 6,
+      "pairCount": 3,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 0,
+      "biconnectedComponentCount": 1,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.25
+    },
+    {
+      "label": "scrambleDepth50:0",
+      "cycleCount": 2,
+      "cycleLength": 5,
+      "pairCount": 5,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.4166666666666667
+    },
+    {
+      "label": "scrambleDepth100:0",
+      "cycleCount": 3,
+      "cycleLength": 5,
+      "pairCount": 2,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 2,
+      "biconnectedComponentCount": 3,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.16666666666666666
+    },
+    {
+      "label": "scrambleDepth100:2",
+      "cycleCount": 2,
+      "cycleLength": 6,
+      "pairCount": 2,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.16666666666666666
+    },
+    {
+      "label": "scrambleDepth100:4",
+      "cycleCount": 2,
+      "cycleLength": 5,
+      "pairCount": 5,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.4166666666666667
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "cycleCount": 2,
+      "cycleLength": 4,
+      "pairCount": 5,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.4166666666666667
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "cycleCount": 5,
+      "cycleLength": 6,
+      "pairCount": 5,
+      "conflictEdgeCount": 0,
+      "parityState": true,
+      "articulationPointCount": 1,
+      "biconnectedComponentCount": 2,
+      "cycleOverlap": true,
+      "cycleDensity": 1,
+      "conflictAdjacentToCycle": false,
+      "pairGraphDensity": 0.4166666666666667
+    }
+  ],
+  "structuralTaxonomyClusters": [
+    {
+      "key": "cycleCount=2|cycleLength=long(5+)|articulationPoints=1|overlap=true|conflictAdjCycle=false",
+      "memberLabels": [
+        "worstCase:b2c9ceb9",
+        "worstCase:cee673eb",
+        "worstCase:5d189c1",
+        "snapshot335:1513fcff",
+        "snapshot335:120fc3af",
+        "scrambleDepth10:3",
+        "scrambleDepth10:6",
+        "scrambleDepth10:7",
+        "scrambleDepth10:9",
+        "scrambleDepth20:1",
+        "scrambleDepth20:4",
+        "scrambleDepth20:7",
+        "scrambleDepth20:8",
+        "scrambleDepth30:2",
+        "scrambleDepth50:0",
+        "scrambleDepth100:2",
+        "scrambleDepth100:4"
+      ]
+    },
+    {
+      "key": "cycleCount=2|cycleLength=short(<=4)|articulationPoints=1|overlap=true|conflictAdjCycle=false",
+      "memberLabels": [
+        "worstCase:5e5b20b",
+        "worstCase:de8abca9",
+        "scrambleDepth10:8",
+        "scrambleDepth100:5"
+      ]
+    },
+    {
+      "key": "cycleCount=3-4|cycleLength=long(5+)|articulationPoints=2+|overlap=true|conflictAdjCycle=false",
+      "memberLabels": [
+        "worstCase:710de4d1",
+        "snapshot335:60b5c3b1",
+        "scrambleDepth10:4",
+        "scrambleDepth100:0"
+      ]
+    },
+    {
+      "key": "cycleCount=3-4|cycleLength=long(5+)|articulationPoints=1|overlap=true|conflictAdjCycle=false",
+      "memberLabels": [
+        "snapshot335:e7a801fb",
+        "snapshot335:ae3d218b"
+      ]
+    },
+    {
+      "key": "cycleCount=3-4|cycleLength=long(5+)|articulationPoints=0|overlap=true|conflictAdjCycle=false",
+      "memberLabels": [
+        "worstCase:1e928fb1"
+      ]
+    },
+    {
+      "key": "cycleCount=2|cycleLength=long(5+)|articulationPoints=0|overlap=true|conflictAdjCycle=false",
+      "memberLabels": [
+        "scrambleDepth30:9"
+      ]
+    },
+    {
+      "key": "cycleCount=5+|cycleLength=long(5+)|articulationPoints=1|overlap=true|conflictAdjCycle=false",
+      "memberLabels": [
+        "scrambleDepth100:8"
+      ]
+    }
+  ],
+  "featureSimilarityClusters": [
+    {
+      "key": "seedA(worstCase:1e928fb1)",
+      "memberLabels": [
+        "worstCase:1e928fb1",
+        "worstCase:5e5b20b",
+        "worstCase:cee673eb",
+        "worstCase:de8abca9",
+        "worstCase:5d189c1",
+        "snapshot335:e7a801fb",
+        "snapshot335:1513fcff",
+        "snapshot335:120fc3af",
+        "scrambleDepth10:3",
+        "scrambleDepth10:6",
+        "scrambleDepth10:7",
+        "scrambleDepth10:8",
+        "scrambleDepth10:9",
+        "scrambleDepth20:1",
+        "scrambleDepth20:4",
+        "scrambleDepth20:7",
+        "scrambleDepth20:8",
+        "scrambleDepth30:2",
+        "scrambleDepth30:9",
+        "scrambleDepth50:0",
+        "scrambleDepth100:4",
+        "scrambleDepth100:5",
+        "scrambleDepth100:8"
+      ]
+    },
+    {
+      "key": "seedB(snapshot335:60b5c3b1)",
+      "memberLabels": [
+        "worstCase:b2c9ceb9",
+        "worstCase:710de4d1",
+        "snapshot335:60b5c3b1",
+        "snapshot335:ae3d218b",
+        "scrambleDepth10:4",
+        "scrambleDepth100:0",
+        "scrambleDepth100:2"
+      ]
+    }
+  ],
+  "graphTopologyClusters": [
+    {
+      "key": "articulationPoints=1|biconnectedComponents=2|overlap=true",
+      "memberLabels": [
+        "worstCase:5e5b20b",
+        "worstCase:b2c9ceb9",
+        "worstCase:cee673eb",
+        "worstCase:de8abca9",
+        "worstCase:5d189c1",
+        "snapshot335:e7a801fb",
+        "snapshot335:1513fcff",
+        "snapshot335:ae3d218b",
+        "snapshot335:120fc3af",
+        "scrambleDepth10:3",
+        "scrambleDepth10:6",
+        "scrambleDepth10:7",
+        "scrambleDepth10:8",
+        "scrambleDepth10:9",
+        "scrambleDepth20:1",
+        "scrambleDepth20:4",
+        "scrambleDepth20:7",
+        "scrambleDepth20:8",
+        "scrambleDepth30:2",
+        "scrambleDepth50:0",
+        "scrambleDepth100:2",
+        "scrambleDepth100:4",
+        "scrambleDepth100:5",
+        "scrambleDepth100:8"
+      ]
+    },
+    {
+      "key": "articulationPoints=2|biconnectedComponents=3|overlap=true",
+      "memberLabels": [
+        "worstCase:710de4d1",
+        "scrambleDepth10:4",
+        "scrambleDepth100:0"
+      ]
+    },
+    {
+      "key": "articulationPoints=0|biconnectedComponents=1|overlap=true",
+      "memberLabels": [
+        "worstCase:1e928fb1",
+        "scrambleDepth30:9"
+      ]
+    },
+    {
+      "key": "articulationPoints=3|biconnectedComponents=4|overlap=true",
+      "memberLabels": [
+        "snapshot335:60b5c3b1"
+      ]
+    }
+  ],
+  "pairwiseAgreement": {
+    "ST_FS": 0.5701149425287356,
+    "ST_GT": 0.6850574712643678,
+    "FS_GT": 0.7241379310344828,
+    "avg": 0.6597701149425287
+  },
+  "profiles": [
+    {
+      "label": "worstCase:1e928fb1",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "worstCase:5e5b20b",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "worstCase:b2c9ceb9",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "worstCase:cee673eb",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "worstCase:710de4d1",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "worstCase:5d189c1",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "snapshot335:e7a801fb",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "snapshot335:120fc3af",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": true,
+        "minCycleLength=3(cycleLength 하한 완화)": true,
+        "minCycleLength=5(minimumCycleSize 상향)": true,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": true,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": true,
+        "conflictEdgeCount===0 required": true,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": true,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": true,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "scrambleDepth10:4",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "scrambleDepth10:6",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "scrambleDepth10:8",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "scrambleDepth10:9",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "scrambleDepth20:1",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "scrambleDepth20:4",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": true,
+        "minCycleLength=3(cycleLength 하한 완화)": true,
+        "minCycleLength=5(minimumCycleSize 상향)": true,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": true,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": true,
+        "conflictEdgeCount===0 required": true,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": true,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": true,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "scrambleDepth20:7",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": true,
+        "minCycleLength=3(cycleLength 하한 완화)": true,
+        "minCycleLength=5(minimumCycleSize 상향)": true,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": true,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": true,
+        "conflictEdgeCount===0 required": true,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": true,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": true,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "scrambleDepth30:2",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": true,
+        "minCycleLength=3(cycleLength 하한 완화)": true,
+        "minCycleLength=5(minimumCycleSize 상향)": true,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": true,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": true,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": true,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": true,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "scrambleDepth30:9",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "scrambleDepth50:0",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "scrambleDepth100:0",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": true,
+        "minCycleLength=3(cycleLength 하한 완화)": true,
+        "minCycleLength=5(minimumCycleSize 상향)": true,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": true,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": true,
+        "conflictEdgeCount===0 required": true,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": true,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": true,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "scrambleDepth100:2",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": true,
+        "minCycleLength=3(cycleLength 하한 완화)": true,
+        "minCycleLength=5(minimumCycleSize 상향)": true,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": true,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": true,
+        "conflictEdgeCount===0 required": true,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": true,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": true,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "scrambleDepth100:4",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "rescuedByConfigLabel": {
+        "baseline(BoundedResolver real)": false,
+        "minCycleLength=3(cycleLength 하한 완화)": false,
+        "minCycleLength=5(minimumCycleSize 상향)": false,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": false,
+        "cycleCount===1 required(dependencyDepth proxy)": false,
+        "cycleCount>=2 required(dependencyDepth proxy)": false,
+        "conflictEdgeCount===0 required": false,
+        "conflictEdgeCount>0 required": false,
+        "pairCount>=2 required(pairThreshold)": false,
+        "pairCount>=5 required(pairThreshold)": false
+      },
+      "rescuedByAny": false,
+      "rescuedOnlyByNonBaseline": false
+    }
+  ],
+  "clusterBehaviors": [
+    {
+      "clusterKey": "seedA(worstCase:1e928fb1)",
+      "size": 23,
+      "rescuedByAnyRate": 0.17391304347826086,
+      "rescuedByConfigRate": {
+        "baseline(BoundedResolver real)": 0.17391304347826086,
+        "minCycleLength=3(cycleLength 하한 완화)": 0.17391304347826086,
+        "minCycleLength=5(minimumCycleSize 상향)": 0.17391304347826086,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": 0.17391304347826086,
+        "cycleCount===1 required(dependencyDepth proxy)": 0,
+        "cycleCount>=2 required(dependencyDepth proxy)": 0.13043478260869565,
+        "conflictEdgeCount===0 required": 0.17391304347826086,
+        "conflictEdgeCount>0 required": 0,
+        "pairCount>=2 required(pairThreshold)": 0.17391304347826086,
+        "pairCount>=5 required(pairThreshold)": 0
+      }
+    },
+    {
+      "clusterKey": "seedB(snapshot335:60b5c3b1)",
+      "size": 7,
+      "rescuedByAnyRate": 0.2857142857142857,
+      "rescuedByConfigRate": {
+        "baseline(BoundedResolver real)": 0.2857142857142857,
+        "minCycleLength=3(cycleLength 하한 완화)": 0.2857142857142857,
+        "minCycleLength=5(minimumCycleSize 상향)": 0.2857142857142857,
+        "maxCycleLength=6(maximumCycleSize 상한 신설)": 0.2857142857142857,
+        "cycleCount===1 required(dependencyDepth proxy)": 0,
+        "cycleCount>=2 required(dependencyDepth proxy)": 0.2857142857142857,
+        "conflictEdgeCount===0 required": 0.2857142857142857,
+        "conflictEdgeCount>0 required": 0,
+        "pairCount>=2 required(pairThreshold)": 0.2857142857142857,
+        "pairCount>=5 required(pairThreshold)": 0
+      }
+    }
+  ],
+  "divergences": [
+    {
+      "configLabel": "baseline(BoundedResolver real)",
+      "minRate": 0.17391304347826086,
+      "maxRate": 0.2857142857142857,
+      "rangePp": 11.180124223602483
+    },
+    {
+      "configLabel": "minCycleLength=3(cycleLength 하한 완화)",
+      "minRate": 0.17391304347826086,
+      "maxRate": 0.2857142857142857,
+      "rangePp": 11.180124223602483
+    },
+    {
+      "configLabel": "minCycleLength=5(minimumCycleSize 상향)",
+      "minRate": 0.17391304347826086,
+      "maxRate": 0.2857142857142857,
+      "rangePp": 11.180124223602483
+    },
+    {
+      "configLabel": "maxCycleLength=6(maximumCycleSize 상한 신설)",
+      "minRate": 0.17391304347826086,
+      "maxRate": 0.2857142857142857,
+      "rangePp": 11.180124223602483
+    },
+    {
+      "configLabel": "cycleCount===1 required(dependencyDepth proxy)",
+      "minRate": 0,
+      "maxRate": 0,
+      "rangePp": 0
+    },
+    {
+      "configLabel": "cycleCount>=2 required(dependencyDepth proxy)",
+      "minRate": 0.13043478260869565,
+      "maxRate": 0.2857142857142857,
+      "rangePp": 15.527950310559005
+    },
+    {
+      "configLabel": "conflictEdgeCount===0 required",
+      "minRate": 0.17391304347826086,
+      "maxRate": 0.2857142857142857,
+      "rangePp": 11.180124223602483
+    },
+    {
+      "configLabel": "conflictEdgeCount>0 required",
+      "minRate": 0,
+      "maxRate": 0,
+      "rangePp": 0
+    },
+    {
+      "configLabel": "pairCount>=2 required(pairThreshold)",
+      "minRate": 0.17391304347826086,
+      "maxRate": 0.2857142857142857,
+      "rangePp": 11.180124223602483
+    },
+    {
+      "configLabel": "pairCount>=5 required(pairThreshold)",
+      "minRate": 0,
+      "maxRate": 0,
+      "rangePp": 0
+    }
+  ],
+  "decisionResult": {
+    "methodsWithMultipleSignificantClusters": 3,
+    "meaningfulDivergence": false,
+    "pass": false,
+    "decision": "B",
+    "rationale": "3/3 클러스터링 방법만 유의미한 클러스터를 2개 이상 찾았거나(구조는 나뉘지만), 클러스터 간 Gate rescue rate 차이가 30%p 미만이다 -- 구조는 나뉘어도 행동은 사실상 동일 -- 단일 메커니즘으로 취급하는 것이 타당하다."
+  }
+}

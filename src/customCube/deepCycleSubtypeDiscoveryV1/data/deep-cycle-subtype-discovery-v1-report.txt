@@ -1,0 +1,101 @@
+Solver Primitive Discovery Sprint -- Deep Cycle Subtype Discovery Sprint v1 -- Report
+Generated: 2026-07-31T03:48:39.398Z
+Population: Deep Cycle Primary Cluster, n=30 (from blueprintAttributionRefinementV1's own resolved output, unmodified)
+
+STEP1. Extended Feature Extraction
+  30 cases, features: cycleCount(dependencyDepth proxy)/cycleLength/pairCount/conflictEdgeCount/parityState(reused) + articulationPointCount/biconnectedComponentCount/cycleOverlap/cycleDensity/conflictAdjacentToCycle/pairGraphDensity(new, graph-topology based)
+  bridgeAdjacency/shortestBridgeLength: NOT computed -- disclosed, this population is single-component(bridge=false) by construction, so these axes are constant/inapplicable here.
+
+STEP2. Clustering (3 independent methods)
+  Structural Taxonomy (7 clusters):
+    [cycleCount=2|cycleLength=long(5+)|articulationPoints=1|overlap=true|conflictAdjCycle=false] size=17
+    [cycleCount=2|cycleLength=short(<=4)|articulationPoints=1|overlap=true|conflictAdjCycle=false] size=4
+    [cycleCount=3-4|cycleLength=long(5+)|articulationPoints=2+|overlap=true|conflictAdjCycle=false] size=4
+    [cycleCount=3-4|cycleLength=long(5+)|articulationPoints=1|overlap=true|conflictAdjCycle=false] size=2
+    [cycleCount=3-4|cycleLength=long(5+)|articulationPoints=0|overlap=true|conflictAdjCycle=false] size=1
+    [cycleCount=2|cycleLength=long(5+)|articulationPoints=0|overlap=true|conflictAdjCycle=false] size=1
+    [cycleCount=5+|cycleLength=long(5+)|articulationPoints=1|overlap=true|conflictAdjCycle=false] size=1
+  Feature Similarity k=2 (2 clusters):
+    [seedA(worstCase:1e928fb1)] size=23
+    [seedB(snapshot335:60b5c3b1)] size=7
+  Graph Topology (4 clusters):
+    [articulationPoints=1|biconnectedComponents=2|overlap=true] size=24
+    [articulationPoints=2|biconnectedComponents=3|overlap=true] size=3
+    [articulationPoints=0|biconnectedComponents=1|overlap=true] size=2
+    [articulationPoints=3|biconnectedComponents=4|overlap=true] size=1
+  Pairwise agreement: ST-FS=0.570, ST-GT=0.685, FS-GT=0.724, avg=0.660
+
+STEP3. Behavioral Profiling (rescue vector across 10 Gate configs, unmodified reuse of deepCycleRefinementV1's own GATE_SWEEP_CONFIGS)
+  rescuedByAny: 6/30
+    [worstCase:1e928fb1] rescuedByAny=false, rescuedByConfigs=(none)
+    [worstCase:5e5b20b] rescuedByAny=false, rescuedByConfigs=(none)
+    [worstCase:b2c9ceb9] rescuedByAny=false, rescuedByConfigs=(none)
+    [worstCase:cee673eb] rescuedByAny=false, rescuedByConfigs=(none)
+    [worstCase:de8abca9] rescuedByAny=false, rescuedByConfigs=(none)
+    [worstCase:710de4d1] rescuedByAny=false, rescuedByConfigs=(none)
+    [worstCase:5d189c1] rescuedByAny=false, rescuedByConfigs=(none)
+    [snapshot335:e7a801fb] rescuedByAny=false, rescuedByConfigs=(none)
+    [snapshot335:60b5c3b1] rescuedByAny=false, rescuedByConfigs=(none)
+    [snapshot335:1513fcff] rescuedByAny=false, rescuedByConfigs=(none)
+    [snapshot335:ae3d218b] rescuedByAny=false, rescuedByConfigs=(none)
+    [snapshot335:120fc3af] rescuedByAny=true, rescuedByConfigs=baseline(BoundedResolver real), minCycleLength=3(cycleLength 하한 완화), minCycleLength=5(minimumCycleSize 상향), maxCycleLength=6(maximumCycleSize 상한 신설), cycleCount>=2 required(dependencyDepth proxy), conflictEdgeCount===0 required, pairCount>=2 required(pairThreshold)
+    [scrambleDepth10:3] rescuedByAny=false, rescuedByConfigs=(none)
+    [scrambleDepth10:4] rescuedByAny=false, rescuedByConfigs=(none)
+    [scrambleDepth10:6] rescuedByAny=false, rescuedByConfigs=(none)
+    [scrambleDepth10:7] rescuedByAny=false, rescuedByConfigs=(none)
+    [scrambleDepth10:8] rescuedByAny=false, rescuedByConfigs=(none)
+    [scrambleDepth10:9] rescuedByAny=false, rescuedByConfigs=(none)
+    [scrambleDepth20:1] rescuedByAny=false, rescuedByConfigs=(none)
+    [scrambleDepth20:4] rescuedByAny=true, rescuedByConfigs=baseline(BoundedResolver real), minCycleLength=3(cycleLength 하한 완화), minCycleLength=5(minimumCycleSize 상향), maxCycleLength=6(maximumCycleSize 상한 신설), cycleCount>=2 required(dependencyDepth proxy), conflictEdgeCount===0 required, pairCount>=2 required(pairThreshold)
+    [scrambleDepth20:7] rescuedByAny=true, rescuedByConfigs=baseline(BoundedResolver real), minCycleLength=3(cycleLength 하한 완화), minCycleLength=5(minimumCycleSize 상향), maxCycleLength=6(maximumCycleSize 상한 신설), cycleCount>=2 required(dependencyDepth proxy), conflictEdgeCount===0 required, pairCount>=2 required(pairThreshold)
+    [scrambleDepth20:8] rescuedByAny=false, rescuedByConfigs=(none)
+    [scrambleDepth30:2] rescuedByAny=true, rescuedByConfigs=baseline(BoundedResolver real), minCycleLength=3(cycleLength 하한 완화), minCycleLength=5(minimumCycleSize 상향), maxCycleLength=6(maximumCycleSize 상한 신설), conflictEdgeCount===0 required, pairCount>=2 required(pairThreshold)
+    [scrambleDepth30:9] rescuedByAny=false, rescuedByConfigs=(none)
+    [scrambleDepth50:0] rescuedByAny=false, rescuedByConfigs=(none)
+    [scrambleDepth100:0] rescuedByAny=true, rescuedByConfigs=baseline(BoundedResolver real), minCycleLength=3(cycleLength 하한 완화), minCycleLength=5(minimumCycleSize 상향), maxCycleLength=6(maximumCycleSize 상한 신설), cycleCount>=2 required(dependencyDepth proxy), conflictEdgeCount===0 required, pairCount>=2 required(pairThreshold)
+    [scrambleDepth100:2] rescuedByAny=true, rescuedByConfigs=baseline(BoundedResolver real), minCycleLength=3(cycleLength 하한 완화), minCycleLength=5(minimumCycleSize 상향), maxCycleLength=6(maximumCycleSize 상한 신설), cycleCount>=2 required(dependencyDepth proxy), conflictEdgeCount===0 required, pairCount>=2 required(pairThreshold)
+    [scrambleDepth100:4] rescuedByAny=false, rescuedByConfigs=(none)
+    [scrambleDepth100:5] rescuedByAny=false, rescuedByConfigs=(none)
+    [scrambleDepth100:8] rescuedByAny=false, rescuedByConfigs=(none)
+
+STEP4. Subtype Stability Analysis (Feature Similarity k=2 clusters vs behavioral rescue profiles)
+  [seedA(worstCase:1e928fb1)] size=23, rescuedByAnyRate=17.4%
+      baseline(BoundedResolver real): 17.4%
+      minCycleLength=3(cycleLength 하한 완화): 17.4%
+      minCycleLength=5(minimumCycleSize 상향): 17.4%
+      maxCycleLength=6(maximumCycleSize 상한 신설): 17.4%
+      cycleCount===1 required(dependencyDepth proxy): 0.0%
+      cycleCount>=2 required(dependencyDepth proxy): 13.0%
+      conflictEdgeCount===0 required: 17.4%
+      conflictEdgeCount>0 required: 0.0%
+      pairCount>=2 required(pairThreshold): 17.4%
+      pairCount>=5 required(pairThreshold): 0.0%
+  [seedB(snapshot335:60b5c3b1)] size=7, rescuedByAnyRate=28.6%
+      baseline(BoundedResolver real): 28.6%
+      minCycleLength=3(cycleLength 하한 완화): 28.6%
+      minCycleLength=5(minimumCycleSize 상향): 28.6%
+      maxCycleLength=6(maximumCycleSize 상한 신설): 28.6%
+      cycleCount===1 required(dependencyDepth proxy): 0.0%
+      cycleCount>=2 required(dependencyDepth proxy): 28.6%
+      conflictEdgeCount===0 required: 28.6%
+      conflictEdgeCount>0 required: 0.0%
+      pairCount>=2 required(pairThreshold): 28.6%
+      pairCount>=5 required(pairThreshold): 0.0%
+  Divergence per Gate config (range across clusters):
+    [baseline(BoundedResolver real)] min=17.4%, max=28.6%, range=11.2pp
+    [minCycleLength=3(cycleLength 하한 완화)] min=17.4%, max=28.6%, range=11.2pp
+    [minCycleLength=5(minimumCycleSize 상향)] min=17.4%, max=28.6%, range=11.2pp
+    [maxCycleLength=6(maximumCycleSize 상한 신설)] min=17.4%, max=28.6%, range=11.2pp
+    [cycleCount===1 required(dependencyDepth proxy)] min=0.0%, max=0.0%, range=0.0pp
+    [cycleCount>=2 required(dependencyDepth proxy)] min=13.0%, max=28.6%, range=15.5pp
+    [conflictEdgeCount===0 required] min=17.4%, max=28.6%, range=11.2pp
+    [conflictEdgeCount>0 required] min=0.0%, max=0.0%, range=0.0pp
+    [pairCount>=2 required(pairThreshold)] min=17.4%, max=28.6%, range=11.2pp
+    [pairCount>=5 required(pairThreshold)] min=0.0%, max=0.0%, range=0.0pp
+
+STEP5. Subtype Decision
+  Methods with >=2 significant(n>=3) clusters: 3/3
+  Meaningful behavioral divergence(>=30pp on any Gate config): false
+  PASS: false
+  Decision: B
+  Rationale: 3/3 클러스터링 방법만 유의미한 클러스터를 2개 이상 찾았거나(구조는 나뉘지만), 클러스터 간 Gate rescue rate 차이가 30%p 미만이다 -- 구조는 나뉘어도 행동은 사실상 동일 -- 단일 메커니즘으로 취급하는 것이 타당하다.
