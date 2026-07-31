@@ -1,0 +1,50 @@
+Solver Primitive Refinement Sprint #1 -- Bridge Injection Refinement Sprint v1 -- Report
+Generated: 2026-07-31T02:54:34.214Z
+Population: 142 cases (v4, unmodified) -- target(Bridge Injection cluster)=51, rest=91
+
+STEP1. Baseline Reproduction (real MultiHopBridgePrototype.ts + BoundedResolver.ts, unmodified)
+  Target cluster(n=51): Coverage=29.4%, Precision=13.3%, Gap Rescue=3.9%, avgRuntime=231.2ms, trueRegression=0
+  Full population(n=142): Coverage=19.7%, Gap Rescue=4.2%, trueRegression=0
+
+STEP2. Gate Sweep (target cluster, Search Contract held at baseline)
+  [baseline(v2 real)] Coverage=29.4%, Precision=13.3%, Gap Rescue=3.9%, avgRuntime=203.9ms | full population trueRegression=0
+  [maxCycleLength=4] Coverage=54.9%, Precision=7.1%, Gap Rescue=3.9%, avgRuntime=271.9ms | full population trueRegression=0
+  [maxCycleLength=5] Coverage=84.3%, Precision=11.6%, Gap Rescue=9.8%, avgRuntime=327.3ms | full population trueRegression=0
+  [maxCycleLength=6] Coverage=98.0%, Precision=10.0%, Gap Rescue=9.8%, avgRuntime=328.8ms | full population trueRegression=0
+  [componentCount===1 required] Coverage=0.0%, Precision=0.0%, Gap Rescue=0.0%, avgRuntime=0.0ms | full population trueRegression=0
+  [conflictEdgeCount===0 required] Coverage=23.5%, Precision=16.7%, Gap Rescue=3.9%, avgRuntime=252.9ms | full population trueRegression=0
+  [conflictEdgeCount>0 required(V3-style)] Coverage=5.9%, Precision=0.0%, Gap Rescue=0.0%, avgRuntime=162.0ms | full population trueRegression=0
+  Best: maxCycleLength=5
+
+STEP3. Search Contract Sweep (target cluster, Gate held at baseline)
+  [baseline(BoundedResolver real)] Coverage=29.4%, Precision=13.3%, Gap Rescue=3.9%, avgRuntime=222.9ms | full population trueRegression=0
+  [maxCandidatesPerHop=1] Coverage=29.4%, Precision=13.3%, Gap Rescue=3.9%, avgRuntime=154.9ms | full population trueRegression=0
+  [maxCandidatesPerHop=3] Coverage=29.4%, Precision=13.3%, Gap Rescue=3.9%, avgRuntime=270.7ms | full population trueRegression=0
+  [maxCandidatesPerHop=4] Coverage=29.4%, Precision=13.3%, Gap Rescue=3.9%, avgRuntime=290.2ms | full population trueRegression=0
+  [maxLeavesExplored=32] Coverage=29.4%, Precision=13.3%, Gap Rescue=3.9%, avgRuntime=205.3ms | full population trueRegression=0
+  [maxLeavesExplored=128] Coverage=29.4%, Precision=13.3%, Gap Rescue=3.9%, avgRuntime=203.2ms | full population trueRegression=0
+  [maxLeavesExplored=256] Coverage=29.4%, Precision=13.3%, Gap Rescue=3.9%, avgRuntime=212.5ms | full population trueRegression=0
+  [perHopDeadlineMs=30] Coverage=29.4%, Precision=13.3%, Gap Rescue=3.9%, avgRuntime=212.3ms | full population trueRegression=0
+  [perHopDeadlineMs=120] Coverage=29.4%, Precision=13.3%, Gap Rescue=3.9%, avgRuntime=248.5ms | full population trueRegression=0
+  [candidateOrdering=byPairCountGain] Coverage=29.4%, Precision=13.3%, Gap Rescue=3.9%, avgRuntime=223.1ms | full population trueRegression=0
+  Best: maxCandidatesPerHop=1
+
+STEP4. Capability Benchmark (Baseline vs Candidate=Best Gate + Best Search Contract, full 142-population)
+  Baseline:  Coverage=19.7%, Precision=21.4%, Gap Rescue=4.2%, avgRuntime=205.8ms, trueRegression=0
+  Candidate: Coverage=56.3%, Precision=8.8%, Gap Rescue=4.9%, avgRuntime=134.6ms, trueRegression=0
+
+STEP5. Statistical Validation (paired-diff, n=142 -- deterministic mechanism, disclosed: population IS the N, no repeat-count needed)
+  improvedCountDiff(Candidate-Baseline): mean=0.0070, 95% CI=[-0.0296, 0.0437], Cohen's d_z=0.032(negligible)
+  runtimeDiffMs(Candidate-Baseline): mean=35.08, 95% CI=[16.57, 53.59]
+  trueRegressionDiff(Candidate-Baseline): mean=0.0000
+  [Gate A][PASS] Regression 증가 없음: True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000].
+  [Gate B][PASS] Runtime 허용 범위: Runtime diff mean=35.1ms, 95% CI=[16.6, 53.6] (허용 기준: Baseline p95=411ms 대비 +15%=62ms 이내).
+  [Gate C][OPEN_QUESTION] Capability 감소 없음: 성공 케이스 diff mean=0.01, 95% CI=[-0.03, 0.04], Cohen's d_z=0.03(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요) [strict mode: OPEN_QUESTION].
+  [Gate E][PASS] Primitive Interaction 이상 없음: Duplicate=0건, Starved Type=0개.
+  Category C(New Primitive)/prototype-stage Pipeline Decision: B -- 필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장.
+
+STEP6. Refinement Decision
+  Level1(Capability 증가, improvedCountDiff mean>0): PASS
+  Level2(Regression 증가 없음, Gate A PASS): PASS
+  Level3(통계적으로 유의한 개선, CI 하한>0): FAIL
+  Decision: B
