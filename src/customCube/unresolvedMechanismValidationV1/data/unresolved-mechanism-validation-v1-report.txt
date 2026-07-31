@@ -1,0 +1,113 @@
+Solver Primitive Discovery Sprint #5 -- Unresolved Mechanism Validation Sprint v1 -- Report
+Generated: 2026-07-31T04:11:58.187Z
+Residual population: Bridge Injection unresolved=46, Deep Cycle unresolved=22, total=68
+
+STEP1. Unresolved Hole Collection
+  Bridge Injection unresolved(never rescued by any of its own 7 Gate + 10 Search Contract + combined-best configs): 46
+  Deep Cycle unresolved(never rescued by any of its own 10 Gate + 10 Search Contract + combined-best configs): 22
+
+STEP2. Existing Primitive Attribution (6 real Primitives, multiple attributions allowed)
+  [DeepCycle(BP-1)] matched=0/68, improvedAlone=0/68
+  [CCR] matched=0/68, improvedAlone=0/68
+  [MultiHopBridge] matched=0/68, improvedAlone=0/68
+  [ConflictBreakingSacrifice] matched=0/68, improvedAlone=0/68
+  [ParityCycleSpecialist(BP-2)] matched=3/68, improvedAlone=3/68
+  [MixedCommutator] matched=0/68, improvedAlone=0/68
+
+STEP3. Counterfactual Combination (2-step sequences)
+  anySolvedByCombo=0/68, anyImprovedByCombo(incl solved)=0/68
+  avg combosTried per case=0.2
+
+STEP3.5. Budget Sensitivity Check (extended deadline=3000ms, only cases unresolved after STEP2+STEP3)
+  checked=65, budgetHelped=12
+
+STEP4. Residual Classification
+  EXISTING_SINGLE_PRIMITIVE: 3/68 (4.4%)
+  EXISTING_COMBINATION: 0/68 (0.0%)
+  EXISTING_ORDERING: 0/68 (0.0%)
+  EXISTING_BUDGET: 12/68 (17.6%)
+  TRULY_UNKNOWN: 53/68 (77.9%)
+
+  Per-case detail:
+    [Bridge Injection] worstCase:45959141: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] worstCase:46086463: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] worstCase:64369533: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] worstCase:84976575: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] worstCase:f17d7eb9: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] worstCase:56a8b82d: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] worstCase:beb967ad: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] worstCase:4549b041: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] worstCase:120fc3af: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] worstCase:dd4d94fd: EXISTING_BUDGET -- DeepCycle(BP-1) improves this case only at extended deadline (3000ms vs 400ms)
+    [Bridge Injection] worstCase:ad12c377: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] worstCase:e5101f85: EXISTING_BUDGET -- DeepCycle(BP-1) improves this case only at extended deadline (3000ms vs 400ms)
+    [Bridge Injection] worstCase:c039e611: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] worstCase:e9009e73: EXISTING_BUDGET -- DeepCycle(BP-1) improves this case only at extended deadline (3000ms vs 400ms)
+    [Bridge Injection] worstCase:14f5293f: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] worstCase:849509c9: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] worstCase:a005d41f: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] worstCase:d3283799: EXISTING_SINGLE_PRIMITIVE -- ParityCycleSpecialist(BP-2) alone improves this case (previously untried against this population)
+    [Bridge Injection] snapshot335:27053491: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] snapshot335:45959141: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] snapshot335:46086463: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] snapshot335:64369533: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] snapshot335:84976575: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] snapshot335:f17d7eb9: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] snapshot335:a061555d: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] snapshot335:dda1453f: EXISTING_BUDGET -- DeepCycle(BP-1) improves this case only at extended deadline (3000ms vs 400ms)
+    [Bridge Injection] snapshot335:7541612b: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] snapshot335:b714481: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] snapshot335:beb967ad: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] snapshot335:36336c1: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] scrambleDepth10:0: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] scrambleDepth10:1: EXISTING_SINGLE_PRIMITIVE -- ParityCycleSpecialist(BP-2) alone improves this case (previously untried against this population)
+    [Bridge Injection] scrambleDepth20:2: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] scrambleDepth20:9: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] scrambleDepth30:3: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] scrambleDepth30:6: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] scrambleDepth30:7: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] scrambleDepth40:1: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] scrambleDepth40:3: EXISTING_BUDGET -- ConflictBreakingSacrifice improves this case only at extended deadline (3000ms vs 400ms)
+    [Bridge Injection] scrambleDepth40:7: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] scrambleDepth50:1: EXISTING_BUDGET -- DeepCycle(BP-1) improves this case only at extended deadline (3000ms vs 400ms)
+    [Bridge Injection] scrambleDepth50:2: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] scrambleDepth50:4: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] scrambleDepth50:5: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Bridge Injection] scrambleDepth100:3: EXISTING_SINGLE_PRIMITIVE -- ParityCycleSpecialist(BP-2) alone improves this case (previously untried against this population)
+    [Bridge Injection] scrambleDepth100:9: EXISTING_BUDGET -- ConflictBreakingSacrifice improves this case only at extended deadline (3000ms vs 400ms)
+    [Deep Cycle] worstCase:1e928fb1: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Deep Cycle] worstCase:5e5b20b: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Deep Cycle] worstCase:b2c9ceb9: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Deep Cycle] worstCase:cee673eb: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Deep Cycle] worstCase:de8abca9: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Deep Cycle] worstCase:710de4d1: EXISTING_BUDGET -- CCR improves this case only at extended deadline (3000ms vs 400ms)
+    [Deep Cycle] worstCase:5d189c1: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Deep Cycle] snapshot335:60b5c3b1: EXISTING_BUDGET -- DeepCycle(BP-1) improves this case only at extended deadline (3000ms vs 400ms)
+    [Deep Cycle] snapshot335:1513fcff: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Deep Cycle] snapshot335:ae3d218b: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Deep Cycle] scrambleDepth10:3: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Deep Cycle] scrambleDepth10:4: EXISTING_BUDGET -- DeepCycle(BP-1) improves this case only at extended deadline (3000ms vs 400ms)
+    [Deep Cycle] scrambleDepth10:6: EXISTING_BUDGET -- DeepCycle(BP-1) improves this case only at extended deadline (3000ms vs 400ms)
+    [Deep Cycle] scrambleDepth10:7: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Deep Cycle] scrambleDepth10:9: EXISTING_BUDGET -- DeepCycle(BP-1) improves this case only at extended deadline (3000ms vs 400ms)
+    [Deep Cycle] scrambleDepth20:1: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Deep Cycle] scrambleDepth20:8: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Deep Cycle] scrambleDepth30:9: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Deep Cycle] scrambleDepth50:0: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Deep Cycle] scrambleDepth100:4: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Deep Cycle] scrambleDepth100:5: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+    [Deep Cycle] scrambleDepth100:8: TRULY_UNKNOWN -- no existing Primitive, combination, ordering, or extended budget produced any improvement
+
+STEP5. Common Mechanism Analysis (TRULY_UNKNOWN only)
+  unknownCount=53
+  taxonomyClassBreakdown: {"CYCLE_ISOLATION":18,"PARITY_GATED_CYCLE":33,"CONFLICT_DOMINANT":1,"LOCKED_PAIR":1}
+  dominantTaxonomyClass=PARITY_GATED_CYCLE (62.3% of Unknown)
+  sourceBlueprintBreakdown: {"Bridge Injection":36,"Deep Cycle":17}
+  meanCycleCount=2.30, meanCycleLength=4.53, meanConflictEdgeCount=0.26, parityShare=64.2%
+
+STEP6. Decision
+  Level1(Residual >=80% classified): false (22.1%)
+  Level2(Unknown 집합 추출): true
+  Level3(Unknown 공통 메커니즘, dominant class >=60%): true
+  Decision: A
+  Rationale: Residual의 22.1%만 기존 Primitive로 설명되고(<80%), 나머지 Unknown 53건 중 62.3%가 동일 Taxonomy Class(PARITY_GATED_CYCLE)를 공유한다(>=60% 기준 충족) -- 공통 구조를 가진 진짜 미해결 메커니즘이 존재한다.

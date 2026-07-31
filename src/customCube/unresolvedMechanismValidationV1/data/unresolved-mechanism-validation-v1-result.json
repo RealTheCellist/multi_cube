@@ -1,0 +1,5318 @@
+{
+  "unresolvedLabels": [
+    {
+      "label": "worstCase:45959141",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:46086463",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:64369533",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:84976575",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:f17d7eb9",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:beb967ad",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:4549b041",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:120fc3af",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:dd4d94fd",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:ad12c377",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:e5101f85",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:c039e611",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:e9009e73",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:14f5293f",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:849509c9",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:a005d41f",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:d3283799",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:27053491",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:45959141",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:46086463",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:64369533",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:84976575",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:f17d7eb9",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:a061555d",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:dda1453f",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:7541612b",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:b714481",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:beb967ad",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "snapshot335:36336c1",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth10:0",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth10:1",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth20:2",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth20:9",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth30:3",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth30:6",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth30:7",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth40:1",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth40:3",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth50:1",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth50:2",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth50:4",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth50:5",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth100:3",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "scrambleDepth100:9",
+      "sourceBlueprint": "Bridge Injection"
+    },
+    {
+      "label": "worstCase:1e928fb1",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "worstCase:5e5b20b",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "worstCase:b2c9ceb9",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "worstCase:cee673eb",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "worstCase:710de4d1",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "worstCase:5d189c1",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "scrambleDepth10:4",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "scrambleDepth10:6",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "scrambleDepth10:9",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "scrambleDepth20:1",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "scrambleDepth30:9",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "scrambleDepth50:0",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "scrambleDepth100:4",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "sourceBlueprint": "Deep Cycle"
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "sourceBlueprint": "Deep Cycle"
+    }
+  ],
+  "attributions": [
+    {
+      "label": "worstCase:45959141",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:46086463",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:64369533",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 10,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:84976575",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:f17d7eb9",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 10,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:beb967ad",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 11,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:4549b041",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 5,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:120fc3af",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 6,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:dd4d94fd",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:ad12c377",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:e5101f85",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 7,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:c039e611",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 8,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:e9009e73",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 13,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:14f5293f",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:849509c9",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 6,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:a005d41f",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 7,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:d3283799",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 8,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": true,
+          "moves": [
+            [
+              "z",
+              -2,
+              -1
+            ],
+            [
+              "x",
+              2,
+              1
+            ],
+            [
+              "x",
+              1,
+              1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "x",
+              2,
+              -1
+            ],
+            [
+              "x",
+              1,
+              -1
+            ],
+            [
+              "y",
+              2,
+              1
+            ],
+            [
+              "y",
+              2,
+              1
+            ],
+            [
+              "x",
+              -2,
+              -1
+            ],
+            [
+              "x",
+              -1,
+              -1
+            ],
+            [
+              "x",
+              0,
+              -1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "x",
+              2,
+              -1
+            ],
+            [
+              "x",
+              1,
+              -1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "x",
+              2,
+              -1
+            ],
+            [
+              "x",
+              1,
+              -1
+            ],
+            [
+              "y",
+              2,
+              1
+            ],
+            [
+              "y",
+              2,
+              1
+            ],
+            [
+              "x",
+              2,
+              1
+            ],
+            [
+              "x",
+              1,
+              1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "x",
+              2,
+              -1
+            ],
+            [
+              "x",
+              1,
+              -1
+            ],
+            [
+              "y",
+              2,
+              1
+            ],
+            [
+              "y",
+              2,
+              1
+            ],
+            [
+              "x",
+              2,
+              -1
+            ],
+            [
+              "x",
+              1,
+              -1
+            ],
+            [
+              "x",
+              2,
+              -1
+            ],
+            [
+              "x",
+              1,
+              -1
+            ],
+            [
+              "x",
+              -2,
+              1
+            ],
+            [
+              "x",
+              -1,
+              1
+            ],
+            [
+              "x",
+              0,
+              1
+            ],
+            [
+              "x",
+              1,
+              1
+            ],
+            [
+              "x",
+              2,
+              1
+            ],
+            [
+              "z",
+              -2,
+              1
+            ]
+          ],
+          "improvedAlone": true,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": true,
+      "anyImprovedAlone": true
+    },
+    {
+      "label": "snapshot335:27053491",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 8,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "snapshot335:45959141",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "snapshot335:46086463",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "snapshot335:64369533",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 10,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "snapshot335:84976575",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "snapshot335:f17d7eb9",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "snapshot335:a061555d",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 7,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "snapshot335:dda1453f",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 11,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "snapshot335:7541612b",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "snapshot335:b714481",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 12,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "snapshot335:beb967ad",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 11,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "snapshot335:36336c1",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 7,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth10:0",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth10:1",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 10,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": true,
+          "moves": [
+            [
+              "y",
+              2,
+              1
+            ],
+            [
+              "x",
+              2,
+              1
+            ],
+            [
+              "x",
+              1,
+              1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "x",
+              2,
+              -1
+            ],
+            [
+              "x",
+              1,
+              -1
+            ],
+            [
+              "y",
+              2,
+              1
+            ],
+            [
+              "y",
+              2,
+              1
+            ],
+            [
+              "x",
+              -2,
+              -1
+            ],
+            [
+              "x",
+              -1,
+              -1
+            ],
+            [
+              "x",
+              0,
+              -1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "x",
+              2,
+              -1
+            ],
+            [
+              "x",
+              1,
+              -1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "x",
+              2,
+              -1
+            ],
+            [
+              "x",
+              1,
+              -1
+            ],
+            [
+              "y",
+              2,
+              1
+            ],
+            [
+              "y",
+              2,
+              1
+            ],
+            [
+              "x",
+              2,
+              1
+            ],
+            [
+              "x",
+              1,
+              1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "x",
+              2,
+              -1
+            ],
+            [
+              "x",
+              1,
+              -1
+            ],
+            [
+              "y",
+              2,
+              1
+            ],
+            [
+              "y",
+              2,
+              1
+            ],
+            [
+              "x",
+              2,
+              -1
+            ],
+            [
+              "x",
+              1,
+              -1
+            ],
+            [
+              "x",
+              2,
+              -1
+            ],
+            [
+              "x",
+              1,
+              -1
+            ],
+            [
+              "x",
+              -2,
+              1
+            ],
+            [
+              "x",
+              -1,
+              1
+            ],
+            [
+              "x",
+              0,
+              1
+            ],
+            [
+              "x",
+              1,
+              1
+            ],
+            [
+              "x",
+              2,
+              1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ]
+          ],
+          "improvedAlone": true,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": true,
+      "anyImprovedAlone": true
+    },
+    {
+      "label": "scrambleDepth20:2",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth20:9",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 5,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth30:3",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth30:6",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 8,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth30:7",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 12,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth40:1",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth40:3",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 10,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 11,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth50:1",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 15,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth50:2",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth50:4",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 8,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth50:5",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth100:3",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 8,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": true,
+          "moves": [
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "x",
+              2,
+              1
+            ],
+            [
+              "x",
+              1,
+              1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "x",
+              2,
+              -1
+            ],
+            [
+              "x",
+              1,
+              -1
+            ],
+            [
+              "y",
+              2,
+              1
+            ],
+            [
+              "y",
+              2,
+              1
+            ],
+            [
+              "x",
+              -2,
+              -1
+            ],
+            [
+              "x",
+              -1,
+              -1
+            ],
+            [
+              "x",
+              0,
+              -1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "x",
+              2,
+              -1
+            ],
+            [
+              "x",
+              1,
+              -1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "x",
+              2,
+              -1
+            ],
+            [
+              "x",
+              1,
+              -1
+            ],
+            [
+              "y",
+              2,
+              1
+            ],
+            [
+              "y",
+              2,
+              1
+            ],
+            [
+              "x",
+              2,
+              1
+            ],
+            [
+              "x",
+              1,
+              1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "y",
+              2,
+              -1
+            ],
+            [
+              "x",
+              2,
+              -1
+            ],
+            [
+              "x",
+              1,
+              -1
+            ],
+            [
+              "y",
+              2,
+              1
+            ],
+            [
+              "y",
+              2,
+              1
+            ],
+            [
+              "x",
+              2,
+              -1
+            ],
+            [
+              "x",
+              1,
+              -1
+            ],
+            [
+              "x",
+              2,
+              -1
+            ],
+            [
+              "x",
+              1,
+              -1
+            ],
+            [
+              "x",
+              -2,
+              1
+            ],
+            [
+              "x",
+              -1,
+              1
+            ],
+            [
+              "x",
+              0,
+              1
+            ],
+            [
+              "x",
+              1,
+              1
+            ],
+            [
+              "x",
+              2,
+              1
+            ],
+            [
+              "y",
+              2,
+              1
+            ]
+          ],
+          "improvedAlone": true,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": true,
+      "anyImprovedAlone": true
+    },
+    {
+      "label": "scrambleDepth100:9",
+      "sourceBlueprint": "Bridge Injection",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:1e928fb1",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:5e5b20b",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 8,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:b2c9ceb9",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 12,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:cee673eb",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 8,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:710de4d1",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 11,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "worstCase:5d189c1",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 13,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 13,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth10:4",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 11,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth10:6",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 10,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth10:9",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 8,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth20:1",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 8,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 8,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth30:9",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 11,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth50:0",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 8,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth100:4",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 9,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 8,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "sourceBlueprint": "Deep Cycle",
+      "wrongWingBefore": 10,
+      "attempts": {
+        "DeepCycle(BP-1)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "CCR": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MultiHopBridge": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ConflictBreakingSacrifice": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "ParityCycleSpecialist(BP-2)": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        },
+        "MixedCommutator": {
+          "matched": false,
+          "moves": null,
+          "improvedAlone": false,
+          "solvedAlone": false
+        }
+      },
+      "anyMatched": false,
+      "anyImprovedAlone": false
+    }
+  ],
+  "combos": [
+    {
+      "label": "worstCase:45959141",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:46086463",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:64369533",
+      "wrongWingBefore": 10,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:84976575",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:f17d7eb9",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "wrongWingBefore": 10,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:beb967ad",
+      "wrongWingBefore": 11,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:4549b041",
+      "wrongWingBefore": 5,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:120fc3af",
+      "wrongWingBefore": 6,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:dd4d94fd",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:ad12c377",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:e5101f85",
+      "wrongWingBefore": 7,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:c039e611",
+      "wrongWingBefore": 8,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:e9009e73",
+      "wrongWingBefore": 13,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:14f5293f",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:849509c9",
+      "wrongWingBefore": 6,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:a005d41f",
+      "wrongWingBefore": 7,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:d3283799",
+      "wrongWingBefore": 8,
+      "combosTried": 5,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "snapshot335:27053491",
+      "wrongWingBefore": 8,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "snapshot335:45959141",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "snapshot335:46086463",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "snapshot335:64369533",
+      "wrongWingBefore": 10,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "snapshot335:84976575",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "snapshot335:f17d7eb9",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "snapshot335:a061555d",
+      "wrongWingBefore": 7,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "snapshot335:dda1453f",
+      "wrongWingBefore": 11,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "snapshot335:7541612b",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "snapshot335:b714481",
+      "wrongWingBefore": 12,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "snapshot335:beb967ad",
+      "wrongWingBefore": 11,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "snapshot335:36336c1",
+      "wrongWingBefore": 7,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth10:0",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth10:1",
+      "wrongWingBefore": 10,
+      "combosTried": 5,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth20:2",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth20:9",
+      "wrongWingBefore": 5,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth30:3",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth30:6",
+      "wrongWingBefore": 8,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth30:7",
+      "wrongWingBefore": 12,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth40:1",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth40:3",
+      "wrongWingBefore": 10,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "wrongWingBefore": 11,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth50:1",
+      "wrongWingBefore": 15,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth50:2",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth50:4",
+      "wrongWingBefore": 8,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth50:5",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth100:3",
+      "wrongWingBefore": 8,
+      "combosTried": 5,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth100:9",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:1e928fb1",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:5e5b20b",
+      "wrongWingBefore": 8,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:b2c9ceb9",
+      "wrongWingBefore": 12,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:cee673eb",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "wrongWingBefore": 8,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:710de4d1",
+      "wrongWingBefore": 11,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "worstCase:5d189c1",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "wrongWingBefore": 13,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "wrongWingBefore": 13,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth10:4",
+      "wrongWingBefore": 11,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth10:6",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "wrongWingBefore": 10,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth10:9",
+      "wrongWingBefore": 8,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth20:1",
+      "wrongWingBefore": 8,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "wrongWingBefore": 8,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth30:9",
+      "wrongWingBefore": 11,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth50:0",
+      "wrongWingBefore": 8,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth100:4",
+      "wrongWingBefore": 9,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "wrongWingBefore": 8,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "wrongWingBefore": 10,
+      "combosTried": 0,
+      "bestCombo": null,
+      "anySolved": false,
+      "anyImproved": false
+    }
+  ],
+  "budgetChecks": [
+    {
+      "label": "worstCase:45959141",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "worstCase:46086463",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "worstCase:64369533",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "worstCase:84976575",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "worstCase:f17d7eb9",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "worstCase:beb967ad",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "worstCase:4549b041",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "worstCase:120fc3af",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "worstCase:dd4d94fd",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": true,
+      "primitiveThatHelped": "DeepCycle(BP-1)"
+    },
+    {
+      "label": "worstCase:ad12c377",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "worstCase:e5101f85",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": true,
+      "primitiveThatHelped": "DeepCycle(BP-1)"
+    },
+    {
+      "label": "worstCase:c039e611",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "worstCase:e9009e73",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": true,
+      "primitiveThatHelped": "DeepCycle(BP-1)"
+    },
+    {
+      "label": "worstCase:14f5293f",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "worstCase:849509c9",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "worstCase:a005d41f",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "snapshot335:27053491",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "snapshot335:45959141",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "snapshot335:46086463",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "snapshot335:64369533",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "snapshot335:84976575",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "snapshot335:f17d7eb9",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "snapshot335:a061555d",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "snapshot335:dda1453f",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": true,
+      "primitiveThatHelped": "DeepCycle(BP-1)"
+    },
+    {
+      "label": "snapshot335:7541612b",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "snapshot335:b714481",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "snapshot335:beb967ad",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "snapshot335:36336c1",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth10:0",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth20:2",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth20:9",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth30:3",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth30:6",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth30:7",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth40:1",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth40:3",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": true,
+      "primitiveThatHelped": "ConflictBreakingSacrifice"
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth50:1",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": true,
+      "primitiveThatHelped": "DeepCycle(BP-1)"
+    },
+    {
+      "label": "scrambleDepth50:2",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth50:4",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth50:5",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth100:9",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": true,
+      "primitiveThatHelped": "ConflictBreakingSacrifice"
+    },
+    {
+      "label": "worstCase:1e928fb1",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "worstCase:5e5b20b",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "worstCase:b2c9ceb9",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "worstCase:cee673eb",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "worstCase:710de4d1",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": true,
+      "primitiveThatHelped": "CCR"
+    },
+    {
+      "label": "worstCase:5d189c1",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": true,
+      "primitiveThatHelped": "DeepCycle(BP-1)"
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth10:4",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": true,
+      "primitiveThatHelped": "DeepCycle(BP-1)"
+    },
+    {
+      "label": "scrambleDepth10:6",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": true,
+      "primitiveThatHelped": "DeepCycle(BP-1)"
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth10:9",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": true,
+      "primitiveThatHelped": "DeepCycle(BP-1)"
+    },
+    {
+      "label": "scrambleDepth20:1",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth30:9",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth50:0",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth100:4",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "solvedAtExtendedBudget": false,
+      "improvedAtExtendedBudget": false,
+      "primitiveThatHelped": null
+    }
+  ],
+  "classifications": [
+    {
+      "label": "worstCase:45959141",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "worstCase:46086463",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "worstCase:64369533",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "worstCase:84976575",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "worstCase:f17d7eb9",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "worstCase:beb967ad",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "worstCase:4549b041",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "worstCase:120fc3af",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "worstCase:dd4d94fd",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "EXISTING_BUDGET",
+      "evidence": "DeepCycle(BP-1) improves this case only at extended deadline (3000ms vs 400ms)"
+    },
+    {
+      "label": "worstCase:ad12c377",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "worstCase:e5101f85",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "EXISTING_BUDGET",
+      "evidence": "DeepCycle(BP-1) improves this case only at extended deadline (3000ms vs 400ms)"
+    },
+    {
+      "label": "worstCase:c039e611",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "worstCase:e9009e73",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "EXISTING_BUDGET",
+      "evidence": "DeepCycle(BP-1) improves this case only at extended deadline (3000ms vs 400ms)"
+    },
+    {
+      "label": "worstCase:14f5293f",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "worstCase:849509c9",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "worstCase:a005d41f",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "worstCase:d3283799",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "EXISTING_SINGLE_PRIMITIVE",
+      "evidence": "ParityCycleSpecialist(BP-2) alone improves this case (previously untried against this population)"
+    },
+    {
+      "label": "snapshot335:27053491",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "snapshot335:45959141",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "snapshot335:46086463",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "snapshot335:64369533",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "snapshot335:84976575",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "snapshot335:f17d7eb9",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "snapshot335:a061555d",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "snapshot335:dda1453f",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "EXISTING_BUDGET",
+      "evidence": "DeepCycle(BP-1) improves this case only at extended deadline (3000ms vs 400ms)"
+    },
+    {
+      "label": "snapshot335:7541612b",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "snapshot335:b714481",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "snapshot335:beb967ad",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "snapshot335:36336c1",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth10:0",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth10:1",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "EXISTING_SINGLE_PRIMITIVE",
+      "evidence": "ParityCycleSpecialist(BP-2) alone improves this case (previously untried against this population)"
+    },
+    {
+      "label": "scrambleDepth20:2",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth20:9",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth30:3",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth30:6",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth30:7",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth40:1",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth40:3",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "EXISTING_BUDGET",
+      "evidence": "ConflictBreakingSacrifice improves this case only at extended deadline (3000ms vs 400ms)"
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth50:1",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "EXISTING_BUDGET",
+      "evidence": "DeepCycle(BP-1) improves this case only at extended deadline (3000ms vs 400ms)"
+    },
+    {
+      "label": "scrambleDepth50:2",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth50:4",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth50:5",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth100:3",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "EXISTING_SINGLE_PRIMITIVE",
+      "evidence": "ParityCycleSpecialist(BP-2) alone improves this case (previously untried against this population)"
+    },
+    {
+      "label": "scrambleDepth100:9",
+      "sourceBlueprint": "Bridge Injection",
+      "category": "EXISTING_BUDGET",
+      "evidence": "ConflictBreakingSacrifice improves this case only at extended deadline (3000ms vs 400ms)"
+    },
+    {
+      "label": "worstCase:1e928fb1",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "worstCase:5e5b20b",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "worstCase:b2c9ceb9",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "worstCase:cee673eb",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "worstCase:710de4d1",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "EXISTING_BUDGET",
+      "evidence": "CCR improves this case only at extended deadline (3000ms vs 400ms)"
+    },
+    {
+      "label": "worstCase:5d189c1",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "EXISTING_BUDGET",
+      "evidence": "DeepCycle(BP-1) improves this case only at extended deadline (3000ms vs 400ms)"
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth10:4",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "EXISTING_BUDGET",
+      "evidence": "DeepCycle(BP-1) improves this case only at extended deadline (3000ms vs 400ms)"
+    },
+    {
+      "label": "scrambleDepth10:6",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "EXISTING_BUDGET",
+      "evidence": "DeepCycle(BP-1) improves this case only at extended deadline (3000ms vs 400ms)"
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth10:9",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "EXISTING_BUDGET",
+      "evidence": "DeepCycle(BP-1) improves this case only at extended deadline (3000ms vs 400ms)"
+    },
+    {
+      "label": "scrambleDepth20:1",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth30:9",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth50:0",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth100:4",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "sourceBlueprint": "Deep Cycle",
+      "category": "TRULY_UNKNOWN",
+      "evidence": "no existing Primitive, combination, ordering, or extended budget produced any improvement"
+    }
+  ],
+  "unknownSummary": {
+    "unknownCount": 53,
+    "dominantTaxonomyClass": "PARITY_GATED_CYCLE",
+    "dominantTaxonomyClassShare": 0.6226415094339622,
+    "taxonomyClassBreakdown": {
+      "CYCLE_ISOLATION": 18,
+      "PARITY_GATED_CYCLE": 33,
+      "CONFLICT_DOMINANT": 1,
+      "LOCKED_PAIR": 1
+    },
+    "sourceBlueprintBreakdown": {
+      "Bridge Injection": 36,
+      "Deep Cycle": 17
+    },
+    "meanCycleCount": 2.30188679245283,
+    "meanCycleLength": 4.528301886792453,
+    "meanConflictEdgeCount": 0.2641509433962264,
+    "parityShare": 0.6415094339622641
+  },
+  "decisionResult": {
+    "totalResidual": 68,
+    "classifiedCount": 15,
+    "classifiedFraction": 0.22058823529411764,
+    "level1Pass": false,
+    "level2Pass": true,
+    "level3Pass": true,
+    "decision": "A",
+    "rationale": "Residual의 22.1%만 기존 Primitive로 설명되고(<80%), 나머지 Unknown 53건 중 62.3%가 동일 Taxonomy Class(PARITY_GATED_CYCLE)를 공유한다(>=60% 기준 충족) -- 공통 구조를 가진 진짜 미해결 메커니즘이 존재한다."
+  }
+}
