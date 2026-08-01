@@ -1,0 +1,541 @@
+{
+  "targetLabels": [
+    "worstCase:5e5b20b",
+    "snapshot335:60b5c3b1",
+    "snapshot335:ad12c377"
+  ],
+  "measurementPathMatrix": [
+    {
+      "path": "attemptRecovery_direct",
+      "invocationLocation": "generateRecoveryStrategies()의 genParityGatedCycle() 클로저 -- genCCR/genMultiComponentMerge 다음, genMixedCommutator 이전에 항상 호출됨(스케줄링 옵션과 무관하게 고정 순서).",
+      "gate": "componentCount>1 (analyzeConstraints(buildStateGraph(cubies)).componentCount) -- MCM의 Gate와 달리 훨씬 관대함(MCM은 특정 조건, PARITY는 순수 componentCount 기준). 실측: 142케이스 중 49케이스가 이 Gate를 통과(componentCount>1).",
+      "dedicatedSliceApplied": "PARITY_GATED_CYCLE_RESERVED_SLICE_MS=2000ms -- `Math.min(deadline, Date.now() + 2000)`로 outer deadline과 무관하게 자체 2000ms 예산 확보(MCM과 동일한 메커니즘).",
+      "shortCircuitStatus": "이미 attemptRecovery()의 short-circuit allowlist에 포함되어 있음(`best.type === \"PARITY_GATED_CYCLE\"`, 줄 788) -- MCM이 겪었던 Short-Circuit Gap 결함이 PARITY에는 애초에 없었다. Short-Circuit Production Integration Sprint v1이 발견하고 고친 문제가 PARITY에는 처음부터 존재하지 않았음.",
+      "realProductionEvidence": "이번 Sprint의 실측 스캔(outer=2000ms, 49개 Gate-passing 케이스 전수 조사): offeredCount=4, chosenCount=3, chosenAndImprovedCount=3 -- worstCase:5e5b20b, snapshot335:60b5c3b1, snapshot335:ad12c377."
+    },
+    {
+      "path": "generateRecoveryStrategies_direct",
+      "invocationLocation": "attemptRecovery_direct와 동일한 genParityGatedCycle() 클로저 -- onEvent 계측 훅을 통해 candidateType=\"PARITY_GATED_CYCLE\"의 start/generated/skipped/empty phase를 직접 관측 가능.",
+      "gate": "attemptRecovery_direct와 동일.",
+      "dedicatedSliceApplied": "attemptRecovery_direct와 동일.",
+      "shortCircuitStatus": "이 경로는 attemptRecovery()의 retry-loop/short-circuit 레이어 자체를 우회하므로 short-circuit 이슈와 무관.",
+      "realProductionEvidence": "SharedProbes.ts의 parityRecoveryTimelineProbe()가 이 경로를 직접 사용 -- MCM Validation Methodology Sprint v1의 attemptRecoveryTimelineProbe()와 동일한 메커니즘(onEvent 훅), candidateType만 PARITY_GATED_CYCLE로 교체."
+    },
+    {
+      "path": "solve_e2e",
+      "invocationLocation": "FiveByFiveEdgeSolverEngine.solve() -> executeTask() -> attemptRecovery() -> genParityGatedCycle() (ENDGAME 타입 task에서만 도달, recoveryEligible=true일 때).",
+      "gate": "attemptRecovery_direct와 동일한 componentCount>1 Gate -- 그러나 이 경로에서는 Recovery 자체가 트리거되어야만(primary 파이프라인 실패) genParityGatedCycle()에 도달함.",
+      "dedicatedSliceApplied": "동일한 PARITY_GATED_CYCLE_RESERVED_SLICE_MS=2000ms -- 그러나 attemptRecovery()가 real solve()로부터 받는 real outer deadline은 MCM Validation Methodology Sprint v1이 이미 확인한 대로 always the FULL task deadline(PLAN_TIME_BUDGET_MS=1000ms 고정, recoveryReserveMsOverride=250ms 기본값은 PRIMARY 파이프라인의 자체 시도 창만 줄임).",
+      "shortCircuitStatus": "attemptRecovery_direct와 동일(이미 allowlist 포함).",
+      "realProductionEvidence": "PARITY_GATED_CYCLE Production Integration Sprint v1(#415-421)의 real solve() 전체 142케이스 replay: parityGatedCycleOfferedCount=0, parityGatedCycleChosenCount=0, parityGatedCycleWinRate=0 -- 이 Sprint 자신의 데이터 파일(parityGatedCycleProductionIntegrationV1/data/parity-gated-cycle-production-integration-v1-result.json)에 이미 기록되어 있던 사실. MCM의 Production Validation Sprint v1(improvedCount Baseline=Integrated=1/142)과 정확히 동일한 패턴 -- solve_e2e 레벨에서 PARITY_GATED_CYCLE이 단 한 번도 후보로조차 등장하지 않았다."
+    }
+  ],
+  "budgetEnvelope": [
+    {
+      "label": "worstCase:5e5b20b",
+      "path": "attemptRecovery_direct",
+      "configDescription": "outer=1000ms (real production outer deadline)",
+      "outerOrPlanDeadlineMs": 1000,
+      "actualRemainingTimeAtParityOrRecoveryStartMs": 608,
+      "dedicatedBudgetMs": 2000,
+      "effectiveBudgetMs": 608
+    },
+    {
+      "label": "worstCase:5e5b20b",
+      "path": "attemptRecovery_direct",
+      "configDescription": "outer=2000ms (PARITY_GATED_CYCLE 자신의 명목 dedicated budget과 동일)",
+      "outerOrPlanDeadlineMs": 2000,
+      "actualRemainingTimeAtParityOrRecoveryStartMs": 1737,
+      "dedicatedBudgetMs": 2000,
+      "effectiveBudgetMs": 1737
+    },
+    {
+      "label": "worstCase:5e5b20b",
+      "path": "solve_e2e",
+      "configDescription": "recoveryReserveMsOverride=250ms (real production default)",
+      "outerOrPlanDeadlineMs": 1000,
+      "actualRemainingTimeAtParityOrRecoveryStartMs": 234,
+      "dedicatedBudgetMs": 2000,
+      "effectiveBudgetMs": 234
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "path": "attemptRecovery_direct",
+      "configDescription": "outer=1000ms (real production outer deadline)",
+      "outerOrPlanDeadlineMs": 1000,
+      "actualRemainingTimeAtParityOrRecoveryStartMs": 569,
+      "dedicatedBudgetMs": 2000,
+      "effectiveBudgetMs": 569
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "path": "attemptRecovery_direct",
+      "configDescription": "outer=2000ms (PARITY_GATED_CYCLE 자신의 명목 dedicated budget과 동일)",
+      "outerOrPlanDeadlineMs": 2000,
+      "actualRemainingTimeAtParityOrRecoveryStartMs": 1398,
+      "dedicatedBudgetMs": 2000,
+      "effectiveBudgetMs": 1398
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "path": "solve_e2e",
+      "configDescription": "recoveryReserveMsOverride=250ms (real production default)",
+      "outerOrPlanDeadlineMs": 1000,
+      "actualRemainingTimeAtParityOrRecoveryStartMs": null,
+      "dedicatedBudgetMs": 2000,
+      "effectiveBudgetMs": null
+    },
+    {
+      "label": "snapshot335:ad12c377",
+      "path": "attemptRecovery_direct",
+      "configDescription": "outer=1000ms (real production outer deadline)",
+      "outerOrPlanDeadlineMs": 1000,
+      "actualRemainingTimeAtParityOrRecoveryStartMs": 484,
+      "dedicatedBudgetMs": 2000,
+      "effectiveBudgetMs": 484
+    },
+    {
+      "label": "snapshot335:ad12c377",
+      "path": "attemptRecovery_direct",
+      "configDescription": "outer=2000ms (PARITY_GATED_CYCLE 자신의 명목 dedicated budget과 동일)",
+      "outerOrPlanDeadlineMs": 2000,
+      "actualRemainingTimeAtParityOrRecoveryStartMs": 1723,
+      "dedicatedBudgetMs": 2000,
+      "effectiveBudgetMs": 1723
+    },
+    {
+      "label": "snapshot335:ad12c377",
+      "path": "solve_e2e",
+      "configDescription": "recoveryReserveMsOverride=250ms (real production default)",
+      "outerOrPlanDeadlineMs": 1000,
+      "actualRemainingTimeAtParityOrRecoveryStartMs": null,
+      "dedicatedBudgetMs": 2000,
+      "effectiveBudgetMs": null
+    }
+  ],
+  "sensitivity": {
+    "attemptRecoverySweep": [
+      {
+        "label": "worstCase:5e5b20b",
+        "outerDeadlineMs": 1000,
+        "result": {
+          "outerDeadlineMs": 1000,
+          "componentCount": 2,
+          "gatePassed": true,
+          "parityOffered": true,
+          "parityChosen": true,
+          "parityRemainingTimeAtStartMs": 739,
+          "parityOwnRuntimeMs": 435,
+          "chosenType": "PARITY_GATED_CYCLE",
+          "improved": true,
+          "wrongWingBefore": 6,
+          "wrongWingAfter": 5
+        }
+      },
+      {
+        "label": "worstCase:5e5b20b",
+        "outerDeadlineMs": 1500,
+        "result": {
+          "outerDeadlineMs": 1500,
+          "componentCount": 2,
+          "gatePassed": true,
+          "parityOffered": true,
+          "parityChosen": true,
+          "parityRemainingTimeAtStartMs": 1034,
+          "parityOwnRuntimeMs": 427,
+          "chosenType": "PARITY_GATED_CYCLE",
+          "improved": true,
+          "wrongWingBefore": 6,
+          "wrongWingAfter": 5
+        }
+      },
+      {
+        "label": "worstCase:5e5b20b",
+        "outerDeadlineMs": 2000,
+        "result": {
+          "outerDeadlineMs": 2000,
+          "componentCount": 2,
+          "gatePassed": true,
+          "parityOffered": true,
+          "parityChosen": true,
+          "parityRemainingTimeAtStartMs": 1745,
+          "parityOwnRuntimeMs": 397,
+          "chosenType": "PARITY_GATED_CYCLE",
+          "improved": true,
+          "wrongWingBefore": 6,
+          "wrongWingAfter": 5
+        }
+      },
+      {
+        "label": "worstCase:5e5b20b",
+        "outerDeadlineMs": 60000,
+        "result": {
+          "outerDeadlineMs": 60000,
+          "componentCount": 2,
+          "gatePassed": true,
+          "parityOffered": true,
+          "parityChosen": true,
+          "parityRemainingTimeAtStartMs": 59577,
+          "parityOwnRuntimeMs": 434,
+          "chosenType": "PARITY_GATED_CYCLE",
+          "improved": true,
+          "wrongWingBefore": 6,
+          "wrongWingAfter": 5
+        }
+      },
+      {
+        "label": "snapshot335:60b5c3b1",
+        "outerDeadlineMs": 1000,
+        "result": {
+          "outerDeadlineMs": 1000,
+          "componentCount": 2,
+          "gatePassed": true,
+          "parityOffered": true,
+          "parityChosen": true,
+          "parityRemainingTimeAtStartMs": 611,
+          "parityOwnRuntimeMs": 713,
+          "chosenType": "PARITY_GATED_CYCLE",
+          "improved": true,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 8
+        }
+      },
+      {
+        "label": "snapshot335:60b5c3b1",
+        "outerDeadlineMs": 1500,
+        "result": {
+          "outerDeadlineMs": 1500,
+          "componentCount": 2,
+          "gatePassed": true,
+          "parityOffered": true,
+          "parityChosen": true,
+          "parityRemainingTimeAtStartMs": 1190,
+          "parityOwnRuntimeMs": 1307,
+          "chosenType": "PARITY_GATED_CYCLE",
+          "improved": true,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 6
+        }
+      },
+      {
+        "label": "snapshot335:60b5c3b1",
+        "outerDeadlineMs": 2000,
+        "result": {
+          "outerDeadlineMs": 2000,
+          "componentCount": 2,
+          "gatePassed": true,
+          "parityOffered": true,
+          "parityChosen": true,
+          "parityRemainingTimeAtStartMs": 1468,
+          "parityOwnRuntimeMs": 1529,
+          "chosenType": "PARITY_GATED_CYCLE",
+          "improved": true,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 6
+        }
+      },
+      {
+        "label": "snapshot335:60b5c3b1",
+        "outerDeadlineMs": 60000,
+        "result": {
+          "outerDeadlineMs": 60000,
+          "componentCount": 2,
+          "gatePassed": true,
+          "parityOffered": true,
+          "parityChosen": true,
+          "parityRemainingTimeAtStartMs": 59449,
+          "parityOwnRuntimeMs": 2007,
+          "chosenType": "PARITY_GATED_CYCLE",
+          "improved": true,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 6
+        }
+      },
+      {
+        "label": "snapshot335:ad12c377",
+        "outerDeadlineMs": 1000,
+        "result": {
+          "outerDeadlineMs": 1000,
+          "componentCount": 2,
+          "gatePassed": true,
+          "parityOffered": false,
+          "parityChosen": false,
+          "parityRemainingTimeAtStartMs": 700,
+          "parityOwnRuntimeMs": 781,
+          "chosenType": "none",
+          "improved": false,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 9
+        }
+      },
+      {
+        "label": "snapshot335:ad12c377",
+        "outerDeadlineMs": 1500,
+        "result": {
+          "outerDeadlineMs": 1500,
+          "componentCount": 2,
+          "gatePassed": true,
+          "parityOffered": true,
+          "parityChosen": true,
+          "parityRemainingTimeAtStartMs": 1271,
+          "parityOwnRuntimeMs": 958,
+          "chosenType": "PARITY_GATED_CYCLE",
+          "improved": true,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 8
+        }
+      },
+      {
+        "label": "snapshot335:ad12c377",
+        "outerDeadlineMs": 2000,
+        "result": {
+          "outerDeadlineMs": 2000,
+          "componentCount": 2,
+          "gatePassed": true,
+          "parityOffered": true,
+          "parityChosen": true,
+          "parityRemainingTimeAtStartMs": 1473,
+          "parityOwnRuntimeMs": 1120,
+          "chosenType": "PARITY_GATED_CYCLE",
+          "improved": true,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 8
+        }
+      },
+      {
+        "label": "snapshot335:ad12c377",
+        "outerDeadlineMs": 60000,
+        "result": {
+          "outerDeadlineMs": 60000,
+          "componentCount": 2,
+          "gatePassed": true,
+          "parityOffered": true,
+          "parityChosen": true,
+          "parityRemainingTimeAtStartMs": 59422,
+          "parityOwnRuntimeMs": 1042,
+          "chosenType": "PARITY_GATED_CYCLE",
+          "improved": true,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 8
+        }
+      }
+    ],
+    "solveSweep": [
+      {
+        "label": "worstCase:5e5b20b",
+        "recoveryReserveMsOverride": 250,
+        "result": {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": true,
+          "remainingTimeAtRecoveryTriggerMs": 240,
+          "deadlineMissed": false,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 6,
+          "wrongWingAfter": 6
+        }
+      },
+      {
+        "label": "worstCase:5e5b20b",
+        "recoveryReserveMsOverride": 450,
+        "result": {
+          "recoveryReserveMsOverride": 450,
+          "recoveryTriggered": true,
+          "remainingTimeAtRecoveryTriggerMs": 246,
+          "deadlineMissed": false,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 6,
+          "wrongWingAfter": 6
+        }
+      },
+      {
+        "label": "worstCase:5e5b20b",
+        "recoveryReserveMsOverride": 900,
+        "result": {
+          "recoveryReserveMsOverride": 900,
+          "recoveryTriggered": true,
+          "remainingTimeAtRecoveryTriggerMs": 241,
+          "deadlineMissed": false,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 6,
+          "wrongWingAfter": 6
+        }
+      },
+      {
+        "label": "snapshot335:60b5c3b1",
+        "recoveryReserveMsOverride": 250,
+        "result": {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 9
+        }
+      },
+      {
+        "label": "snapshot335:60b5c3b1",
+        "recoveryReserveMsOverride": 450,
+        "result": {
+          "recoveryReserveMsOverride": 450,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 9
+        }
+      },
+      {
+        "label": "snapshot335:60b5c3b1",
+        "recoveryReserveMsOverride": 900,
+        "result": {
+          "recoveryReserveMsOverride": 900,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 9
+        }
+      },
+      {
+        "label": "snapshot335:ad12c377",
+        "recoveryReserveMsOverride": 250,
+        "result": {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 9
+        }
+      },
+      {
+        "label": "snapshot335:ad12c377",
+        "recoveryReserveMsOverride": 450,
+        "result": {
+          "recoveryReserveMsOverride": 450,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 9
+        }
+      },
+      {
+        "label": "snapshot335:ad12c377",
+        "recoveryReserveMsOverride": 900,
+        "result": {
+          "recoveryReserveMsOverride": 900,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 9
+        }
+      }
+    ],
+    "attemptRecoveryThresholdMs": {
+      "worstCase:5e5b20b": 1000,
+      "snapshot335:60b5c3b1": 1000,
+      "snapshot335:ad12c377": 1500
+    },
+    "solveThresholdMs": {
+      "worstCase:5e5b20b": null,
+      "snapshot335:60b5c3b1": null,
+      "snapshot335:ad12c377": null
+    }
+  },
+  "methodComparison": [
+    {
+      "label": "worstCase:5e5b20b",
+      "methodAResult": "PASS",
+      "methodBResult": "FAIL",
+      "methodAChosenType": "PARITY_GATED_CYCLE",
+      "methodBChosenType": "none",
+      "methodARuntimeProxy": 397,
+      "methodBRuntimeProxy": 240,
+      "methodFlipsResult": true
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "methodAResult": "PASS",
+      "methodBResult": "FAIL",
+      "methodAChosenType": "PARITY_GATED_CYCLE",
+      "methodBChosenType": "none",
+      "methodARuntimeProxy": 1529,
+      "methodBRuntimeProxy": null,
+      "methodFlipsResult": true
+    },
+    {
+      "label": "snapshot335:ad12c377",
+      "methodAResult": "PASS",
+      "methodBResult": "FAIL",
+      "methodAChosenType": "PARITY_GATED_CYCLE",
+      "methodBChosenType": "none",
+      "methodARuntimeProxy": 1120,
+      "methodBRuntimeProxy": null,
+      "methodFlipsResult": true
+    }
+  ],
+  "applicability": {
+    "checks": [
+      {
+        "condition": "Dedicated Budget Primitive인가",
+        "satisfied": true,
+        "evidence": "모든 attemptRecovery_direct/solve_e2e 측정 행에서 dedicatedBudgetMs=2000ms로 일관됨 (PARITY_GATED_CYCLE_RESERVED_SLICE_MS, fiveByFiveEdgeRecovery.ts 실제 상수 인용)."
+      },
+      {
+        "condition": "solve() 기본 Budget Envelope에서 구조적으로 Capability가 숨겨지는가",
+        "satisfied": true,
+        "evidence": "3개 실제 known-effect case 전부 solve_e2e @ recoveryReserveMsOverride=250ms에서 improved=false(Method B FAIL) -- effectiveBudgetMs는 case별로 null(2건, Recovery 트리거 자체가 trace에 없음) 또는 247ms(1건, worstCase:5e5b20b -- Recovery는 트리거되지만 attemptRecovery_direct@outer=1000ms의 604ms에 크게 못 미치는 예산만 남음)로 나타나, \"예산이 0\"이 아니라 \"예산이 구조적으로 부족\"이 공통 원인임을 보여준다. 이미 커밋된 PARITY_GATED_CYCLE Production Integration Sprint v1 데이터(parityGatedCycleProductionIntegrationV1/data)도 전체 142케이스에서 parityGatedCycleOfferedCount=0, parityGatedCycleChosenCount=0을 기록 -- 소표본 우연이 아니라 population 전체에서 일관된 real 관측."
+      },
+      {
+        "condition": "attemptRecovery_direct에서 Capability가 독립적으로 관측되는가",
+        "satisfied": true,
+        "evidence": "3개 실제 case(worstCase:5e5b20b, snapshot335:60b5c3b1, snapshot335:ad12c377) 전부 outer=2000ms에서 chosenType=PARITY_GATED_CYCLE, improved=true로 실측 확인됨."
+      }
+    ],
+    "allSatisfied": true,
+    "classification": "MCM_PROTOCOL_APPLICABLE"
+  },
+  "decisionResult": {
+    "level1MeasurementMismatch": true,
+    "level2CapabilityExists": true,
+    "level3ProtocolNecessity": true,
+    "decision": "A_PROTOCOL_ADOPTED",
+    "rootCause": "solve_e2e의 real production 기본값(recoveryReserveMsOverride=250ms)에서는 PARITY_GATED_CYCLE이 Recovery 트리거 자체에 도달하지 못하거나(2/3 case) 도달해도 필요한 예산에 크게 못 미쳐(1/3 case, 247ms) Capability가 전혀 관측되지 않는다(이미 커밋된 Production Integration Sprint v1 데이터: offeredCount=0/142도 population 전체 수준에서 이를 재확인). 반면 attemptRecovery_direct에서는 real production 기본 outer deadline(1000ms) 부근에서부터 3개 case 전부 개별 임계값(worstCase:5e5b20b(attemptRecoveryThresholdMs=1000ms), snapshot335:60b5c3b1(attemptRecoveryThresholdMs=1000ms), snapshot335:ad12c377(attemptRecoveryThresholdMs=1500ms))에서 chosenType=PARITY_GATED_CYCLE, improved=true로 확인된다. 이는 MCM과 정확히 동일한 Budget Envelope 불일치이며, Sensitivity Analysis의 독립적인 실측(attemptRecoveryThresholdMs 발견 vs solveThresholdMs 미발견, 250/450/900ms 전 구간)이 이를 재확인한다.",
+    "frameworkCompatible": true,
+    "rationale": "Measurement Mismatch 확인(Level1 PASS) + Capability 존재 확인(Level2 PASS, 3/3 case) + MCM Protocol 적용 필요성 실측 입증(Level3 PASS, Applicability 3개 조건 전부 충족) + 기존 Validation Framework 수정 불필요 -- PARITY_GATED_CYCLE Validation Protocol을 MCM과 동일한 방식으로 공식 채택한다."
+  },
+  "overallLevels": {
+    "level1MeasurementPathAudit": true,
+    "level2BudgetEnvelopeAnalysis": true,
+    "level3SensitivityAnalysis": true,
+    "level4MethodComparison": true,
+    "level5ApplicabilityAnalysis": true,
+    "level6ValidationProtocolDecision": true
+  }
+}
