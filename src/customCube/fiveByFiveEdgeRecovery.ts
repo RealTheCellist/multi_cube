@@ -772,14 +772,20 @@ export function attemptRecovery(
 
     // CCR Production Integration Sprint v1 / Mixed Commutator Production
     // Integration Sprint v1 / Parity-Gated Cycle Production Integration
-    // Sprint v1: CCR's, MIXED_COMMUTATOR's, and PARITY_GATED_CYCLE's own
-    // moves (runCCRPrototype / tryMixedCommutatorPrototype / this file's
-    // own genParityGatedCycle -> each one's own validateDeferred call,
+    // Sprint v1 / Multi-Component Merge Short-Circuit Production
+    // Integration Sprint v1: CCR's, MIXED_COMMUTATOR's, PARITY_GATED_CYCLE's,
+    // and MULTI_COMPONENT_MERGE's own moves (runCCRPrototype /
+    // tryMixedCommutatorPrototype / this file's own genParityGatedCycle /
+    // genMultiComponentMerge -> each one's own validateDeferred call,
     // byte-identical invariant to REPAIR's runSuccessV2) are ALSO already
     // guaranteed net-improving by the time they reach here -- the same
     // reasoning this short-circuit already relies on for REPAIR, extended
     // to the other candidate types that share the exact same guarantee.
-    if ((best.type === "REPAIR" || best.type === "CCR" || best.type === "MIXED_COMMUTATOR" || best.type === "PARITY_GATED_CYCLE") && shortCircuitRepair && afterDisrupt < originalBaseline) {
+    // MULTI_COMPONENT_MERGE was the sole omission (Refinement Sprint v3's
+    // own real-trace finding: chosen + net-improving moves discarded by a
+    // later round's deadline break) -- this line is the only change this
+    // Sprint makes.
+    if ((best.type === "REPAIR" || best.type === "CCR" || best.type === "MIXED_COMMUTATOR" || best.type === "PARITY_GATED_CYCLE" || best.type === "MULTI_COMPONENT_MERGE") && shortCircuitRepair && afterDisrupt < originalBaseline) {
       log("recovery-repair-short-circuit", `${best.type}가 이미 net-improvement 검증됨(wrongWing ${originalBaseline} -> ${afterDisrupt}) -- retryTask 생략`);
       applySeq(cubies, applied);
       return applied;
