@@ -1,0 +1,913 @@
+{
+  "targetLabels": [
+    "scrambleDepth30:2",
+    "scrambleDepth40:7",
+    "scrambleDepth100:5"
+  ],
+  "outerDeadlineMs": 2000,
+  "timelines": [
+    {
+      "label": "scrambleDepth30:2",
+      "outerDeadlineMs": 2000,
+      "events": [
+        {
+          "type": "DISRUPT",
+          "phase": "start",
+          "atMs": 3
+        },
+        {
+          "type": "DISRUPT",
+          "phase": "empty",
+          "atMs": 86
+        },
+        {
+          "type": "DISRUPT",
+          "phase": "start",
+          "atMs": 86
+        },
+        {
+          "type": "DISRUPT",
+          "phase": "empty",
+          "atMs": 224
+        },
+        {
+          "type": "REPAIR",
+          "phase": "start",
+          "atMs": 225
+        },
+        {
+          "type": "REPAIR",
+          "phase": "empty",
+          "atMs": 535
+        },
+        {
+          "type": "CCR",
+          "phase": "start",
+          "atMs": 535
+        },
+        {
+          "type": "CCR",
+          "phase": "empty",
+          "atMs": 536
+        },
+        {
+          "type": "MULTI_COMPONENT_MERGE",
+          "phase": "start",
+          "atMs": 536
+        },
+        {
+          "type": "MULTI_COMPONENT_MERGE",
+          "phase": "generated",
+          "atMs": 1537
+        },
+        {
+          "type": "PARITY_GATED_CYCLE",
+          "phase": "start",
+          "atMs": 1538
+        },
+        {
+          "type": "PARITY_GATED_CYCLE",
+          "phase": "empty",
+          "atMs": 2166
+        },
+        {
+          "type": "MIXED_COMMUTATOR",
+          "phase": "start",
+          "atMs": 2167
+        },
+        {
+          "type": "MIXED_COMMUTATOR",
+          "phase": "skipped",
+          "atMs": 2167
+        },
+        {
+          "type": "SETUP",
+          "phase": "skipped",
+          "atMs": 2167
+        }
+      ],
+      "segments": [
+        {
+          "type": "DISRUPT",
+          "seq": 0,
+          "startMs": 3,
+          "finishMs": 86,
+          "ownRuntimeMs": 83,
+          "remainingTimeAtStartMs": 1997,
+          "finalPhase": "empty"
+        },
+        {
+          "type": "DISRUPT",
+          "seq": 1,
+          "startMs": 86,
+          "finishMs": 224,
+          "ownRuntimeMs": 138,
+          "remainingTimeAtStartMs": 1914,
+          "finalPhase": "empty"
+        },
+        {
+          "type": "REPAIR",
+          "seq": 0,
+          "startMs": 225,
+          "finishMs": 535,
+          "ownRuntimeMs": 310,
+          "remainingTimeAtStartMs": 1775,
+          "finalPhase": "empty"
+        },
+        {
+          "type": "CCR",
+          "seq": 0,
+          "startMs": 535,
+          "finishMs": 536,
+          "ownRuntimeMs": 1,
+          "remainingTimeAtStartMs": 1465,
+          "finalPhase": "empty"
+        },
+        {
+          "type": "MULTI_COMPONENT_MERGE",
+          "seq": 0,
+          "startMs": 536,
+          "finishMs": 1537,
+          "ownRuntimeMs": 1001,
+          "remainingTimeAtStartMs": 1464,
+          "finalPhase": "generated"
+        },
+        {
+          "type": "PARITY_GATED_CYCLE",
+          "seq": 0,
+          "startMs": 1538,
+          "finishMs": 2166,
+          "ownRuntimeMs": 628,
+          "remainingTimeAtStartMs": 462,
+          "finalPhase": "empty"
+        },
+        {
+          "type": "MIXED_COMMUTATOR",
+          "seq": 0,
+          "startMs": 2167,
+          "finishMs": 2167,
+          "ownRuntimeMs": 0,
+          "remainingTimeAtStartMs": -167,
+          "finalPhase": "skipped"
+        },
+        {
+          "type": "SETUP",
+          "seq": 0,
+          "startMs": 2167,
+          "finishMs": 2167,
+          "ownRuntimeMs": 0,
+          "remainingTimeAtStartMs": -167,
+          "finalPhase": "skipped"
+        }
+      ],
+      "offeredTypes": [
+        "MULTI_COMPONENT_MERGE"
+      ],
+      "chosenType": "MULTI_COMPONENT_MERGE",
+      "mcmSegment": {
+        "type": "MULTI_COMPONENT_MERGE",
+        "seq": 0,
+        "startMs": 536,
+        "finishMs": 1537,
+        "ownRuntimeMs": 1001,
+        "remainingTimeAtStartMs": 1464,
+        "finalPhase": "generated"
+      },
+      "mcmOffered": true,
+      "mcmChosen": true,
+      "totalCallRuntimeMs": 2167
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "outerDeadlineMs": 2000,
+      "events": [
+        {
+          "type": "DISRUPT",
+          "phase": "start",
+          "atMs": 2
+        },
+        {
+          "type": "DISRUPT",
+          "phase": "empty",
+          "atMs": 347
+        },
+        {
+          "type": "DISRUPT",
+          "phase": "skipped",
+          "atMs": 347
+        },
+        {
+          "type": "REPAIR",
+          "phase": "start",
+          "atMs": 347
+        },
+        {
+          "type": "REPAIR",
+          "phase": "empty",
+          "atMs": 348
+        },
+        {
+          "type": "CCR",
+          "phase": "start",
+          "atMs": 348
+        },
+        {
+          "type": "CCR",
+          "phase": "empty",
+          "atMs": 2187
+        },
+        {
+          "type": "MULTI_COMPONENT_MERGE",
+          "phase": "start",
+          "atMs": 2187
+        },
+        {
+          "type": "MULTI_COMPONENT_MERGE",
+          "phase": "empty",
+          "atMs": 2190
+        },
+        {
+          "type": "PARITY_GATED_CYCLE",
+          "phase": "start",
+          "atMs": 2190
+        },
+        {
+          "type": "PARITY_GATED_CYCLE",
+          "phase": "empty",
+          "atMs": 2191
+        },
+        {
+          "type": "MIXED_COMMUTATOR",
+          "phase": "start",
+          "atMs": 2191
+        },
+        {
+          "type": "MIXED_COMMUTATOR",
+          "phase": "skipped",
+          "atMs": 2191
+        },
+        {
+          "type": "SETUP",
+          "phase": "start",
+          "atMs": 2191
+        },
+        {
+          "type": "SETUP",
+          "phase": "empty",
+          "atMs": 2191
+        }
+      ],
+      "segments": [
+        {
+          "type": "DISRUPT",
+          "seq": 0,
+          "startMs": 2,
+          "finishMs": 347,
+          "ownRuntimeMs": 345,
+          "remainingTimeAtStartMs": 1998,
+          "finalPhase": "empty"
+        },
+        {
+          "type": "DISRUPT",
+          "seq": 1,
+          "startMs": 347,
+          "finishMs": 347,
+          "ownRuntimeMs": 0,
+          "remainingTimeAtStartMs": 1653,
+          "finalPhase": "skipped"
+        },
+        {
+          "type": "REPAIR",
+          "seq": 0,
+          "startMs": 347,
+          "finishMs": 348,
+          "ownRuntimeMs": 1,
+          "remainingTimeAtStartMs": 1653,
+          "finalPhase": "empty"
+        },
+        {
+          "type": "CCR",
+          "seq": 0,
+          "startMs": 348,
+          "finishMs": 2187,
+          "ownRuntimeMs": 1839,
+          "remainingTimeAtStartMs": 1652,
+          "finalPhase": "empty"
+        },
+        {
+          "type": "MULTI_COMPONENT_MERGE",
+          "seq": 0,
+          "startMs": 2187,
+          "finishMs": 2190,
+          "ownRuntimeMs": 3,
+          "remainingTimeAtStartMs": -187,
+          "finalPhase": "empty"
+        },
+        {
+          "type": "PARITY_GATED_CYCLE",
+          "seq": 0,
+          "startMs": 2190,
+          "finishMs": 2191,
+          "ownRuntimeMs": 1,
+          "remainingTimeAtStartMs": -190,
+          "finalPhase": "empty"
+        },
+        {
+          "type": "MIXED_COMMUTATOR",
+          "seq": 0,
+          "startMs": 2191,
+          "finishMs": 2191,
+          "ownRuntimeMs": 0,
+          "remainingTimeAtStartMs": -191,
+          "finalPhase": "skipped"
+        },
+        {
+          "type": "SETUP",
+          "seq": 0,
+          "startMs": 2191,
+          "finishMs": 2191,
+          "ownRuntimeMs": 0,
+          "remainingTimeAtStartMs": -191,
+          "finalPhase": "empty"
+        }
+      ],
+      "offeredTypes": [],
+      "chosenType": "none",
+      "mcmSegment": {
+        "type": "MULTI_COMPONENT_MERGE",
+        "seq": 0,
+        "startMs": 2187,
+        "finishMs": 2190,
+        "ownRuntimeMs": 3,
+        "remainingTimeAtStartMs": -187,
+        "finalPhase": "empty"
+      },
+      "mcmOffered": false,
+      "mcmChosen": false,
+      "totalCallRuntimeMs": 2191
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "outerDeadlineMs": 2000,
+      "events": [
+        {
+          "type": "DISRUPT",
+          "phase": "start",
+          "atMs": 2
+        },
+        {
+          "type": "DISRUPT",
+          "phase": "empty",
+          "atMs": 96
+        },
+        {
+          "type": "DISRUPT",
+          "phase": "start",
+          "atMs": 96
+        },
+        {
+          "type": "DISRUPT",
+          "phase": "empty",
+          "atMs": 149
+        },
+        {
+          "type": "REPAIR",
+          "phase": "start",
+          "atMs": 149
+        },
+        {
+          "type": "REPAIR",
+          "phase": "empty",
+          "atMs": 288
+        },
+        {
+          "type": "CCR",
+          "phase": "start",
+          "atMs": 288
+        },
+        {
+          "type": "CCR",
+          "phase": "empty",
+          "atMs": 290
+        },
+        {
+          "type": "MULTI_COMPONENT_MERGE",
+          "phase": "start",
+          "atMs": 290
+        },
+        {
+          "type": "MULTI_COMPONENT_MERGE",
+          "phase": "empty",
+          "atMs": 2023
+        },
+        {
+          "type": "PARITY_GATED_CYCLE",
+          "phase": "start",
+          "atMs": 2023
+        },
+        {
+          "type": "PARITY_GATED_CYCLE",
+          "phase": "empty",
+          "atMs": 2024
+        },
+        {
+          "type": "MIXED_COMMUTATOR",
+          "phase": "start",
+          "atMs": 2024
+        },
+        {
+          "type": "MIXED_COMMUTATOR",
+          "phase": "skipped",
+          "atMs": 2024
+        },
+        {
+          "type": "SETUP",
+          "phase": "start",
+          "atMs": 2024
+        },
+        {
+          "type": "SETUP",
+          "phase": "empty",
+          "atMs": 2024
+        }
+      ],
+      "segments": [
+        {
+          "type": "DISRUPT",
+          "seq": 0,
+          "startMs": 2,
+          "finishMs": 96,
+          "ownRuntimeMs": 94,
+          "remainingTimeAtStartMs": 1998,
+          "finalPhase": "empty"
+        },
+        {
+          "type": "DISRUPT",
+          "seq": 1,
+          "startMs": 96,
+          "finishMs": 149,
+          "ownRuntimeMs": 53,
+          "remainingTimeAtStartMs": 1904,
+          "finalPhase": "empty"
+        },
+        {
+          "type": "REPAIR",
+          "seq": 0,
+          "startMs": 149,
+          "finishMs": 288,
+          "ownRuntimeMs": 139,
+          "remainingTimeAtStartMs": 1851,
+          "finalPhase": "empty"
+        },
+        {
+          "type": "CCR",
+          "seq": 0,
+          "startMs": 288,
+          "finishMs": 290,
+          "ownRuntimeMs": 2,
+          "remainingTimeAtStartMs": 1712,
+          "finalPhase": "empty"
+        },
+        {
+          "type": "MULTI_COMPONENT_MERGE",
+          "seq": 0,
+          "startMs": 290,
+          "finishMs": 2023,
+          "ownRuntimeMs": 1733,
+          "remainingTimeAtStartMs": 1710,
+          "finalPhase": "empty"
+        },
+        {
+          "type": "PARITY_GATED_CYCLE",
+          "seq": 0,
+          "startMs": 2023,
+          "finishMs": 2024,
+          "ownRuntimeMs": 1,
+          "remainingTimeAtStartMs": -23,
+          "finalPhase": "empty"
+        },
+        {
+          "type": "MIXED_COMMUTATOR",
+          "seq": 0,
+          "startMs": 2024,
+          "finishMs": 2024,
+          "ownRuntimeMs": 0,
+          "remainingTimeAtStartMs": -24,
+          "finalPhase": "skipped"
+        },
+        {
+          "type": "SETUP",
+          "seq": 0,
+          "startMs": 2024,
+          "finishMs": 2024,
+          "ownRuntimeMs": 0,
+          "remainingTimeAtStartMs": -24,
+          "finalPhase": "empty"
+        }
+      ],
+      "offeredTypes": [],
+      "chosenType": "none",
+      "mcmSegment": {
+        "type": "MULTI_COMPONENT_MERGE",
+        "seq": 0,
+        "startMs": 290,
+        "finishMs": 2023,
+        "ownRuntimeMs": 1733,
+        "remainingTimeAtStartMs": 1710,
+        "finalPhase": "empty"
+      },
+      "mcmOffered": false,
+      "mcmChosen": false,
+      "totalCallRuntimeMs": 2024
+    }
+  ],
+  "attributions": [
+    {
+      "label": "scrambleDepth30:2",
+      "primitivesBeforeMcm": [
+        {
+          "type": "DISRUPT",
+          "seq": 0,
+          "timeConsumedMs": 83,
+          "producedCandidate": false,
+          "wonSelection": false
+        },
+        {
+          "type": "DISRUPT",
+          "seq": 1,
+          "timeConsumedMs": 138,
+          "producedCandidate": false,
+          "wonSelection": false
+        },
+        {
+          "type": "REPAIR",
+          "seq": 0,
+          "timeConsumedMs": 310,
+          "producedCandidate": false,
+          "wonSelection": false
+        },
+        {
+          "type": "CCR",
+          "seq": 0,
+          "timeConsumedMs": 1,
+          "producedCandidate": false,
+          "wonSelection": false
+        }
+      ],
+      "totalTimeConsumedBeforeMcmMs": 532,
+      "candidateProducingCount": 0,
+      "mcmOffered": true,
+      "mcmChosen": true,
+      "mcmOwnBudgetMs": 1464,
+      "chosenType": "MULTI_COMPONENT_MERGE"
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "primitivesBeforeMcm": [
+        {
+          "type": "DISRUPT",
+          "seq": 0,
+          "timeConsumedMs": 345,
+          "producedCandidate": false,
+          "wonSelection": false
+        },
+        {
+          "type": "DISRUPT",
+          "seq": 1,
+          "timeConsumedMs": 0,
+          "producedCandidate": false,
+          "wonSelection": false
+        },
+        {
+          "type": "REPAIR",
+          "seq": 0,
+          "timeConsumedMs": 1,
+          "producedCandidate": false,
+          "wonSelection": false
+        },
+        {
+          "type": "CCR",
+          "seq": 0,
+          "timeConsumedMs": 1839,
+          "producedCandidate": false,
+          "wonSelection": false
+        }
+      ],
+      "totalTimeConsumedBeforeMcmMs": 2185,
+      "candidateProducingCount": 0,
+      "mcmOffered": false,
+      "mcmChosen": false,
+      "mcmOwnBudgetMs": -187,
+      "chosenType": "none"
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "primitivesBeforeMcm": [
+        {
+          "type": "DISRUPT",
+          "seq": 0,
+          "timeConsumedMs": 94,
+          "producedCandidate": false,
+          "wonSelection": false
+        },
+        {
+          "type": "DISRUPT",
+          "seq": 1,
+          "timeConsumedMs": 53,
+          "producedCandidate": false,
+          "wonSelection": false
+        },
+        {
+          "type": "REPAIR",
+          "seq": 0,
+          "timeConsumedMs": 139,
+          "producedCandidate": false,
+          "wonSelection": false
+        },
+        {
+          "type": "CCR",
+          "seq": 0,
+          "timeConsumedMs": 2,
+          "producedCandidate": false,
+          "wonSelection": false
+        }
+      ],
+      "totalTimeConsumedBeforeMcmMs": 288,
+      "candidateProducingCount": 0,
+      "mcmOffered": false,
+      "mcmChosen": false,
+      "mcmOwnBudgetMs": 1710,
+      "chosenType": "none"
+    }
+  ],
+  "removals": [
+    {
+      "label": "scrambleDepth30:2",
+      "outcomes": [
+        {
+          "config": "FULL",
+          "improved": false,
+          "chosenType": "MULTI_COMPONENT_MERGE",
+          "wrongWingBefore": 11,
+          "wrongWingAfter": 11
+        },
+        {
+          "config": "WITHOUT_CCR",
+          "improved": false,
+          "chosenType": "MULTI_COMPONENT_MERGE",
+          "wrongWingBefore": 11,
+          "wrongWingAfter": 11
+        },
+        {
+          "config": "WITHOUT_REPAIR",
+          "improved": false,
+          "chosenType": "MULTI_COMPONENT_MERGE",
+          "wrongWingBefore": 11,
+          "wrongWingAfter": 11
+        },
+        {
+          "config": "WITHOUT_PARITY_GATED_CYCLE",
+          "improved": false,
+          "chosenType": "MULTI_COMPONENT_MERGE",
+          "wrongWingBefore": 11,
+          "wrongWingAfter": 11
+        },
+        {
+          "config": "WITHOUT_MIXED_COMMUTATOR",
+          "improved": false,
+          "chosenType": "MULTI_COMPONENT_MERGE",
+          "wrongWingBefore": 11,
+          "wrongWingAfter": 11
+        }
+      ],
+      "anyRemovalRescues": false,
+      "rescuingConfigs": []
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "outcomes": [
+        {
+          "config": "FULL",
+          "improved": false,
+          "chosenType": "none",
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 10
+        },
+        {
+          "config": "WITHOUT_CCR",
+          "improved": false,
+          "chosenType": "MULTI_COMPONENT_MERGE",
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 10
+        },
+        {
+          "config": "WITHOUT_REPAIR",
+          "improved": false,
+          "chosenType": "none",
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 10
+        },
+        {
+          "config": "WITHOUT_PARITY_GATED_CYCLE",
+          "improved": false,
+          "chosenType": "none",
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 10
+        },
+        {
+          "config": "WITHOUT_MIXED_COMMUTATOR",
+          "improved": false,
+          "chosenType": "none",
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 10
+        }
+      ],
+      "anyRemovalRescues": false,
+      "rescuingConfigs": []
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "outcomes": [
+        {
+          "config": "FULL",
+          "improved": false,
+          "chosenType": "MULTI_COMPONENT_MERGE",
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 10
+        },
+        {
+          "config": "WITHOUT_CCR",
+          "improved": false,
+          "chosenType": "MULTI_COMPONENT_MERGE",
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 10
+        },
+        {
+          "config": "WITHOUT_REPAIR",
+          "improved": false,
+          "chosenType": "MULTI_COMPONENT_MERGE",
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 10
+        },
+        {
+          "config": "WITHOUT_PARITY_GATED_CYCLE",
+          "improved": false,
+          "chosenType": "MULTI_COMPONENT_MERGE",
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 10
+        },
+        {
+          "config": "WITHOUT_MIXED_COMMUTATOR",
+          "improved": false,
+          "chosenType": "MULTI_COMPONENT_MERGE",
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 10
+        }
+      ],
+      "anyRemovalRescues": false,
+      "rescuingConfigs": []
+    }
+  ],
+  "budgetDeps": [
+    {
+      "label": "scrambleDepth30:2",
+      "outerDeadlineMs": 2000,
+      "consumedByType": {
+        "DISRUPT": 221,
+        "REPAIR": 310,
+        "CCR": 1
+      },
+      "consumedBeforeMcmMs": 532,
+      "mcmAvailableMs": 1464,
+      "mcmOwnRuntimeMs": 1001,
+      "unusedAfterMcmMs": 463,
+      "mcmRan": true
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "outerDeadlineMs": 2000,
+      "consumedByType": {
+        "DISRUPT": 345,
+        "REPAIR": 1,
+        "CCR": 1839
+      },
+      "consumedBeforeMcmMs": 2185,
+      "mcmAvailableMs": -187,
+      "mcmOwnRuntimeMs": 3,
+      "unusedAfterMcmMs": -190,
+      "mcmRan": true
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "outerDeadlineMs": 2000,
+      "consumedByType": {
+        "DISRUPT": 147,
+        "REPAIR": 139,
+        "CCR": 2
+      },
+      "consumedBeforeMcmMs": 288,
+      "mcmAvailableMs": 1710,
+      "mcmOwnRuntimeMs": 1733,
+      "unusedAfterMcmMs": -23,
+      "mcmRan": true
+    }
+  ],
+  "unlimited": [
+    {
+      "label": "scrambleDepth30:2",
+      "wrongWingBefore": 11,
+      "wrongWingAfter": 11,
+      "improved": false,
+      "chosenType": "MULTI_COMPONENT_MERGE",
+      "wallMs": 2665
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "wrongWingBefore": 10,
+      "wrongWingAfter": 6,
+      "improved": true,
+      "chosenType": "MULTI_COMPONENT_MERGE",
+      "wallMs": 6662
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "wrongWingBefore": 10,
+      "wrongWingAfter": 10,
+      "improved": false,
+      "chosenType": "MULTI_COMPONENT_MERGE",
+      "wallMs": 4738
+    }
+  ],
+  "shortCircuits": [
+    {
+      "label": "scrambleDepth30:2",
+      "finalMovesEmpty": true,
+      "mcmWasAppliedInTrace": true,
+      "mcmOwnNetImprovement": true,
+      "shortCircuitGapDetected": true,
+      "wrongWingBefore": 11,
+      "wrongWingAfter": 10
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "finalMovesEmpty": true,
+      "mcmWasAppliedInTrace": false,
+      "mcmOwnNetImprovement": false,
+      "shortCircuitGapDetected": false,
+      "wrongWingBefore": null,
+      "wrongWingAfter": null
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "finalMovesEmpty": true,
+      "mcmWasAppliedInTrace": true,
+      "mcmOwnNetImprovement": true,
+      "shortCircuitGapDetected": true,
+      "wrongWingBefore": 10,
+      "wrongWingAfter": 9
+    }
+  ],
+  "comparativeRefs": {
+    "scrambleDepth30:2": {
+      "runtimeMs": 796,
+      "mergeStepsSucceeded": 0,
+      "componentCountBefore": 3,
+      "componentCountAfter": 3
+    },
+    "scrambleDepth40:7": {
+      "runtimeMs": 2134,
+      "mergeStepsSucceeded": 0,
+      "componentCountBefore": 3,
+      "componentCountAfter": 3
+    },
+    "scrambleDepth100:5": {
+      "runtimeMs": 2106,
+      "mergeStepsSucceeded": 0,
+      "componentCountBefore": 3,
+      "componentCountAfter": 3
+    }
+  },
+  "rootCauseRows": [
+    {
+      "label": "scrambleDepth30:2",
+      "bucket": "SHORT_CIRCUIT_GAP",
+      "evidence": "실측 trace: MCM이 chooseBestRecovery에서 선택되고 자체 moves가 실제로 net-improve했음(wrongWing 11->10, \"recovery-applied\" 로그로 확인)에도, attemptRecovery()의 shortCircuitRepair 목록에 MULTI_COMPONENT_MERGE가 빠져 있어 이후 라운드의 deadline 초과로 개선분이 통째로 폐기됨(finalMoves.length=0). MCM 자체는 실패하지 않았다 -- Integration 배선(short-circuit 목록 누락)의 문제."
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "bucket": "BUDGET_COMPETITION",
+      "evidence": "Unlimited Replay(outer=60000ms)에서 improved=true(wallMs=6662, chosenType=MULTI_COMPONENT_MERGE) -- outer deadline 제약만 제거해도 회복됨. 다른 Primitive와의 예산 경쟁이 근본 원인."
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "bucket": "SHORT_CIRCUIT_GAP",
+      "evidence": "실측 trace: MCM이 chooseBestRecovery에서 선택되고 자체 moves가 실제로 net-improve했음(wrongWing 10->9, \"recovery-applied\" 로그로 확인)에도, attemptRecovery()의 shortCircuitRepair 목록에 MULTI_COMPONENT_MERGE가 빠져 있어 이후 라운드의 deadline 초과로 개선분이 통째로 폐기됨(finalMoves.length=0). MCM 자체는 실패하지 않았다 -- Integration 배선(short-circuit 목록 누락)의 문제."
+    }
+  ],
+  "levels": {
+    "level1Pass": true,
+    "level2Pass": true,
+    "level3Decision": "A_PRODUCTION_CONTRACT",
+    "level3Rationale": "3건 모두 Production Contract 수정으로 해결 가능한 원인(Budget/Scheduler/Candidate/Selection Competition 또는 Short-Circuit Gap)으로 분류됨 -- 경쟁 완화 또는 shortCircuitRepair 목록에 MULTI_COMPONENT_MERGE 추가 등으로 해결 가능성이 높다."
+  }
+}

@@ -17,6 +17,7 @@ import type { ExecutorLibraries } from "./fiveByFiveEdgeExecutor";
 import type { HoleCase } from "./coverageAtlas/HoleDatasetBuilder";
 import { collectTimelines, ALL_RECOVERY_TYPES } from "./solverPrimitiveMultiComponentMergeIntegrationRefinementV3/CompetitionTimeline";
 import { buildAttributions } from "./solverPrimitiveMultiComponentMergeIntegrationRefinementV3/CompetitionAttribution";
+import { runShortCircuitAudit } from "./solverPrimitiveMultiComponentMergeIntegrationRefinementV3/ShortCircuitAudit";
 import { runRemovalPopulation } from "./solverPrimitiveMultiComponentMergeIntegrationRefinementV3/PrimitiveRemoval";
 import { buildBudgetDependencyPopulation } from "./solverPrimitiveMultiComponentMergeIntegrationRefinementV3/BudgetDependency";
 import { runUnlimitedReplay, UNLIMITED_OUTER_DEADLINE_MS } from "./solverPrimitiveMultiComponentMergeIntegrationRefinementV3/UnlimitedReplay";
@@ -65,6 +66,10 @@ function main() {
   const attributions = buildAttributions(timelines);
   for (const a of attributions) console.log(`  ${a.label}: totalTimeConsumedBeforeMcmMs=${a.totalTimeConsumedBeforeMcmMs}, candidateProducingCount=${a.candidateProducingCount}, mcmOwnBudgetMs=${a.mcmOwnBudgetMs}`);
 
+  console.log("STEP2(addendum): Short-Circuit Gap Audit (real attemptRecovery() trace parsing)...");
+  const shortCircuits = runShortCircuitAudit(holes, libs);
+  for (const s of shortCircuits) console.log(`  ${s.label}: shortCircuitGapDetected=${s.shortCircuitGapDetected}, mcmWasAppliedInTrace=${s.mcmWasAppliedInTrace}, mcmOwnNetImprovement=${s.mcmOwnNetImprovement}, wrongWing ${s.wrongWingBefore}->${s.wrongWingAfter}`);
+
   console.log("STEP3: Counterfactual Primitive Removal (real attemptRecovery(), toggling includeCCR/includeRepair/includeParityGatedCycle/includeMixedCommutator one at a time)...");
   const removals = runRemovalPopulation(holes, libs);
   for (const r of removals) console.log(`  ${r.label}: anyRemovalRescues=${r.anyRemovalRescues}, rescuingConfigs=${r.rescuingConfigs.join(",") || "none"}`);
@@ -82,7 +87,7 @@ function main() {
   for (const [label, ref] of comparativeRefs) console.log(`  ${label}: runtimeMs=${ref.runtimeMs}, mergeStepsSucceeded=${ref.mergeStepsSucceeded}`);
 
   console.log("STEP6: Root Cause Matrix + Level1-3 + Decision...");
-  const rootCauseRows = buildRootCauseMatrix(attributions, removals, unlimited, comparativeRefs);
+  const rootCauseRows = buildRootCauseMatrix(attributions, removals, unlimited, comparativeRefs, shortCircuits);
   for (const r of rootCauseRows) console.log(`  ${r.label}: bucket=${r.bucket}`);
   const levels = evaluateLevels(rootCauseRows);
   console.log(`  level1Pass=${levels.level1Pass}, level2Pass=${levels.level2Pass}, decision=${levels.level3Decision}`);
@@ -112,6 +117,9 @@ function main() {
     for (const o of r.outcomes) push(`    ${o.config}: improved=${o.improved}, chosenType=${o.chosenType}, wrongWing ${o.wrongWingBefore}->${o.wrongWingAfter}`);
   }
   push(`  disclosed scope limitation: DISRUPT/SETUP have no existing include-toggle parameter (removing them would require a fiveByFiveEdgeRecovery.ts change, forbidden this Sprint) -- their contribution is inferred from STEP1/2's own timeline evidence only.`);
+  push();
+  push("STEP2(addendum). Short-Circuit Gap Audit (real attemptRecovery() trace parsing, outer=2000ms)");
+  for (const s of shortCircuits) push(`  ${s.label}: shortCircuitGapDetected=${s.shortCircuitGapDetected}, mcmWasAppliedInTrace=${s.mcmWasAppliedInTrace}, mcmOwnNetImprovement=${s.mcmOwnNetImprovement}, wrongWing ${s.wrongWingBefore}->${s.wrongWingAfter}, finalMovesEmpty=${s.finalMovesEmpty}`);
   push();
   push("STEP4. Budget Dependency Graph (derived from STEP1 timeline)");
   for (const b of budgetDeps) {
@@ -145,6 +153,7 @@ function main() {
         removals,
         budgetDeps,
         unlimited,
+        shortCircuits,
         comparativeRefs: Object.fromEntries(comparativeRefs),
         rootCauseRows,
         levels,

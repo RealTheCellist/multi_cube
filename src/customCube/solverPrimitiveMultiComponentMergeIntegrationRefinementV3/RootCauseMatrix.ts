@@ -1,16 +1,30 @@
 // --- RootCauseMatrix (Multi-Component Merge Production Integration
 // Refinement Sprint v3, STEP6) -----------------------------------------------
-// Classifies each of the 3 successMismatch cases into exactly ONE of the
-// Directive's own 6 named buckets, using STEP2(Attribution)/STEP3(Removal)/
-// STEP5(Unlimited Replay) real evidence -- checked in the order that most
-// directly falsifies each hypothesis first (Budget -> Selection/Candidate ->
-// Primitive Failure -> Unknown only if nothing else explains it).
+// Classifies each of the 3 successMismatch cases into exactly ONE bucket,
+// using STEP2(Attribution)/STEP3(Removal)/STEP5(Unlimited Replay)/STEP2
+// addendum(ShortCircuitAudit) real evidence -- checked in the order that
+// most directly falsifies each hypothesis first.
+//
+// SHORT_CIRCUIT_GAP is a 7th bucket ADDED to the Directive's own named 6
+// (Budget/Scheduler/Candidate/Selection Competition, Primitive Failure,
+// Unknown) after ShortCircuitAudit.ts's own real trace evidence surfaced a
+// concrete mechanism none of those 6 names describe precisely: MCM is
+// CHOSEN and its own moves already net-improve wrongWingCount (the same
+// validateDeferred guarantee REPAIR/CCR/MIXED_COMMUTATOR/PARITY_GATED_CYCLE
+// get), but attemptRecovery()'s own shortCircuitRepair fast path (read-only
+// reference, fiveByFiveEdgeRecovery.ts, NOT modified this Sprint) never
+// lists MULTI_COMPONENT_MERGE among the types it short-circuits -- so the
+// genuinely-improving result can still be discarded by a later round's
+// deadline `break` + the function's final `return [];`. This is honestly
+// disclosed as a DISTINCT mechanism from "Primitive Failure"(MCM 자체 실패)
+// since MCM did NOT fail here -- the surrounding Integration wiring did.
 import type { RecoveryType } from "../fiveByFiveEdgeSolverTypes";
 import type { CaseAttribution } from "./CompetitionAttribution";
 import type { CaseRemovalRow, RemovalConfig } from "./PrimitiveRemoval";
 import type { UnlimitedReplayRow } from "./UnlimitedReplay";
+import type { ShortCircuitAuditRow } from "./ShortCircuitAudit";
 
-export type RootCauseBucket = "BUDGET_COMPETITION" | "SCHEDULER_COMPETITION" | "CANDIDATE_COMPETITION" | "SELECTION_COMPETITION" | "PRIMITIVE_FAILURE" | "UNKNOWN";
+export type RootCauseBucket = "BUDGET_COMPETITION" | "SCHEDULER_COMPETITION" | "CANDIDATE_COMPETITION" | "SELECTION_COMPETITION" | "PRIMITIVE_FAILURE" | "SHORT_CIRCUIT_GAP" | "UNKNOWN";
 
 export interface ComparativeReference {
   runtimeMs: number;
@@ -37,7 +51,21 @@ export interface RootCauseRow {
   evidence: string;
 }
 
-export function classifyCase(attribution: CaseAttribution, removal: CaseRemovalRow, unlimited: UnlimitedReplayRow, comparative: ComparativeReference | undefined): RootCauseRow {
+export function classifyCase(
+  attribution: CaseAttribution,
+  removal: CaseRemovalRow,
+  unlimited: UnlimitedReplayRow,
+  comparative: ComparativeReference | undefined,
+  shortCircuit?: ShortCircuitAuditRow
+): RootCauseRow {
+  if (shortCircuit?.shortCircuitGapDetected) {
+    return {
+      label: attribution.label,
+      bucket: "SHORT_CIRCUIT_GAP",
+      evidence: `실측 trace: MCM이 chooseBestRecovery에서 선택되고 자체 moves가 실제로 net-improve했음(wrongWing ${shortCircuit.wrongWingBefore}->${shortCircuit.wrongWingAfter}, "recovery-applied" 로그로 확인)에도, attemptRecovery()의 shortCircuitRepair 목록에 MULTI_COMPONENT_MERGE가 빠져 있어 이후 라운드의 deadline 초과로 개선분이 통째로 폐기됨(finalMoves.length=0). MCM 자체는 실패하지 않았다 -- Integration 배선(short-circuit 목록 누락)의 문제.`,
+    };
+  }
+
   if (unlimited.improved) {
     return {
       label: attribution.label,
@@ -90,12 +118,14 @@ export function buildRootCauseMatrix(
   attributions: readonly CaseAttribution[],
   removals: readonly CaseRemovalRow[],
   unlimited: readonly UnlimitedReplayRow[],
-  comparativeByLabel: ReadonlyMap<string, ComparativeReference>
+  comparativeByLabel: ReadonlyMap<string, ComparativeReference>,
+  shortCircuits: readonly ShortCircuitAuditRow[] = []
 ): RootCauseRow[] {
   return attributions.map((a) => {
     const removal = removals.find((r) => r.label === a.label)!;
     const u = unlimited.find((r) => r.label === a.label)!;
-    return classifyCase(a, removal, u, comparativeByLabel.get(a.label));
+    const sc = shortCircuits.find((r) => r.label === a.label);
+    return classifyCase(a, removal, u, comparativeByLabel.get(a.label), sc);
   });
 }
 
@@ -113,8 +143,13 @@ export function evaluateLevels(rows: readonly RootCauseRow[]): Level1To3 {
   const unknownCount = rows.filter((r) => r.bucket === "UNKNOWN").length;
   const level2Pass = unknownCount <= 1;
 
-  const competitionBuckets: RootCauseBucket[] = ["BUDGET_COMPETITION", "SCHEDULER_COMPETITION", "CANDIDATE_COMPETITION", "SELECTION_COMPETITION"];
-  const allCompetition = rows.every((r) => competitionBuckets.includes(r.bucket));
+  // SHORT_CIRCUIT_GAP counts as "fixable via Production Contract" alongside
+  // the 4 named competition buckets -- it is a concrete, low-risk,
+  // well-understood Integration wiring fix (add MULTI_COMPONENT_MERGE to
+  // attemptRecovery()'s own shortCircuitRepair type list), not a deeper
+  // Primitive/architecture limitation.
+  const fixableBuckets: RootCauseBucket[] = ["BUDGET_COMPETITION", "SCHEDULER_COMPETITION", "CANDIDATE_COMPETITION", "SELECTION_COMPETITION", "SHORT_CIRCUIT_GAP"];
+  const allCompetition = rows.every((r) => fixableBuckets.includes(r.bucket));
   const allPrimitiveFailure = rows.every((r) => r.bucket === "PRIMITIVE_FAILURE");
   const anyPrimitiveFailure = rows.some((r) => r.bucket === "PRIMITIVE_FAILURE");
 
@@ -122,7 +157,7 @@ export function evaluateLevels(rows: readonly RootCauseRow[]): Level1To3 {
   let level3Rationale: string;
   if (allCompetition) {
     level3Decision = "A_PRODUCTION_CONTRACT";
-    level3Rationale = `3건 모두 경쟁 기반 원인(Budget/Scheduler/Candidate/Selection Competition)으로 분류됨 -- 경쟁을 완화하는 Production Contract 수정(예: MCM 전용 예산 보장 또는 경쟁 Primitive와의 순서/Gate 조정)으로 해결 가능성이 높다.`;
+    level3Rationale = `3건 모두 Production Contract 수정으로 해결 가능한 원인(Budget/Scheduler/Candidate/Selection Competition 또는 Short-Circuit Gap)으로 분류됨 -- 경쟁 완화 또는 shortCircuitRepair 목록에 MULTI_COMPONENT_MERGE 추가 등으로 해결 가능성이 높다.`;
   } else if (allPrimitiveFailure) {
     level3Decision = "C_PRIMITIVE_BLUEPRINT_REGRESSION";
     level3Rationale = `3건 모두 Primitive Failure(MCM 자체 명목 예산 부족 또는 자체 실패)로 분류됨 -- 경쟁을 모두 제거해도(Unlimited Replay) 회복되지 않으므로 Integration 문제가 아니라 Primitive 메커니즘/Blueprint 자체의 한계로 결론짓는다.`;
