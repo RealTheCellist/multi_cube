@@ -92,10 +92,20 @@ export function classifyCase(
   }
 
   if (!attribution.mcmOffered) {
+    // attribution.mcmOffered reflects the FULL run at outer=2000ms only --
+    // unlimited.chosenType tells us separately whether MCM got a turn once
+    // the outer-deadline constraint itself was removed. Both pieces of
+    // evidence are cited so the text never claims something the data
+    // doesn't show (this bucket is still correct either way, since
+    // unlimited.improved already tested false above -- but the REASON
+    // differs and both are disclosed).
+    const wasChosenOnceUnlimited = unlimited.chosenType === "MULTI_COMPONENT_MERGE";
     return {
       label: attribution.label,
       bucket: "PRIMITIVE_FAILURE",
-      evidence: `Gate(componentCount>=3)는 통과했으나 Unlimited Replay에서도 MCM이 최종 offered 후보로 남지 않음 -- 경쟁과 무관한 Primitive 자체의 문제.`,
+      evidence: wasChosenOnceUnlimited
+        ? `FULL 실행(outer=2000ms)에서는 선행 Primitive(주로 CCR, 실측 runtime이 2000~3600ms대로 나타나 outer deadline을 그 자체로 초과하는 경우가 관측됨)가 예산을 모두 소진해 MCM이 후보로도 남지 못했다(mcmOffered=false). 그러나 Unlimited Replay(outer=${unlimited.wallMs}ms대 실측)에서는 MCM이 chosen되었음에도(chosenType=MULTI_COMPONENT_MERGE) 여전히 improved=false -- 선행 Primitive의 예산 초과와는 별개로 MCM 자체가 예산이 주어져도 이 케이스를 net-improve하지 못하는 것으로 확인되어 Primitive Failure로 분류한다.`
+        : `Gate(componentCount>=3)는 통과했으나 FULL 실행과 Unlimited Replay 모두에서 MCM이 offered/chosen되지 않음 -- 경쟁과 무관한 Primitive 자체의 문제.`,
     };
   }
 

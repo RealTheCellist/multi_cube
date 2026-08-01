@@ -4,50 +4,50 @@
 Target cases: scrambleDepth30:2, scrambleDepth40:7, scrambleDepth100:5 (all componentCountBefore=3, all comparativeIsolatedSuccess=true, all productionArmCSuccess=false per Refinement Sprint v2)
 
 STEP1. Competition Timeline (real generateRecoveryStrategies(), outer=2000ms)
-  scrambleDepth30:2: totalCallRuntimeMs=2167, chosenType=MULTI_COMPONENT_MERGE
-    [seq0] DISRUPT: startMs=3, finishMs=86, ownRuntimeMs=83, remainingTimeAtStartMs=1997, finalPhase=empty
-    [seq1] DISRUPT: startMs=86, finishMs=224, ownRuntimeMs=138, remainingTimeAtStartMs=1914, finalPhase=empty
-    [seq0] REPAIR: startMs=225, finishMs=535, ownRuntimeMs=310, remainingTimeAtStartMs=1775, finalPhase=empty
-    [seq0] CCR: startMs=535, finishMs=536, ownRuntimeMs=1, remainingTimeAtStartMs=1465, finalPhase=empty
-    [seq0] MULTI_COMPONENT_MERGE: startMs=536, finishMs=1537, ownRuntimeMs=1001, remainingTimeAtStartMs=1464, finalPhase=generated
-    [seq0] PARITY_GATED_CYCLE: startMs=1538, finishMs=2166, ownRuntimeMs=628, remainingTimeAtStartMs=462, finalPhase=empty
-    [seq0] MIXED_COMMUTATOR: startMs=2167, finishMs=2167, ownRuntimeMs=0, remainingTimeAtStartMs=-167, finalPhase=skipped
-    [seq0] SETUP: startMs=2167, finishMs=2167, ownRuntimeMs=0, remainingTimeAtStartMs=-167, finalPhase=skipped
-  scrambleDepth40:7: totalCallRuntimeMs=2191, chosenType=none
-    [seq0] DISRUPT: startMs=2, finishMs=347, ownRuntimeMs=345, remainingTimeAtStartMs=1998, finalPhase=empty
-    [seq1] DISRUPT: startMs=347, finishMs=347, ownRuntimeMs=0, remainingTimeAtStartMs=1653, finalPhase=skipped
-    [seq0] REPAIR: startMs=347, finishMs=348, ownRuntimeMs=1, remainingTimeAtStartMs=1653, finalPhase=empty
-    [seq0] CCR: startMs=348, finishMs=2187, ownRuntimeMs=1839, remainingTimeAtStartMs=1652, finalPhase=empty
-    [seq0] MULTI_COMPONENT_MERGE: startMs=2187, finishMs=2190, ownRuntimeMs=3, remainingTimeAtStartMs=-187, finalPhase=empty
-    [seq0] PARITY_GATED_CYCLE: startMs=2190, finishMs=2191, ownRuntimeMs=1, remainingTimeAtStartMs=-190, finalPhase=empty
-    [seq0] MIXED_COMMUTATOR: startMs=2191, finishMs=2191, ownRuntimeMs=0, remainingTimeAtStartMs=-191, finalPhase=skipped
-    [seq0] SETUP: startMs=2191, finishMs=2191, ownRuntimeMs=0, remainingTimeAtStartMs=-191, finalPhase=empty
-  scrambleDepth100:5: totalCallRuntimeMs=2024, chosenType=none
-    [seq0] DISRUPT: startMs=2, finishMs=96, ownRuntimeMs=94, remainingTimeAtStartMs=1998, finalPhase=empty
-    [seq1] DISRUPT: startMs=96, finishMs=149, ownRuntimeMs=53, remainingTimeAtStartMs=1904, finalPhase=empty
-    [seq0] REPAIR: startMs=149, finishMs=288, ownRuntimeMs=139, remainingTimeAtStartMs=1851, finalPhase=empty
-    [seq0] CCR: startMs=288, finishMs=290, ownRuntimeMs=2, remainingTimeAtStartMs=1712, finalPhase=empty
-    [seq0] MULTI_COMPONENT_MERGE: startMs=290, finishMs=2023, ownRuntimeMs=1733, remainingTimeAtStartMs=1710, finalPhase=empty
-    [seq0] PARITY_GATED_CYCLE: startMs=2023, finishMs=2024, ownRuntimeMs=1, remainingTimeAtStartMs=-23, finalPhase=empty
-    [seq0] MIXED_COMMUTATOR: startMs=2024, finishMs=2024, ownRuntimeMs=0, remainingTimeAtStartMs=-24, finalPhase=skipped
-    [seq0] SETUP: startMs=2024, finishMs=2024, ownRuntimeMs=0, remainingTimeAtStartMs=-24, finalPhase=empty
+  scrambleDepth30:2: totalCallRuntimeMs=2168, chosenType=MULTI_COMPONENT_MERGE
+    [seq0] DISRUPT: startMs=3, finishMs=78, ownRuntimeMs=75, remainingTimeAtStartMs=1997, finalPhase=empty
+    [seq1] DISRUPT: startMs=78, finishMs=202, ownRuntimeMs=124, remainingTimeAtStartMs=1922, finalPhase=empty
+    [seq0] REPAIR: startMs=202, finishMs=493, ownRuntimeMs=291, remainingTimeAtStartMs=1798, finalPhase=empty
+    [seq0] CCR: startMs=493, finishMs=494, ownRuntimeMs=1, remainingTimeAtStartMs=1507, finalPhase=empty
+    [seq0] MULTI_COMPONENT_MERGE: startMs=495, finishMs=1540, ownRuntimeMs=1045, remainingTimeAtStartMs=1505, finalPhase=generated
+    [seq0] PARITY_GATED_CYCLE: startMs=1540, finishMs=2167, ownRuntimeMs=627, remainingTimeAtStartMs=460, finalPhase=empty
+    [seq0] MIXED_COMMUTATOR: startMs=2168, finishMs=2168, ownRuntimeMs=0, remainingTimeAtStartMs=-168, finalPhase=skipped
+    [seq0] SETUP: startMs=2168, finishMs=2168, ownRuntimeMs=0, remainingTimeAtStartMs=-168, finalPhase=skipped
+  scrambleDepth40:7: totalCallRuntimeMs=2030, chosenType=none
+    [seq0] DISRUPT: startMs=1, finishMs=83, ownRuntimeMs=82, remainingTimeAtStartMs=1999, finalPhase=empty
+    [seq1] DISRUPT: startMs=83, finishMs=370, ownRuntimeMs=287, remainingTimeAtStartMs=1917, finalPhase=empty
+    [seq0] REPAIR: startMs=370, finishMs=371, ownRuntimeMs=1, remainingTimeAtStartMs=1630, finalPhase=empty
+    [seq0] CCR: startMs=371, finishMs=2025, ownRuntimeMs=1654, remainingTimeAtStartMs=1629, finalPhase=empty
+    [seq0] MULTI_COMPONENT_MERGE: startMs=2025, finishMs=2026, ownRuntimeMs=1, remainingTimeAtStartMs=-25, finalPhase=empty
+    [seq0] PARITY_GATED_CYCLE: startMs=2026, finishMs=2030, ownRuntimeMs=4, remainingTimeAtStartMs=-26, finalPhase=empty
+    [seq0] MIXED_COMMUTATOR: startMs=2030, finishMs=2030, ownRuntimeMs=0, remainingTimeAtStartMs=-30, finalPhase=skipped
+    [seq0] SETUP: startMs=2030, finishMs=2030, ownRuntimeMs=0, remainingTimeAtStartMs=-30, finalPhase=empty
+  scrambleDepth100:5: totalCallRuntimeMs=2108, chosenType=MULTI_COMPONENT_MERGE
+    [seq0] DISRUPT: startMs=1, finishMs=94, ownRuntimeMs=93, remainingTimeAtStartMs=1999, finalPhase=empty
+    [seq1] DISRUPT: startMs=94, finishMs=153, ownRuntimeMs=59, remainingTimeAtStartMs=1906, finalPhase=empty
+    [seq0] REPAIR: startMs=153, finishMs=236, ownRuntimeMs=83, remainingTimeAtStartMs=1847, finalPhase=empty
+    [seq0] CCR: startMs=236, finishMs=237, ownRuntimeMs=1, remainingTimeAtStartMs=1764, finalPhase=empty
+    [seq0] MULTI_COMPONENT_MERGE: startMs=237, finishMs=2107, ownRuntimeMs=1870, remainingTimeAtStartMs=1763, finalPhase=generated
+    [seq0] PARITY_GATED_CYCLE: startMs=2107, finishMs=2108, ownRuntimeMs=1, remainingTimeAtStartMs=-107, finalPhase=empty
+    [seq0] MIXED_COMMUTATOR: startMs=2108, finishMs=2108, ownRuntimeMs=0, remainingTimeAtStartMs=-108, finalPhase=skipped
+    [seq0] SETUP: startMs=2108, finishMs=2108, ownRuntimeMs=0, remainingTimeAtStartMs=-108, finalPhase=skipped
 
 STEP2. Primitive Competition Attribution Matrix
-  scrambleDepth30:2: mcmOffered=true, mcmChosen=true, chosenType=MULTI_COMPONENT_MERGE, mcmOwnBudgetMs=1464
-    DISRUPT(seq0): timeConsumedMs=83, producedCandidate=false, wonSelection=false
-    DISRUPT(seq1): timeConsumedMs=138, producedCandidate=false, wonSelection=false
-    REPAIR(seq0): timeConsumedMs=310, producedCandidate=false, wonSelection=false
+  scrambleDepth30:2: mcmOffered=true, mcmChosen=true, chosenType=MULTI_COMPONENT_MERGE, mcmOwnBudgetMs=1505
+    DISRUPT(seq0): timeConsumedMs=75, producedCandidate=false, wonSelection=false
+    DISRUPT(seq1): timeConsumedMs=124, producedCandidate=false, wonSelection=false
+    REPAIR(seq0): timeConsumedMs=291, producedCandidate=false, wonSelection=false
     CCR(seq0): timeConsumedMs=1, producedCandidate=false, wonSelection=false
-  scrambleDepth40:7: mcmOffered=false, mcmChosen=false, chosenType=none, mcmOwnBudgetMs=-187
-    DISRUPT(seq0): timeConsumedMs=345, producedCandidate=false, wonSelection=false
-    DISRUPT(seq1): timeConsumedMs=0, producedCandidate=false, wonSelection=false
+  scrambleDepth40:7: mcmOffered=false, mcmChosen=false, chosenType=none, mcmOwnBudgetMs=-25
+    DISRUPT(seq0): timeConsumedMs=82, producedCandidate=false, wonSelection=false
+    DISRUPT(seq1): timeConsumedMs=287, producedCandidate=false, wonSelection=false
     REPAIR(seq0): timeConsumedMs=1, producedCandidate=false, wonSelection=false
-    CCR(seq0): timeConsumedMs=1839, producedCandidate=false, wonSelection=false
-  scrambleDepth100:5: mcmOffered=false, mcmChosen=false, chosenType=none, mcmOwnBudgetMs=1710
-    DISRUPT(seq0): timeConsumedMs=94, producedCandidate=false, wonSelection=false
-    DISRUPT(seq1): timeConsumedMs=53, producedCandidate=false, wonSelection=false
-    REPAIR(seq0): timeConsumedMs=139, producedCandidate=false, wonSelection=false
-    CCR(seq0): timeConsumedMs=2, producedCandidate=false, wonSelection=false
+    CCR(seq0): timeConsumedMs=1654, producedCandidate=false, wonSelection=false
+  scrambleDepth100:5: mcmOffered=true, mcmChosen=true, chosenType=MULTI_COMPONENT_MERGE, mcmOwnBudgetMs=1763
+    DISRUPT(seq0): timeConsumedMs=93, producedCandidate=false, wonSelection=false
+    DISRUPT(seq1): timeConsumedMs=59, producedCandidate=false, wonSelection=false
+    REPAIR(seq0): timeConsumedMs=83, producedCandidate=false, wonSelection=false
+    CCR(seq0): timeConsumedMs=1, producedCandidate=false, wonSelection=false
 
 STEP3. Primitive Responsibility Matrix (Counterfactual Removal, outer=2000ms)
   scrambleDepth30:2: anyRemovalRescues=false, rescuingConfigs=none
@@ -65,7 +65,7 @@ STEP3. Primitive Responsibility Matrix (Counterfactual Removal, outer=2000ms)
   scrambleDepth100:5: anyRemovalRescues=false, rescuingConfigs=none
     FULL: improved=false, chosenType=MULTI_COMPONENT_MERGE, wrongWing 10->10
     WITHOUT_CCR: improved=false, chosenType=MULTI_COMPONENT_MERGE, wrongWing 10->10
-    WITHOUT_REPAIR: improved=false, chosenType=MULTI_COMPONENT_MERGE, wrongWing 10->10
+    WITHOUT_REPAIR: improved=false, chosenType=none, wrongWing 10->10
     WITHOUT_PARITY_GATED_CYCLE: improved=false, chosenType=MULTI_COMPONENT_MERGE, wrongWing 10->10
     WITHOUT_MIXED_COMMUTATOR: improved=false, chosenType=MULTI_COMPONENT_MERGE, wrongWing 10->10
   disclosed scope limitation: DISRUPT/SETUP have no existing include-toggle parameter (removing them would require a fiveByFiveEdgeRecovery.ts change, forbidden this Sprint) -- their contribution is inferred from STEP1/2's own timeline evidence only.
@@ -76,23 +76,23 @@ STEP2(addendum). Short-Circuit Gap Audit (real attemptRecovery() trace parsing, 
   scrambleDepth100:5: shortCircuitGapDetected=true, mcmWasAppliedInTrace=true, mcmOwnNetImprovement=true, wrongWing 10->9, finalMovesEmpty=true
 
 STEP4. Budget Dependency Graph (derived from STEP1 timeline)
-  scrambleDepth30:2: outerDeadlineMs=2000, consumedBeforeMcmMs=532, mcmAvailableMs=1464, mcmOwnRuntimeMs=1001, unusedAfterMcmMs=463
-    consumed by DISRUPT: 221ms
-    consumed by REPAIR: 310ms
+  scrambleDepth30:2: outerDeadlineMs=2000, consumedBeforeMcmMs=491, mcmAvailableMs=1505, mcmOwnRuntimeMs=1045, unusedAfterMcmMs=460
+    consumed by DISRUPT: 199ms
+    consumed by REPAIR: 291ms
     consumed by CCR: 1ms
-  scrambleDepth40:7: outerDeadlineMs=2000, consumedBeforeMcmMs=2185, mcmAvailableMs=-187, mcmOwnRuntimeMs=3, unusedAfterMcmMs=-190
-    consumed by DISRUPT: 345ms
+  scrambleDepth40:7: outerDeadlineMs=2000, consumedBeforeMcmMs=2024, mcmAvailableMs=-25, mcmOwnRuntimeMs=1, unusedAfterMcmMs=-26
+    consumed by DISRUPT: 369ms
     consumed by REPAIR: 1ms
-    consumed by CCR: 1839ms
-  scrambleDepth100:5: outerDeadlineMs=2000, consumedBeforeMcmMs=288, mcmAvailableMs=1710, mcmOwnRuntimeMs=1733, unusedAfterMcmMs=-23
-    consumed by DISRUPT: 147ms
-    consumed by REPAIR: 139ms
-    consumed by CCR: 2ms
+    consumed by CCR: 1654ms
+  scrambleDepth100:5: outerDeadlineMs=2000, consumedBeforeMcmMs=236, mcmAvailableMs=1763, mcmOwnRuntimeMs=1870, unusedAfterMcmMs=-107
+    consumed by DISRUPT: 152ms
+    consumed by REPAIR: 83ms
+    consumed by CCR: 1ms
 
 STEP5. Counterfactual Unlimited Production Replay (outer=60000ms)
-  scrambleDepth30:2: improved=false, chosenType=MULTI_COMPONENT_MERGE, wallMs=2665, wrongWing 11->11
-  scrambleDepth40:7: improved=true, chosenType=MULTI_COMPONENT_MERGE, wallMs=6662, wrongWing 10->6
-  scrambleDepth100:5: improved=false, chosenType=MULTI_COMPONENT_MERGE, wallMs=4738, wrongWing 10->10
+  scrambleDepth30:2: improved=false, chosenType=MULTI_COMPONENT_MERGE, wallMs=2888, wrongWing 11->11
+  scrambleDepth40:7: improved=false, chosenType=MULTI_COMPONENT_MERGE, wallMs=7131, wrongWing 10->10
+  scrambleDepth100:5: improved=false, chosenType=MULTI_COMPONENT_MERGE, wallMs=4869, wrongWing 10->10
   Comparative Prototype Sprint v1's own isolated result (reference, unmodified):
     scrambleDepth30:2: runtimeMs=796, mergeStepsSucceeded=0, componentCountBefore=3->3
     scrambleDepth40:7: runtimeMs=2134, mergeStepsSucceeded=0, componentCountBefore=3->3
@@ -101,10 +101,10 @@ STEP5. Counterfactual Unlimited Production Replay (outer=60000ms)
 STEP6. Root Cause Matrix + Decision
   scrambleDepth30:2: bucket=SHORT_CIRCUIT_GAP
     evidence: 실측 trace: MCM이 chooseBestRecovery에서 선택되고 자체 moves가 실제로 net-improve했음(wrongWing 11->10, "recovery-applied" 로그로 확인)에도, attemptRecovery()의 shortCircuitRepair 목록에 MULTI_COMPONENT_MERGE가 빠져 있어 이후 라운드의 deadline 초과로 개선분이 통째로 폐기됨(finalMoves.length=0). MCM 자체는 실패하지 않았다 -- Integration 배선(short-circuit 목록 누락)의 문제.
-  scrambleDepth40:7: bucket=BUDGET_COMPETITION
-    evidence: Unlimited Replay(outer=60000ms)에서 improved=true(wallMs=6662, chosenType=MULTI_COMPONENT_MERGE) -- outer deadline 제약만 제거해도 회복됨. 다른 Primitive와의 예산 경쟁이 근본 원인.
+  scrambleDepth40:7: bucket=PRIMITIVE_FAILURE
+    evidence: FULL 실행(outer=2000ms)에서는 선행 Primitive(주로 CCR, 실측 runtime이 2000~3600ms대로 나타나 outer deadline을 그 자체로 초과하는 경우가 관측됨)가 예산을 모두 소진해 MCM이 후보로도 남지 못했다(mcmOffered=false). 그러나 Unlimited Replay(outer=7131ms대 실측)에서는 MCM이 chosen되었음에도(chosenType=MULTI_COMPONENT_MERGE) 여전히 improved=false -- 선행 Primitive의 예산 초과와는 별개로 MCM 자체가 예산이 주어져도 이 케이스를 net-improve하지 못하는 것으로 확인되어 Primitive Failure로 분류한다.
   scrambleDepth100:5: bucket=SHORT_CIRCUIT_GAP
     evidence: 실측 trace: MCM이 chooseBestRecovery에서 선택되고 자체 moves가 실제로 net-improve했음(wrongWing 10->9, "recovery-applied" 로그로 확인)에도, attemptRecovery()의 shortCircuitRepair 목록에 MULTI_COMPONENT_MERGE가 빠져 있어 이후 라운드의 deadline 초과로 개선분이 통째로 폐기됨(finalMoves.length=0). MCM 자체는 실패하지 않았다 -- Integration 배선(short-circuit 목록 누락)의 문제.
   Level1(구조 정량화)=PASS, Level2(Unknown<=1)=PASS
-  Decision = A_PRODUCTION_CONTRACT
-  rationale: 3건 모두 Production Contract 수정으로 해결 가능한 원인(Budget/Scheduler/Candidate/Selection Competition 또는 Short-Circuit Gap)으로 분류됨 -- 경쟁 완화 또는 shortCircuitRepair 목록에 MULTI_COMPONENT_MERGE 추가 등으로 해결 가능성이 높다.
+  Decision = B_INTEGRATION_REFINEMENT
+  rationale: 경쟁 기반 원인과 Primitive Failure가 혼재됨 -- 일부는 Contract 수정으로 해결 가능하지만 나머지는 Primitive 자체의 한계이므로, 단일 Decision으로 확정하기보다 case-by-case Refinement가 필요하다.
