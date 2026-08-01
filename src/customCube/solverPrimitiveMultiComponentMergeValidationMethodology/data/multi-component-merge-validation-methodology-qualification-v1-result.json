@@ -1,0 +1,429 @@
+{
+  "measurementCoverage": [
+    {
+      "path": "attemptRecovery_direct",
+      "describedAs": "Calls fiveByFiveEdgeRecovery.ts's own attemptRecovery() directly with an explicit outer `deadline` argument, bypassing solve()'s own PLAN_TIME_BUDGET_MS/recoveryReserveMsOverride mechanics entirely.",
+      "contractMeasured": "The Recovery layer's own internal scheduling/short-circuit contract in isolation -- whatever `deadline` the caller passes IS MCM's effective ceiling (via Math.min against MULTI_COMPONENT_MERGE_RESERVED_SLICE_MS=2000ms), with no upstream PAIR/FLIP/PARITY/ENDGAME-primary-pipeline competition for that same clock.",
+      "budgetCondition": "Caller-controlled outer deadline (1000/1500/2000/60000ms all directly testable, real existing parameter, no production change needed).",
+      "primitivesIncluded": "All of DISRUPT/SETUP/REPAIR/CCR/MIXED_COMMUTATOR/PARITY_GATED_CYCLE/MULTI_COMPONENT_MERGE, same real production order (AFTER_CCR default).",
+      "usedInSprints": [
+        "Multi-Component Merge Production Integration Sprint v1",
+        "Refinement Sprint v1/v2/v3",
+        "Short-Circuit Production Integration Sprint v1 (STEP2/3)"
+      ],
+      "knownLimitation": "Never exercises the primary (non-Recovery) pipeline's own real consumption of the SAME outer deadline before Recovery gets triggered -- in real solve(), PAIR/FLIP/PARITY/ENDGAME's own primary attempt already consumes part of the 1000ms before Recovery is even invoked; this path assumes Recovery starts at t=0 with the FULL outer deadline available, which is NOT how real production solve() behaves."
+    },
+    {
+      "path": "generateRecoveryStrategies_direct",
+      "describedAs": "Calls generateRecoveryStrategies() directly (one level below attemptRecovery(), which normally wraps it in a scratch-clone retry loop), passing an explicit onEvent instrumentation hook.",
+      "contractMeasured": "Same Recovery Contract as attemptRecovery_direct, but WITHOUT attemptRecovery()'s own retry-loop/short-circuit dispatch layer -- isolates pure candidate GENERATION (offered/chosen/scored), not the eventual accept/discard decision the short-circuit bug lived in.",
+      "budgetCondition": "Same caller-controlled outer deadline as attemptRecovery_direct.",
+      "primitivesIncluded": "Same 7 types as attemptRecovery_direct.",
+      "usedInSprints": [
+        "Refinement Sprint v3 (CompetitionTimeline.ts, onEvent-based per-candidate timeline)"
+      ],
+      "knownLimitation": "Only this path exposes onEvent -- attemptRecovery() itself passes `undefined` for onEvent when it calls generateRecoveryStrategies() internally (fiveByFiveEdgeRecovery.ts's own source), so no REAL production caller (including solve()) ever gets per-candidate start/finish telemetry. This is itself a disclosed measurement-coverage gap this Sprint's own STEP2 has to work around."
+    },
+    {
+      "path": "solve_e2e",
+      "describedAs": "Calls the REAL FiveByFiveEdgeSolverEngine.solve() entry point exactly as real product callers do -- one call encompasses the full PAIR/FLIP/PARITY/ENDGAME task loop, with Recovery triggered internally by executeTask() only when a task's own primary attempt fails.",
+      "contractMeasured": "The REAL, complete production Contract as end-users actually experience it -- Recovery (and MCM within it) only gets whatever real wall-clock remains after the primary pipeline's own attempt, which is itself governed by `recoveryReserveMsOverride` (PRODUCTION_ENDGAME_RECOVERY_RESERVE_MS=250ms default) carved off the END of the task's own deadline, NOT off the full outer 1000ms.",
+      "budgetCondition": "PLAN_TIME_BUDGET_MS=1000ms fixed, NOT exposed as a solve() parameter (cannot vary the outer deadline without either modifying fiveByFiveEdgeSolverEngine.ts, forbidden this Sprint, or a clock-manipulation test technique this Sprint does not use). `recoveryReserveMsOverride` IS a real, exposed, unmodified solve() parameter (default 250ms) that controls how much of the ENDGAME task's own remaining deadline gets reserved for Recovery -- this is the one real, safe lever this Sprint's own STEP2/3 sweep.",
+      "primitivesIncluded": "Same 7 Recovery types, but ONLY reachable via ENDGAME-type tasks (`recoveryEligible = allowRecovery && task.type === \"ENDGAME\"`) -- PAIR/FLIP/PARITY tasks never trigger Recovery at all.",
+      "usedInSprints": [
+        "Production Integration Finalization Sprint v1",
+        "Solver Release Readiness Validation Sprint v1",
+        "Multi-Component Merge Production Validation Sprint v1"
+      ],
+      "knownLimitation": "Cannot vary the outer 1000ms plan deadline via any existing parameter -- the ONLY safe, unmodified lever affecting Recovery's real effective budget at this level is `recoveryReserveMsOverride`. A Hole Dataset case that is ALREADY the terminal stuck state of a historical 50-iteration loop may simply not have enough real remaining wall-clock left for a single fresh solve() call's own ENDGAME task to reach a Recovery-eligible failure with a large enough reserve for MCM's own 2000ms nominal need."
+    },
+    {
+      "path": "hole_dataset_replay",
+      "describedAs": "Loads the 142-case Hole Dataset (mechanismAnalysis/RawDatasetLoader.ts's own loadRawHoleDataset(), unmodified) and replays EITHER attemptRecovery_direct OR solve_e2e over every case.",
+      "contractMeasured": "Not its own separate Contract -- a POPULATION multiplier applied on top of whichever underlying path (attemptRecovery_direct or solve_e2e) is chosen.",
+      "budgetCondition": "Inherits whatever the underlying path's own budget condition is.",
+      "primitivesIncluded": "Inherits whatever the underlying path's own Primitive set is.",
+      "usedInSprints": [
+        "Every Sprint in this arc's own MCM research line -- always layered on top of one of the two direct-call paths above."
+      ],
+      "knownLimitation": "A large N does not compensate for a systematically-insensitive underlying path -- Production Validation Sprint v1's own N=142 solve_e2e replay found improvedCountDiff mean=0.0000 not because the population was too small, but because solve_e2e itself could not reach the budget condition the effect needs."
+    },
+    {
+      "path": "counterfactual_replay",
+      "describedAs": "Real execution with ONE variable deliberately varied (outer deadline, scheduling order, or -- new to this Sprint -- recoveryReserveMsOverride) while everything else is held at real production defaults, comparing Arm A/B/C or Baseline/Integrated.",
+      "contractMeasured": "Whatever the varied parameter itself controls -- a counterfactual is only as informative as the parameter it varies actually reaching the mechanism under test.",
+      "budgetCondition": "Whichever values the experiment design chooses to sweep.",
+      "primitivesIncluded": "Whatever the underlying path (attemptRecovery_direct or solve_e2e) offers.",
+      "usedInSprints": [
+        "Refinement Sprint v1 (Scheduler Ordering)",
+        "Refinement Sprint v2 (Outer Deadline, attemptRecovery_direct only)",
+        "Short-Circuit Production Integration Sprint v1 (Baseline/Integrated via git-checkout toggle)"
+      ],
+      "knownLimitation": "Every counterfactual_replay in this arc BEFORE this Sprint varied a parameter reachable only from attemptRecovery_direct (outer deadline) -- none varied a parameter reachable from solve_e2e (recoveryReserveMsOverride) until this Sprint's own STEP3."
+    }
+  ],
+  "budgetEnvelope": [
+    {
+      "label": "scrambleDepth30:2",
+      "path": "attemptRecovery_direct",
+      "configDescription": "outer=1000ms (real production outer deadline)",
+      "outerOrPlanDeadlineMs": 1000,
+      "actualRemainingTimeAtMcmOrRecoveryStartMs": 644,
+      "dedicatedBudgetMs": 2000,
+      "effectiveBudgetMs": 644
+    },
+    {
+      "label": "scrambleDepth30:2",
+      "path": "attemptRecovery_direct",
+      "configDescription": "outer=2000ms (Short-Circuit Production Integration Sprint v1's own reproduction condition)",
+      "outerOrPlanDeadlineMs": 2000,
+      "actualRemainingTimeAtMcmOrRecoveryStartMs": 1645,
+      "dedicatedBudgetMs": 2000,
+      "effectiveBudgetMs": 1645
+    },
+    {
+      "label": "scrambleDepth30:2",
+      "path": "solve_e2e",
+      "configDescription": "recoveryReserveMsOverride=250ms (real production default)",
+      "outerOrPlanDeadlineMs": 1000,
+      "actualRemainingTimeAtMcmOrRecoveryStartMs": null,
+      "dedicatedBudgetMs": 2000,
+      "effectiveBudgetMs": null
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "path": "attemptRecovery_direct",
+      "configDescription": "outer=1000ms (real production outer deadline)",
+      "outerOrPlanDeadlineMs": 1000,
+      "actualRemainingTimeAtMcmOrRecoveryStartMs": 741,
+      "dedicatedBudgetMs": 2000,
+      "effectiveBudgetMs": 741
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "path": "attemptRecovery_direct",
+      "configDescription": "outer=2000ms (Short-Circuit Production Integration Sprint v1's own reproduction condition)",
+      "outerOrPlanDeadlineMs": 2000,
+      "actualRemainingTimeAtMcmOrRecoveryStartMs": 1761,
+      "dedicatedBudgetMs": 2000,
+      "effectiveBudgetMs": 1761
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "path": "solve_e2e",
+      "configDescription": "recoveryReserveMsOverride=250ms (real production default)",
+      "outerOrPlanDeadlineMs": 1000,
+      "actualRemainingTimeAtMcmOrRecoveryStartMs": null,
+      "dedicatedBudgetMs": 2000,
+      "effectiveBudgetMs": null
+    }
+  ],
+  "sensitivity": {
+    "attemptRecoverySweep": [
+      {
+        "label": "scrambleDepth30:2",
+        "outerDeadlineMs": 1000,
+        "result": {
+          "outerDeadlineMs": 1000,
+          "mcmOffered": true,
+          "mcmChosen": true,
+          "mcmRemainingTimeAtStartMs": 689,
+          "mcmOwnRuntimeMs": 700,
+          "chosenType": "MULTI_COMPONENT_MERGE",
+          "improved": true,
+          "wrongWingBefore": 11,
+          "wrongWingAfter": 10
+        }
+      },
+      {
+        "label": "scrambleDepth30:2",
+        "outerDeadlineMs": 1500,
+        "result": {
+          "outerDeadlineMs": 1500,
+          "mcmOffered": true,
+          "mcmChosen": true,
+          "mcmRemainingTimeAtStartMs": 1054,
+          "mcmOwnRuntimeMs": 720,
+          "chosenType": "MULTI_COMPONENT_MERGE",
+          "improved": true,
+          "wrongWingBefore": 11,
+          "wrongWingAfter": 10
+        }
+      },
+      {
+        "label": "scrambleDepth30:2",
+        "outerDeadlineMs": 2000,
+        "result": {
+          "outerDeadlineMs": 2000,
+          "mcmOffered": true,
+          "mcmChosen": true,
+          "mcmRemainingTimeAtStartMs": 1660,
+          "mcmOwnRuntimeMs": 720,
+          "chosenType": "MULTI_COMPONENT_MERGE",
+          "improved": true,
+          "wrongWingBefore": 11,
+          "wrongWingAfter": 10
+        }
+      },
+      {
+        "label": "scrambleDepth30:2",
+        "outerDeadlineMs": 60000,
+        "result": {
+          "outerDeadlineMs": 60000,
+          "mcmOffered": true,
+          "mcmChosen": true,
+          "mcmRemainingTimeAtStartMs": 59649,
+          "mcmOwnRuntimeMs": 711,
+          "chosenType": "MULTI_COMPONENT_MERGE",
+          "improved": true,
+          "wrongWingBefore": 11,
+          "wrongWingAfter": 10
+        }
+      },
+      {
+        "label": "scrambleDepth100:5",
+        "outerDeadlineMs": 1000,
+        "result": {
+          "outerDeadlineMs": 1000,
+          "mcmOffered": true,
+          "mcmChosen": true,
+          "mcmRemainingTimeAtStartMs": 738,
+          "mcmOwnRuntimeMs": 766,
+          "chosenType": "MULTI_COMPONENT_MERGE",
+          "improved": true,
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 8
+        }
+      },
+      {
+        "label": "scrambleDepth100:5",
+        "outerDeadlineMs": 1500,
+        "result": {
+          "outerDeadlineMs": 1500,
+          "mcmOffered": true,
+          "mcmChosen": true,
+          "mcmRemainingTimeAtStartMs": 1266,
+          "mcmOwnRuntimeMs": 1464,
+          "chosenType": "MULTI_COMPONENT_MERGE",
+          "improved": true,
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 8
+        }
+      },
+      {
+        "label": "scrambleDepth100:5",
+        "outerDeadlineMs": 2000,
+        "result": {
+          "outerDeadlineMs": 2000,
+          "mcmOffered": true,
+          "mcmChosen": true,
+          "mcmRemainingTimeAtStartMs": 1761,
+          "mcmOwnRuntimeMs": 2002,
+          "chosenType": "MULTI_COMPONENT_MERGE",
+          "improved": true,
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 8
+        }
+      },
+      {
+        "label": "scrambleDepth100:5",
+        "outerDeadlineMs": 60000,
+        "result": {
+          "outerDeadlineMs": 60000,
+          "mcmOffered": true,
+          "mcmChosen": true,
+          "mcmRemainingTimeAtStartMs": 59780,
+          "mcmOwnRuntimeMs": 2023,
+          "chosenType": "MULTI_COMPONENT_MERGE",
+          "improved": true,
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 8
+        }
+      }
+    ],
+    "solveSweep": [
+      {
+        "label": "scrambleDepth30:2",
+        "recoveryReserveMsOverride": 250,
+        "result": {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 11,
+          "wrongWingAfter": 11
+        }
+      },
+      {
+        "label": "scrambleDepth30:2",
+        "recoveryReserveMsOverride": 450,
+        "result": {
+          "recoveryReserveMsOverride": 450,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 11,
+          "wrongWingAfter": 11
+        }
+      },
+      {
+        "label": "scrambleDepth30:2",
+        "recoveryReserveMsOverride": 900,
+        "result": {
+          "recoveryReserveMsOverride": 900,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 11,
+          "wrongWingAfter": 11
+        }
+      },
+      {
+        "label": "scrambleDepth100:5",
+        "recoveryReserveMsOverride": 250,
+        "result": {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 10
+        }
+      },
+      {
+        "label": "scrambleDepth100:5",
+        "recoveryReserveMsOverride": 450,
+        "result": {
+          "recoveryReserveMsOverride": 450,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 10
+        }
+      },
+      {
+        "label": "scrambleDepth100:5",
+        "recoveryReserveMsOverride": 900,
+        "result": {
+          "recoveryReserveMsOverride": 900,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 10
+        }
+      }
+    ],
+    "attemptRecoveryThresholdMs": {
+      "scrambleDepth30:2": 1000,
+      "scrambleDepth100:5": 1000
+    },
+    "solveThresholdMs": {
+      "scrambleDepth30:2": null,
+      "scrambleDepth100:5": null
+    }
+  },
+  "metricSensitivity": {
+    "attemptRecoveryAxis": [
+      {
+        "configLabel": "outer=1000ms",
+        "improvedCount": 2,
+        "solvedCount": 0,
+        "wrongWingReductionTotal": 3,
+        "recoverySuccessCount": 2
+      },
+      {
+        "configLabel": "outer=1500ms",
+        "improvedCount": 2,
+        "solvedCount": 0,
+        "wrongWingReductionTotal": 3,
+        "recoverySuccessCount": 2
+      },
+      {
+        "configLabel": "outer=2000ms",
+        "improvedCount": 2,
+        "solvedCount": 0,
+        "wrongWingReductionTotal": 3,
+        "recoverySuccessCount": 2
+      },
+      {
+        "configLabel": "outer=60000ms",
+        "improvedCount": 2,
+        "solvedCount": 0,
+        "wrongWingReductionTotal": 3,
+        "recoverySuccessCount": 2
+      }
+    ],
+    "solveAxis": [
+      {
+        "configLabel": "recoveryReserveMsOverride=250ms",
+        "improvedCount": 0,
+        "solvedCount": 0,
+        "wrongWingReductionTotal": 0,
+        "recoverySuccessCount": 0
+      },
+      {
+        "configLabel": "recoveryReserveMsOverride=450ms",
+        "improvedCount": 0,
+        "solvedCount": 0,
+        "wrongWingReductionTotal": 0,
+        "recoverySuccessCount": 0
+      },
+      {
+        "configLabel": "recoveryReserveMsOverride=900ms",
+        "improvedCount": 0,
+        "solvedCount": 0,
+        "wrongWingReductionTotal": 0,
+        "recoverySuccessCount": 0
+      }
+    ],
+    "allMetricsMoveTogether": true,
+    "proposedNewKpi": {
+      "name": "Recovered Improvement Before Deadline (RIBD)",
+      "definition": "Per-case boolean: MCM was OFFERED as a candidate (regardless of whether it was ultimately CHOSEN) AND its own remainingTimeAtStart (from the real onEvent/trace timeline) was >= the runtime it actually needed to reach a net-improving result in the Comparative Prototype's own isolated measurement. Aggregated as a rate across the population.",
+      "rationale": "improvedCount/solvedCount/wrongWingReduction/recoverySuccess are all OUTCOME metrics -- they only register a signal at the exact instant the effect crosses into success, giving no visibility into cases that were CLOSE (e.g. MCM offered, chosen, and net-improving, but discarded by an unrelated Integration-layer gap like the short-circuit omission this whole arc's own Sprints found) vs cases where MCM was never even in contention. RIBD would separate 'the Primitive had a fair shot and still failed' from 'the Primitive never had a fair shot' -- exactly the ambiguity this Sprint's own STEP2/STEP3 had to resolve by hand via BudgetEnvelopeAnalysis/SensitivityAnalysis. This is a PROPOSAL only -- the Validation Framework itself (ReleaseGates.ts/KpiDefinitions.ts) is not modified this Sprint."
+    }
+  },
+  "counterfactual": [
+    {
+      "label": "scrambleDepth30:2",
+      "shortCircuitMethodResult": "PASS",
+      "productValidationMethodResult": "FAIL",
+      "methodFlipsResult": true
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "shortCircuitMethodResult": "PASS",
+      "productValidationMethodResult": "FAIL",
+      "methodFlipsResult": true
+    }
+  ],
+  "decisionResult": {
+    "level1Pass": true,
+    "level2Pass": true,
+    "level3Pass": true,
+    "decision": "B_MCM_DEDICATED_PROTOCOL_NEEDED",
+    "rootCause": "solve_e2e의 real production 기본값(recoveryReserveMsOverride=250ms)이 MCM의 명목 예산(2000ms)에 크게 못 미치고, solve()는 이 Sprint 시점까지 outer deadline 자체를 바꿀 파라미터가 없다 -- 반면 attemptRecovery_direct는 outer deadline이 실제 노출된 파라미터라 2000ms까지 실측 가능하다. STEP3 Sensitivity Analysis의 실측 임계값이 이를 독립적으로 재확인한다: flip이 발생한 모든 Case에서 attemptRecoveryThresholdMs는 스윕 범위(1000/1500/2000/60000ms) 내에서 실제로 발견되지만, solveThresholdMs는 스윕 범위(250/450/900ms) 전체에서 단 한 번도 발견되지 않는다 -- solve_e2e 축이 효과를 관측하기에 근본적으로 budget이 부족하다는 뜻이다. 두 경로가 서로 다른 결과를 내는 것은 노이즈가 아니라 이 Budget Envelope 차이 하나로 완전히 설명된다.",
+    "recommendedProtocol": "MCM처럼 자체 명목 예산(dedicated budget)이 solve()의 real production 기본 Recovery Reserve(250ms)보다 훨씬 큰 Primitive 계열은, solve_e2e 단일 측정만으로 Capability 유무를 판정하지 않는다. 향후 이런 Primitive의 Product Validation은 반드시 (1) solve_e2e @ 실제 production 기본값(현재 상태 확인용)과 (2) attemptRecovery_direct @ outer=해당 Primitive의 명목 예산과 같거나 큰 값(진짜 Capability 존재 여부 확인용) 두 가지를 **함께** 보고해야 한다 -- 어느 한쪽만으로 Decision A/C를 내리지 않는다. Validation Framework(ReleaseGates.ts/ChangeClassification.ts) 자체의 Gate 정의는 수정할 필요가 없다 -- Category 선택과 측정 축 선택 가이드라인만 추가하면 된다.",
+    "rationale": "Method가 갈리는 모든 케이스에서 solve_e2e의 실제 effective budget이 attemptRecovery_direct(outer=2000ms)보다 항상 작았다(Level2 PASS) -- 원인이 노이즈가 아니라 Budget Envelope 하나로 단일 귀속된다. Framework의 Gate 정의 자체를 바꿀 필요는 없지만, MCM류의 \"큰 dedicated budget이 필요한 Primitive\"에는 표준 solve_e2e 측정만으로 충분하지 않다는 것이 이번 Sprint의 핵심 결론이다."
+  }
+}
