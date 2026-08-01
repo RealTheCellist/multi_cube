@@ -105,7 +105,17 @@ export interface SolveStrategy {
 // v1's own Decision), Budget 2000ms (Integration Planning Refinement
 // Sprint v1's own Decision A), Integration Point "after_CCR" -- see
 // fiveByFiveEdgeRecovery.ts's own genParityGatedCycle().
-export type RecoveryType = "DISRUPT" | "SETUP" | "REPAIR" | "CCR" | "MIXED_COMMUTATOR" | "PARITY_GATED_CYCLE";
+// "MULTI_COMPONENT_MERGE" (Multi-Component Merge Production Integration
+// Sprint v1) added the same way -- Gate: componentCount>=3 (Integration
+// Planning Sprint v1's own Decision, mutually exclusive with
+// PARITY_GATED_CYCLE's own componentCount>1 Gate in practice since MCM
+// claims every componentCount>=3 case first), Budget
+// MULTI_COMPONENT_MERGE_RESERVED_SLICE_MS=2000ms (same value as
+// PARITY_GATED_CYCLE_RESERVED_SLICE_MS, Integration Planning Sprint v1's
+// own Decision A), Integration Point "before_PARITY" (generated right
+// after CCR, before PARITY_GATED_CYCLE) -- see fiveByFiveEdgeRecovery.ts's
+// own genMultiComponentMerge().
+export type RecoveryType = "DISRUPT" | "SETUP" | "REPAIR" | "CCR" | "MIXED_COMMUTATOR" | "MULTI_COMPONENT_MERGE" | "PARITY_GATED_CYCLE";
 
 export interface RecoveryStrategy {
   id: number;

@@ -70,6 +70,19 @@ import { generateBridgeCandidates } from "./parityGatedCyclePrototypeV1/BridgeCa
 import { traverseAllCycles } from "./parityGatedCyclePrototypeV1/MultiCycleTraversal";
 import { bestEffortCleanup } from "./parityGatedCyclePrototypeV1/BridgeRemoval";
 import { validateDeferred } from "./solverV2Prototype/DeferredValidator";
+// Multi-Component Merge Production Integration Sprint v1: Integration
+// Point "before_PARITY" (Integration Planning Sprint v1's own Decision A)
+// -- generated right after genCCR, before genParityGatedCycle. Gate:
+// componentCount>=3 (Planning Sprint's own confirmed Gate, no
+// relaxation). tryMultiComponentMerge reused UNMODIFIED (Comparative
+// Prototype Sprint v1's own orchestration -- sequential largestTwo
+// bridging across >2 components, already deadline-parametrized) --
+// genMultiComponentMerge() below only adds the SAME traversal/cleanup/
+// validateDeferred composition genParityGatedCycle() already uses,
+// exactly like that function does, so the two share an identical
+// downstream contract and differ only in how the bridge/merge step
+// itself is produced.
+import { tryMultiComponentMerge } from "./solverPrimitiveParityComparativePrototype/MultiComponentMergePrototype";
 
 // Section 13's Time Budget table gives Recovery its own small sub-budgets
 // (생성 50ms / Simulation 50ms / Retry 150ms) -- these are PER-TASK budgets
@@ -147,6 +160,17 @@ const SETUP_RESERVED_SLICE_MS = 500;
 // own tested ceiling, disclosed there as not a confirmed true saturation
 // point.
 const PARITY_GATED_CYCLE_RESERVED_SLICE_MS = 2000;
+
+// Multi-Component Merge Production Integration Sprint v1: MULTI_COMPONENT_MERGE's
+// own reserved slice, off the OUTER deadline exactly like the other 4
+// reservedBudget candidates. Same numeric value as
+// PARITY_GATED_CYCLE_RESERVED_SLICE_MS per Integration Planning Sprint
+// v1's own Decision A (Dedicated Slice policy, "PARITY_GATED_CYCLE_RESERVED_SLICE_MS
+// 동일 값 재사용") -- kept as its own named constant (rather than literally
+// sharing the PARITY_GATED_CYCLE identifier) since the two are
+// conceptually separate reserved windows, matching every other
+// RecoveryType's own dedicated constant in this file.
+const MULTI_COMPONENT_MERGE_RESERVED_SLICE_MS = 2000;
 
 // Instrumentation hook for Integration Refinement Sprint v1's own STEP1/
 // STEP2 scheduling-verification measurements (matched/skipped/budget-
@@ -240,7 +264,17 @@ export function generateRecoveryStrategies(
   // Executor changes, the same mechanism CCR/MIXED_COMMUTATOR's own
   // integration already relies on. `false` reconstructs the pre-this-
   // Sprint baseline for this Sprint's own before/after Production Replay.
-  includeParityGatedCycle = true
+  includeParityGatedCycle = true,
+  // Multi-Component Merge Production Integration Sprint v1: mirrors
+  // includeCCR/includeMixedCommutator/includeParityGatedCycle's own
+  // pattern exactly. Defaults to true (MULTI_COMPONENT_MERGE included)
+  // for real production use -- fiveByFiveEdgeExecutor.ts's own
+  // executeTask() is never modified and never passes this new trailing
+  // parameter, so the real production call site automatically gets
+  // MULTI_COMPONENT_MERGE via this default with ZERO Executor changes.
+  // `false` reconstructs the pre-this-Sprint baseline for this Sprint's
+  // own before/after Production Replay (STEP3 Capability Validation).
+  includeMultiComponentMerge = true
 ): RecoveryStrategy[] {
   const { lib, flipLib, caseLib } = libs;
   const genDeadline = Math.min(deadline, Date.now() + RECOVERY_GEN_BUDGET_MS);
@@ -391,6 +425,62 @@ export function generateRecoveryStrategies(
     onEvent?.({ candidateType: "CCR", phase: added ? "generated" : "empty", atMs: Date.now() });
   };
 
+  // Multi-Component Merge Production Integration Sprint v1: Integration
+  // Point "before_PARITY" (Integration Planning Sprint v1's own Decision A)
+  // -- always generated right after genCCR, before genParityGatedCycle,
+  // regardless of schedulingStrategy (same reasoning as genCCR/
+  // genMixedCommutator/genParityGatedCycle's own comments: the REPAIR A/B
+  // scheduling question is unrelated to this candidate's own placement).
+  // Gate: componentCount>=3 (Planning Sprint's own confirmed Gate, no
+  // relaxation -- Directive's own "Gate 완화 금지"). This Gate is a
+  // strict subset of PARITY_GATED_CYCLE's own Gate (componentCount>1), so
+  // MULTI_COMPONENT_MERGE claims every componentCount>=3 case before
+  // PARITY_GATED_CYCLE ever runs on it, leaving PARITY_GATED_CYCLE's
+  // practical scope reduced to componentCount===2 -- the two Gates are
+  // mutually exclusive in practice (Integration Planning Sprint v1's own
+  // STEP1/STEP6 finding). Budget: MULTI_COMPONENT_MERGE_RESERVED_SLICE_MS
+  // (2000ms) reserved slice off the OUTER deadline, exactly like REPAIR/
+  // MIXED_COMMUTATOR/SETUP/PARITY_GATED_CYCLE's own reservedBudget
+  // mechanism. tryMultiComponentMerge (Comparative Prototype Sprint v1's
+  // own orchestration, UNMODIFIED, already deadline-parametrized) produces
+  // the merge moves; the traversal/cleanup/validateDeferred composition
+  // below is identical to genParityGatedCycle()'s own, reusing the same
+  // unmodified building blocks.
+  const genMultiComponentMerge = () => {
+    if (!includeMultiComponentMerge) return;
+    onEvent?.({ candidateType: "MULTI_COMPONENT_MERGE", phase: "start", atMs: Date.now() });
+    const stats = analyzeConstraints(buildStateGraph(cubies));
+    if (stats.componentCount < 3) {
+      onEvent?.({ candidateType: "MULTI_COMPONENT_MERGE", phase: "skipped", atMs: Date.now() });
+      return;
+    }
+    const d = Math.min(deadline, Date.now() + MULTI_COMPONENT_MERGE_RESERVED_SLICE_MS);
+    const merge = tryMultiComponentMerge(cubies, d);
+
+    const afterMerge = cloneCubies(cubies);
+    if (merge.moves && merge.moves.length) applySeq(afterMerge, merge.moves);
+    const traversal = traverseAllCycles(afterMerge, lib, d);
+    const traversalMoves = traversal.moves ?? [];
+    const afterTraversal = cloneCubies(afterMerge);
+    if (traversalMoves.length) applySeq(afterTraversal, traversalMoves);
+    const cleanupMoves = bestEffortCleanup(afterTraversal, lib, d);
+    const combinedMoves = [...(merge.moves ?? []), ...traversalMoves, ...cleanupMoves];
+
+    let finalMoves: Move[] | null = null;
+    if (combinedMoves.length > 0) {
+      const afterState = cloneCubies(cubies);
+      applySeq(afterState, combinedMoves);
+      const validation = validateDeferred(cubies, afterState);
+      finalMoves = validation.accepted ? combinedMoves : null;
+    }
+    const added = add(
+      "MULTI_COMPONENT_MERGE",
+      `Sequential Multi-Component Merge (componentCount>=3 Gate, before_PARITY reserved-slice scheduling, Budget=2000ms, componentCountBefore=${merge.componentCountBefore}->${merge.componentCountAfter})`,
+      finalMoves
+    );
+    onEvent?.({ candidateType: "MULTI_COMPONENT_MERGE", phase: added ? "generated" : "empty", atMs: Date.now() });
+  };
+
   // Production Integration Sprint v1: Integration Point mirrors CCR's own
   // (repair_after) -- always generated LAST, regardless of
   // schedulingStrategy (the REPAIR A/B scheduling question is unrelated
@@ -485,29 +575,38 @@ export function generateRecoveryStrategies(
   // baseline keeps the ORIGINAL DISRUPT,DISRUPT,SETUP,REPAIR order;
   // priorityGate (Strategy A) tries REPAIR FIRST, using the exact same
   // shared-genDeadline mechanism as baseline, simply given first crack at
-  // it before DISRUPT/SETUP can consume it. CCR and MIXED_COMMUTATOR are
-  // always appended last (in that order) in both variants (both
-  // Integration Points are independent of the REPAIR scheduling A/B
-  // question).
+  // it before DISRUPT/SETUP can consume it. CCR, MULTI_COMPONENT_MERGE,
+  // PARITY_GATED_CYCLE and MIXED_COMMUTATOR are always appended last (in
+  // that order) in every variant (all 4 Integration Points are independent
+  // of the REPAIR scheduling A/B question). MULTI_COMPONENT_MERGE sits
+  // between genCCR and genParityGatedCycle in every variant -- Multi-
+  // Component Merge Production Integration Sprint v1's own "before_PARITY"
+  // Integration Point (Integration Planning Sprint v1's own Decision A),
+  // applied identically regardless of schedulingStrategy/
+  // useSetupReservedSlice, the same principle genCCR/genMixedCommutator/
+  // genParityGatedCycle's own comments already establish for their
+  // placements.
   //
   // reservedBudget + useSetupReservedSlice=true (today's real production):
   // Scheduler Prototype Sprint v1's Option A moves genSetup() to the very
   // end of the order -- its own genSetup() body (above) now checks
   // `candidates.length === 0` before attempting anything, so this ordering
   // change is what makes "last resort" actually mean something: by the
-  // time genSetup() runs, DISRUPT/REPAIR/CCR/MIXED_COMMUTATOR have already
-  // had their turn, so `candidates` truthfully reflects whether any of them
-  // found something. Every other schedulingStrategy/useSetupReservedSlice
-  // combination (baseline, priorityGate, or reservedBudget with
+  // time genSetup() runs, DISRUPT/REPAIR/CCR/MULTI_COMPONENT_MERGE/
+  // PARITY_GATED_CYCLE/MIXED_COMMUTATOR have already had their turn, so
+  // `candidates` truthfully reflects whether any of them found something.
+  // Every other schedulingStrategy/useSetupReservedSlice combination
+  // (baseline, priorityGate, or reservedBudget with
   // useSetupReservedSlice=false) keeps the pre-existing order untouched --
-  // this Sprint's only allowed change is Scheduler Ordering for the one
-  // branch under test.
+  // this Sprint's only allowed change is inserting genMultiComponentMerge
+  // at the one fixed Integration Point, per this Sprint's own Directive
+  // scope (변경 범위: fiveByFiveEdgeRecovery.ts only).
   const order =
     schedulingStrategy === "priorityGate"
-      ? [genRepair, genDisrupt1, genDisrupt2, genSetup, genCCR, genParityGatedCycle, genMixedCommutator]
+      ? [genRepair, genDisrupt1, genDisrupt2, genSetup, genCCR, genMultiComponentMerge, genParityGatedCycle, genMixedCommutator]
       : schedulingStrategy === "reservedBudget" && useSetupReservedSlice
-        ? [genDisrupt1, genDisrupt2, genRepair, genCCR, genParityGatedCycle, genMixedCommutator, genSetup]
-        : [genDisrupt1, genDisrupt2, genSetup, genRepair, genCCR, genParityGatedCycle, genMixedCommutator];
+        ? [genDisrupt1, genDisrupt2, genRepair, genCCR, genMultiComponentMerge, genParityGatedCycle, genMixedCommutator, genSetup]
+        : [genDisrupt1, genDisrupt2, genSetup, genRepair, genCCR, genMultiComponentMerge, genParityGatedCycle, genMixedCommutator];
   for (const step of order) step();
 
   return candidates;
@@ -585,7 +684,12 @@ export function attemptRecovery(
   // to generateRecoveryStrategies -- see that function's own
   // includeParityGatedCycle comment. Defaults to true (PARITY_GATED_CYCLE
   // included) for real production use.
-  includeParityGatedCycle = true
+  includeParityGatedCycle = true,
+  // Multi-Component Merge Production Integration Sprint v1: threaded
+  // through to generateRecoveryStrategies -- see that function's own
+  // includeMultiComponentMerge comment. Defaults to true
+  // (MULTI_COMPONENT_MERGE included) for real production use.
+  includeMultiComponentMerge = true
 ): Move[] {
   const log = (label: string, detail?: string) => trace?.push({ at: Date.now(), label, detail });
   const visited = new Set<number>();
@@ -608,7 +712,7 @@ export function attemptRecovery(
   for (let round = 0; round < MAX_RECOVERY_RETRIES; round++) {
     if (Date.now() > deadline) break;
 
-    const candidates = generateRecoveryStrategies(scratch, libs, deadline, weights, includeRepair, schedulingStrategy, undefined, includeCCR, includeMixedCommutator, useSetupReservedSlice, includeParityGatedCycle);
+    const candidates = generateRecoveryStrategies(scratch, libs, deadline, weights, includeRepair, schedulingStrategy, undefined, includeCCR, includeMixedCommutator, useSetupReservedSlice, includeParityGatedCycle, includeMultiComponentMerge);
     if (candidates.length === 0) {
       log("recovery-no-candidates", `${round + 1}회차: Recovery 후보를 찾지 못함`);
       break;
