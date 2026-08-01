@@ -1,0 +1,208 @@
+{
+  "validationScopeMatrix": [
+    {
+      "axis": "CAPABILITY_VALIDATION",
+      "path": "attemptRecovery_direct",
+      "purpose": "Primitive 자체의 Capability(net-improving 여부)를 격리된 조건에서 검증한다 -- 실사용 환경의 primary 파이프라인 경쟁이나 solve()의 고정 outer deadline에 구애받지 않고, Primitive가 '충분한 예산이 주어졌을 때 실제로 이기는가'만 확인한다.",
+      "budgetRequirement": "호출자 지정 outer deadline >= 검증 대상 Primitive 자신의 RESERVED_SLICE_MS(명목 dedicated budget) -- Validation Methodology Qualification Sprint v1의 STEP3가 실측으로 확인한 대로, 이 조건이 충족되지 않으면 Primitive의 실제 효과도 이 축에서 가려질 수 있다 (예: outer=1000ms조차도 MCM 두 known-effect case에서는 이미 충분했지만, 이는 케이스별로 달라질 수 있으므로 최소 명목 budget 이상을 권장한다).",
+      "evidenceSource": "Short-Circuit Production Integration Sprint v1 (outer=2000ms 실측, 2/2 회복) + Validation Methodology Qualification Sprint v1 STEP3 (outer=1000/1500/2000/60000ms 스윕, 전 구간 improved=true)"
+    },
+    {
+      "axis": "PRODUCT_VALIDATION",
+      "path": "solve_e2e",
+      "purpose": "실제 최종 사용자가 겪는 완전한 Production Contract(primary 파이프라인의 outer deadline 선점 + ENDGAME 전용 Recovery 트리거 + real recoveryReserveMsOverride) 하에서, 이 변경이 실사용 결과(해결률/런타임/Regression)에 미치는 실제 영향을 검증한다.",
+      "budgetRequirement": "PLAN_TIME_BUDGET_MS=1000ms 고정(파라미터 아님) + recoveryReserveMsOverride(기본 250ms, 유일하게 노출된 안전한 레버) -- 이 축은 Primitive의 명목 budget에 맞춰 조정할 수 없다는 것이 이 Sprint 계열의 핵심 발견이다.",
+      "evidenceSource": "Multi-Component Merge Production Validation Sprint v1 (N=142, real solve(), improvedCount Baseline=Integrated=1/142) + Validation Methodology Qualification Sprint v1 STEP3 (recoveryReserveMsOverride=250/450/900ms 스윕, 전 구간 improved=false)"
+    }
+  ],
+  "validationFlow": [
+    {
+      "stage": "CAPABILITY_VALIDATION",
+      "order": 1,
+      "description": "attemptRecovery_direct를 검증 대상 Primitive 자신의 명목 budget(RESERVED_SLICE_MS) 이상의 outer deadline으로 호출해, Primitive 자체가 net-improving한지 확인한다.",
+      "reusedModule": "solverPrimitiveMultiComponentMergeValidationMethodology/SharedProbes.ts의 attemptRecoveryTimelineProbe() (Validation Methodology Qualification Sprint v1이 이미 실행/검증) -- generateRecoveryStrategies() 직접 호출 + onEvent 계측, 신규 실행 로직 없음.",
+      "inputRequirement": "대상 Hole Dataset 부분집합(해당 Primitive가 실제로 후보로 offer되는 케이스), outer deadline >= 대상 Primitive의 RESERVED_SLICE_MS.",
+      "outputConsumedBy": "RELEASE_DECISION (Gate C의 Capability 축 입력값 중 하나)"
+    },
+    {
+      "stage": "REGRESSION_VALIDATION",
+      "order": 2,
+      "description": "전체 Hole Dataset에 대해 real production 기본값(outer=1000ms)으로 attemptRecovery_direct를 Baseline/Integrated 두 arm으로 실행해, 새 Regression이 없는지 확인한다.",
+      "reusedModule": "solverPrimitiveMultiComponentMergeShortCircuitProductionIntegration/RegressionAudit.ts의 auditRegression() (Short-Circuit Production Integration Sprint v1이 이미 실행/검증, newRegressionCount=0 확인됨) -- 신규 로직 없음.",
+      "inputRequirement": "전체 Hole Dataset(142케이스), Baseline(변경 전) vs Integrated(변경 후) 두 real attemptRecovery_direct population replay.",
+      "outputConsumedBy": "RELEASE_DECISION (Gate A 입력값)"
+    },
+    {
+      "stage": "PRODUCT_VALIDATION",
+      "order": 3,
+      "description": "real solve() E2E를 production 기본값(recoveryReserveMsOverride=250ms)으로 전체 Hole Dataset에 실행해, 실사용 환경에서의 실제 영향(해결률/런타임)을 확인한다 -- 이 축이 CAPABILITY_VALIDATION과 다른 결과를 보일 수 있음을 이미 알고 있는 상태로 진행한다 (Validation Methodology Qualification Sprint v1의 핵심 발견).",
+      "reusedModule": "solverPrimitiveMultiComponentMergeProductionValidation/EndToEndSolveProbe.ts + PopulationReplay.ts (Multi-Component Merge Production Validation Sprint v1이 이미 실행/검증) -- 신규 로직 없음.",
+      "inputRequirement": "전체 Hole Dataset(142케이스), real solve() Baseline vs Integrated.",
+      "outputConsumedBy": "RELEASE_DECISION (Gate B/C의 Product 축 입력값, Gate E)"
+    },
+    {
+      "stage": "RELEASE_DECISION",
+      "order": 4,
+      "description": "CAPABILITY_VALIDATION과 PRODUCT_VALIDATION의 결과를 함께(어느 한쪽만이 아니라) Validation Framework의 Gate A/B/C/E에 통과시켜 최종 Decision A/B/C를 낸다. MCM 계열은 PRODUCT_VALIDATION 단독 결과(예: improvedCountDiff mean=0)만으로 Decision C(효과 없음)를 내리지 않는다 -- CAPABILITY_VALIDATION이 PASS인데 PRODUCT_VALIDATION만 OPEN_QUESTION/FAIL이면, 원인을 Budget Envelope 불일치로 우선 의심하고 STEP3(Sensitivity)로 재확인한다.",
+      "reusedModule": "solverPostReleaseValidationFramework/ReleaseGates.ts (evaluateGateA/B/C/E) + ChangeClassification.ts (getCategorySpec) + ValidationPipeline.ts (decideFromGates()) -- 전부 기존 그대로, 수정 없음.",
+      "inputRequirement": "REGRESSION_VALIDATION의 Gate A 입력, PRODUCT_VALIDATION의 Gate B/C/E 입력, CAPABILITY_VALIDATION의 보조 Gate C 입력(Product 축이 애매할 때 Capability 축의 PASS가 근거로 인용됨).",
+      "outputConsumedBy": "(최종 단계 -- 사람이 읽는 Release Decision)"
+    }
+  ],
+  "kpiMappingTable": [
+    {
+      "tier": "CAPABILITY",
+      "kpi": "improvedCount",
+      "role": "PRIMARY",
+      "realFieldSource": "AttemptRecoveryProbeResult.improved (SharedProbes.ts) aggregated as count(improved===true) over the target case subset",
+      "definition": "대상 Primitive가 후보로 offer + chosen되어 wrongWingAfter < wrongWingBefore를 만든 케이스 수."
+    },
+    {
+      "tier": "CAPABILITY",
+      "kpi": "chosenType",
+      "role": "SECONDARY",
+      "realFieldSource": "AttemptRecoveryProbeResult.chosenType",
+      "definition": "실제로 선택된 Recovery 후보 타입 -- 대상 Primitive가 선택되었는지(vs 다른 Primitive에 밀렸는지) 직접 확인."
+    },
+    {
+      "tier": "CAPABILITY",
+      "kpi": "wrongWingReduction",
+      "role": "SECONDARY",
+      "realFieldSource": "AttemptRecoveryProbeResult.wrongWingBefore - .wrongWingAfter",
+      "definition": "실제로 감소한 wrongWing 개수 합 -- improvedCount의 boolean보다 세밀한 크기 정보."
+    },
+    {
+      "tier": "PRODUCT",
+      "kpi": "solvedCount",
+      "role": "PRIMARY",
+      "realFieldSource": "EndToEndSolveResult.solved / SolveE2EProbeResult.solved (wrongWingAfter===0)",
+      "definition": "real solve() E2E 이후 완전히 해결된(wrongWing=0) 케이스 수."
+    },
+    {
+      "tier": "PRODUCT",
+      "kpi": "runtime",
+      "role": "SECONDARY",
+      "realFieldSource": "PairwiseComparison.runtimeDiffMs (StatisticalValidation.ts, Baseline vs Integrated wall-clock ms diff)",
+      "definition": "real solve() 호출의 wall-clock 실행 시간 변화 -- Gate B(Runtime 허용 범위)의 직접 입력."
+    },
+    {
+      "tier": "PRODUCT",
+      "kpi": "regression",
+      "role": "SECONDARY",
+      "realFieldSource": "ReplayOutcome.trueRegression (RegressionAudit.ts) / RegressionAuditResult.newRegressionCount",
+      "definition": "변경 후 새로 발생한 실패(개선되던 케이스가 악화됨) 건수 -- Gate A(Regression 증가 없음)의 직접 입력."
+    }
+  ],
+  "proposedUnadoptedKpi": {
+    "name": "Recovered Improvement Before Deadline (RIBD)",
+    "status": "PROPOSED, NOT ADOPTED",
+    "origin": "Multi-Component Merge Validation Methodology Qualification Sprint v1 STEP4 (MetricSensitivityAudit.ts)"
+  },
+  "applicabilityMatrix": [
+    {
+      "type": "DISRUPT",
+      "dedicatedBudgetMs": null,
+      "exceedsRecoveryReserve": false,
+      "empiricalSolveE2ECapabilityConfirmed": "CONFIRMED",
+      "empiricalEvidence": "genDeadline를 SETUP과 공유(자체 Reserved Slice 없음) -- Product Integration Finalization Sprint v1 이래 real solve() 경로에서 지속적으로 관측됨.",
+      "applicability": "PRODUCT_VALIDATION_SUFFICIENT",
+      "rationale": "자체 dedicated budget이 없으므로 solve_e2e의 real Budget Envelope과 Capability Validation의 Budget Envelope이 사실상 동일하다 -- 별도 Protocol 불필요."
+    },
+    {
+      "type": "REPAIR",
+      "dedicatedBudgetMs": 75,
+      "exceedsRecoveryReserve": false,
+      "empiricalSolveE2ECapabilityConfirmed": "CONFIRMED",
+      "empiricalEvidence": "REPAIR_RESERVED_SLICE_MS=75ms, real production Recovery Reserve(250ms)보다 작음 -- solve_e2e가 이 예산에 항상 도달 가능. Prod Integration Sprint 계열(#205-211)에서 real solve()로 이미 Capability 확인됨.",
+      "applicability": "PRODUCT_VALIDATION_SUFFICIENT",
+      "rationale": "명목 예산이 real Recovery Reserve보다 작아 solve_e2e에서 구조적으로 도달 불가능한 상황이 발생하지 않는다."
+    },
+    {
+      "type": "CCR",
+      "dedicatedBudgetMs": null,
+      "exceedsRecoveryReserve": false,
+      "empiricalSolveE2ECapabilityConfirmed": "CONFIRMED",
+      "empiricalEvidence": "고정 Reserved Slice 없이 'remainingTime' Budget Contract(남은 real outer deadline 그대로 사용) -- CCR Production Integration Sprint v1(#205-211)에서 real solve()로 Capability 확인됨.",
+      "applicability": "PRODUCT_VALIDATION_SUFFICIENT",
+      "rationale": "명목 dedicated budget 자체가 없으므로 solve_e2e의 real Budget Envelope과 어긋날 여지가 없다."
+    },
+    {
+      "type": "MIXED_COMMUTATOR",
+      "dedicatedBudgetMs": 300,
+      "exceedsRecoveryReserve": true,
+      "empiricalSolveE2ECapabilityConfirmed": "CONFIRMED",
+      "empiricalEvidence": "MIXED_COMMUTATOR_RESERVED_SLICE_MS=300ms, real Recovery Reserve(250ms)보다 크다(정성적으로는 exceedsRecoveryReserve=true) -- 그러나 Mixed Commutator Production Validation Sprint v1/v2(#345-347, #355-357)에서 real solve() E2E로 이미 Capability가 확인되었고, 이번 MCM Sprint 계열과 같은 Measurement Mismatch를 낳는 후속 Methodology Sprint가 발생하지 않았다.",
+      "applicability": "PRODUCT_VALIDATION_SUFFICIENT",
+      "rationale": "명목상 250ms Recovery Reserve를 초과하지만(300ms), 초과폭이 MCM/PARITY_GATED_CYCLE(2000ms)에 비해 작아 solve_e2e가 실제로 도달 가능한 범위였다는 것이 이미 완료된 real solve() Sprint로 실증되었다. '초과 여부'만으로 기계적으로 Protocol을 적용하지 않고, 실측 Capability 확인 이력을 우선한다."
+    },
+    {
+      "type": "SETUP",
+      "dedicatedBudgetMs": 500,
+      "exceedsRecoveryReserve": true,
+      "empiricalSolveE2ECapabilityConfirmed": "CONFIRMED",
+      "empiricalEvidence": "SETUP_RESERVED_SLICE_MS=500ms, real Recovery Reserve(250ms)의 2배 -- 그러나 Reserved Slice Production Integration Sprint v1(#368-373)이 real solve(), 전체 Hole Dataset으로 Capability + Regression Validation을 이미 완료했고, 후속 Measurement Mismatch Sprint가 발생하지 않았다.",
+      "applicability": "PRODUCT_VALIDATION_SUFFICIENT",
+      "rationale": "MIXED_COMMUTATOR와 동일한 논리 -- Directive의 예시 목록이 SETUP을 비대상으로 분류한 것은 산술적 '초과 여부'가 아니라 이미 완료된 real solve() 실측 Capability 확인 이력에 근거한 것으로 재해석된다."
+    },
+    {
+      "type": "PARITY_GATED_CYCLE",
+      "dedicatedBudgetMs": 2000,
+      "exceedsRecoveryReserve": true,
+      "empiricalSolveE2ECapabilityConfirmed": "UNKNOWN_NEEDS_CHECK",
+      "empiricalEvidence": "PARITY_GATED_CYCLE_RESERVED_SLICE_MS=2000ms -- MULTI_COMPONENT_MERGE_RESERVED_SLICE_MS(2000ms)와 정확히 동일한 규모. Directive의 예시 목록(적용 대상/비대상 어느 쪽에도) 언급되지 않았다 -- 이번 Sprint의 실측 코드 감사로 새로 발견된 항목.",
+      "applicability": "STRUCTURALLY_AT_RISK_UNVERIFIED",
+      "rationale": "MCM과 동일한 2000ms dedicated budget을 가지므로 구조적으로 동일한 Measurement Mismatch 위험군이다. 다만 이 Sprint의 범위(Documentation/Framework Extension, Production 실행 없음)에서는 PARITY_GATED_CYCLE에 대한 실제 attemptRecovery_direct/solve_e2e 비교 실측을 수행하지 않았으므로 'MCM_PROTOCOL_REQUIRED'로 단정하지 않는다 -- 별도 실측 Sprint가 필요한 후보로 명시적으로 남긴다."
+    },
+    {
+      "type": "MULTI_COMPONENT_MERGE",
+      "dedicatedBudgetMs": 2000,
+      "exceedsRecoveryReserve": true,
+      "empiricalSolveE2ECapabilityConfirmed": "NOT_CONFIRMED",
+      "empiricalEvidence": "MULTI_COMPONENT_MERGE_RESERVED_SLICE_MS=2000ms -- Validation Methodology Qualification Sprint v1이 real 실행으로 confirmedCapability(attemptRecovery_direct 전 구간)와 solve_e2e에서의 관측 실패(전 구간)를 모두 실측함.",
+      "applicability": "MCM_PROTOCOL_REQUIRED",
+      "rationale": "이 Sprint 계열 전체의 원인 -- 명목 dedicated budget이 solve_e2e의 real Budget Envelope에 구조적으로 도달할 수 없음이 실측으로 확인된 유일한 케이스."
+    }
+  ],
+  "compatibility": {
+    "gateChecks": [
+      {
+        "gate": "A",
+        "functionName": "evaluateGateA",
+        "signatureIsGeneric": true,
+        "evidence": "evaluateGateA(trueRegressionDiff: MetricEvaluation, falseRegressionDiff: MetricEvaluation) -- MetricEvaluation/KpiSnapshot 기반(경로 무관)."
+      },
+      {
+        "gate": "B",
+        "functionName": "evaluateGateB",
+        "signatureIsGeneric": true,
+        "evidence": "evaluateGateB(runtimeDiffMsEvaluation: MetricEvaluation, baselineP95Ms: number, toleranceFactor = 1.15) -- MetricEvaluation/KpiSnapshot 기반(경로 무관)."
+      },
+      {
+        "gate": "C",
+        "functionName": "evaluateGateC",
+        "signatureIsGeneric": true,
+        "evidence": "evaluateGateC(improvedCountDiffEvaluation: MetricEvaluation, strict = false) -- MetricEvaluation/KpiSnapshot 기반(경로 무관)."
+      },
+      {
+        "gate": "E",
+        "functionName": "evaluateGateE",
+        "signatureIsGeneric": true,
+        "evidence": "evaluateGateE(snapshot: Pick<KpiSnapshot, \"duplicateCount\" | \"starvedTypeCount\">) -- MetricEvaluation/KpiSnapshot 기반(경로 무관)."
+      }
+    ],
+    "allGatesGeneric": true,
+    "categoryCCoversRequiredGates": true,
+    "frameworkModificationRequired": false,
+    "evidenceSummary": "Gate A/B/C/E 전부 MetricEvaluation/KpiSnapshot 기반 제네릭 시그니처를 사용하므로, Capability Validation(attemptRecovery_direct)과 Product Validation(solve_e2e) 어느 쪽에서 나온 비교 결과든 동일한 함수에 그대로 입력 가능하다. Category C의 requiredGates=[A,B,C,E]는 이미 Directive가 요구한 Gate 목록과 정확히 일치한다 (Short-Circuit/Production Validation Sprint 양쪽 모두 이미 Category C로 분류해 사용한 전례와 일치). Framework 자체 수정 불필요."
+  },
+  "decisionResult": {
+    "level1Pass": true,
+    "level2Pass": true,
+    "level3Pass": true,
+    "decision": "A_PROTOCOL_ADOPTED",
+    "rationale": "Validation Scope(2축) + Validation Flow(4단계) + Applicability(7개 Primitive 전체 분류) + Compatibility(Gate A/B/C/E 전부 generic, Category C requiredGates 일치) 모두 실측/코드 감사로 확인되었다 -- MCM Validation Protocol을 공식 채택한다. MCM 연구는 Primitive 연구/Production Integration/Validation Methodology/Validation Protocol 표준화 4단계를 모두 완료하고 운영 표준(Operational Standard)으로 전환된다.",
+    "openFollowUps": [
+      "PARITY_GATED_CYCLE: MCM과 동일한 2000ms dedicated budget을 가지므로 구조적으로 동일한 Measurement Mismatch 위험군이다. 다만 이 Sprint의 범위(Documentation/Framework Extension, Production 실행 없음)에서는 PARITY_GATED_CYCLE에 대한 실제 attemptRecovery_direct/solve_e2e 비교 실측을 수행하지 않았으므로 'MCM_PROTOCOL_REQUIRED'로 단정하지 않는다 -- 별도 실측 Sprint가 필요한 후보로 명시적으로 남긴다."
+    ]
+  }
+}
