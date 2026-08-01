@@ -1,5 +1,19 @@
 # Cube Solver iOS Productization Sprint v1 — Decision Revision: Flutter
 
+> **SUPERSEDED (partially) — see `docs/MOBILE_WEBVIEW_PIVOT.md`.**
+> This document's core decision — **Flutter, one Dart codebase for
+> iOS+Android** — still stands. What's superseded is *how* that Flutter
+> app is built: it no longer hosts native Dart screens or runs the Solver
+> via `flutter_js`/QuickJS. The user pointed out this app had drifted into
+> being a standalone "solver utility" with no actual cube game in it —
+> the opposite of what the product is for. The Flutter app now wraps the
+> real, already-working web cube game (`src/`, this repo — 3D
+> render/swipe/scramble/timer, with the Solver already wired in as a
+> "help me, I'm stuck" hint button) in a `webview_flutter` shell, instead
+> of reimplementing any of that in Dart. Kept below for the historical
+> record of why Flutter (not Swift/Kotlin) was chosen as the
+> cross-platform layer — that reasoning is unaffected by the pivot.
+
 ## Why this revision exists
 
 `docs/IOS_PRODUCT_ARCHITECTURE.md`'s original Decision 1 chose native

@@ -1,9 +1,14 @@
 name: poly_puzzle_cube
 description: >
-  Poly Puzzle Cube Solver -- Flutter app wrapping the frozen Solver Version
-  1.0 Baseline (src/customCube, this repo) via a bundled JavaScript bridge.
-  iOS-first per docs/VERSION_1_0_RELEASE_NOTE.md, Android sharing the same
-  Dart codebase once a future Roadmap Sprint approves the port.
+  Poly Puzzle -- a playable 5x5 (and 2x2/3x3/4x4) Rubik's-style cube game.
+  Wraps the real web app (src/, this repo -- 3D cube, swipe-to-turn,
+  scramble, timer, and a solver-backed "next move" help system) in a
+  WebView shell for iOS/Android app store distribution. See
+  docs/MOBILE_WEBVIEW_PIVOT.md for why: the whole point of this project was
+  a real cube GAME with the Solver as a help feature when stuck, not a
+  standalone solver utility -- and the web app already has exactly that,
+  fully built and validated, so this Sprint wraps it rather than
+  re-implementing any of it in Dart.
 publish_to: "none"
 version: 1.0.0+1
 
@@ -14,13 +19,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  # Wraps JavaScriptCore on iOS/macOS and QuickJS (via FFI) on
-  # Android/Linux/Windows -- the cross-platform equivalent of
-  # solver_sdk/ios/'s JSContext usage, letting both target platforms run
-  # the identical PolyPuzzleSolverBridge.bundle.js without a second,
-  # per-platform native SDK layer.
-  flutter_js: ^0.8.1
-  provider: ^6.1.2
+  # Official Flutter team WebView package. loadFlutterAsset() is built
+  # specifically for "bundle a whole built SPA as Flutter assets and serve
+  # it" -- no local HTTP server or file:// relative-path workarounds needed.
+  webview_flutter: ^4.10.0
 
 dev_dependencies:
   flutter_test:
@@ -30,9 +32,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/js/PolyPuzzleSolverBridge.bundle.js
-    - assets/cube_fixtures/solved.json
-    - assets/cube_fixtures/easy_5.json
-    - assets/cube_fixtures/light_15.json
-    - assets/cube_fixtures/medium_25.json
-    - assets/cube_fixtures/hard_40.json
+    - assets/webapp/index.html
+    - assets/webapp/favicon.svg
+    - assets/webapp/assets/
