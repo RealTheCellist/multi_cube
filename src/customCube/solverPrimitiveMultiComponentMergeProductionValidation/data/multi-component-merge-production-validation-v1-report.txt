@@ -1,0 +1,40 @@
+=== Multi-Component Merge Production Validation Sprint v1 -- Report ===
+(Final Capability Qualification -- Product Validation, no production code change)
+
+STEP1. Operating Contract Audit
+  matchedLine:     if ((best.type === "REPAIR" || best.type === "CCR" || best.type === "MIXED_COMMUTATOR" || best.type === "PARITY_GATED_CYCLE" || best.type === "MULTI_COMPONENT_MERGE") && shortCircuitRepair && afterDisrupt < originalBaseline) {
+  allShortCircuitTypesPresent=true, presentTypes=REPAIR, CCR, MIXED_COMMUTATOR, PARITY_GATED_CYCLE, MULTI_COMPONENT_MERGE
+  noDriftSinceFix=true (diff vs e386da8 for all protected files: "(empty)")
+
+STEP2. Large Population Replay (real end-to-end solve(), N=142, today's production defaults)
+  Baseline(pre-fix): improvedCount=1, solvedCount=0
+  Integrated(current production): improvedCount=1, solvedCount=0
+
+STEP3. Statistical Validation
+  improvedCountDiff(primary) mean=0.0000, 95% CI=[0.0000, 0.0000], Cohen's dz=0.000(negligible)
+  solvedCountDiff(secondary) mean=0.0000, 95% CI=[0.0000, 0.0000]
+  runtimeDiffMs mean=-8.4ms, 95% CI=[-18.2, 1.5]
+
+STEP4. Primitive Interaction Matrix
+  REPAIR: competition=0, starvedByMcm=0, duplicateWithMcm=0, replacedByMcm=0
+  CCR: competition=0, starvedByMcm=0, duplicateWithMcm=0, replacedByMcm=0
+  MIXED_COMMUTATOR: competition=0, starvedByMcm=0, duplicateWithMcm=0, replacedByMcm=0
+  PARITY_GATED_CYCLE: competition=0, starvedByMcm=0, duplicateWithMcm=0, replacedByMcm=0
+  SETUP: competition=0, starvedByMcm=0, duplicateWithMcm=0, replacedByMcm=0
+  totalDuplicateCount=0, totalStarvedTypeCount=0
+
+STEP5. Validation Framework
+  Gate A(Regression 증가 없음)=PASS -- True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000].
+  Gate B(Runtime 허용 범위)=PASS -- Runtime diff mean=-8.4ms, 95% CI=[-18.2, 1.5] (허용 기준: Baseline p95=1173ms 대비 +15%=176ms 이내).
+  Gate C(Capability 감소 없음)=OPEN_QUESTION -- 성공 케이스 diff mean=0.00, 95% CI=[0.00, 0.00], Cohen's d_z=0.00(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요) [strict mode: OPEN_QUESTION].
+  Gate E(Primitive Interaction 이상 없음)=PASS -- Duplicate=0건, Starved Type=0개.
+  pipelineDecision=B: 필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장.
+
+STEP6. Product Qualification
+  newRegressionCount=0
+  Level1(Contract Audit)=PASS
+  Level2(Capability 95% CI 하한>0)=FAIL
+  Level3(Regression 0)=PASS
+  Level4(Validation Framework Decision A)=FAIL
+  Decision = B_POPULATION_EXPANSION_NEEDED
+  rationale: Contract는 정상이고(Level1 PASS) Regression도 없다(Level3 PASS, newRegressionCount=0). 다만 이번 Sprint가 사용한 real end-to-end solve() 1회 호출 측정(N=142)에서는 improvedCountDiff mean=0.0000로 Baseline과 Integrated가 사실상 구별되지 않았다(Level2 FAIL) -- 이는 Short-Circuit Production Integration Sprint v1이 이미 실측으로 확인한 효과(scrambleDepth30:2/scrambleDepth100:5, outer=2000ms, attemptRecovery() 레벨)가 사라졌다는 뜻이 아니라, 이번 Sprint의 측정 축(단일 solve() 호출, 자체 내부 예산)이 그 조건보다 훨씬 좁아 같은 신호를 감지하기에 충분히 민감하지 않다는 뜻이다(disclosed). 모집단 확대보다는 이 효과가 실제로 관측되는 조건(outer=2000ms 급 예산)에 맞춘 재측정이 필요하다.
