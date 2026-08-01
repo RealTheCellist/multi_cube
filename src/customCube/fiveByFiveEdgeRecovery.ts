@@ -274,7 +274,21 @@ export function generateRecoveryStrategies(
   // MULTI_COMPONENT_MERGE via this default with ZERO Executor changes.
   // `false` reconstructs the pre-this-Sprint baseline for this Sprint's
   // own before/after Production Replay (STEP3 Capability Validation).
-  includeMultiComponentMerge = true
+  includeMultiComponentMerge = true,
+  // Multi-Component Merge Production Integration Refinement Sprint v1:
+  // Production Integration Sprint v1's own real Contract Audit found
+  // MULTI_COMPONENT_MERGE budget-starved on 100% of Gate-matched cases
+  // (avgActualBudgetAvailableMs=493.6ms of its nominal 2000ms) because CCR's
+  // own "remainingTime" Budget Contract consumes the shrinking OUTER
+  // deadline before MCM's turn -- both candidates clamp against the SAME
+  // outer `deadline` via Math.min(), so whichever runs LATER in the order
+  // gets whatever's left. "AFTER_CCR" (default) reproduces that exact
+  // pre-Refinement-Sprint production order byte-for-bit. "BEFORE_CCR" moves
+  // genMultiComponentMerge earlier than genCCR in every order variant --
+  // this Sprint's own Dedicated-Budget/Scheduler-Ordering experiment arm,
+  // never touching CCR's own algorithm or its own Budget Contract, only
+  // WHEN it gets its turn.
+  multiComponentMergeOrder: "AFTER_CCR" | "BEFORE_CCR" = "AFTER_CCR"
 ): RecoveryStrategy[] {
   const { lib, flipLib, caseLib } = libs;
   const genDeadline = Math.min(deadline, Date.now() + RECOVERY_GEN_BUDGET_MS);
@@ -601,12 +615,18 @@ export function generateRecoveryStrategies(
   // this Sprint's only allowed change is inserting genMultiComponentMerge
   // at the one fixed Integration Point, per this Sprint's own Directive
   // scope (변경 범위: fiveByFiveEdgeRecovery.ts only).
+  // Integration Refinement Sprint v1: the CCR/MULTI_COMPONENT_MERGE relative
+  // order is the ONLY thing multiComponentMergeOrder controls -- everything
+  // else about their placement (always after REPAIR, always before
+  // PARITY_GATED_CYCLE/MIXED_COMMUTATOR) is unchanged from Production
+  // Integration Sprint v1.
+  const ccrAndMcm = multiComponentMergeOrder === "BEFORE_CCR" ? [genMultiComponentMerge, genCCR] : [genCCR, genMultiComponentMerge];
   const order =
     schedulingStrategy === "priorityGate"
-      ? [genRepair, genDisrupt1, genDisrupt2, genSetup, genCCR, genMultiComponentMerge, genParityGatedCycle, genMixedCommutator]
+      ? [genRepair, genDisrupt1, genDisrupt2, genSetup, ...ccrAndMcm, genParityGatedCycle, genMixedCommutator]
       : schedulingStrategy === "reservedBudget" && useSetupReservedSlice
-        ? [genDisrupt1, genDisrupt2, genRepair, genCCR, genMultiComponentMerge, genParityGatedCycle, genMixedCommutator, genSetup]
-        : [genDisrupt1, genDisrupt2, genSetup, genRepair, genCCR, genMultiComponentMerge, genParityGatedCycle, genMixedCommutator];
+        ? [genDisrupt1, genDisrupt2, genRepair, ...ccrAndMcm, genParityGatedCycle, genMixedCommutator, genSetup]
+        : [genDisrupt1, genDisrupt2, genSetup, genRepair, ...ccrAndMcm, genParityGatedCycle, genMixedCommutator];
   for (const step of order) step();
 
   return candidates;
@@ -689,7 +709,12 @@ export function attemptRecovery(
   // through to generateRecoveryStrategies -- see that function's own
   // includeMultiComponentMerge comment. Defaults to true
   // (MULTI_COMPONENT_MERGE included) for real production use.
-  includeMultiComponentMerge = true
+  includeMultiComponentMerge = true,
+  // Multi-Component Merge Production Integration Refinement Sprint v1:
+  // threaded through to generateRecoveryStrategies -- see that function's
+  // own multiComponentMergeOrder comment. Defaults to "AFTER_CCR" (today's
+  // real production order) for real production use.
+  multiComponentMergeOrder: "AFTER_CCR" | "BEFORE_CCR" = "AFTER_CCR"
 ): Move[] {
   const log = (label: string, detail?: string) => trace?.push({ at: Date.now(), label, detail });
   const visited = new Set<number>();
@@ -712,7 +737,7 @@ export function attemptRecovery(
   for (let round = 0; round < MAX_RECOVERY_RETRIES; round++) {
     if (Date.now() > deadline) break;
 
-    const candidates = generateRecoveryStrategies(scratch, libs, deadline, weights, includeRepair, schedulingStrategy, undefined, includeCCR, includeMixedCommutator, useSetupReservedSlice, includeParityGatedCycle, includeMultiComponentMerge);
+    const candidates = generateRecoveryStrategies(scratch, libs, deadline, weights, includeRepair, schedulingStrategy, undefined, includeCCR, includeMixedCommutator, useSetupReservedSlice, includeParityGatedCycle, includeMultiComponentMerge, multiComponentMergeOrder);
     if (candidates.length === 0) {
       log("recovery-no-candidates", `${round + 1}회차: Recovery 후보를 찾지 못함`);
       break;
