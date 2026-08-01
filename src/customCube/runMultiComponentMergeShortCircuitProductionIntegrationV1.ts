@@ -61,6 +61,22 @@ function capture(label: string) {
   console.log(`[${label}] raw capture written: ${rawPath(label)}`);
 }
 
+// SuccessMismatch Replay/Short-Circuit Validation (STEP3/4) source: the 3
+// target cases replayed at outer=2000ms -- the EXACT conditions Refinement
+// Sprint v3 identified them under (successMismatch = comparativeIsolated
+// Success at outer=2000ms vs production Arm C failure at outer=2000ms).
+// Real production's own outer deadline is 1000ms (STEP2's own scope) --
+// at 1000ms none of these 3 cases even give MULTI_COMPONENT_MERGE enough
+// budget to be chosen at all (confirmed: chosenType=none for all 3 in both
+// Baseline and Integrated 1000ms captures), so replaying STEP3/4 at 1000ms
+// would trivially show "no change" regardless of whether the fix works --
+// not a meaningful test of the fix. Captured separately via
+// _mismatch_at_2000ms.ts (same runOneCase(), outer parametrized to 2000ms,
+// git-checkout-toggled the same way as the population capture).
+function loadMismatchAt2000ms(label: "baseline" | "integrated"): ReplayOutcome[] {
+  return JSON.parse(fs.readFileSync(`${DATA_DIR}/mismatch-at-2000ms-${label}.json`, "utf-8"));
+}
+
 function compare() {
   const baselineRaw = JSON.parse(fs.readFileSync(rawPath("baseline"), "utf-8"));
   const integratedRaw = JSON.parse(fs.readFileSync(rawPath("integrated"), "utf-8"));
@@ -68,9 +84,9 @@ function compare() {
   const integrated: ReplayOutcome[] = integratedRaw.population;
   const contractAudit = integratedRaw.contractAudit;
 
-  console.log("STEP4: Short-Circuit Validation (Integrated capture, 3 SuccessMismatch cases)...");
-  const mismatchIntegrated = integrated.filter((r) => TARGET_MISMATCH_LABELS.includes(r.label));
-  const mismatchBaseline = new Map(baseline.filter((r) => TARGET_MISMATCH_LABELS.includes(r.label)).map((r) => [r.label, r]));
+  console.log("STEP3/4: SuccessMismatch Replay + Short-Circuit Validation (outer=2000ms, matching Refinement Sprint v3's own reproduction conditions)...");
+  const mismatchIntegrated = loadMismatchAt2000ms("integrated");
+  const mismatchBaseline = new Map(loadMismatchAt2000ms("baseline").map((r) => [r.label, r]));
   for (const r of mismatchIntegrated) {
     const b = mismatchBaseline.get(r.label)!;
     console.log(`  ${r.label}: baseline(wrongWing ${b.wrongWingBefore}->${b.wrongWingAfter}, improved=${b.improved}) -> integrated(wrongWing ${r.wrongWingBefore}->${r.wrongWingAfter}, improved=${r.improved}, mcmShortCircuited=${r.mcmShortCircuited})`);
@@ -115,7 +131,7 @@ function compare() {
   push(`  matchedLine: ${contractAudit.matchedLine}`);
   push(`  allTypesPresent=${contractAudit.allTypesPresent}, presentTypes=${contractAudit.presentTypes.join(", ")}`);
   push();
-  push("STEP2. Production Replay (full 142-case, real production defaults)");
+  push("STEP2. Production Replay (full 142-case, real production defaults, outer=1000ms)");
   const baseImproved = baseline.filter((r: ReplayOutcome) => r.improved).length;
   const intImproved = integrated.filter((r: ReplayOutcome) => r.improved).length;
   const baseRegression = baseline.filter((r: ReplayOutcome) => r.trueRegression).length;
@@ -123,13 +139,13 @@ function compare() {
   push(`  Baseline: improvedCount=${baseImproved}, regressionCount=${baseRegression}`);
   push(`  Integrated: improvedCount=${intImproved}, regressionCount=${intRegression}`);
   push();
-  push("STEP3. SuccessMismatch Replay");
+  push("STEP3. SuccessMismatch Replay (outer=2000ms, Refinement Sprint v3's own reproduction conditions)");
   for (const r of mismatchIntegrated) {
     const b = mismatchBaseline.get(r.label)!;
     push(`  ${r.label}: Before(wrongWing ${b.wrongWingBefore}->${b.wrongWingAfter}, improved=${b.improved}) -> After(wrongWing ${r.wrongWingBefore}->${r.wrongWingAfter}, improved=${r.improved})`);
   }
   push();
-  push("STEP4. Short-Circuit Validation");
+  push("STEP4. Short-Circuit Validation (outer=2000ms)");
   for (const label of mismatchTargets) {
     const r = mismatchIntegrated.find((x) => x.label === label)!;
     push(`  ${label}: mcmShortCircuited=${r.mcmShortCircuited}, chosenType=${r.chosenType}, improved=${r.improved}`);

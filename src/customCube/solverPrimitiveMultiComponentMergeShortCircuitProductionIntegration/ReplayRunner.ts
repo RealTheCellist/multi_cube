@@ -68,7 +68,13 @@ function chosenTypeFromTrace(trace: TraceEntry[]): RecoveryType | "none" {
 }
 
 function mcmShortCircuitedFromTrace(trace: TraceEntry[]): boolean {
-  return trace.some((t) => t.label === "recovery-repair-short-circuit" && (t.detail ?? "").includes("Sequential Multi-Component Merge"));
+  // The "recovery-repair-short-circuit" log line (fiveByFiveEdgeRecovery.ts)
+  // interpolates `${best.type}` directly -- the RecoveryType enum value
+  // ("MULTI_COMPONENT_MERGE"), NOT the human-readable candidate description
+  // ("Sequential Multi-Component Merge") used elsewhere (e.g.
+  // "recovery-applied"/"recovery-candidates"). Match the actual text this
+  // specific log line emits.
+  return trace.some((t) => t.label === "recovery-repair-short-circuit" && (t.detail ?? "").includes("MULTI_COMPONENT_MERGE"));
 }
 
 export interface ReplayOutcome {
@@ -82,12 +88,12 @@ export interface ReplayOutcome {
   wallMs: number;
 }
 
-export function runOneCase(hole: HoleCase, libs: ExecutorLibraries): ReplayOutcome {
+export function runOneCase(hole: HoleCase, libs: ExecutorLibraries, outerDeadlineMs: number = PRODUCTION_OUTER_DEADLINE_MS): ReplayOutcome {
   const clone = cloneCubies(hole.cubies);
   const wrongWingBefore = wrongWingCount5(clone);
   const trace: TraceEntry[] = [];
   const start = Date.now();
-  const deadline = start + PRODUCTION_OUTER_DEADLINE_MS;
+  const deadline = start + outerDeadlineMs;
   const moves = attemptRecovery(clone, libs, deadline, DEFAULT_EVALUATOR_WEIGHTS, (working, taskDeadline) => endgameRetryTask(working, libs, taskDeadline), trace);
   const wallMs = Date.now() - start;
   const wrongWingAfter = moves.length > 0 ? wrongWingCount5(clone) : wrongWingBefore;
@@ -103,6 +109,6 @@ export function runOneCase(hole: HoleCase, libs: ExecutorLibraries): ReplayOutco
   };
 }
 
-export function runPopulation(holes: readonly HoleCase[], libs: ExecutorLibraries): ReplayOutcome[] {
-  return holes.map((h) => runOneCase(h, libs));
+export function runPopulation(holes: readonly HoleCase[], libs: ExecutorLibraries, outerDeadlineMs: number = PRODUCTION_OUTER_DEADLINE_MS): ReplayOutcome[] {
+  return holes.map((h) => runOneCase(h, libs, outerDeadlineMs));
 }

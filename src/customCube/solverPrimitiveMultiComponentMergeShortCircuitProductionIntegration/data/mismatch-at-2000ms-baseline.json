@@ -1,0 +1,32 @@
+[
+  {
+    "label": "scrambleDepth30:2",
+    "wrongWingBefore": 11,
+    "wrongWingAfter": 11,
+    "chosenType": "MULTI_COMPONENT_MERGE",
+    "mcmShortCircuited": false,
+    "improved": false,
+    "trueRegression": false,
+    "wallMs": 2029
+  },
+  {
+    "label": "scrambleDepth40:7",
+    "wrongWingBefore": 10,
+    "wrongWingAfter": 10,
+    "chosenType": "none",
+    "mcmShortCircuited": false,
+    "improved": false,
+    "trueRegression": false,
+    "wallMs": 2018
+  },
+  {
+    "label": "scrambleDepth100:5",
+    "wrongWingBefore": 10,
+    "wrongWingAfter": 10,
+    "chosenType": "MULTI_COMPONENT_MERGE",
+    "mcmShortCircuited": false,
+    "improved": false,
+    "trueRegression": false,
+    "wallMs": 2040
+  }
+]

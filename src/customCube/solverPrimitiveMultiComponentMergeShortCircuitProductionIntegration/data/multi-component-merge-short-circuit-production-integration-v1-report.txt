@@ -1,0 +1,37 @@
+=== Multi-Component Merge Short-Circuit Production Integration Sprint v1 -- Report ===
+
+STEP1. Contract Integration Audit
+  matchedLine:     if ((best.type === "REPAIR" || best.type === "CCR" || best.type === "MIXED_COMMUTATOR" || best.type === "PARITY_GATED_CYCLE" || best.type === "MULTI_COMPONENT_MERGE") && shortCircuitRepair && afterDisrupt < originalBaseline) {
+  allTypesPresent=true, presentTypes=REPAIR, CCR, MIXED_COMMUTATOR, PARITY_GATED_CYCLE, MULTI_COMPONENT_MERGE
+
+STEP2. Production Replay (full 142-case, real production defaults, outer=1000ms)
+  Baseline: improvedCount=9, regressionCount=0
+  Integrated: improvedCount=12, regressionCount=0
+
+STEP3. SuccessMismatch Replay (outer=2000ms, Refinement Sprint v3's own reproduction conditions)
+  scrambleDepth30:2: Before(wrongWing 11->11, improved=false) -> After(wrongWing 11->10, improved=true)
+  scrambleDepth40:7: Before(wrongWing 10->10, improved=false) -> After(wrongWing 10->10, improved=false)
+  scrambleDepth100:5: Before(wrongWing 10->10, improved=false) -> After(wrongWing 10->9, improved=true)
+
+STEP4. Short-Circuit Validation (outer=2000ms)
+  scrambleDepth30:2: mcmShortCircuited=true, chosenType=MULTI_COMPONENT_MERGE, improved=true
+  scrambleDepth100:5: mcmShortCircuited=true, chosenType=MULTI_COMPONENT_MERGE, improved=true
+
+STEP5. Regression Audit
+  newRegressionCount=0, newCapabilityCount=3, duplicateRescueCount=0, starvedTypeCount=4
+
+STEP6. Statistical Validation + Validation Framework
+  improvedCountDiff mean=0.0211, 95% CI=[-0.0026, 0.0449], Cohen's dz=0.146(negligible)
+  runtimeDiffMs mean=34.0ms, 95% CI=[6.8, 61.3]
+  Gate A(Regression 증가 없음)=PASS -- True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000].
+  Gate B(Runtime 허용 범위)=PASS -- Runtime diff mean=34.0ms, 95% CI=[6.8, 61.3] (허용 기준: Baseline p95=1294ms 대비 +15%=194ms 이내).
+  Gate C(Capability 감소 없음)=OPEN_QUESTION -- 성공 케이스 diff mean=0.02, 95% CI=[-0.00, 0.04], Cohen's d_z=0.15(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요) [strict mode: OPEN_QUESTION].
+  Gate E(Primitive Interaction 이상 없음)=OPEN_QUESTION -- Duplicate=0건, Starved Type=4개.
+  pipelineDecision=B: 필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장.
+
+Level1-3 판정 + Decision
+  Level1(Short-Circuit Contract 정상 동작)=PASS
+  Level2(Capability 회복, Regression 없음)=PASS
+  Level3(Validation Framework Decision A)=FAIL
+  Decision = B_PARTIAL_RECOVERY
+  rationale: Short-Circuit Contract는 정상 동작하나(Level1 PASS) successMismatch 2/2건만 회복되었거나 Validation Framework가 완전 승인(A)이 아니다 -- 추가 Contract Refinement가 필요하다.
