@@ -1,0 +1,38 @@
+name: poly_puzzle_cube
+description: >
+  Poly Puzzle Cube Solver -- Flutter app wrapping the frozen Solver Version
+  1.0 Baseline (src/customCube, this repo) via a bundled JavaScript bridge.
+  iOS-first per docs/VERSION_1_0_RELEASE_NOTE.md, Android sharing the same
+  Dart codebase once a future Roadmap Sprint approves the port.
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Wraps JavaScriptCore on iOS/macOS and QuickJS (via FFI) on
+  # Android/Linux/Windows -- the cross-platform equivalent of
+  # solver_sdk/ios/'s JSContext usage, letting both target platforms run
+  # the identical PolyPuzzleSolverBridge.bundle.js without a second,
+  # per-platform native SDK layer.
+  flutter_js: ^0.8.1
+  provider: ^6.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/js/PolyPuzzleSolverBridge.bundle.js
+    - assets/cube_fixtures/solved.json
+    - assets/cube_fixtures/easy_5.json
+    - assets/cube_fixtures/light_15.json
+    - assets/cube_fixtures/medium_25.json
+    - assets/cube_fixtures/hard_40.json

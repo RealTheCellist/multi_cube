@@ -76,3 +76,27 @@ iOS Productization (this Sprint, partial)
    -> App Store Review -> Version 1.0 Release
    -> User Feedback -> Version 1.1 -> Android Port -> Google Play Release
 ```
+
+## Update — Flutter Decision Revision (same Sprint, later in the session)
+
+The user confirmed a real, near-term Android release goal, which reopens
+Decision 1 above by its own stated condition. See
+`docs/FLUTTER_DECISION_REVISION.md` for the full reasoning. Summary:
+
+- `ios/PolyPuzzleCube/` (SwiftUI) and `solver_sdk/ios/` (Swift Package) are
+  **removed**, superseded by a single Flutter/Dart codebase (`mobile/`)
+  targeting iOS and Android from one source tree.
+- The Solver SDK boundary now uses `flutter_js` (JavaScriptCore on iOS,
+  QuickJS-over-FFI on Android/Linux) against the same, unmodified
+  `solver_sdk/bridge/PolyPuzzleSolverBridge.bundle.js` — the "never
+  reimplement the Solver Engine" rule is unchanged.
+- Unlike the original Swift attempt, **a real Flutter SDK was installed
+  this session** and used to verify the revision: `flutter analyze` (0
+  issues, after fixing 2 real bugs it caught), `flutter test` (3/3 passed,
+  incl. a round-trip test against the real `solved.json` fixture), and
+  `flutter build linux --debug` (full native compile+link, including
+  `flutter_js`'s FFI/QuickJS bindings, producing a real, runnable ELF
+  binary that launched under Xvfb without crashing).
+- iOS-specific behavior (JavaScriptCore path, Simulator/device UI) is
+  still unverified — same category of gap as before, now scoped to
+  `mobile/` instead of `ios/PolyPuzzleCube/`.

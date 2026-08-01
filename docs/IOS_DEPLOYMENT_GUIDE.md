@@ -1,5 +1,13 @@
 # iOS Deployment Guide (STEP5/STEP6 — execution steps for a macOS+Xcode environment)
 
+> **SUPERSEDED** — see `docs/FLUTTER_DECISION_REVISION.md`. This guide's
+> Xcode-project-from-scratch steps applied to the now-removed native
+> `ios/PolyPuzzleCube/`. The Flutter app's own iOS build path is `flutter
+> build ios` from `mobile/` (still requires macOS+Xcode+Apple Developer
+> account, still unverified in this Sprint's Linux container) — see the
+> Decision Revision doc for what has and hasn't been verified. Kept as-is
+> for historical record.
+
 This Sprint's Linux container has no Swift toolchain, no Xcode, no iOS
 Simulator, and no Apple Developer account access — so nothing below this
 line has actually been run. This is a checklist for whoever (human or a

@@ -1,5 +1,13 @@
 # Cube Solver iOS Productization Sprint v1 — Product Architecture
 
+> **SUPERSEDED (tech stack only)** — see `docs/FLUTTER_DECISION_REVISION.md`.
+> The `ios/PolyPuzzleCube/` SwiftUI app and `solver_sdk/ios/` Swift Package
+> described below were replaced by a Flutter app (`mobile/`) once the user
+> confirmed a real, near-term Android release goal. The Bridge Verification
+> findings, protected-file discipline, and "never reimplement the Solver
+> Engine" rule below are all unaffected and still accurate — only the
+> consuming UI/SDK layer changed. Kept as-is for historical record.
+
 Baseline this Sprint builds on top of, unmodified:
 `docs/SOLVER_BASELINE_V1.md` (commit `1df58b6`). Protected files (Solver
 Engine / Primitive / Scheduler / Budget / Recovery Pipeline / Validation

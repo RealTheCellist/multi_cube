@@ -1,5 +1,11 @@
 # App Store Submission Guide (STEP6)
 
+> **Still applicable** — see `docs/FLUTTER_DECISION_REVISION.md`. The App
+> Store listing/privacy/submission checklist below is stack-agnostic and
+> applies unchanged to the Flutter app (`mobile/`); only the build
+> artifact it starts from changes (`flutter build ipa` output instead of
+> an Xcode archive of the native app).
+
 Everything below is a checklist/draft for a future step, not a submission
 that has happened — this Sprint had no App Store Connect access and no
 buildable `.ipa` (see `docs/IOS_DEPLOYMENT_GUIDE.md`).
