@@ -1,0 +1,1599 @@
+{
+  "testDesign": {
+    "methodology": "전체 142케이스 Hole Dataset에 대해 real FiveByFiveEdgeSolverEngine.solve() E2E를 real production 기본값(recoveryReserveMsOverride=250ms)으로 독립적으로 N회(이번 Sprint에서는 2회) 반복 실행한다. 각 실행은 서로 다른 real wall-clock 시점에 수행되며, 동일한 고정 코드 상태 위에서 shuffle() 기반 확률 요소가 만드는 real variance를 관측한다.",
+    "proxyJustification": "이 프로젝트는 실사용자 트래픽이나 캘린더 시간에 걸친 운영 원격측정(telemetry) 이력이 없는 연구 저장소다 -- 따라서 '수개월간 실사용으로 관측됨'을 의미하는 진짜 Long-term 검증은 불가능하다. 이번 Sprint는 이를 숨기지 않고, '동일한 고정 코드 위에서의 독립적인 반복 real 실행'을 시간 축의 정직한 대체 지표로 명시적으로 채택한다.",
+    "frozenCodeBaseline": "commit e386da8(Short-Circuit fix) 이후 production 파일 diff 0건이 이후 6개 Sprint(MCM Production Validation, MCM Validation Methodology Qualification, Protocol Standardization, PARITY Validation Protocol Qualification, Solver Research Closeout, 그리고 이번 Sprint 자신)에서 연속 확인됨 -- 현재 HEAD가 그 고정 코드 상태다.",
+    "protectedFiles": [
+      "fiveByFiveEdgeRecovery.ts",
+      "fiveByFiveEdgePlanner.ts",
+      "fiveByFiveEdgeExecutor.ts",
+      "fiveByFiveEdgeSolverEngine.ts",
+      "fiveByFiveEdges.ts",
+      "solverPostReleaseValidationFramework/*",
+      "모든 Primitive 구현 파일"
+    ],
+    "forbiddenActions": [
+      "Production Solver 수정",
+      "Primitive 수정",
+      "Budget/Scheduler 수정",
+      "Validation Framework 수정"
+    ],
+    "realRunCount": 2
+  },
+  "regressionTrend": {
+    "rows": [
+      {
+        "label": "worstCase:45959141",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:46086463",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:64369533",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:68977335",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:84976575",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:f17d7eb9",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:70a5020b",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:56a8b82d",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:7541612b",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:b714481",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:beb967ad",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:1e928fb1",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:4549b041",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:1513fcff",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:d37ca819",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:ae3d218b",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:120fc3af",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:dd4d94fd",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:36336c1",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:ad12c377",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:e7a801fb",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:1af658ab",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:4e27e5a1",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:93b485f7",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:5e5b20b",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:e5101f85",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:4749cd9d",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:d27df773",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:c039e611",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:b2c9ceb9",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:589b0a25",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:cee673eb",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:e9009e73",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:e8be823",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:14f5293f",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:f776edb1",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:de8abca9",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:2db21feb",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:849509c9",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:c0277d5d",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:f5f1b8fd",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:a005d41f",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:224f6f8b",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:252f8891",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:5f7ee009",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:d3283799",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:710de4d1",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:5d189c1",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:669f43ff",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:42c89b9",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:3cece8ff",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "worstCase:44b9b619",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:12022029",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:27053491",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:45959141",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:46086463",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:64369533",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:68977335",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:84976575",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:f17d7eb9",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:a061555d",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:dda1453f",
+        "run1Improved": true,
+        "run2Improved": true,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:e7a801fb",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:1af658ab",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:70a5020b",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:56a8b82d",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:60b5c3b1",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:7541612b",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:b714481",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:beb967ad",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:1e928fb1",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:4549b041",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:1513fcff",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:4e27e5a1",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:d37ca819",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:93b485f7",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:5e5b20b",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:ae3d218b",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:120fc3af",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:dd4d94fd",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:36336c1",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "snapshot335:ad12c377",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth10:0",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth10:1",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth10:2",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth10:3",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth10:4",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth10:5",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth10:6",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth10:7",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth10:8",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth10:9",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth20:0",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth20:1",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth20:2",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth20:3",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth20:4",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth20:5",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth20:6",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth20:7",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth20:8",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth20:9",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth30:0",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth30:1",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth30:2",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth30:3",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth30:4",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth30:5",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth30:6",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth30:7",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth30:8",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth30:9",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth40:0",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth40:1",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth40:2",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth40:3",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth40:4",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth40:5",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth40:6",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth40:7",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth40:8",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth40:9",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth50:0",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth50:1",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth50:2",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth50:3",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth50:4",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth50:5",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth50:6",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth50:7",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth50:8",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth50:9",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth100:0",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth100:1",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth100:2",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth100:3",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth100:4",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth100:5",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth100:6",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth100:7",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth100:8",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      },
+      {
+        "label": "scrambleDepth100:9",
+        "run1Improved": false,
+        "run2Improved": false,
+        "run1Solved": false,
+        "run2Solved": false,
+        "flips": false
+      }
+    ],
+    "run1ImprovedCount": 1,
+    "run2ImprovedCount": 1,
+    "run1SolvedCount": 0,
+    "run2SolvedCount": 0,
+    "flipCount": 0,
+    "flipRate": 0
+  },
+  "runtimeRun1": {
+    "n": 142,
+    "meanMs": 1053.9154929577464,
+    "p50Ms": 1013,
+    "p95Ms": 1195,
+    "p99Ms": 1309,
+    "maxMs": 2477,
+    "deadlineMissCount": 59
+  },
+  "runtimeRun2": {
+    "n": 142,
+    "meanMs": 1067.1549295774648,
+    "p50Ms": 1009,
+    "p95Ms": 1254,
+    "p99Ms": 1441,
+    "maxMs": 2755,
+    "deadlineMissCount": 58
+  },
+  "runtimeTolerance": {
+    "withinTolerance": true,
+    "thresholdMs": 1374.25
+  },
+  "contractStability": {
+    "rows": [
+      {
+        "constant": "PRODUCTION_ENDGAME_RECOVERY_RESERVE_MS",
+        "closeoutValue": 250,
+        "currentValue": 250,
+        "drifted": false
+      },
+      {
+        "constant": "FIXED_BUDGET_MS",
+        "closeoutValue": 140,
+        "currentValue": 140,
+        "drifted": false
+      },
+      {
+        "constant": "REPAIR_RESERVED_SLICE_MS",
+        "closeoutValue": 75,
+        "currentValue": 75,
+        "drifted": false
+      },
+      {
+        "constant": "MIXED_COMMUTATOR_RESERVED_SLICE_MS",
+        "closeoutValue": 300,
+        "currentValue": 300,
+        "drifted": false
+      },
+      {
+        "constant": "SETUP_RESERVED_SLICE_MS",
+        "closeoutValue": 500,
+        "currentValue": 500,
+        "drifted": false
+      },
+      {
+        "constant": "PARITY_GATED_CYCLE_RESERVED_SLICE_MS",
+        "closeoutValue": 2000,
+        "currentValue": 2000,
+        "drifted": false
+      },
+      {
+        "constant": "MULTI_COMPONENT_MERGE_RESERVED_SLICE_MS",
+        "closeoutValue": 2000,
+        "currentValue": 2000,
+        "drifted": false
+      },
+      {
+        "constant": "PLAN_TIME_BUDGET_MS",
+        "closeoutValue": 1000,
+        "currentValue": 1000,
+        "drifted": false
+      }
+    ],
+    "anyDrift": false
+  },
+  "determinism": [
+    {
+      "label": "worstCase:5e5b20b",
+      "repeats": [
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": true,
+          "remainingTimeAtRecoveryTriggerMs": 212,
+          "deadlineMissed": false,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 6,
+          "wrongWingAfter": 6
+        },
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": true,
+          "remainingTimeAtRecoveryTriggerMs": 205,
+          "deadlineMissed": false,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 6,
+          "wrongWingAfter": 6
+        },
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": true,
+          "remainingTimeAtRecoveryTriggerMs": 214,
+          "deadlineMissed": false,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 6,
+          "wrongWingAfter": 6
+        },
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": true,
+          "remainingTimeAtRecoveryTriggerMs": 215,
+          "deadlineMissed": false,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 6,
+          "wrongWingAfter": 6
+        },
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": true,
+          "remainingTimeAtRecoveryTriggerMs": 208,
+          "deadlineMissed": false,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 6,
+          "wrongWingAfter": 6
+        }
+      ],
+      "allChosenTypesIdentical": true,
+      "allImprovedIdentical": true,
+      "allWrongWingAfterIdentical": true,
+      "distinctChosenTypes": [
+        "none"
+      ],
+      "distinctWrongWingAfter": [
+        6
+      ]
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "repeats": [
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 9
+        },
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 9
+        },
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 9
+        },
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 9
+        },
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 9
+        }
+      ],
+      "allChosenTypesIdentical": true,
+      "allImprovedIdentical": true,
+      "allWrongWingAfterIdentical": true,
+      "distinctChosenTypes": [
+        "none"
+      ],
+      "distinctWrongWingAfter": [
+        9
+      ]
+    },
+    {
+      "label": "snapshot335:ad12c377",
+      "repeats": [
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 9
+        },
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 9
+        },
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 9
+        },
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 9
+        },
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 9,
+          "wrongWingAfter": 9
+        }
+      ],
+      "allChosenTypesIdentical": true,
+      "allImprovedIdentical": true,
+      "allWrongWingAfterIdentical": true,
+      "distinctChosenTypes": [
+        "none"
+      ],
+      "distinctWrongWingAfter": [
+        9
+      ]
+    },
+    {
+      "label": "scrambleDepth30:2",
+      "repeats": [
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 11,
+          "wrongWingAfter": 11
+        },
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 11,
+          "wrongWingAfter": 11
+        },
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 11,
+          "wrongWingAfter": 11
+        },
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 11,
+          "wrongWingAfter": 11
+        },
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 11,
+          "wrongWingAfter": 11
+        }
+      ],
+      "allChosenTypesIdentical": true,
+      "allImprovedIdentical": true,
+      "allWrongWingAfterIdentical": true,
+      "distinctChosenTypes": [
+        "none"
+      ],
+      "distinctWrongWingAfter": [
+        11
+      ]
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "repeats": [
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 10
+        },
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 10
+        },
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 10
+        },
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 10
+        },
+        {
+          "recoveryReserveMsOverride": 250,
+          "recoveryTriggered": false,
+          "remainingTimeAtRecoveryTriggerMs": null,
+          "deadlineMissed": true,
+          "chosenType": "none",
+          "improved": false,
+          "solved": false,
+          "wrongWingBefore": 10,
+          "wrongWingAfter": 10
+        }
+      ],
+      "allChosenTypesIdentical": true,
+      "allImprovedIdentical": true,
+      "allWrongWingAfterIdentical": true,
+      "distinctChosenTypes": [
+        "none"
+      ],
+      "distinctWrongWingAfter": [
+        10
+      ]
+    }
+  ],
+  "decisionResult": {
+    "level1RegressionStable": true,
+    "level2RuntimeStable": true,
+    "level3ContractStable": true,
+    "level4DeterminismCharacterized": true,
+    "decision": "A_LONG_TERM_RELIABILITY_CONFIRMED",
+    "rationale": "2회 독립 real population replay 간 flipRate=0.0% (<10%), Runtime p95 허용 범위 이내이고 deadlineMissCount가 run1=59건/run2=58건으로 안정적(절대 0건이 아니라 이미 disclosed된 PLAN_TIME_BUDGET_MS=1000ms 고정 한계에서 기인하는 baseline 수준을 유지), Operating Contract 8개 전부 Closeout 대비 drift 없음, Determinism 실측 특성화 완료 -- Long-term Reliability를 확정하고 Continuous Validation Framework Sprint로 진행할 수 있다."
+  }
+}
