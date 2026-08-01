@@ -1,0 +1,416 @@
+{
+  "populationN": 142,
+  "budgetAfter": {
+    "order": "AFTER_CCR",
+    "n": 142,
+    "gateMatchedCount": 9,
+    "avgConsumedBudgetMs": 564.8888888888889,
+    "avgActualBudgetAvailableMs": 435.1111111111111,
+    "starvedCount": 9,
+    "starvedRate": 1
+  },
+  "budgetBefore": {
+    "order": "BEFORE_CCR",
+    "n": 142,
+    "gateMatchedCount": 9,
+    "avgConsumedBudgetMs": 319,
+    "avgActualBudgetAvailableMs": 681,
+    "starvedCount": 9,
+    "starvedRate": 1
+  },
+  "replaySummary": {
+    "n": 142,
+    "baselineImprovedCount": 15,
+    "afterCcrImprovedCount": 17,
+    "beforeCcrImprovedCount": 15,
+    "afterCcrNewCapabilityCount": 3,
+    "beforeCcrNewCapabilityCount": 2,
+    "afterCcrRegressionCount": 1,
+    "beforeCcrRegressionCount": 2,
+    "afterCcrTrueRegressionCount": 0,
+    "beforeCcrTrueRegressionCount": 0
+  },
+  "unlimitedBudgetSuccessCount": 4,
+  "unlimitedBudgetPopulationN": 9,
+  "interactionAfter": {
+    "order": "AFTER_CCR",
+    "gateMatchedCount": 9,
+    "overlapCount": 1,
+    "overlapRate": 0.1111111111111111,
+    "duplicateRescueCount": 1,
+    "replacementCount": 0,
+    "avgActualBudgetAvailableMs": 435.1111111111111,
+    "budgetStarvedRate": 1
+  },
+  "interactionBefore": {
+    "order": "BEFORE_CCR",
+    "gateMatchedCount": 9,
+    "overlapCount": 0,
+    "overlapRate": 0,
+    "duplicateRescueCount": 0,
+    "replacementCount": 0,
+    "avgActualBudgetAvailableMs": 681,
+    "budgetStarvedRate": 1
+  },
+  "stats": {
+    "beforeCcrVsAfterCcr": {
+      "label": "BEFORE_CCR vs AFTER_CCR",
+      "n": 142,
+      "improvedCountDiff": {
+        "stats": {
+          "n": 142,
+          "mean": -0.014084507042253521,
+          "stddev": 0.16783627165933776,
+          "coefficientOfVariation": -11.916375287812981,
+          "ci95Half": 0.02760563380281689,
+          "ciLower": -0.04169014084507041,
+          "ciUpper": 0.013521126760563369
+        },
+        "effectSize": {
+          "meanDiff": -0.014084507042253521,
+          "variance": 0.028169014084507022,
+          "standardError": 0.014084507042253516,
+          "cohensD": -0.08391813582966894,
+          "magnitude": "negligible"
+        },
+        "majorityVoteRate": 0.9788732394366197
+      },
+      "trueRegressionDiff": {
+        "stats": {
+          "n": 142,
+          "mean": 0,
+          "stddev": 0,
+          "coefficientOfVariation": 0,
+          "ci95Half": 0,
+          "ciLower": 0,
+          "ciUpper": 0
+        },
+        "effectSize": {
+          "meanDiff": 0,
+          "variance": 0,
+          "standardError": 0,
+          "cohensD": 0,
+          "magnitude": "negligible"
+        },
+        "majorityVoteRate": 1
+      },
+      "runtimeDiffMs": {
+        "stats": {
+          "n": 142,
+          "mean": -19.58450704225352,
+          "stddev": 136.01351846443214,
+          "coefficientOfVariation": -6.944954916198981,
+          "ci95Half": 22.371441797652018,
+          "ciLower": -41.95594883990554,
+          "ciUpper": 2.786934755398498
+        },
+        "effectSize": {
+          "meanDiff": -19.58450704225352,
+          "variance": 18499.677205074422,
+          "standardError": 11.414000917169396,
+          "cohensD": -0.14398941563573267,
+          "magnitude": "negligible"
+        },
+        "majorityVoteRate": 0.45774647887323944
+      },
+      "baselineP95RuntimeMs": 1230
+    },
+    "beforeCcrVsBaseline": {
+      "label": "BEFORE_CCR vs Baseline(no MCM)",
+      "n": 142,
+      "improvedCountDiff": {
+        "stats": {
+          "n": 142,
+          "mean": 0,
+          "stddev": 0.16843038421330378,
+          "coefficientOfVariation": 0,
+          "ci95Half": 0.027703353166100484,
+          "ciLower": -0.027703353166100484,
+          "ciUpper": 0.027703353166100484
+        },
+        "effectSize": {
+          "meanDiff": 0,
+          "variance": 0.02836879432624113,
+          "standardError": 0.014134363860255348,
+          "cohensD": 0,
+          "magnitude": "negligible"
+        },
+        "majorityVoteRate": 0.9859154929577465
+      },
+      "trueRegressionDiff": {
+        "stats": {
+          "n": 142,
+          "mean": 0,
+          "stddev": 0,
+          "coefficientOfVariation": 0,
+          "ci95Half": 0,
+          "ciLower": 0,
+          "ciUpper": 0
+        },
+        "effectSize": {
+          "meanDiff": 0,
+          "variance": 0,
+          "standardError": 0,
+          "cohensD": 0,
+          "magnitude": "negligible"
+        },
+        "majorityVoteRate": 1
+      },
+      "runtimeDiffMs": {
+        "stats": {
+          "n": 142,
+          "mean": 8.915492957746478,
+          "stddev": 131.65802968122566,
+          "coefficientOfVariation": 14.767330343391821,
+          "ci95Half": 21.655052978997123,
+          "ciLower": -12.739560021250645,
+          "ciUpper": 30.5705459367436
+        },
+        "effectSize": {
+          "meanDiff": 8.915492957746478,
+          "variance": 17333.836779542497,
+          "standardError": 11.048496417855675,
+          "cohensD": 0.06771704680172516,
+          "magnitude": "negligible"
+        },
+        "majorityVoteRate": 0.5845070422535211
+      },
+      "baselineP95RuntimeMs": 1208
+    },
+    "afterCcrVsBaseline": {
+      "label": "AFTER_CCR vs Baseline(no MCM)",
+      "n": 142,
+      "improvedCountDiff": {
+        "stats": {
+          "n": 142,
+          "mean": 0.014084507042253521,
+          "stddev": 0.16783627165933776,
+          "coefficientOfVariation": 11.916375287812981,
+          "ci95Half": 0.02760563380281689,
+          "ciLower": -0.013521126760563369,
+          "ciUpper": 0.04169014084507041
+        },
+        "effectSize": {
+          "meanDiff": 0.014084507042253521,
+          "variance": 0.028169014084507022,
+          "standardError": 0.014084507042253516,
+          "cohensD": 0.08391813582966894,
+          "magnitude": "negligible"
+        },
+        "majorityVoteRate": 0.9929577464788732
+      },
+      "trueRegressionDiff": {
+        "stats": {
+          "n": 142,
+          "mean": 0,
+          "stddev": 0,
+          "coefficientOfVariation": 0,
+          "ci95Half": 0,
+          "ciLower": 0,
+          "ciUpper": 0
+        },
+        "effectSize": {
+          "meanDiff": 0,
+          "variance": 0,
+          "standardError": 0,
+          "cohensD": 0,
+          "magnitude": "negligible"
+        },
+        "majorityVoteRate": 1
+      },
+      "runtimeDiffMs": {
+        "stats": {
+          "n": 142,
+          "mean": 28.5,
+          "stddev": 132.10992360490417,
+          "coefficientOfVariation": 4.6354359159615495,
+          "ci95Half": 21.72938028650612,
+          "ciLower": 6.770619713493879,
+          "ciUpper": 50.22938028650612
+        },
+        "effectSize": {
+          "meanDiff": 28.5,
+          "variance": 17453.031914893614,
+          "standardError": 11.086418513523531,
+          "cohensD": 0.21572944122830473,
+          "magnitude": "small"
+        },
+        "majorityVoteRate": 0.5211267605633803
+      },
+      "baselineP95RuntimeMs": 1208
+    }
+  },
+  "framework": {
+    "gateResults": [
+      {
+        "gate": "A",
+        "name": "Regression 증가 없음",
+        "status": "PASS",
+        "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+      },
+      {
+        "gate": "B",
+        "name": "Runtime 허용 범위",
+        "status": "PASS",
+        "evidence": "Runtime diff mean=-19.6ms, 95% CI=[-42.0, 2.8] (허용 기준: Baseline p95=1230ms 대비 +15%=184ms 이내)."
+      },
+      {
+        "gate": "C",
+        "name": "Capability 감소 없음",
+        "status": "OPEN_QUESTION",
+        "evidence": "성공 케이스 diff mean=-0.01, 95% CI=[-0.04, 0.01], Cohen's d_z=-0.08(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요) [strict mode: OPEN_QUESTION]."
+      },
+      {
+        "gate": "D",
+        "name": "Operating Contract 유지",
+        "status": "PASS",
+        "evidence": "2개 Contract 전부 PASS."
+      },
+      {
+        "gate": "E",
+        "name": "Primitive Interaction 이상 없음",
+        "status": "OPEN_QUESTION",
+        "evidence": "Duplicate=0건, Starved Type=1개."
+      }
+    ],
+    "pipelineResult": {
+      "changeCategory": "D",
+      "categorySpec": {
+        "category": "D",
+        "name": "Architecture Change",
+        "description": "Scheduler Ordering, Budget Contract, Planner/Executor 경계 등 구조적 변경.",
+        "requiredGates": [
+          "A",
+          "B",
+          "C",
+          "D",
+          "E"
+        ],
+        "minN": 30,
+        "minNByStage": {
+          "prototype": 15,
+          "production": 30
+        },
+        "populationScope": "전체 Hole Dataset + 실 solve() E2E",
+        "requiresFullContractAudit": true
+      },
+      "nUsed": 142,
+      "meetsMinN": true,
+      "gateResults": [
+        {
+          "gate": "A",
+          "name": "Regression 증가 없음",
+          "status": "PASS",
+          "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+        },
+        {
+          "gate": "B",
+          "name": "Runtime 허용 범위",
+          "status": "PASS",
+          "evidence": "Runtime diff mean=-19.6ms, 95% CI=[-42.0, 2.8] (허용 기준: Baseline p95=1230ms 대비 +15%=184ms 이내)."
+        },
+        {
+          "gate": "C",
+          "name": "Capability 감소 없음",
+          "status": "OPEN_QUESTION",
+          "evidence": "성공 케이스 diff mean=-0.01, 95% CI=[-0.04, 0.01], Cohen's d_z=-0.08(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요) [strict mode: OPEN_QUESTION]."
+        },
+        {
+          "gate": "D",
+          "name": "Operating Contract 유지",
+          "status": "PASS",
+          "evidence": "2개 Contract 전부 PASS."
+        },
+        {
+          "gate": "E",
+          "name": "Primitive Interaction 이상 없음",
+          "status": "OPEN_QUESTION",
+          "evidence": "Duplicate=0건, Starved Type=1개."
+        }
+      ],
+      "decision": "B",
+      "decisionRationale": "필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장."
+    }
+  },
+  "candidateScores": [
+    {
+      "id": "CURRENT_CCR_THEN_MCM",
+      "realMechanism": "AFTER_CCR",
+      "capabilityScore": 2,
+      "avgActualBudgetAvailableMs": 435.1111111111111,
+      "avgRuntimeMs": 1016.2816901408451,
+      "regressionCount": 1,
+      "complexityScore": 0
+    },
+    {
+      "id": "MCM_THEN_CCR",
+      "realMechanism": "BEFORE_CCR",
+      "capabilityScore": 0,
+      "avgActualBudgetAvailableMs": 681,
+      "avgRuntimeMs": 996.6971830985915,
+      "regressionCount": 2,
+      "complexityScore": 1
+    },
+    {
+      "id": "DEDICATED_BUDGET",
+      "realMechanism": "BEFORE_CCR",
+      "capabilityScore": 0,
+      "avgActualBudgetAvailableMs": 681,
+      "avgRuntimeMs": 996.6971830985915,
+      "regressionCount": 2,
+      "complexityScore": 1
+    },
+    {
+      "id": "CONDITIONAL_SCHEDULER",
+      "realMechanism": "BEFORE_CCR",
+      "capabilityScore": 0,
+      "avgActualBudgetAvailableMs": 681,
+      "avgRuntimeMs": 996.6971830985915,
+      "regressionCount": 2,
+      "complexityScore": 1
+    }
+  ],
+  "selection": {
+    "decision": "B_REFINEMENT_V2",
+    "rationale": "부분적인 회복 신호는 있으나(budgetStarvedRate=100.0%, reorderingSignificantlyBetter=false) 최적 Operating Contract를 확정할 만큼 명확하지 않다 -- Refinement Sprint v2로 추가 검증이 필요하다.",
+    "selectedContract": "CURRENT_CCR_THEN_MCM",
+    "candidateScores": [
+      {
+        "id": "CURRENT_CCR_THEN_MCM",
+        "realMechanism": "AFTER_CCR",
+        "capabilityScore": 2,
+        "avgActualBudgetAvailableMs": 435.1111111111111,
+        "avgRuntimeMs": 1016.2816901408451,
+        "regressionCount": 1,
+        "complexityScore": 0
+      },
+      {
+        "id": "MCM_THEN_CCR",
+        "realMechanism": "BEFORE_CCR",
+        "capabilityScore": 0,
+        "avgActualBudgetAvailableMs": 681,
+        "avgRuntimeMs": 996.6971830985915,
+        "regressionCount": 2,
+        "complexityScore": 1
+      },
+      {
+        "id": "DEDICATED_BUDGET",
+        "realMechanism": "BEFORE_CCR",
+        "capabilityScore": 0,
+        "avgActualBudgetAvailableMs": 681,
+        "avgRuntimeMs": 996.6971830985915,
+        "regressionCount": 2,
+        "complexityScore": 1
+      },
+      {
+        "id": "CONDITIONAL_SCHEDULER",
+        "realMechanism": "BEFORE_CCR",
+        "capabilityScore": 0,
+        "avgActualBudgetAvailableMs": 681,
+        "avgRuntimeMs": 996.6971830985915,
+        "regressionCount": 2,
+        "complexityScore": 1
+      }
+    ]
+  }
+}
