@@ -1,0 +1,2145 @@
+{
+  "runId": "run3",
+  "startedAt": "2026-08-01T15:36:20.947Z",
+  "finishedAt": "2026-08-01T15:38:50.285Z",
+  "rows": [
+    {
+      "label": "worstCase:45959141",
+      "runtimeMs": 2273,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9
+      }
+    },
+    {
+      "label": "worstCase:46086463",
+      "runtimeMs": 1002,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9
+      }
+    },
+    {
+      "label": "worstCase:64369533",
+      "runtimeMs": 1002,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10
+      }
+    },
+    {
+      "label": "worstCase:68977335",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 226,
+        "deadlineMissed": false,
+        "chosenType": "SETUP",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "worstCase:84976575",
+      "runtimeMs": 1138,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 242,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "worstCase:f17d7eb9",
+      "runtimeMs": 1002,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9
+      }
+    },
+    {
+      "label": "worstCase:70a5020b",
+      "runtimeMs": 1014,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 208,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "runtimeMs": 1002,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11
+      }
+    },
+    {
+      "label": "worstCase:7541612b",
+      "runtimeMs": 1044,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 249,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "worstCase:b714481",
+      "runtimeMs": 1051,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 134,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "worstCase:beb967ad",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11
+      }
+    },
+    {
+      "label": "worstCase:1e928fb1",
+      "runtimeMs": 1080,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 218,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "worstCase:4549b041",
+      "runtimeMs": 1052,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 4,
+        "wrongWingAfter": 4
+      }
+    },
+    {
+      "label": "worstCase:1513fcff",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9
+      }
+    },
+    {
+      "label": "worstCase:d37ca819",
+      "runtimeMs": 1004,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 245,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "worstCase:ae3d218b",
+      "runtimeMs": 1043,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 127,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "worstCase:120fc3af",
+      "runtimeMs": 1006,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 247,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5
+      }
+    },
+    {
+      "label": "worstCase:dd4d94fd",
+      "runtimeMs": 1005,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 2,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 12
+      }
+    },
+    {
+      "label": "worstCase:36336c1",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 151,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 4,
+        "wrongWingAfter": 4
+      }
+    },
+    {
+      "label": "worstCase:ad12c377",
+      "runtimeMs": 1124,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 96,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "worstCase:e7a801fb",
+      "runtimeMs": 1002,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10
+      }
+    },
+    {
+      "label": "worstCase:1af658ab",
+      "runtimeMs": 1158,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 237,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 4,
+        "wrongWingAfter": 4
+      }
+    },
+    {
+      "label": "worstCase:4e27e5a1",
+      "runtimeMs": 1002,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "worstCase:93b485f7",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9
+      }
+    },
+    {
+      "label": "worstCase:5e5b20b",
+      "runtimeMs": 1026,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 208,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "worstCase:e5101f85",
+      "runtimeMs": 1199,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 9,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9
+      }
+    },
+    {
+      "label": "worstCase:4749cd9d",
+      "runtimeMs": 1005,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 187,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9
+      }
+    },
+    {
+      "label": "worstCase:d27df773",
+      "runtimeMs": 1002,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9
+      }
+    },
+    {
+      "label": "worstCase:c039e611",
+      "runtimeMs": 1090,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 161,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "worstCase:b2c9ceb9",
+      "runtimeMs": 1002,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 12
+      }
+    },
+    {
+      "label": "worstCase:589b0a25",
+      "runtimeMs": 1012,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 95,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "worstCase:cee673eb",
+      "runtimeMs": 1141,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 32,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9
+      }
+    },
+    {
+      "label": "worstCase:e9009e73",
+      "runtimeMs": 1002,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 13,
+        "wrongWingAfter": 13
+      }
+    },
+    {
+      "label": "worstCase:e8be823",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11
+      }
+    },
+    {
+      "label": "worstCase:14f5293f",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 15,
+        "wrongWingAfter": 15
+      }
+    },
+    {
+      "label": "worstCase:f776edb1",
+      "runtimeMs": 1067,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 198,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5
+      }
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "runtimeMs": 1006,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 210,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "worstCase:2db21feb",
+      "runtimeMs": 1109,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 69,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9
+      }
+    },
+    {
+      "label": "worstCase:849509c9",
+      "runtimeMs": 1142,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 163,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "worstCase:c0277d5d",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 12
+      }
+    },
+    {
+      "label": "worstCase:f5f1b8fd",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10
+      }
+    },
+    {
+      "label": "worstCase:a005d41f",
+      "runtimeMs": 1075,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 162,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "worstCase:224f6f8b",
+      "runtimeMs": 1138,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 38,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "worstCase:252f8891",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11
+      }
+    },
+    {
+      "label": "worstCase:5f7ee009",
+      "runtimeMs": 1002,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 57,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "worstCase:d3283799",
+      "runtimeMs": 1006,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 242,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10
+      }
+    },
+    {
+      "label": "worstCase:710de4d1",
+      "runtimeMs": 1165,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 216,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "worstCase:5d189c1",
+      "runtimeMs": 1002,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9
+      }
+    },
+    {
+      "label": "worstCase:669f43ff",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 12
+      }
+    },
+    {
+      "label": "worstCase:42c89b9",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 12
+      }
+    },
+    {
+      "label": "worstCase:3cece8ff",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9
+      }
+    },
+    {
+      "label": "worstCase:44b9b619",
+      "runtimeMs": 1002,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "snapshot335:12022029",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10
+      }
+    },
+    {
+      "label": "snapshot335:27053491",
+      "runtimeMs": 1008,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 240,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "snapshot335:45959141",
+      "runtimeMs": 1111,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 232,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "snapshot335:46086463",
+      "runtimeMs": 1002,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9
+      }
+    },
+    {
+      "label": "snapshot335:64369533",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10
+      }
+    },
+    {
+      "label": "snapshot335:68977335",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 205,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "snapshot335:84976575",
+      "runtimeMs": 1033,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 11,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "snapshot335:f17d7eb9",
+      "runtimeMs": 1003,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 241,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "snapshot335:a061555d",
+      "runtimeMs": 1019,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 156,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "snapshot335:dda1453f",
+      "runtimeMs": 1005,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 231,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": true,
+        "solved": false,
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 4
+      }
+    },
+    {
+      "label": "snapshot335:e7a801fb",
+      "runtimeMs": 1026,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 189,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "snapshot335:1af658ab",
+      "runtimeMs": 1043,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 168,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 4,
+        "wrongWingAfter": 4
+      }
+    },
+    {
+      "label": "snapshot335:70a5020b",
+      "runtimeMs": 1030,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 245,
+        "deadlineMissed": false,
+        "chosenType": "DISRUPT",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "snapshot335:56a8b82d",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 151,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 3,
+        "wrongWingAfter": 3
+      }
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9
+      }
+    },
+    {
+      "label": "snapshot335:7541612b",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11
+      }
+    },
+    {
+      "label": "snapshot335:b714481",
+      "runtimeMs": 1005,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 203,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "snapshot335:beb967ad",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11
+      }
+    },
+    {
+      "label": "snapshot335:1e928fb1",
+      "runtimeMs": 1003,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10
+      }
+    },
+    {
+      "label": "snapshot335:4549b041",
+      "runtimeMs": 1117,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 170,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "runtimeMs": 1014,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 234,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 4,
+        "wrongWingAfter": 4
+      }
+    },
+    {
+      "label": "snapshot335:4e27e5a1",
+      "runtimeMs": 1002,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "snapshot335:d37ca819",
+      "runtimeMs": 1332,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 238,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "snapshot335:93b485f7",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9
+      }
+    },
+    {
+      "label": "snapshot335:5e5b20b",
+      "runtimeMs": 1128,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 90,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9
+      }
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "runtimeMs": 1064,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 149,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "snapshot335:120fc3af",
+      "runtimeMs": 1019,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 229,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5
+      }
+    },
+    {
+      "label": "snapshot335:dd4d94fd",
+      "runtimeMs": 1002,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 12
+      }
+    },
+    {
+      "label": "snapshot335:36336c1",
+      "runtimeMs": 1083,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 95,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "snapshot335:ad12c377",
+      "runtimeMs": 1002,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9
+      }
+    },
+    {
+      "label": "scrambleDepth10:0",
+      "runtimeMs": 1005,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 117,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5
+      }
+    },
+    {
+      "label": "scrambleDepth10:1",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10
+      }
+    },
+    {
+      "label": "scrambleDepth10:2",
+      "runtimeMs": 1129,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 149,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 3,
+        "wrongWingAfter": 3
+      }
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 246,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 4,
+        "wrongWingAfter": 4
+      }
+    },
+    {
+      "label": "scrambleDepth10:4",
+      "runtimeMs": 1003,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 82,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5
+      }
+    },
+    {
+      "label": "scrambleDepth10:5",
+      "runtimeMs": 1030,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 249,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "scrambleDepth10:6",
+      "runtimeMs": 1002,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "runtimeMs": 1120,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 223,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "scrambleDepth10:8",
+      "runtimeMs": 1140,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 98,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10
+      }
+    },
+    {
+      "label": "scrambleDepth10:9",
+      "runtimeMs": 1003,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 249,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "scrambleDepth20:0",
+      "runtimeMs": 1004,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 181,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5
+      }
+    },
+    {
+      "label": "scrambleDepth20:1",
+      "runtimeMs": 1177,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 148,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9
+      }
+    },
+    {
+      "label": "scrambleDepth20:2",
+      "runtimeMs": 1008,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 192,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "scrambleDepth20:3",
+      "runtimeMs": 1018,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 227,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "scrambleDepth20:4",
+      "runtimeMs": 1130,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 75,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "scrambleDepth20:5",
+      "runtimeMs": 1097,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 236,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "scrambleDepth20:6",
+      "runtimeMs": 1017,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 209,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5
+      }
+    },
+    {
+      "label": "scrambleDepth20:7",
+      "runtimeMs": 1258,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 132,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "runtimeMs": 1084,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 238,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "scrambleDepth20:9",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 12
+      }
+    },
+    {
+      "label": "scrambleDepth30:0",
+      "runtimeMs": 1002,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 12
+      }
+    },
+    {
+      "label": "scrambleDepth30:1",
+      "runtimeMs": 1050,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 35,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11
+      }
+    },
+    {
+      "label": "scrambleDepth30:2",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11
+      }
+    },
+    {
+      "label": "scrambleDepth30:3",
+      "runtimeMs": 1003,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 241,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "scrambleDepth30:4",
+      "runtimeMs": 1065,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 207,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5
+      }
+    },
+    {
+      "label": "scrambleDepth30:5",
+      "runtimeMs": 1003,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "scrambleDepth30:6",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11
+      }
+    },
+    {
+      "label": "scrambleDepth30:7",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 237,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "scrambleDepth30:8",
+      "runtimeMs": 1163,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 167,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10
+      }
+    },
+    {
+      "label": "scrambleDepth30:9",
+      "runtimeMs": 1096,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 163,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "scrambleDepth40:0",
+      "runtimeMs": 1130,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 163,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "scrambleDepth40:1",
+      "runtimeMs": 1049,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 232,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "scrambleDepth40:2",
+      "runtimeMs": 1175,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 9,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10
+      }
+    },
+    {
+      "label": "scrambleDepth40:3",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9
+      }
+    },
+    {
+      "label": "scrambleDepth40:4",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9
+      }
+    },
+    {
+      "label": "scrambleDepth40:5",
+      "runtimeMs": 1077,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 190,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "scrambleDepth40:6",
+      "runtimeMs": 1139,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 229,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10
+      }
+    },
+    {
+      "label": "scrambleDepth40:8",
+      "runtimeMs": 1009,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 194,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "scrambleDepth40:9",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 210,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "scrambleDepth50:0",
+      "runtimeMs": 1060,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 53,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "scrambleDepth50:1",
+      "runtimeMs": 1165,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 75,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "scrambleDepth50:2",
+      "runtimeMs": 1115,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 98,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "scrambleDepth50:3",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "scrambleDepth50:4",
+      "runtimeMs": 1009,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 173,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "scrambleDepth50:5",
+      "runtimeMs": 1050,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 120,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "scrambleDepth50:6",
+      "runtimeMs": 1164,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 11,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "scrambleDepth50:7",
+      "runtimeMs": 1034,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 215,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6
+      }
+    },
+    {
+      "label": "scrambleDepth50:8",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 12
+      }
+    },
+    {
+      "label": "scrambleDepth50:9",
+      "runtimeMs": 1040,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 226,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "scrambleDepth100:0",
+      "runtimeMs": 1007,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 20,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "scrambleDepth100:1",
+      "runtimeMs": 1002,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10
+      }
+    },
+    {
+      "label": "scrambleDepth100:2",
+      "runtimeMs": 1008,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 182,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5
+      }
+    },
+    {
+      "label": "scrambleDepth100:3",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10
+      }
+    },
+    {
+      "label": "scrambleDepth100:4",
+      "runtimeMs": 1143,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 43,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "runtimeMs": 1001,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10
+      }
+    },
+    {
+      "label": "scrambleDepth100:6",
+      "runtimeMs": 1005,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 192,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8
+      }
+    },
+    {
+      "label": "scrambleDepth100:7",
+      "runtimeMs": 1020,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 122,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7
+      }
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "runtimeMs": 1044,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": true,
+        "remainingTimeAtRecoveryTriggerMs": 200,
+        "deadlineMissed": false,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5
+      }
+    },
+    {
+      "label": "scrambleDepth100:9",
+      "runtimeMs": 1003,
+      "result": {
+        "recoveryReserveMsOverride": 250,
+        "recoveryTriggered": false,
+        "remainingTimeAtRecoveryTriggerMs": null,
+        "deadlineMissed": true,
+        "chosenType": "none",
+        "improved": false,
+        "solved": false,
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 12
+      }
+    }
+  ],
+  "solveCount": 142,
+  "improvedCount": 1,
+  "solvedCount": 0,
+  "runtimeMeanMs": 1051.6760563380283,
+  "runtimeP50Ms": 1006,
+  "runtimeP95Ms": 1165,
+  "runtimeMaxMs": 2273,
+  "deadlineMissCount": 50
+}

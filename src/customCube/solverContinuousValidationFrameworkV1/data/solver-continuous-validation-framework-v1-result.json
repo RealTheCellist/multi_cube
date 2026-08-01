@@ -1,0 +1,212 @@
+{
+  "validationPolicy": [
+    {
+      "name": "Regression Validation",
+      "reusedModule": "solverLongTermReliabilityValidationV1/RegressionTrend.ts + solverPostReleaseValidationFramework/ReleaseGates.ts(evaluateGateA)",
+      "frequency": "per-run-pair",
+      "passCriterion": "latest run과 reference run 간 per-case trueRegressionDiff의 95% CI가 0을 초과하지 않음(isNonRegressive) -- 새로 악화된 case가 통계적으로 유의하게 증가하지 않았음."
+    },
+    {
+      "name": "Runtime Validation",
+      "reusedModule": "solverLongTermReliabilityValidationV1/RuntimeDistribution.ts + solverPostReleaseValidationFramework/ReleaseGates.ts(evaluateGateB)",
+      "frequency": "per-run-pair",
+      "passCriterion": "latest run의 p95 runtime이 reference run의 p95 대비 +15% tolerance 이내."
+    },
+    {
+      "name": "Contract Drift Validation",
+      "reusedModule": "solverLongTermReliabilityValidationV1/ContractStability.ts를 일반화한 ContractDriftMonitor.ts",
+      "frequency": "per-run",
+      "passCriterion": "Solver Research Closeout Sprint v1이 Freeze한 8개 Operating Contract 값이 production 코드에서 여전히 동일하게 읽힘 -- 하나라도 다르면 즉시 FAIL."
+    },
+    {
+      "name": "Determinism Spot Check",
+      "reusedModule": "solverLongTermReliabilityValidationV1/DeterminismAnalysis.ts",
+      "frequency": "per-run",
+      "passCriterion": "정기 실행은 아니며(비용이 큼, 케이스당 N회 반복), 이 Sprint의 own STEP1이 정의한 '분기별 표본 점검' 대상으로만 명시 -- 매 Nightly Validation마다 강제하지 않는다(disclosed scope 축소)."
+    },
+    {
+      "name": "Release Gate Validation",
+      "reusedModule": "solverContinuousValidationFrameworkV1/ReleaseGateAutomation.ts (Gate A/B/C + Contract Drift 조합)",
+      "frequency": "per-run-pair",
+      "passCriterion": "Regression/Runtime/Capability Gate 전부 PASS 이고 Contract Drift 없음 -- 하나라도 FAIL이면 전체 Release Gate Validation FAIL."
+    }
+  ],
+  "dashboard": [
+    {
+      "runId": "run1",
+      "startedAt": "2026-08-01T14:40:16.204Z",
+      "finishedAt": "2026-08-01T14:42:45.861Z",
+      "improvedCount": 1,
+      "solvedCount": 0,
+      "runtimeP50Ms": 1013,
+      "runtimeP95Ms": 1195,
+      "runtimeMaxMs": 2477,
+      "deadlineMissCount": 59,
+      "regressionCountVsPrevious": null,
+      "flipRateVsPrevious": null
+    },
+    {
+      "runId": "run2",
+      "startedAt": "2026-08-01T14:43:00.159Z",
+      "finishedAt": "2026-08-01T14:45:31.697Z",
+      "improvedCount": 1,
+      "solvedCount": 0,
+      "runtimeP50Ms": 1009,
+      "runtimeP95Ms": 1254,
+      "runtimeMaxMs": 2755,
+      "deadlineMissCount": 58,
+      "regressionCountVsPrevious": 0,
+      "flipRateVsPrevious": 0
+    },
+    {
+      "runId": "run3",
+      "startedAt": "2026-08-01T15:36:20.947Z",
+      "finishedAt": "2026-08-01T15:38:50.285Z",
+      "improvedCount": 1,
+      "solvedCount": 0,
+      "runtimeP50Ms": 1006,
+      "runtimeP95Ms": 1165,
+      "runtimeMaxMs": 2273,
+      "deadlineMissCount": 50,
+      "regressionCountVsPrevious": 0,
+      "flipRateVsPrevious": 0
+    }
+  ],
+  "contractDrift": {
+    "rows": [
+      {
+        "constant": "PRODUCTION_ENDGAME_RECOVERY_RESERVE_MS",
+        "closeoutValue": 250,
+        "currentValue": 250,
+        "drifted": false
+      },
+      {
+        "constant": "FIXED_BUDGET_MS",
+        "closeoutValue": 140,
+        "currentValue": 140,
+        "drifted": false
+      },
+      {
+        "constant": "REPAIR_RESERVED_SLICE_MS",
+        "closeoutValue": 75,
+        "currentValue": 75,
+        "drifted": false
+      },
+      {
+        "constant": "MIXED_COMMUTATOR_RESERVED_SLICE_MS",
+        "closeoutValue": 300,
+        "currentValue": 300,
+        "drifted": false
+      },
+      {
+        "constant": "SETUP_RESERVED_SLICE_MS",
+        "closeoutValue": 500,
+        "currentValue": 500,
+        "drifted": false
+      },
+      {
+        "constant": "PARITY_GATED_CYCLE_RESERVED_SLICE_MS",
+        "closeoutValue": 2000,
+        "currentValue": 2000,
+        "drifted": false
+      },
+      {
+        "constant": "MULTI_COMPONENT_MERGE_RESERVED_SLICE_MS",
+        "closeoutValue": 2000,
+        "currentValue": 2000,
+        "drifted": false
+      },
+      {
+        "constant": "PLAN_TIME_BUDGET_MS",
+        "closeoutValue": 1000,
+        "currentValue": 1000,
+        "drifted": false
+      }
+    ],
+    "anyDrift": false,
+    "status": "PASS"
+  },
+  "releaseGate": {
+    "gateA": {
+      "gate": "A",
+      "name": "Regression 증가 없음",
+      "status": "PASS",
+      "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+    },
+    "gateB": {
+      "gate": "B",
+      "name": "Runtime 허용 범위",
+      "status": "PASS",
+      "evidence": "Runtime diff mean=-15.5ms, 95% CI=[-32.4, 1.5] (허용 기준: Baseline p95=1254ms 대비 +15%=188ms 이내)."
+    },
+    "gateC": {
+      "gate": "C",
+      "name": "Capability 감소 없음",
+      "status": "PASS",
+      "evidence": "성공 케이스 diff mean=0.00, 95% CI=[0.00, 0.00], Cohen's d_z=0.00(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요)."
+    },
+    "contractDrift": {
+      "rows": [
+        {
+          "constant": "PRODUCTION_ENDGAME_RECOVERY_RESERVE_MS",
+          "closeoutValue": 250,
+          "currentValue": 250,
+          "drifted": false
+        },
+        {
+          "constant": "FIXED_BUDGET_MS",
+          "closeoutValue": 140,
+          "currentValue": 140,
+          "drifted": false
+        },
+        {
+          "constant": "REPAIR_RESERVED_SLICE_MS",
+          "closeoutValue": 75,
+          "currentValue": 75,
+          "drifted": false
+        },
+        {
+          "constant": "MIXED_COMMUTATOR_RESERVED_SLICE_MS",
+          "closeoutValue": 300,
+          "currentValue": 300,
+          "drifted": false
+        },
+        {
+          "constant": "SETUP_RESERVED_SLICE_MS",
+          "closeoutValue": 500,
+          "currentValue": 500,
+          "drifted": false
+        },
+        {
+          "constant": "PARITY_GATED_CYCLE_RESERVED_SLICE_MS",
+          "closeoutValue": 2000,
+          "currentValue": 2000,
+          "drifted": false
+        },
+        {
+          "constant": "MULTI_COMPONENT_MERGE_RESERVED_SLICE_MS",
+          "closeoutValue": 2000,
+          "currentValue": 2000,
+          "drifted": false
+        },
+        {
+          "constant": "PLAN_TIME_BUDGET_MS",
+          "closeoutValue": 1000,
+          "currentValue": 1000,
+          "drifted": false
+        }
+      ],
+      "anyDrift": false,
+      "status": "PASS"
+    },
+    "overallDecision": "PASS"
+  },
+  "decisionResult": {
+    "level1NightlyValidationFrameworkBuilt": true,
+    "level2RegressionDashboardBuilt": true,
+    "level3ContractDriftMonitorBuilt": true,
+    "level4ReleaseGateAutomationApplied": true,
+    "decision": "A_FRAMEWORK_COMPLETE",
+    "rationale": "Validation Policy(5개 항목) 정의 + Nightly Validation 실제 실행(3회) + Regression Dashboard 트렌드 계산 정상 작동 + Contract Drift Monitor 실행(status=PASS) + Release Gate Automation 실행(overallDecision=PASS) 모두 확인됨 -- Continuous Validation Framework를 공식 완료로 선언한다."
+  }
+}

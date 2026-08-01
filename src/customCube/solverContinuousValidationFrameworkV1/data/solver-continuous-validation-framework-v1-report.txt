@@ -1,0 +1,50 @@
+=== Solver Continuous Validation Framework Sprint v1 -- Report ===
+
+STEP1. Validation Policy
+  [Regression Validation] (per-run-pair)
+    reusedModule: solverLongTermReliabilityValidationV1/RegressionTrend.ts + solverPostReleaseValidationFramework/ReleaseGates.ts(evaluateGateA)
+    passCriterion: latest run과 reference run 간 per-case trueRegressionDiff의 95% CI가 0을 초과하지 않음(isNonRegressive) -- 새로 악화된 case가 통계적으로 유의하게 증가하지 않았음.
+  [Runtime Validation] (per-run-pair)
+    reusedModule: solverLongTermReliabilityValidationV1/RuntimeDistribution.ts + solverPostReleaseValidationFramework/ReleaseGates.ts(evaluateGateB)
+    passCriterion: latest run의 p95 runtime이 reference run의 p95 대비 +15% tolerance 이내.
+  [Contract Drift Validation] (per-run)
+    reusedModule: solverLongTermReliabilityValidationV1/ContractStability.ts를 일반화한 ContractDriftMonitor.ts
+    passCriterion: Solver Research Closeout Sprint v1이 Freeze한 8개 Operating Contract 값이 production 코드에서 여전히 동일하게 읽힘 -- 하나라도 다르면 즉시 FAIL.
+  [Determinism Spot Check] (per-run)
+    reusedModule: solverLongTermReliabilityValidationV1/DeterminismAnalysis.ts
+    passCriterion: 정기 실행은 아니며(비용이 큼, 케이스당 N회 반복), 이 Sprint의 own STEP1이 정의한 '분기별 표본 점검' 대상으로만 명시 -- 매 Nightly Validation마다 강제하지 않는다(disclosed scope 축소).
+  [Release Gate Validation] (per-run-pair)
+    reusedModule: solverContinuousValidationFrameworkV1/ReleaseGateAutomation.ts (Gate A/B/C + Contract Drift 조합)
+    passCriterion: Regression/Runtime/Capability Gate 전부 PASS 이고 Contract Drift 없음 -- 하나라도 FAIL이면 전체 Release Gate Validation FAIL.
+
+STEP2/3. Nightly Validation + Regression Dashboard (3 real runs)
+  | Run | Improved | Solved | Runtime p95 | Deadline Miss | RegressionVsPrevious |
+  | run1 | 1 | 0 | 1195ms | 59 | N/A |
+  | run2 | 1 | 0 | 1254ms | 58 | 0 |
+  | run3 | 1 | 0 | 1165ms | 50 | 0 |
+
+STEP4. Contract Drift Monitor
+  PRODUCTION_ENDGAME_RECOVERY_RESERVE_MS: closeout=250, current=250, drifted=false
+  FIXED_BUDGET_MS: closeout=140, current=140, drifted=false
+  REPAIR_RESERVED_SLICE_MS: closeout=75, current=75, drifted=false
+  MIXED_COMMUTATOR_RESERVED_SLICE_MS: closeout=300, current=300, drifted=false
+  SETUP_RESERVED_SLICE_MS: closeout=500, current=500, drifted=false
+  PARITY_GATED_CYCLE_RESERVED_SLICE_MS: closeout=2000, current=2000, drifted=false
+  MULTI_COMPONENT_MERGE_RESERVED_SLICE_MS: closeout=2000, current=2000, drifted=false
+  PLAN_TIME_BUDGET_MS: closeout=1000, current=1000, drifted=false
+  status=PASS
+
+STEP5. Release Gate Automation (run3 vs run2)
+  Gate A(Regression): PASS -- True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000].
+  Gate B(Runtime): PASS -- Runtime diff mean=-15.5ms, 95% CI=[-32.4, 1.5] (허용 기준: Baseline p95=1254ms 대비 +15%=188ms 이내).
+  Gate C(Capability): PASS -- 성공 케이스 diff mean=0.00, 95% CI=[0.00, 0.00], Cohen's d_z=0.00(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요).
+  Contract Drift: PASS
+  overallDecision=PASS
+
+STEP6. Framework Decision
+  Level1(Nightly Validation Framework 구축)=PASS
+  Level2(Regression Dashboard 생성)=PASS
+  Level3(Contract Drift Monitor 구축)=PASS
+  Level4(Release Gate Automation 적용)=PASS
+  Decision=A_FRAMEWORK_COMPLETE
+  rationale: Validation Policy(5개 항목) 정의 + Nightly Validation 실제 실행(3회) + Regression Dashboard 트렌드 계산 정상 작동 + Contract Drift Monitor 실행(status=PASS) + Release Gate Automation 실행(overallDecision=PASS) 모두 확인됨 -- Continuous Validation Framework를 공식 완료로 선언한다.
