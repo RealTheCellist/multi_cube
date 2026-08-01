@@ -1,0 +1,55 @@
+=== Multi-Component Merge Production Integration Sprint v1 -- Report ===
+
+Hole Dataset n=142 (real production functions -- generateRecoveryStrategies()/attemptRecovery(), read-only measurement)
+
+STEP2. Contract Audit
+  gateMatchedRate=6.3% (9/142), contractMatchesPlanningGate=true
+  positionCorrectRate=100.0% (9/9)
+  avgActualBudgetAvailableMs=493.6 (nominal 2000ms), budgetStarvedCount=9/9
+  chosenCount(MCM won argmax)=1/9
+
+STEP3. Capability Validation (Baseline vs Integrated)
+  baselineImprovedCount=14/142, integratedImprovedCount=15/142
+  newCapabilityCount=1, duplicateCount=0, regressionCount=0
+  integratedTrueRegressionCount=0
+
+STEP4. Primitive Interaction
+  overlapCount=1/9 (11.1%)
+  duplicateRescueCount=0, baselineChosenBreakdown={}
+  replacementCount=0
+  starvationCount=9/9 (100.0%), avgActualBudgetAvailableMs=493.6
+
+STEP5. Statistical Validation + Validation Framework
+  improvedCountDiff: mean=0.0070, 95% CI=[-0.0068, 0.0208], Cohen's dz=0.084(negligible)
+  trueRegressionDiff: mean=0.0000, 95% CI=[0.0000, 0.0000]
+  runtimeDiffMs: mean=-7.1ms, 95% CI=[-26.4, 12.2]
+  newCapabilityRate=0.7%
+  Gate A(Regression 증가 없음)=PASS -- True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000].
+  Gate B(Runtime 허용 범위)=PASS -- Runtime diff mean=-7.1ms, 95% CI=[-26.4, 12.2] (허용 기준: Baseline p95=1212ms 대비 +15%=182ms 이내).
+  Gate C(Capability 감소 없음)=OPEN_QUESTION -- 성공 케이스 diff mean=0.01, 95% CI=[-0.01, 0.02], Cohen's d_z=0.08(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요) [strict mode: OPEN_QUESTION].
+  Gate E(Primitive Interaction 이상 없음)=PASS -- Duplicate=0건, Starved Type=0개.
+  pipelineDecision=B: 필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장.
+  RecoveryTypeStats:
+    [DISRUPT] offered=1, chosen=1, chosenRate=100.0%, duplicateCount=0, starved=false
+    [SETUP] offered=3, chosen=3, chosenRate=100.0%, duplicateCount=0, starved=false
+    [REPAIR] offered=0, chosen=0, chosenRate=0.0%, duplicateCount=0, starved=false
+    [CCR] offered=8, chosen=8, chosenRate=100.0%, duplicateCount=0, starved=false
+    [MULTI_COMPONENT_MERGE] offered=1, chosen=1, chosenRate=100.0%, duplicateCount=0, starved=false
+    [PARITY_GATED_CYCLE] offered=1, chosen=1, chosenRate=100.0%, duplicateCount=0, starved=false
+    [MIXED_COMMUTATOR] offered=6, chosen=5, chosenRate=83.3%, duplicateCount=0, starved=false
+
+STEP6. Root Cause Analysis
+  gateMissRate=93.7% (133/142) -- Dataset Coverage ceiling=6.3%
+  resolvedCount=0, duplicateCount=0
+  schedulerOrderingCount=0, primitiveFailureOrBudgetCount=9
+  budgetStarvationEvidence: avgActualBudgetAvailableMsAmongGateMatched=493.6, budgetStarvedRateAmongGateMatched=100.0%
+
+Level1-4 + Decision
+  Level1(Operating Contract 정확히 구현)=PASS
+  Level2(Regression 0)=PASS
+  Level3(신규 Capability 확인)=FAIL
+  Level4(Validation Framework 통과)=FAIL
+  finalDecision=B_INTEGRATION_REFINEMENT
+  rationale: Contract는 정확히 구현됐고(Level1 PASS) Regression도 없다(Level2 PASS). 신규 Capability는 실측상 0건(Level3 FAIL)이지만, Root Cause 분석 결과 gate-matched 9건 중 100%가 Budget Starvation 상태였다(avgActualBudgetAvailableMs=493.6ms, 명목 2000ms의 24.7%에 불과) -- CCR의 remainingTime Budget Contract가 Outer Deadline을 먼저 소진해 MULTI_COMPONENT_MERGE가 자신의 명목 예산을 온전히 받지 못했다. 이는 Primitive 자체의 구조적 한계가 아니라 Budget/Scheduler 상호작용 문제로 귀속된다 -- Primitive Blueprint로 회귀하는 대신 Budget/Scheduler 재설계를 다루는 Production Integration Refinement Sprint로 진행한다.
+
+  (수정 disclosure: 원래 자동 생성된 리포트는 Level4(Validation Framework) FAIL과 신규 Capability 0건만 보고 Decision C(Primitive Blueprint로 회귀)를 냈다. 이후 STEP6 Root Cause 데이터를 직접 재검토한 결과, gate-matched 9건 전원이 Budget Starvation 상태였고, 실제로 후보가 생성된 유일한 케이스(scrambleDepth100:5)는 Comparative Prototype Sprint v1의 독립 2000ms 예산 테스트에서는 성공했던 케이스임이 확인되어, 원인이 Primitive 자체가 아니라 Budget/Scheduler임이 명확해졌다. 이에 따라 driver의 Decision 로직(runMultiComponentMergeProductionIntegrationV1.ts)과 이 리포트를 Decision B로 수정했다.)

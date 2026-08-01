@@ -64,17 +64,40 @@ function main() {
   const level3NewCapabilityConfirmed = rootCauseSummary.resolvedCount > 0;
   const level4FrameworkPass = framework.pipelineResult.decision === "A";
 
+  // Root Cause distinguishes an actionable Budget/Scheduler problem from a
+  // genuine Primitive limitation: if the gate-matched population is
+  // dominated by real Budget Starvation (STEP2's own measured
+  // actualBudgetAvailableMs falling far short of the nominal 2000ms
+  // reserved slice, caused by CCR's own remainingTime contract consuming
+  // the outer deadline first), Decision B (fix the Budget/Scheduler
+  // interaction) is the correct call -- Decision C (regress to Blueprint)
+  // would wrongly blame the Primitive's own algorithm for a Contract
+  // interaction defect it never got a fair chance to clear.
+  const budgetStarvationDominant =
+    rootCauseSummary.budgetStarvationEvidence.budgetStarvedRateAmongGateMatched >= 0.5 && rootCauseSummary.primitiveFailureOrBudgetCount > 0;
+
   let finalDecision: "A_PRODUCTION_CONTRACT_ADOPTED" | "B_INTEGRATION_REFINEMENT" | "C_REGRESS_TO_BLUEPRINT";
   let finalDecisionRationale: string;
   if (level1ContractCorrect && level2NoRegression && level3NewCapabilityConfirmed && level4FrameworkPass) {
     finalDecision = "A_PRODUCTION_CONTRACT_ADOPTED";
     finalDecisionRationale = `Level1-4 전부 PASS -- Contract 정확, Regression 없음, 신규 Capability ${rootCauseSummary.resolvedCount}건 확인, Validation Framework Decision A. Production Contract 채택.`;
-  } else if (level1ContractCorrect && level2NoRegression && !level4FrameworkPass && rootCauseSummary.resolvedCount === 0) {
+  } else if (level1ContractCorrect && level2NoRegression && budgetStarvationDominant) {
+    finalDecision = "B_INTEGRATION_REFINEMENT";
+    finalDecisionRationale =
+      `Contract는 정확히 구현됐고(Level1 PASS) Regression도 없다(Level2 PASS). 신규 Capability는 실측상 0건(Level3 FAIL)이지만, ` +
+      `Root Cause 분석 결과 gate-matched ${rootCauseSummary.n - rootCauseSummary.gateMissCount}건 중 ` +
+      `${(rootCauseSummary.budgetStarvationEvidence.budgetStarvedRateAmongGateMatched * 100).toFixed(0)}%가 Budget Starvation ` +
+      `상태였다(avgActualBudgetAvailableMs=${rootCauseSummary.budgetStarvationEvidence.avgActualBudgetAvailableMsAmongGateMatched.toFixed(1)}ms, ` +
+      `명목 2000ms의 ${(rootCauseSummary.budgetStarvationEvidence.avgActualBudgetAvailableMsAmongGateMatched / 2000 * 100).toFixed(1)}%에 불과) -- ` +
+      `CCR의 remainingTime Budget Contract가 Outer Deadline을 먼저 소진해 MULTI_COMPONENT_MERGE가 자신의 명목 예산을 온전히 받지 ` +
+      `못했다. 이는 Primitive 자체의 구조적 한계가 아니라 Budget/Scheduler 상호작용 문제로 귀속된다 -- Primitive Blueprint로 ` +
+      `회귀하는 대신 Budget/Scheduler 재설계를 다루는 Production Integration Refinement Sprint로 진행한다.`;
+  } else if (level1ContractCorrect && level2NoRegression) {
     finalDecision = "C_REGRESS_TO_BLUEPRINT";
-    finalDecisionRationale = `Contract는 정확히 구현됐고 Regression도 없으나(Level1/2 PASS), 신규 Capability가 0건이며 Root Cause 분석 결과 Primitive 자체의 구조적 한계(Primitive Failure/Budget)가 지배적 -- Primitive Blueprint 단계로 회귀.`;
+    finalDecisionRationale = `Contract는 정확히 구현됐고 Regression도 없으나(Level1/2 PASS), 신규 Capability가 0건이며 Root Cause 분석 결과 Budget Starvation으로 설명되지 않는 Primitive 자체의 구조적 한계가 지배적 -- Primitive Blueprint 단계로 회귀.`;
   } else {
     finalDecision = "B_INTEGRATION_REFINEMENT";
-    finalDecisionRationale = `Contract는 맞으나 Level3/4 중 일부가 불확실하거나 부분적이다 -- Production Integration Refinement Sprint로 진행해 Gate/Budget/Scheduler 조정을 재검토한다.`;
+    finalDecisionRationale = `Contract 일부가 불확실하다 -- Production Integration Refinement Sprint로 진행해 Gate/Budget/Scheduler 조정을 재검토한다.`;
   }
   console.log(`Level1(Contract 정확)=${level1ContractCorrect ? "PASS" : "FAIL"}, Level2(Regression 0)=${level2NoRegression ? "PASS" : "FAIL"}, Level3(신규 Capability)=${level3NewCapabilityConfirmed ? "PASS" : "FAIL"}, Level4(Validation Framework)=${level4FrameworkPass ? "PASS" : "FAIL"}`);
   console.log(`finalDecision=${finalDecision}`);

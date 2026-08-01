@@ -1,0 +1,5445 @@
+{
+  "populationN": 142,
+  "auditSummary": {
+    "n": 142,
+    "gateMatchedCount": 9,
+    "gateMatchedRate": 0.06338028169014084,
+    "positionCorrectCount": 9,
+    "positionCorrectRate": 1,
+    "avgActualBudgetAvailableMs": 493.55555555555554,
+    "budgetStarvedCount": 9,
+    "chosenCount": 1,
+    "contractMatchesPlanningGate": true
+  },
+  "validationRows": [
+    {
+      "label": "worstCase:45959141",
+      "baseline": {
+        "label": "worstCase:45959141",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1003,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:45959141",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1008,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:46086463",
+      "baseline": {
+        "label": "worstCase:46086463",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1010,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:46086463",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1125,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:64369533",
+      "baseline": {
+        "label": "worstCase:64369533",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1004,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:64369533",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1038,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:68977335",
+      "baseline": {
+        "label": "worstCase:68977335",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "SETUP",
+        "candidatesOffered": [
+          "SETUP"
+        ],
+        "candidatesDetail": "Multi-ply Setup (즉시 이득 없는 수 + 후속 수습, reservedBudget scheduling, last-resort): score=-993.5",
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 640,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "worstCase:68977335",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 759,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:84976575",
+      "baseline": {
+        "label": "worstCase:84976575",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1025,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:84976575",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1019,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:f17d7eb9",
+      "baseline": {
+        "label": "worstCase:f17d7eb9",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1006,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:f17d7eb9",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1120,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:70a5020b",
+      "baseline": {
+        "label": "worstCase:70a5020b",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 712,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "worstCase:70a5020b",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 766,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "baseline": {
+        "label": "worstCase:56a8b82d",
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1009,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:56a8b82d",
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 980,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:7541612b",
+      "baseline": {
+        "label": "worstCase:7541612b",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1007,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:7541612b",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1167,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:b714481",
+      "baseline": {
+        "label": "worstCase:b714481",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1036,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:b714481",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1009,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:beb967ad",
+      "baseline": {
+        "label": "worstCase:beb967ad",
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1004,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:beb967ad",
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1046,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:1e928fb1",
+      "baseline": {
+        "label": "worstCase:1e928fb1",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 4,
+        "chosenType": "CCR",
+        "candidatesOffered": [
+          "CCR"
+        ],
+        "candidatesDetail": "Clean-Cycle Resolution (remainingTime=0ms 남음): score=-1167.0",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 1104,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:1e928fb1",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 4,
+        "chosenType": "CCR",
+        "candidatesOffered": [
+          "CCR"
+        ],
+        "candidatesDetail": "Clean-Cycle Resolution (remainingTime=0ms 남음): score=-1167.0",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 1017,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:4549b041",
+      "baseline": {
+        "label": "worstCase:4549b041",
+        "wrongWingBefore": 4,
+        "wrongWingAfter": 4,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1004,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:4549b041",
+        "wrongWingBefore": 4,
+        "wrongWingAfter": 4,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1056,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:1513fcff",
+      "baseline": {
+        "label": "worstCase:1513fcff",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1034,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:1513fcff",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1010,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:d37ca819",
+      "baseline": {
+        "label": "worstCase:d37ca819",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 717,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "worstCase:d37ca819",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 772,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:ae3d218b",
+      "baseline": {
+        "label": "worstCase:ae3d218b",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 719,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "worstCase:ae3d218b",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 659,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:120fc3af",
+      "baseline": {
+        "label": "worstCase:120fc3af",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1001,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:120fc3af",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1015,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:dd4d94fd",
+      "baseline": {
+        "label": "worstCase:dd4d94fd",
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 12,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1201,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:dd4d94fd",
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 12,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1222,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:36336c1",
+      "baseline": {
+        "label": "worstCase:36336c1",
+        "wrongWingBefore": 4,
+        "wrongWingAfter": 4,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1003,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:36336c1",
+        "wrongWingBefore": 4,
+        "wrongWingAfter": 4,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 849,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:ad12c377",
+      "baseline": {
+        "label": "worstCase:ad12c377",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 898,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "worstCase:ad12c377",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 758,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:e7a801fb",
+      "baseline": {
+        "label": "worstCase:e7a801fb",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 8,
+        "chosenType": "CCR",
+        "candidatesOffered": [
+          "CCR"
+        ],
+        "candidatesDetail": "Clean-Cycle Resolution (remainingTime=0ms 남음): score=-556.0",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 1053,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:e7a801fb",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 8,
+        "chosenType": "CCR",
+        "candidatesOffered": [
+          "CCR"
+        ],
+        "candidatesDetail": "Clean-Cycle Resolution (remainingTime=0ms 남음): score=-556.0",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 1014,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:1af658ab",
+      "baseline": {
+        "label": "worstCase:1af658ab",
+        "wrongWingBefore": 4,
+        "wrongWingAfter": 4,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1191,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:1af658ab",
+        "wrongWingBefore": 4,
+        "wrongWingAfter": 4,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1252,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:4e27e5a1",
+      "baseline": {
+        "label": "worstCase:4e27e5a1",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 672,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "worstCase:4e27e5a1",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 793,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:93b485f7",
+      "baseline": {
+        "label": "worstCase:93b485f7",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 853,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "worstCase:93b485f7",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1027,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:5e5b20b",
+      "baseline": {
+        "label": "worstCase:5e5b20b",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 5,
+        "chosenType": "PARITY_GATED_CYCLE",
+        "candidatesOffered": [
+          "PARITY_GATED_CYCLE"
+        ],
+        "candidatesDetail": "Cross-Component Bridge Cycle Resolver (componentCount>1 Gate, after_CCR reserved-slice scheduling, Budget=2000ms): score=-891.5",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 974,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "worstCase:5e5b20b",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 5,
+        "chosenType": "PARITY_GATED_CYCLE",
+        "candidatesOffered": [
+          "PARITY_GATED_CYCLE"
+        ],
+        "candidatesDetail": "Cross-Component Bridge Cycle Resolver (componentCount>1 Gate, after_CCR reserved-slice scheduling, Budget=2000ms): score=-891.5",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 860,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:e5101f85",
+      "baseline": {
+        "label": "worstCase:e5101f85",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1031,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:e5101f85",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1257,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:4749cd9d",
+      "baseline": {
+        "label": "worstCase:4749cd9d",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1004,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:4749cd9d",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1057,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:d27df773",
+      "baseline": {
+        "label": "worstCase:d27df773",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1092,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:d27df773",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1253,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:c039e611",
+      "baseline": {
+        "label": "worstCase:c039e611",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1088,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:c039e611",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1014,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:b2c9ceb9",
+      "baseline": {
+        "label": "worstCase:b2c9ceb9",
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 12,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1145,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:b2c9ceb9",
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 12,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1040,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:589b0a25",
+      "baseline": {
+        "label": "worstCase:589b0a25",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1049,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:589b0a25",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1001,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:cee673eb",
+      "baseline": {
+        "label": "worstCase:cee673eb",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1013,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:cee673eb",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1017,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:e9009e73",
+      "baseline": {
+        "label": "worstCase:e9009e73",
+        "wrongWingBefore": 13,
+        "wrongWingAfter": 13,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1044,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:e9009e73",
+        "wrongWingBefore": 13,
+        "wrongWingAfter": 12,
+        "chosenType": "CCR",
+        "candidatesOffered": [
+          "CCR"
+        ],
+        "candidatesDetail": "Clean-Cycle Resolution (remainingTime=0ms 남음): score=-2053.0",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 1171,
+        "deadlineMissed": true
+      },
+      "newCapability": true,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:e8be823",
+      "baseline": {
+        "label": "worstCase:e8be823",
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 10,
+        "chosenType": "MIXED_COMMUTATOR",
+        "candidatesOffered": [
+          "MIXED_COMMUTATOR"
+        ],
+        "candidatesDetail": "Mixed Pattern Bracket Commutator (cycleCount=1 AND componentCount=1 Gate, reserved-slice scheduling): score=-645.5",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 520,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "worstCase:e8be823",
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 10,
+        "chosenType": "MIXED_COMMUTATOR",
+        "candidatesOffered": [
+          "MIXED_COMMUTATOR"
+        ],
+        "candidatesDetail": "Mixed Pattern Bracket Commutator (cycleCount=1 AND componentCount=1 Gate, reserved-slice scheduling): score=-645.5",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 647,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:14f5293f",
+      "baseline": {
+        "label": "worstCase:14f5293f",
+        "wrongWingBefore": 15,
+        "wrongWingAfter": 14,
+        "chosenType": "MIXED_COMMUTATOR",
+        "candidatesOffered": [
+          "MIXED_COMMUTATOR"
+        ],
+        "candidatesDetail": "Mixed Pattern Bracket Commutator (cycleCount=1 AND componentCount=1 Gate, reserved-slice scheduling): score=-637.5",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 864,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "worstCase:14f5293f",
+        "wrongWingBefore": 15,
+        "wrongWingAfter": 11,
+        "chosenType": "DISRUPT",
+        "candidatesOffered": [
+          "DISRUPT",
+          "MIXED_COMMUTATOR"
+        ],
+        "candidatesDetail": "가벼운 Disruption (교란 1개 이하, 재귀 없음): score=-363.5 / Mixed Pattern Bracket Commutator (cycleCount=1 AND componentCount=1 Gate, reserved-slice scheduling): score=-637.5",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 840,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:f776edb1",
+      "baseline": {
+        "label": "worstCase:f776edb1",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1104,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:f776edb1",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1108,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "baseline": {
+        "label": "worstCase:de8abca9",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1191,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:de8abca9",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1192,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:2db21feb",
+      "baseline": {
+        "label": "worstCase:2db21feb",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 806,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "worstCase:2db21feb",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1045,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:849509c9",
+      "baseline": {
+        "label": "worstCase:849509c9",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1025,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:849509c9",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1020,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:c0277d5d",
+      "baseline": {
+        "label": "worstCase:c0277d5d",
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 12,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 977,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "worstCase:c0277d5d",
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 12,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 697,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:f5f1b8fd",
+      "baseline": {
+        "label": "worstCase:f5f1b8fd",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 961,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "worstCase:f5f1b8fd",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 917,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:a005d41f",
+      "baseline": {
+        "label": "worstCase:a005d41f",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1049,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:a005d41f",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1030,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:224f6f8b",
+      "baseline": {
+        "label": "worstCase:224f6f8b",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1031,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:224f6f8b",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1008,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:252f8891",
+      "baseline": {
+        "label": "worstCase:252f8891",
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 10,
+        "chosenType": "MIXED_COMMUTATOR",
+        "candidatesOffered": [
+          "MIXED_COMMUTATOR"
+        ],
+        "candidatesDetail": "Mixed Pattern Bracket Commutator (cycleCount=1 AND componentCount=1 Gate, reserved-slice scheduling): score=-645.5",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 623,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "worstCase:252f8891",
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 10,
+        "chosenType": "MIXED_COMMUTATOR",
+        "candidatesOffered": [
+          "MIXED_COMMUTATOR"
+        ],
+        "candidatesDetail": "Mixed Pattern Bracket Commutator (cycleCount=1 AND componentCount=1 Gate, reserved-slice scheduling): score=-645.5",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 596,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:5f7ee009",
+      "baseline": {
+        "label": "worstCase:5f7ee009",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 658,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "worstCase:5f7ee009",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "SETUP",
+        "candidatesOffered": [
+          "SETUP"
+        ],
+        "candidatesDetail": "Multi-ply Setup (즉시 이득 없는 수 + 후속 수습, reservedBudget scheduling, last-resort): score=-1211.0",
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 653,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:d3283799",
+      "baseline": {
+        "label": "worstCase:d3283799",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1057,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:d3283799",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1035,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:710de4d1",
+      "baseline": {
+        "label": "worstCase:710de4d1",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1212,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:710de4d1",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1210,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:5d189c1",
+      "baseline": {
+        "label": "worstCase:5d189c1",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1212,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:5d189c1",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1128,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:669f43ff",
+      "baseline": {
+        "label": "worstCase:669f43ff",
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 12,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 730,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "worstCase:669f43ff",
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 12,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 889,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:42c89b9",
+      "baseline": {
+        "label": "worstCase:42c89b9",
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 11,
+        "chosenType": "CCR",
+        "candidatesOffered": [
+          "CCR"
+        ],
+        "candidatesDetail": "Clean-Cycle Resolution (remainingTime=0ms 남음): score=-1101.5",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 1234,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:42c89b9",
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 11,
+        "chosenType": "CCR",
+        "candidatesOffered": [
+          "CCR"
+        ],
+        "candidatesDetail": "Clean-Cycle Resolution (remainingTime=0ms 남음): score=-1101.5",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 1248,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:3cece8ff",
+      "baseline": {
+        "label": "worstCase:3cece8ff",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1143,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "worstCase:3cece8ff",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1101,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "worstCase:44b9b619",
+      "baseline": {
+        "label": "worstCase:44b9b619",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 970,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "worstCase:44b9b619",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 944,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:12022029",
+      "baseline": {
+        "label": "snapshot335:12022029",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "SETUP",
+        "candidatesOffered": [
+          "SETUP"
+        ],
+        "candidatesDetail": "Multi-ply Setup (즉시 이득 없는 수 + 후속 수습, reservedBudget scheduling, last-resort): score=-535.5",
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1029,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:12022029",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 663,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:27053491",
+      "baseline": {
+        "label": "snapshot335:27053491",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 785,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "snapshot335:27053491",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 790,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:45959141",
+      "baseline": {
+        "label": "snapshot335:45959141",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1018,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:45959141",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1010,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:46086463",
+      "baseline": {
+        "label": "snapshot335:46086463",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1152,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:46086463",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1027,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:64369533",
+      "baseline": {
+        "label": "snapshot335:64369533",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1009,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:64369533",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1012,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:68977335",
+      "baseline": {
+        "label": "snapshot335:68977335",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "SETUP",
+        "candidatesOffered": [
+          "SETUP"
+        ],
+        "candidatesDetail": "Multi-ply Setup (즉시 이득 없는 수 + 후속 수습, reservedBudget scheduling, last-resort): score=-1253.0",
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1295,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:68977335",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 828,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:84976575",
+      "baseline": {
+        "label": "snapshot335:84976575",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1002,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:84976575",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1047,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:f17d7eb9",
+      "baseline": {
+        "label": "snapshot335:f17d7eb9",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1189,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:f17d7eb9",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1016,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:a061555d",
+      "baseline": {
+        "label": "snapshot335:a061555d",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1082,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:a061555d",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1109,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:dda1453f",
+      "baseline": {
+        "label": "snapshot335:dda1453f",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1071,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:dda1453f",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1072,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:e7a801fb",
+      "baseline": {
+        "label": "snapshot335:e7a801fb",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1154,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:e7a801fb",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 796,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:1af658ab",
+      "baseline": {
+        "label": "snapshot335:1af658ab",
+        "wrongWingBefore": 4,
+        "wrongWingAfter": 4,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1026,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:1af658ab",
+        "wrongWingBefore": 4,
+        "wrongWingAfter": 4,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1001,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:70a5020b",
+      "baseline": {
+        "label": "snapshot335:70a5020b",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 824,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "snapshot335:70a5020b",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 761,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:56a8b82d",
+      "baseline": {
+        "label": "snapshot335:56a8b82d",
+        "wrongWingBefore": 3,
+        "wrongWingAfter": 3,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1023,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:56a8b82d",
+        "wrongWingBefore": 3,
+        "wrongWingAfter": 3,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1006,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "baseline": {
+        "label": "snapshot335:60b5c3b1",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1198,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:60b5c3b1",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1073,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:7541612b",
+      "baseline": {
+        "label": "snapshot335:7541612b",
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1044,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:7541612b",
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1006,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:b714481",
+      "baseline": {
+        "label": "snapshot335:b714481",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1008,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:b714481",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1069,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:beb967ad",
+      "baseline": {
+        "label": "snapshot335:beb967ad",
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1191,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:beb967ad",
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1005,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:1e928fb1",
+      "baseline": {
+        "label": "snapshot335:1e928fb1",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 733,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "snapshot335:1e928fb1",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1014,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:4549b041",
+      "baseline": {
+        "label": "snapshot335:4549b041",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1001,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:4549b041",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1142,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "baseline": {
+        "label": "snapshot335:1513fcff",
+        "wrongWingBefore": 4,
+        "wrongWingAfter": 4,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1176,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:1513fcff",
+        "wrongWingBefore": 4,
+        "wrongWingAfter": 4,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 980,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:4e27e5a1",
+      "baseline": {
+        "label": "snapshot335:4e27e5a1",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 757,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "snapshot335:4e27e5a1",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 760,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:d37ca819",
+      "baseline": {
+        "label": "snapshot335:d37ca819",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 704,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "snapshot335:d37ca819",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 749,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:93b485f7",
+      "baseline": {
+        "label": "snapshot335:93b485f7",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 861,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "snapshot335:93b485f7",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 687,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:5e5b20b",
+      "baseline": {
+        "label": "snapshot335:5e5b20b",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 947,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "snapshot335:5e5b20b",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1209,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "baseline": {
+        "label": "snapshot335:ae3d218b",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 696,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "snapshot335:ae3d218b",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 696,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:120fc3af",
+      "baseline": {
+        "label": "snapshot335:120fc3af",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1067,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:120fc3af",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1023,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:dd4d94fd",
+      "baseline": {
+        "label": "snapshot335:dd4d94fd",
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 12,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1220,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:dd4d94fd",
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 12,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1143,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:36336c1",
+      "baseline": {
+        "label": "snapshot335:36336c1",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1211,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:36336c1",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1016,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "snapshot335:ad12c377",
+      "baseline": {
+        "label": "snapshot335:ad12c377",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1207,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "snapshot335:ad12c377",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1213,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth10:0",
+      "baseline": {
+        "label": "scrambleDepth10:0",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1012,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth10:0",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1226,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth10:1",
+      "baseline": {
+        "label": "scrambleDepth10:1",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1130,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth10:1",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1129,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth10:2",
+      "baseline": {
+        "label": "scrambleDepth10:2",
+        "wrongWingBefore": 3,
+        "wrongWingAfter": 3,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1217,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth10:2",
+        "wrongWingBefore": 3,
+        "wrongWingAfter": 3,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1143,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "baseline": {
+        "label": "scrambleDepth10:3",
+        "wrongWingBefore": 4,
+        "wrongWingAfter": 4,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1050,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth10:3",
+        "wrongWingBefore": 4,
+        "wrongWingAfter": 4,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1001,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth10:4",
+      "baseline": {
+        "label": "scrambleDepth10:4",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1155,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth10:4",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1015,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth10:5",
+      "baseline": {
+        "label": "scrambleDepth10:5",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1012,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth10:5",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1081,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth10:6",
+      "baseline": {
+        "label": "scrambleDepth10:6",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 859,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "scrambleDepth10:6",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "SETUP",
+        "candidatesOffered": [
+          "SETUP"
+        ],
+        "candidatesDetail": "Multi-ply Setup (즉시 이득 없는 수 + 후속 수습, reservedBudget scheduling, last-resort): score=-987.5",
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 789,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "baseline": {
+        "label": "scrambleDepth10:7",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1022,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth10:7",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "SETUP",
+        "candidatesOffered": [
+          "SETUP"
+        ],
+        "candidatesDetail": "Multi-ply Setup (즉시 이득 없는 수 + 후속 수습, reservedBudget scheduling, last-resort): score=-1067.5",
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 784,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth10:8",
+      "baseline": {
+        "label": "scrambleDepth10:8",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 9,
+        "chosenType": "CCR",
+        "candidatesOffered": [
+          "CCR"
+        ],
+        "candidatesDetail": "Clean-Cycle Resolution (remainingTime=0ms 남음): score=-859.5",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 1085,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth10:8",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 9,
+        "chosenType": "CCR",
+        "candidatesOffered": [
+          "CCR"
+        ],
+        "candidatesDetail": "Clean-Cycle Resolution (remainingTime=0ms 남음): score=-859.5",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 1114,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth10:9",
+      "baseline": {
+        "label": "scrambleDepth10:9",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1022,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth10:9",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1019,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth20:0",
+      "baseline": {
+        "label": "scrambleDepth20:0",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1005,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth20:0",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1127,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth20:1",
+      "baseline": {
+        "label": "scrambleDepth20:1",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1152,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth20:1",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1220,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth20:2",
+      "baseline": {
+        "label": "scrambleDepth20:2",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1138,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth20:2",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1040,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth20:3",
+      "baseline": {
+        "label": "scrambleDepth20:3",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 730,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "scrambleDepth20:3",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 799,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth20:4",
+      "baseline": {
+        "label": "scrambleDepth20:4",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "SETUP",
+        "candidatesOffered": [
+          "SETUP"
+        ],
+        "candidatesDetail": "Multi-ply Setup (즉시 이득 없는 수 + 후속 수습, reservedBudget scheduling, last-resort): score=84.0",
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 964,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "scrambleDepth20:4",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1077,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth20:5",
+      "baseline": {
+        "label": "scrambleDepth20:5",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1056,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth20:5",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1096,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth20:6",
+      "baseline": {
+        "label": "scrambleDepth20:6",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1125,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth20:6",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1046,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth20:7",
+      "baseline": {
+        "label": "scrambleDepth20:7",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1107,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth20:7",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1085,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "baseline": {
+        "label": "scrambleDepth20:8",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1038,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth20:8",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1118,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth20:9",
+      "baseline": {
+        "label": "scrambleDepth20:9",
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 11,
+        "chosenType": "MIXED_COMMUTATOR",
+        "candidatesOffered": [
+          "MIXED_COMMUTATOR"
+        ],
+        "candidatesDetail": "Mixed Pattern Bracket Commutator (cycleCount=1 AND componentCount=1 Gate, reserved-slice scheduling): score=-637.5",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 466,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "scrambleDepth20:9",
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 11,
+        "chosenType": "MIXED_COMMUTATOR",
+        "candidatesOffered": [
+          "MIXED_COMMUTATOR"
+        ],
+        "candidatesDetail": "Mixed Pattern Bracket Commutator (cycleCount=1 AND componentCount=1 Gate, reserved-slice scheduling): score=-637.5",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 471,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth30:0",
+      "baseline": {
+        "label": "scrambleDepth30:0",
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 10,
+        "chosenType": "MIXED_COMMUTATOR",
+        "candidatesOffered": [
+          "MIXED_COMMUTATOR"
+        ],
+        "candidatesDetail": "Mixed Pattern Bracket Commutator (cycleCount=1 AND componentCount=1 Gate, reserved-slice scheduling): score=-1195.0",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 913,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "scrambleDepth30:0",
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 10,
+        "chosenType": "MIXED_COMMUTATOR",
+        "candidatesOffered": [
+          "MIXED_COMMUTATOR"
+        ],
+        "candidatesDetail": "Mixed Pattern Bracket Commutator (cycleCount=1 AND componentCount=1 Gate, reserved-slice scheduling): score=-1195.0",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 876,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth30:1",
+      "baseline": {
+        "label": "scrambleDepth30:1",
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1235,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth30:1",
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1164,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth30:2",
+      "baseline": {
+        "label": "scrambleDepth30:2",
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1046,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth30:2",
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1108,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth30:3",
+      "baseline": {
+        "label": "scrambleDepth30:3",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1008,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth30:3",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1003,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth30:4",
+      "baseline": {
+        "label": "scrambleDepth30:4",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1001,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth30:4",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1001,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth30:5",
+      "baseline": {
+        "label": "scrambleDepth30:5",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1005,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth30:5",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1137,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth30:6",
+      "baseline": {
+        "label": "scrambleDepth30:6",
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 720,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "scrambleDepth30:6",
+        "wrongWingBefore": 11,
+        "wrongWingAfter": 11,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 727,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth30:7",
+      "baseline": {
+        "label": "scrambleDepth30:7",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1137,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth30:7",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1038,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth30:8",
+      "baseline": {
+        "label": "scrambleDepth30:8",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 9,
+        "chosenType": "MIXED_COMMUTATOR",
+        "candidatesOffered": [
+          "MIXED_COMMUTATOR"
+        ],
+        "candidatesDetail": "Mixed Pattern Bracket Commutator (cycleCount=1 AND componentCount=1 Gate, reserved-slice scheduling): score=176.0",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 559,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "scrambleDepth30:8",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 9,
+        "chosenType": "MIXED_COMMUTATOR",
+        "candidatesOffered": [
+          "MIXED_COMMUTATOR"
+        ],
+        "candidatesDetail": "Mixed Pattern Bracket Commutator (cycleCount=1 AND componentCount=1 Gate, reserved-slice scheduling): score=176.0",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 534,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth30:9",
+      "baseline": {
+        "label": "scrambleDepth30:9",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 980,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "scrambleDepth30:9",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 972,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth40:0",
+      "baseline": {
+        "label": "scrambleDepth40:0",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1205,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth40:0",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1033,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth40:1",
+      "baseline": {
+        "label": "scrambleDepth40:1",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1088,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth40:1",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1044,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth40:2",
+      "baseline": {
+        "label": "scrambleDepth40:2",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1068,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth40:2",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1022,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth40:3",
+      "baseline": {
+        "label": "scrambleDepth40:3",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1002,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth40:3",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1059,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth40:4",
+      "baseline": {
+        "label": "scrambleDepth40:4",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 929,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "scrambleDepth40:4",
+        "wrongWingBefore": 9,
+        "wrongWingAfter": 9,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 802,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth40:5",
+      "baseline": {
+        "label": "scrambleDepth40:5",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 661,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "scrambleDepth40:5",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 807,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth40:6",
+      "baseline": {
+        "label": "scrambleDepth40:6",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1047,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth40:6",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1153,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "baseline": {
+        "label": "scrambleDepth40:7",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1266,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth40:7",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1028,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth40:8",
+      "baseline": {
+        "label": "scrambleDepth40:8",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 858,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "scrambleDepth40:8",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 733,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth40:9",
+      "baseline": {
+        "label": "scrambleDepth40:9",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1008,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth40:9",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1058,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth50:0",
+      "baseline": {
+        "label": "scrambleDepth50:0",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1052,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth50:0",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 902,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth50:1",
+      "baseline": {
+        "label": "scrambleDepth50:1",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1042,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth50:1",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1206,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth50:2",
+      "baseline": {
+        "label": "scrambleDepth50:2",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 7,
+        "chosenType": "CCR",
+        "candidatesOffered": [
+          "CCR"
+        ],
+        "candidatesDetail": "Clean-Cycle Resolution (remainingTime=0ms 남음): score=-1743.0",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 1139,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth50:2",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 7,
+        "chosenType": "CCR",
+        "candidatesOffered": [
+          "CCR"
+        ],
+        "candidatesDetail": "Clean-Cycle Resolution (remainingTime=0ms 남음): score=-1743.0",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 1176,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth50:3",
+      "baseline": {
+        "label": "scrambleDepth50:3",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 802,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "scrambleDepth50:3",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 878,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth50:4",
+      "baseline": {
+        "label": "scrambleDepth50:4",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1007,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth50:4",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1007,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth50:5",
+      "baseline": {
+        "label": "scrambleDepth50:5",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1067,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth50:5",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1098,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth50:6",
+      "baseline": {
+        "label": "scrambleDepth50:6",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1171,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth50:6",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1051,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth50:7",
+      "baseline": {
+        "label": "scrambleDepth50:7",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1048,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth50:7",
+        "wrongWingBefore": 6,
+        "wrongWingAfter": 6,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1046,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth50:8",
+      "baseline": {
+        "label": "scrambleDepth50:8",
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 11,
+        "chosenType": "CCR",
+        "candidatesOffered": [
+          "CCR"
+        ],
+        "candidatesDetail": "Clean-Cycle Resolution (remainingTime=0ms 남음): score=-2765.0",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 1044,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth50:8",
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 11,
+        "chosenType": "CCR",
+        "candidatesOffered": [
+          "CCR"
+        ],
+        "candidatesDetail": "Clean-Cycle Resolution (remainingTime=0ms 남음): score=-2765.0",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 1028,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth50:9",
+      "baseline": {
+        "label": "scrambleDepth50:9",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 658,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "scrambleDepth50:9",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 749,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth100:0",
+      "baseline": {
+        "label": "scrambleDepth100:0",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1077,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth100:0",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1259,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth100:1",
+      "baseline": {
+        "label": "scrambleDepth100:1",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1087,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth100:1",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1007,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth100:2",
+      "baseline": {
+        "label": "scrambleDepth100:2",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1001,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth100:2",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1001,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth100:3",
+      "baseline": {
+        "label": "scrambleDepth100:3",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1065,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth100:3",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1003,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth100:4",
+      "baseline": {
+        "label": "scrambleDepth100:4",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1023,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth100:4",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1051,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "baseline": {
+        "label": "scrambleDepth100:5",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1078,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth100:5",
+        "wrongWingBefore": 10,
+        "wrongWingAfter": 10,
+        "chosenType": "MULTI_COMPONENT_MERGE",
+        "candidatesOffered": [
+          "MULTI_COMPONENT_MERGE"
+        ],
+        "candidatesDetail": "Sequential Multi-Component Merge (componentCount>=3 Gate, before_PARITY reserved-slice scheduling, Budget=2000ms, componentCountBefore=3->3): score=-3190.5",
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1075,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth100:6",
+      "baseline": {
+        "label": "scrambleDepth100:6",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1159,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth100:6",
+        "wrongWingBefore": 8,
+        "wrongWingAfter": 8,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1209,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth100:7",
+      "baseline": {
+        "label": "scrambleDepth100:7",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 949,
+        "deadlineMissed": false
+      },
+      "integrated": {
+        "label": "scrambleDepth100:7",
+        "wrongWingBefore": 7,
+        "wrongWingAfter": 7,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 936,
+        "deadlineMissed": false
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "baseline": {
+        "label": "scrambleDepth100:8",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1001,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth100:8",
+        "wrongWingBefore": 5,
+        "wrongWingAfter": 5,
+        "chosenType": "none",
+        "candidatesOffered": [],
+        "candidatesDetail": null,
+        "improved": false,
+        "trueRegression": false,
+        "wallMs": 1194,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    },
+    {
+      "label": "scrambleDepth100:9",
+      "baseline": {
+        "label": "scrambleDepth100:9",
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 11,
+        "chosenType": "CCR",
+        "candidatesOffered": [
+          "CCR"
+        ],
+        "candidatesDetail": "Clean-Cycle Resolution (remainingTime=0ms 남음): score=-224.0",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 1043,
+        "deadlineMissed": true
+      },
+      "integrated": {
+        "label": "scrambleDepth100:9",
+        "wrongWingBefore": 12,
+        "wrongWingAfter": 11,
+        "chosenType": "CCR",
+        "candidatesOffered": [
+          "CCR"
+        ],
+        "candidatesDetail": "Clean-Cycle Resolution (remainingTime=0ms 남음): score=-224.0",
+        "improved": true,
+        "trueRegression": false,
+        "wallMs": 1042,
+        "deadlineMissed": true
+      },
+      "newCapability": false,
+      "duplicate": false,
+      "regression": false
+    }
+  ],
+  "validationSummary": {
+    "n": 142,
+    "baselineImprovedCount": 14,
+    "integratedImprovedCount": 15,
+    "newCapabilityCount": 1,
+    "duplicateCount": 0,
+    "regressionCount": 0,
+    "integratedTrueRegressionCount": 0
+  },
+  "interaction": {
+    "gateMatchedCount": 9,
+    "overlapCount": 1,
+    "overlapRate": 0.1111111111111111,
+    "duplicateRescueCount": 0,
+    "duplicateRescueBaselineChosenBreakdown": {},
+    "replacementCount": 0,
+    "starvationCount": 9,
+    "starvationRate": 1,
+    "avgActualBudgetAvailableMs": 493.55555555555554
+  },
+  "stats": {
+    "n": 142,
+    "improvedCountDiff": {
+      "stats": {
+        "n": 142,
+        "mean": 0.007042253521126761,
+        "stddev": 0.08391813582966888,
+        "coefficientOfVariation": 11.916375287812981,
+        "ci95Half": 0.013802816901408445,
+        "ciLower": -0.006760563380281684,
+        "ciUpper": 0.020845070422535205
+      },
+      "effectSize": {
+        "meanDiff": 0.007042253521126761,
+        "variance": 0.0070422535211267555,
+        "standardError": 0.007042253521126758,
+        "cohensD": 0.08391813582966894,
+        "magnitude": "negligible"
+      },
+      "majorityVoteRate": 1
+    },
+    "trueRegressionDiff": {
+      "stats": {
+        "n": 142,
+        "mean": 0,
+        "stddev": 0,
+        "coefficientOfVariation": 0,
+        "ci95Half": 0,
+        "ciLower": 0,
+        "ciUpper": 0
+      },
+      "effectSize": {
+        "meanDiff": 0,
+        "variance": 0,
+        "standardError": 0,
+        "cohensD": 0,
+        "magnitude": "negligible"
+      },
+      "majorityVoteRate": 1
+    },
+    "runtimeDiffMs": {
+      "stats": {
+        "n": 142,
+        "mean": -7.098591549295775,
+        "stddev": 117.14344179444706,
+        "coefficientOfVariation": -16.50234993532885,
+        "ci95Half": 19.26770014972019,
+        "ciLower": -26.366291699015967,
+        "ciUpper": 12.169108600424416
+      },
+      "effectSize": {
+        "meanDiff": -7.098591549295775,
+        "variance": 13722.585955449005,
+        "standardError": 9.830459260061323,
+        "cohensD": -0.06059743030046663,
+        "magnitude": "negligible"
+      },
+      "majorityVoteRate": 0.4788732394366197
+    },
+    "newCapabilityRate": 0.007042253521126761,
+    "baselineP95RuntimeMs": 1212
+  },
+  "framework": {
+    "gateResults": [
+      {
+        "gate": "A",
+        "name": "Regression 증가 없음",
+        "status": "PASS",
+        "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+      },
+      {
+        "gate": "B",
+        "name": "Runtime 허용 범위",
+        "status": "PASS",
+        "evidence": "Runtime diff mean=-7.1ms, 95% CI=[-26.4, 12.2] (허용 기준: Baseline p95=1212ms 대비 +15%=182ms 이내)."
+      },
+      {
+        "gate": "C",
+        "name": "Capability 감소 없음",
+        "status": "OPEN_QUESTION",
+        "evidence": "성공 케이스 diff mean=0.01, 95% CI=[-0.01, 0.02], Cohen's d_z=0.08(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요) [strict mode: OPEN_QUESTION]."
+      },
+      {
+        "gate": "E",
+        "name": "Primitive Interaction 이상 없음",
+        "status": "PASS",
+        "evidence": "Duplicate=0건, Starved Type=0개."
+      }
+    ],
+    "pipelineResult": {
+      "changeCategory": "C",
+      "categorySpec": {
+        "category": "C",
+        "name": "New Primitive",
+        "description": "새로운 Recovery/Solving Primitive 추가.",
+        "requiredGates": [
+          "A",
+          "B",
+          "C",
+          "E"
+        ],
+        "minN": 30,
+        "minNByStage": {
+          "prototype": 10,
+          "production": 30
+        },
+        "populationScope": "전체 Hole Dataset + 해당 Primitive의 Target Cluster",
+        "requiresFullContractAudit": false
+      },
+      "nUsed": 142,
+      "meetsMinN": true,
+      "gateResults": [
+        {
+          "gate": "A",
+          "name": "Regression 증가 없음",
+          "status": "PASS",
+          "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+        },
+        {
+          "gate": "B",
+          "name": "Runtime 허용 범위",
+          "status": "PASS",
+          "evidence": "Runtime diff mean=-7.1ms, 95% CI=[-26.4, 12.2] (허용 기준: Baseline p95=1212ms 대비 +15%=182ms 이내)."
+        },
+        {
+          "gate": "C",
+          "name": "Capability 감소 없음",
+          "status": "OPEN_QUESTION",
+          "evidence": "성공 케이스 diff mean=0.01, 95% CI=[-0.01, 0.02], Cohen's d_z=0.08(negligible). 유의미한 개선(no -- 감소 없음만 확인, 개선 유의성은 별도 판단 필요) [strict mode: OPEN_QUESTION]."
+        },
+        {
+          "gate": "E",
+          "name": "Primitive Interaction 이상 없음",
+          "status": "PASS",
+          "evidence": "Duplicate=0건, Starved Type=0개."
+        }
+      ],
+      "decision": "B",
+      "decisionRationale": "필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장."
+    },
+    "recoveryTypeStats": [
+      {
+        "recoveryType": "DISRUPT",
+        "offeredCount": 1,
+        "chosenCount": 1,
+        "chosenRate": 1,
+        "duplicateCount": 0,
+        "starved": false
+      },
+      {
+        "recoveryType": "SETUP",
+        "offeredCount": 3,
+        "chosenCount": 3,
+        "chosenRate": 1,
+        "duplicateCount": 0,
+        "starved": false
+      },
+      {
+        "recoveryType": "REPAIR",
+        "offeredCount": 0,
+        "chosenCount": 0,
+        "chosenRate": 0,
+        "duplicateCount": 0,
+        "starved": false
+      },
+      {
+        "recoveryType": "CCR",
+        "offeredCount": 8,
+        "chosenCount": 8,
+        "chosenRate": 1,
+        "duplicateCount": 0,
+        "starved": false
+      },
+      {
+        "recoveryType": "MULTI_COMPONENT_MERGE",
+        "offeredCount": 1,
+        "chosenCount": 1,
+        "chosenRate": 1,
+        "duplicateCount": 0,
+        "starved": false
+      },
+      {
+        "recoveryType": "PARITY_GATED_CYCLE",
+        "offeredCount": 1,
+        "chosenCount": 1,
+        "chosenRate": 1,
+        "duplicateCount": 0,
+        "starved": false
+      },
+      {
+        "recoveryType": "MIXED_COMMUTATOR",
+        "offeredCount": 6,
+        "chosenCount": 5,
+        "chosenRate": 0.8333333333333334,
+        "duplicateCount": 0,
+        "starved": false
+      }
+    ]
+  },
+  "rootCauseRows": [
+    {
+      "label": "worstCase:45959141",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:46086463",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:64369533",
+      "componentCount": 3,
+      "gateMatched": true,
+      "bucket": "PRIMITIVE_FAILURE_OR_BUDGET"
+    },
+    {
+      "label": "worstCase:68977335",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:84976575",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:f17d7eb9",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:70a5020b",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:7541612b",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:b714481",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:beb967ad",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:1e928fb1",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:4549b041",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:1513fcff",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:d37ca819",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:ae3d218b",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:120fc3af",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:dd4d94fd",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:36336c1",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:ad12c377",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:e7a801fb",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:1af658ab",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:4e27e5a1",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:93b485f7",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:5e5b20b",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:e5101f85",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:4749cd9d",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:d27df773",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:c039e611",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:b2c9ceb9",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:589b0a25",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:cee673eb",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:e9009e73",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:e8be823",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:14f5293f",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:f776edb1",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:2db21feb",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:849509c9",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:c0277d5d",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:f5f1b8fd",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:a005d41f",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:224f6f8b",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:252f8891",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:5f7ee009",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:d3283799",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:710de4d1",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:5d189c1",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:669f43ff",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:42c89b9",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "worstCase:3cece8ff",
+      "componentCount": 3,
+      "gateMatched": true,
+      "bucket": "PRIMITIVE_FAILURE_OR_BUDGET"
+    },
+    {
+      "label": "worstCase:44b9b619",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:12022029",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:27053491",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:45959141",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:46086463",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:64369533",
+      "componentCount": 3,
+      "gateMatched": true,
+      "bucket": "PRIMITIVE_FAILURE_OR_BUDGET"
+    },
+    {
+      "label": "snapshot335:68977335",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:84976575",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:f17d7eb9",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:a061555d",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:dda1453f",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:e7a801fb",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:1af658ab",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:70a5020b",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:56a8b82d",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:7541612b",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:b714481",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:beb967ad",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:1e928fb1",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:4549b041",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:4e27e5a1",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:d37ca819",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:93b485f7",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:5e5b20b",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:120fc3af",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:dd4d94fd",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:36336c1",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "snapshot335:ad12c377",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth10:0",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth10:1",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth10:2",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth10:4",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth10:5",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth10:6",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth10:8",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth10:9",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth20:0",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth20:1",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth20:2",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth20:3",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth20:4",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth20:5",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth20:6",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth20:7",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth20:9",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth30:0",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth30:1",
+      "componentCount": 3,
+      "gateMatched": true,
+      "bucket": "PRIMITIVE_FAILURE_OR_BUDGET"
+    },
+    {
+      "label": "scrambleDepth30:2",
+      "componentCount": 3,
+      "gateMatched": true,
+      "bucket": "PRIMITIVE_FAILURE_OR_BUDGET"
+    },
+    {
+      "label": "scrambleDepth30:3",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth30:4",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth30:5",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth30:6",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth30:7",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth30:8",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth30:9",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth40:0",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth40:1",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth40:2",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth40:3",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth40:4",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth40:5",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth40:6",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "componentCount": 3,
+      "gateMatched": true,
+      "bucket": "PRIMITIVE_FAILURE_OR_BUDGET"
+    },
+    {
+      "label": "scrambleDepth40:8",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth40:9",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth50:0",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth50:1",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth50:2",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth50:3",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth50:4",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth50:5",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth50:6",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth50:7",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth50:8",
+      "componentCount": 3,
+      "gateMatched": true,
+      "bucket": "PRIMITIVE_FAILURE_OR_BUDGET"
+    },
+    {
+      "label": "scrambleDepth50:9",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth100:0",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth100:1",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth100:2",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth100:3",
+      "componentCount": 3,
+      "gateMatched": true,
+      "bucket": "PRIMITIVE_FAILURE_OR_BUDGET"
+    },
+    {
+      "label": "scrambleDepth100:4",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "componentCount": 3,
+      "gateMatched": true,
+      "bucket": "PRIMITIVE_FAILURE_OR_BUDGET"
+    },
+    {
+      "label": "scrambleDepth100:6",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth100:7",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "componentCount": 1,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    },
+    {
+      "label": "scrambleDepth100:9",
+      "componentCount": 2,
+      "gateMatched": false,
+      "bucket": "GATE_MISS"
+    }
+  ],
+  "rootCauseSummary": {
+    "n": 142,
+    "gateMissCount": 133,
+    "gateMissRate": 0.9366197183098591,
+    "resolvedCount": 0,
+    "duplicateCount": 0,
+    "schedulerOrderingCount": 0,
+    "primitiveFailureOrBudgetCount": 9,
+    "datasetCoverageCeiling": 0.06338028169014084,
+    "budgetStarvationEvidence": {
+      "avgActualBudgetAvailableMsAmongGateMatched": 493.55555555555554,
+      "budgetStarvedRateAmongGateMatched": 1
+    }
+  },
+  "level1ContractCorrect": true,
+  "level2NoRegression": true,
+  "level3NewCapabilityConfirmed": false,
+  "level4FrameworkPass": false,
+  "finalDecision": "B_INTEGRATION_REFINEMENT",
+  "finalDecisionRationale": "Contract는 정확히 구현됐고(Level1 PASS) Regression도 없다(Level2 PASS). 신규 Capability는 실측상 0건(Level3 FAIL)이지만, Root Cause 분석 결과 gate-matched 9건 전원(100%)이 Budget Starvation 상태였다(avgActualBudgetAvailableMs=493.6ms, 명목 2000ms의 24.7%에 불과) -- CCR의 remainingTime Budget Contract가 Outer Deadline(1000ms)을 먼저 소진해, MULTI_COMPONENT_MERGE가 실제로 후보를 생성한 유일한 케이스(scrambleDepth100:5)조차 자신의 명목 2000ms Reserved Slice를 온전히 받지 못했다. 이 케이스는 Comparative Prototype Sprint v1의 독립 2000ms 예산 테스트에서는 실제로 성공했던 케이스였다 -- 즉 이번 Sprint의 신규 Capability 0건은 Primitive 자체의 구조적 한계가 아니라 Budget/Scheduler 상호작용(CCR과의 예산 경쟁) 문제로 귀속된다. Primitive Blueprint로 회귀하는 대신 Budget/Scheduler 재설계를 다루는 Production Integration Refinement Sprint로 진행한다.",
+  "budgetStarvationDominant": true
+}
