@@ -1,0 +1,388 @@
+{
+  "populationN": 142,
+  "auditSummary": {
+    "outerDeadlineMs": 1000,
+    "n": 142,
+    "gateMatchedCount": 9,
+    "avgRemainingTimeAtMcmStartMs": 519.6666666666666,
+    "avgActualBudgetAvailableMs": 519.6666666666666,
+    "fullBudgetCount": 0,
+    "fullBudgetRate": 0,
+    "deadlineAbortCount": 51
+  },
+  "replaySummary": {
+    "n": 142,
+    "armAImprovedCount": 15,
+    "armBImprovedCount": 18,
+    "armCImprovedCount": 21,
+    "armBNewCapabilityVsA": 4,
+    "armCNewCapabilityVsA": 7,
+    "armARegressionCount": 0,
+    "armBRegressionCount": 0,
+    "armCRegressionCount": 0,
+    "armAMcmChosenCount": 1,
+    "armBMcmChosenCount": 2,
+    "armCMcmChosenCount": 2
+  },
+  "consistencyRows": [
+    {
+      "label": "worstCase:64369533",
+      "componentCountBefore": 3,
+      "comparativeIsolatedSuccess": false,
+      "productionArmCSuccess": false,
+      "match": true
+    },
+    {
+      "label": "worstCase:3cece8ff",
+      "componentCountBefore": 3,
+      "comparativeIsolatedSuccess": false,
+      "productionArmCSuccess": false,
+      "match": true
+    },
+    {
+      "label": "snapshot335:64369533",
+      "componentCountBefore": 3,
+      "comparativeIsolatedSuccess": false,
+      "productionArmCSuccess": false,
+      "match": true
+    },
+    {
+      "label": "scrambleDepth30:1",
+      "componentCountBefore": 3,
+      "comparativeIsolatedSuccess": false,
+      "productionArmCSuccess": false,
+      "match": true
+    },
+    {
+      "label": "scrambleDepth30:2",
+      "componentCountBefore": 3,
+      "comparativeIsolatedSuccess": true,
+      "productionArmCSuccess": false,
+      "match": false
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "componentCountBefore": 3,
+      "comparativeIsolatedSuccess": true,
+      "productionArmCSuccess": false,
+      "match": false
+    },
+    {
+      "label": "scrambleDepth50:8",
+      "componentCountBefore": 3,
+      "comparativeIsolatedSuccess": true,
+      "productionArmCSuccess": true,
+      "match": true
+    },
+    {
+      "label": "scrambleDepth100:3",
+      "componentCountBefore": 3,
+      "comparativeIsolatedSuccess": false,
+      "productionArmCSuccess": false,
+      "match": true
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "componentCountBefore": 3,
+      "comparativeIsolatedSuccess": true,
+      "productionArmCSuccess": false,
+      "match": false
+    }
+  ],
+  "consistency": {
+    "n": 9,
+    "matchCount": 6,
+    "matchRate": 0.6666666666666666,
+    "successMatchCount": 1,
+    "successMismatchCount": 3,
+    "failureMatchCount": 5,
+    "failureMismatchCount": 0
+  },
+  "stats": {
+    "armBVsArmA": {
+      "label": "1500ms vs 1000ms",
+      "n": 142,
+      "improvedCountDiff": {
+        "stats": {
+          "n": 142,
+          "mean": 0.02112676056338028,
+          "stddev": 0.18711356809141252,
+          "coefficientOfVariation": 8.856708889660194,
+          "ci95Half": 0.03077635477243155,
+          "ciLower": -0.00964959420905127,
+          "ciUpper": 0.051903115335811836
+        },
+        "effectSize": {
+          "meanDiff": 0.02112676056338028,
+          "variance": 0.03501148736389967,
+          "standardError": 0.015702221822669157,
+          "cohensD": 0.11290875792106646,
+          "magnitude": "negligible"
+        },
+        "majorityVoteRate": 0.9929577464788732
+      },
+      "trueRegressionDiff": {
+        "stats": {
+          "n": 142,
+          "mean": 0,
+          "stddev": 0,
+          "coefficientOfVariation": 0,
+          "ci95Half": 0,
+          "ciLower": 0,
+          "ciUpper": 0
+        },
+        "effectSize": {
+          "meanDiff": 0,
+          "variance": 0,
+          "standardError": 0,
+          "cohensD": 0,
+          "magnitude": "negligible"
+        },
+        "majorityVoteRate": 1
+      },
+      "runtimeDiffMs": {
+        "stats": {
+          "n": 142,
+          "mean": 303.4788732394366,
+          "stddev": 271.2280116475205,
+          "coefficientOfVariation": 0.8937294670707734,
+          "ci95Half": 44.61146027960539,
+          "ciLower": 258.8674129598312,
+          "ciUpper": 348.090333519042
+        },
+        "effectSize": {
+          "meanDiff": 303.4788732394366,
+          "variance": 73564.6343022675,
+          "standardError": 22.760949122247645,
+          "cohensD": 1.118906824542254,
+          "magnitude": "large"
+        },
+        "majorityVoteRate": 0.8450704225352113
+      },
+      "baselineP95RuntimeMs": 1214
+    },
+    "armCVsArmA": {
+      "label": "2000ms vs 1000ms",
+      "n": 142,
+      "improvedCountDiff": {
+        "stats": {
+          "n": 142,
+          "mean": 0.04225352112676056,
+          "stddev": 0.23439190787413144,
+          "coefficientOfVariation": 5.547275153021111,
+          "ci95Half": 0.03855267464621894,
+          "ciLower": 0.003700846480541621,
+          "ciUpper": 0.08080619577297951
+        },
+        "effectSize": {
+          "meanDiff": 0.04225352112676056,
+          "variance": 0.05493956647687532,
+          "standardError": 0.019669731962356603,
+          "cohensD": 0.18026868551046873,
+          "magnitude": "negligible"
+        },
+        "majorityVoteRate": 0.9929577464788732
+      },
+      "trueRegressionDiff": {
+        "stats": {
+          "n": 142,
+          "mean": 0,
+          "stddev": 0,
+          "coefficientOfVariation": 0,
+          "ci95Half": 0,
+          "ciLower": 0,
+          "ciUpper": 0
+        },
+        "effectSize": {
+          "meanDiff": 0,
+          "variance": 0,
+          "standardError": 0,
+          "cohensD": 0,
+          "magnitude": "negligible"
+        },
+        "majorityVoteRate": 1
+      },
+      "runtimeDiffMs": {
+        "stats": {
+          "n": 142,
+          "mean": 524.0422535211268,
+          "stddev": 477.1126496661783,
+          "coefficientOfVariation": 0.9104469085467427,
+          "ci95Half": 78.47527211584959,
+          "ciLower": 445.5669814052772,
+          "ciUpper": 602.5175256369764
+        },
+        "effectSize": {
+          "meanDiff": 524.0422535211268,
+          "variance": 227636.4804714814,
+          "standardError": 40.03840414073959,
+          "cohensD": 1.0983616843690558,
+          "magnitude": "large"
+        },
+        "majorityVoteRate": 0.8169014084507042
+      },
+      "baselineP95RuntimeMs": 1214
+    },
+    "armCVsArmB": {
+      "label": "2000ms vs 1500ms",
+      "n": 142,
+      "improvedCountDiff": {
+        "stats": {
+          "n": 142,
+          "mean": 0.02112676056338028,
+          "stddev": 0.14431593883136787,
+          "coefficientOfVariation": 6.830954438018079,
+          "ci95Half": 0.023737020132184358,
+          "ciLower": -0.002610259568804077,
+          "ciUpper": 0.04486378069556464
+        },
+        "effectSize": {
+          "meanDiff": 0.02112676056338028,
+          "variance": 0.02082709020077911,
+          "standardError": 0.01211072455723692,
+          "cohensD": 0.14639242715987696,
+          "magnitude": "negligible"
+        },
+        "majorityVoteRate": 1
+      },
+      "trueRegressionDiff": {
+        "stats": {
+          "n": 142,
+          "mean": 0,
+          "stddev": 0,
+          "coefficientOfVariation": 0,
+          "ci95Half": 0,
+          "ciLower": 0,
+          "ciUpper": 0
+        },
+        "effectSize": {
+          "meanDiff": 0,
+          "variance": 0,
+          "standardError": 0,
+          "cohensD": 0,
+          "magnitude": "negligible"
+        },
+        "majorityVoteRate": 1
+      },
+      "runtimeDiffMs": {
+        "stats": {
+          "n": 142,
+          "mean": 220.56338028169014,
+          "stddev": 293.7835471060195,
+          "coefficientOfVariation": 1.331968827875312,
+          "ci95Half": 48.32138451670716,
+          "ciLower": 172.241995764983,
+          "ciUpper": 268.8847647983973
+        },
+        "effectSize": {
+          "meanDiff": 220.56338028169014,
+          "variance": 86308.77255019479,
+          "standardError": 24.65376761056488,
+          "cohensD": 0.7507683206033796,
+          "magnitude": "medium"
+        },
+        "majorityVoteRate": 0.7112676056338029
+      },
+      "baselineP95RuntimeMs": 1694
+    }
+  },
+  "framework": {
+    "gateResults": [
+      {
+        "gate": "A",
+        "name": "Regression 증가 없음",
+        "status": "PASS",
+        "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+      },
+      {
+        "gate": "B",
+        "name": "Runtime 허용 범위",
+        "status": "OPEN_QUESTION",
+        "evidence": "Runtime diff mean=524.0ms, 95% CI=[445.6, 602.5] (허용 기준: Baseline p95=1214ms 대비 +15%=182ms 이내)."
+      },
+      {
+        "gate": "C",
+        "name": "Capability 감소 없음",
+        "status": "PASS",
+        "evidence": "성공 케이스 diff mean=0.04, 95% CI=[0.00, 0.08], Cohen's d_z=0.18(negligible). 유의미한 개선(YES) [strict mode: PASS]."
+      },
+      {
+        "gate": "E",
+        "name": "Primitive Interaction 이상 없음",
+        "status": "PASS",
+        "evidence": "Duplicate=0건, Starved Type=0개."
+      }
+    ],
+    "pipelineResult": {
+      "changeCategory": "B",
+      "categorySpec": {
+        "category": "B",
+        "name": "Performance Optimization",
+        "description": "Runtime/Budget 조정 -- 알고리즘 결과 자체는 불변.",
+        "requiredGates": [
+          "A",
+          "B",
+          "C"
+        ],
+        "minN": 30,
+        "minNByStage": {
+          "prototype": 10,
+          "production": 30
+        },
+        "populationScope": "전체 Hole Dataset(142케이스)",
+        "requiresFullContractAudit": false
+      },
+      "nUsed": 142,
+      "meetsMinN": true,
+      "gateResults": [
+        {
+          "gate": "A",
+          "name": "Regression 증가 없음",
+          "status": "PASS",
+          "evidence": "True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000]."
+        },
+        {
+          "gate": "B",
+          "name": "Runtime 허용 범위",
+          "status": "OPEN_QUESTION",
+          "evidence": "Runtime diff mean=524.0ms, 95% CI=[445.6, 602.5] (허용 기준: Baseline p95=1214ms 대비 +15%=182ms 이내)."
+        },
+        {
+          "gate": "C",
+          "name": "Capability 감소 없음",
+          "status": "PASS",
+          "evidence": "성공 케이스 diff mean=0.04, 95% CI=[0.00, 0.08], Cohen's d_z=0.18(negligible). 유의미한 개선(YES) [strict mode: PASS]."
+        },
+        {
+          "gate": "E",
+          "name": "Primitive Interaction 이상 없음",
+          "status": "PASS",
+          "evidence": "Duplicate=0건, Starved Type=0개."
+        }
+      ],
+      "decision": "B",
+      "decisionRationale": "필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장."
+    }
+  },
+  "rootCause": {
+    "decision": "B_PARTIAL_NOT_SUFFICIENT",
+    "rationale": "증거가 혼재되어 있다(significantRecovery=true, consistency=66.7%) -- 확정적 결론을 내리기엔 이르므로 Refinement Sprint v3로 추가 검증한다.",
+    "matrix": [
+      {
+        "factor": "Outer Deadline 확장 효과 (Arm C vs Arm A)",
+        "evidence": "improvedCountDiff mean=0.0423, 95% CI=[0.0037, 0.0808], Cohen's dz=0.180(negligible)",
+        "contribution": "HIGH"
+      },
+      {
+        "factor": "Comparative Prototype 일치도",
+        "evidence": "matchRate=66.7% (successMatch=1, successMismatch=3)",
+        "contribution": "MEDIUM"
+      },
+      {
+        "factor": "Validation Framework(Category B) Decision",
+        "evidence": "B: 필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장.",
+        "contribution": "LOW"
+      }
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+=== Multi-Component Merge Production Integration Refinement Sprint v2 -- Report ===
+
+Hole Dataset n=142 (real production functions -- outer deadline varied 1000/1500/2000ms, everything else fixed at real production defaults)
+
+STEP1. Outer Deadline Audit (independent reproduction at outer=1000ms)
+  gateMatchedCount=9, avgRemainingTimeAtMcmStartMs=519.7, avgActualBudgetAvailableMs=519.7
+  fullBudgetCount(전체 2000ms 확보)=0/9 (0.0%), deadlineAbortCount=51
+
+STEP2/3. Counterfactual Deadline Replay + Capability Recovery
+  Arm A(1000ms, 현행): improvedCount=15, regressionCount=0, mcmChosenCount=1
+  Arm B(1500ms, 확장): improvedCount=18, newCapabilityVsA=4, regressionCount=0, mcmChosenCount=2
+  Arm C(2000ms, Counterfactual): improvedCount=21, newCapabilityVsA=7, regressionCount=0, mcmChosenCount=2
+
+STEP4. Comparative Prototype Consistency (Arm C vs Comparative Prototype Sprint v1's own isolated 2000ms test)
+  n=9, matchRate=66.7%
+  successMatch=1, successMismatch(isolated succeeded, production Arm C did not)=3
+  failureMatch=5, failureMismatch(isolated failed, production Arm C succeeded)=0
+
+STEP5. Statistical Validation + Validation Framework (Category B, Performance Optimization)
+  Arm B vs Arm A: improvedCountDiff mean=0.0211, 95% CI=[-0.0096, 0.0519], Cohen's dz=0.113(negligible)
+  Arm C vs Arm A: improvedCountDiff mean=0.0423, 95% CI=[0.0037, 0.0808], Cohen's dz=0.180(negligible)
+  Arm C vs Arm B: improvedCountDiff mean=0.0211, 95% CI=[-0.0026, 0.0449]
+  Gate A(Regression 증가 없음)=PASS -- True Regression diff mean=0.000, CI=[0.000, 0.000]; False Regression diff mean=0.000, CI=[0.000, 0.000].
+  Gate B(Runtime 허용 범위)=OPEN_QUESTION -- Runtime diff mean=524.0ms, 95% CI=[445.6, 602.5] (허용 기준: Baseline p95=1214ms 대비 +15%=182ms 이내).
+  Gate C(Capability 감소 없음)=PASS -- 성공 케이스 diff mean=0.04, 95% CI=[0.00, 0.08], Cohen's d_z=0.18(negligible). 유의미한 개선(YES) [strict mode: PASS].
+  Gate E(Primitive Interaction 이상 없음)=PASS -- Duplicate=0건, Starved Type=0개.
+  pipelineDecision=B: 필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장.
+
+STEP6. Root Cause Decision + Matrix
+  [HIGH] Outer Deadline 확장 효과 (Arm C vs Arm A): improvedCountDiff mean=0.0423, 95% CI=[0.0037, 0.0808], Cohen's dz=0.180(negligible)
+  [MEDIUM] Comparative Prototype 일치도: matchRate=66.7% (successMatch=1, successMismatch=3)
+  [LOW] Validation Framework(Category B) Decision: B: 필수 Gate는 FAIL 없음이나 일부 OPEN_QUESTION -- 조건부 승인, 후속 확인 권장.
+  decision=B_PARTIAL_NOT_SUFFICIENT
+  rationale: 증거가 혼재되어 있다(significantRecovery=true, consistency=66.7%) -- 확정적 결론을 내리기엔 이르므로 Refinement Sprint v3로 추가 검증한다.
