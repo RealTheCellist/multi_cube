@@ -1,0 +1,1438 @@
+{
+  "label": "baseline",
+  "contractAudit": {
+    "matchedLine": "    if ((best.type === \"REPAIR\" || best.type === \"CCR\" || best.type === \"MIXED_COMMUTATOR\" || best.type === \"PARITY_GATED_CYCLE\") && shortCircuitRepair && afterDisrupt < originalBaseline) {",
+    "allTypesPresent": false,
+    "presentTypes": [
+      "REPAIR",
+      "CCR",
+      "MIXED_COMMUTATOR",
+      "PARITY_GATED_CYCLE"
+    ],
+    "missingTypes": [
+      "MULTI_COMPONENT_MERGE"
+    ]
+  },
+  "population": [
+    {
+      "label": "worstCase:45959141",
+      "wrongWingBefore": 9,
+      "wrongWingAfter": 9,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1143
+    },
+    {
+      "label": "worstCase:46086463",
+      "wrongWingBefore": 9,
+      "wrongWingAfter": 9,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1076
+    },
+    {
+      "label": "worstCase:64369533",
+      "wrongWingBefore": 10,
+      "wrongWingAfter": 10,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1026
+    },
+    {
+      "label": "worstCase:68977335",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "SETUP",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 682
+    },
+    {
+      "label": "worstCase:84976575",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1220
+    },
+    {
+      "label": "worstCase:f17d7eb9",
+      "wrongWingBefore": 9,
+      "wrongWingAfter": 9,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1042
+    },
+    {
+      "label": "worstCase:70a5020b",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "SETUP",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 729
+    },
+    {
+      "label": "worstCase:56a8b82d",
+      "wrongWingBefore": 11,
+      "wrongWingAfter": 11,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 839
+    },
+    {
+      "label": "worstCase:7541612b",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1017
+    },
+    {
+      "label": "worstCase:b714481",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1294
+    },
+    {
+      "label": "worstCase:beb967ad",
+      "wrongWingBefore": 11,
+      "wrongWingAfter": 11,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1117
+    },
+    {
+      "label": "worstCase:1e928fb1",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 4,
+      "chosenType": "CCR",
+      "mcmShortCircuited": false,
+      "improved": true,
+      "trueRegression": false,
+      "wallMs": 1143
+    },
+    {
+      "label": "worstCase:4549b041",
+      "wrongWingBefore": 4,
+      "wrongWingAfter": 4,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1081
+    },
+    {
+      "label": "worstCase:1513fcff",
+      "wrongWingBefore": 9,
+      "wrongWingAfter": 9,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1093
+    },
+    {
+      "label": "worstCase:d37ca819",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 982
+    },
+    {
+      "label": "worstCase:ae3d218b",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 652
+    },
+    {
+      "label": "worstCase:120fc3af",
+      "wrongWingBefore": 5,
+      "wrongWingAfter": 5,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1011
+    },
+    {
+      "label": "worstCase:dd4d94fd",
+      "wrongWingBefore": 12,
+      "wrongWingAfter": 12,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1003
+    },
+    {
+      "label": "worstCase:36336c1",
+      "wrongWingBefore": 4,
+      "wrongWingAfter": 4,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1005
+    },
+    {
+      "label": "worstCase:ad12c377",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 8,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 940
+    },
+    {
+      "label": "worstCase:e7a801fb",
+      "wrongWingBefore": 10,
+      "wrongWingAfter": 8,
+      "chosenType": "CCR",
+      "mcmShortCircuited": false,
+      "improved": true,
+      "trueRegression": false,
+      "wallMs": 1059
+    },
+    {
+      "label": "worstCase:1af658ab",
+      "wrongWingBefore": 4,
+      "wrongWingAfter": 4,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1001
+    },
+    {
+      "label": "worstCase:4e27e5a1",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 8,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 923
+    },
+    {
+      "label": "worstCase:93b485f7",
+      "wrongWingBefore": 9,
+      "wrongWingAfter": 9,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 830
+    },
+    {
+      "label": "worstCase:5e5b20b",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1016
+    },
+    {
+      "label": "worstCase:e5101f85",
+      "wrongWingBefore": 9,
+      "wrongWingAfter": 9,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1032
+    },
+    {
+      "label": "worstCase:4749cd9d",
+      "wrongWingBefore": 9,
+      "wrongWingAfter": 9,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1008
+    },
+    {
+      "label": "worstCase:d27df773",
+      "wrongWingBefore": 9,
+      "wrongWingAfter": 9,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1012
+    },
+    {
+      "label": "worstCase:c039e611",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1005
+    },
+    {
+      "label": "worstCase:b2c9ceb9",
+      "wrongWingBefore": 12,
+      "wrongWingAfter": 12,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1236
+    },
+    {
+      "label": "worstCase:589b0a25",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1235
+    },
+    {
+      "label": "worstCase:cee673eb",
+      "wrongWingBefore": 9,
+      "wrongWingAfter": 9,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1067
+    },
+    {
+      "label": "worstCase:e9009e73",
+      "wrongWingBefore": 13,
+      "wrongWingAfter": 13,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1019
+    },
+    {
+      "label": "worstCase:e8be823",
+      "wrongWingBefore": 11,
+      "wrongWingAfter": 11,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1265
+    },
+    {
+      "label": "worstCase:14f5293f",
+      "wrongWingBefore": 15,
+      "wrongWingAfter": 14,
+      "chosenType": "MIXED_COMMUTATOR",
+      "mcmShortCircuited": false,
+      "improved": true,
+      "trueRegression": false,
+      "wallMs": 452
+    },
+    {
+      "label": "worstCase:f776edb1",
+      "wrongWingBefore": 5,
+      "wrongWingAfter": 5,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1004
+    },
+    {
+      "label": "worstCase:de8abca9",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1043
+    },
+    {
+      "label": "worstCase:2db21feb",
+      "wrongWingBefore": 9,
+      "wrongWingAfter": 9,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 661
+    },
+    {
+      "label": "worstCase:849509c9",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 8,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1302
+    },
+    {
+      "label": "worstCase:c0277d5d",
+      "wrongWingBefore": 12,
+      "wrongWingAfter": 12,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 745
+    },
+    {
+      "label": "worstCase:f5f1b8fd",
+      "wrongWingBefore": 10,
+      "wrongWingAfter": 10,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 985
+    },
+    {
+      "label": "worstCase:a005d41f",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1005
+    },
+    {
+      "label": "worstCase:224f6f8b",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 8,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1109
+    },
+    {
+      "label": "worstCase:252f8891",
+      "wrongWingBefore": 11,
+      "wrongWingAfter": 10,
+      "chosenType": "MIXED_COMMUTATOR",
+      "mcmShortCircuited": false,
+      "improved": true,
+      "trueRegression": false,
+      "wallMs": 612
+    },
+    {
+      "label": "worstCase:5f7ee009",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 8,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 780
+    },
+    {
+      "label": "worstCase:d3283799",
+      "wrongWingBefore": 10,
+      "wrongWingAfter": 10,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1065
+    },
+    {
+      "label": "worstCase:710de4d1",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1226
+    },
+    {
+      "label": "worstCase:5d189c1",
+      "wrongWingBefore": 9,
+      "wrongWingAfter": 9,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1016
+    },
+    {
+      "label": "worstCase:669f43ff",
+      "wrongWingBefore": 12,
+      "wrongWingAfter": 12,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1014
+    },
+    {
+      "label": "worstCase:42c89b9",
+      "wrongWingBefore": 12,
+      "wrongWingAfter": 12,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1024
+    },
+    {
+      "label": "worstCase:3cece8ff",
+      "wrongWingBefore": 9,
+      "wrongWingAfter": 9,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1361
+    },
+    {
+      "label": "worstCase:44b9b619",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 8,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1098
+    },
+    {
+      "label": "snapshot335:12022029",
+      "wrongWingBefore": 10,
+      "wrongWingAfter": 10,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1296
+    },
+    {
+      "label": "snapshot335:27053491",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 781
+    },
+    {
+      "label": "snapshot335:45959141",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1011
+    },
+    {
+      "label": "snapshot335:46086463",
+      "wrongWingBefore": 9,
+      "wrongWingAfter": 9,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1084
+    },
+    {
+      "label": "snapshot335:64369533",
+      "wrongWingBefore": 10,
+      "wrongWingAfter": 10,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1073
+    },
+    {
+      "label": "snapshot335:68977335",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 671
+    },
+    {
+      "label": "snapshot335:84976575",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 8,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1095
+    },
+    {
+      "label": "snapshot335:f17d7eb9",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1158
+    },
+    {
+      "label": "snapshot335:a061555d",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1148
+    },
+    {
+      "label": "snapshot335:dda1453f",
+      "wrongWingBefore": 5,
+      "wrongWingAfter": 5,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1045
+    },
+    {
+      "label": "snapshot335:e7a801fb",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 795
+    },
+    {
+      "label": "snapshot335:1af658ab",
+      "wrongWingBefore": 4,
+      "wrongWingAfter": 4,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1125
+    },
+    {
+      "label": "snapshot335:70a5020b",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 767
+    },
+    {
+      "label": "snapshot335:56a8b82d",
+      "wrongWingBefore": 3,
+      "wrongWingAfter": 3,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1194
+    },
+    {
+      "label": "snapshot335:60b5c3b1",
+      "wrongWingBefore": 9,
+      "wrongWingAfter": 9,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1254
+    },
+    {
+      "label": "snapshot335:7541612b",
+      "wrongWingBefore": 11,
+      "wrongWingAfter": 11,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1090
+    },
+    {
+      "label": "snapshot335:b714481",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1263
+    },
+    {
+      "label": "snapshot335:beb967ad",
+      "wrongWingBefore": 11,
+      "wrongWingAfter": 11,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1052
+    },
+    {
+      "label": "snapshot335:1e928fb1",
+      "wrongWingBefore": 10,
+      "wrongWingAfter": 10,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 864
+    },
+    {
+      "label": "snapshot335:4549b041",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1314
+    },
+    {
+      "label": "snapshot335:1513fcff",
+      "wrongWingBefore": 4,
+      "wrongWingAfter": 4,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1237
+    },
+    {
+      "label": "snapshot335:4e27e5a1",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 8,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 682
+    },
+    {
+      "label": "snapshot335:d37ca819",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 802
+    },
+    {
+      "label": "snapshot335:93b485f7",
+      "wrongWingBefore": 9,
+      "wrongWingAfter": 9,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 803
+    },
+    {
+      "label": "snapshot335:5e5b20b",
+      "wrongWingBefore": 9,
+      "wrongWingAfter": 9,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 962
+    },
+    {
+      "label": "snapshot335:ae3d218b",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 710
+    },
+    {
+      "label": "snapshot335:120fc3af",
+      "wrongWingBefore": 5,
+      "wrongWingAfter": 5,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1268
+    },
+    {
+      "label": "snapshot335:dd4d94fd",
+      "wrongWingBefore": 12,
+      "wrongWingAfter": 12,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1008
+    },
+    {
+      "label": "snapshot335:36336c1",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1058
+    },
+    {
+      "label": "snapshot335:ad12c377",
+      "wrongWingBefore": 9,
+      "wrongWingAfter": 9,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1102
+    },
+    {
+      "label": "scrambleDepth10:0",
+      "wrongWingBefore": 5,
+      "wrongWingAfter": 5,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1282
+    },
+    {
+      "label": "scrambleDepth10:1",
+      "wrongWingBefore": 10,
+      "wrongWingAfter": 10,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1095
+    },
+    {
+      "label": "scrambleDepth10:2",
+      "wrongWingBefore": 3,
+      "wrongWingAfter": 3,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1280
+    },
+    {
+      "label": "scrambleDepth10:3",
+      "wrongWingBefore": 4,
+      "wrongWingAfter": 4,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1240
+    },
+    {
+      "label": "scrambleDepth10:4",
+      "wrongWingBefore": 5,
+      "wrongWingAfter": 5,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1080
+    },
+    {
+      "label": "scrambleDepth10:5",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1068
+    },
+    {
+      "label": "scrambleDepth10:6",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 8,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 679
+    },
+    {
+      "label": "scrambleDepth10:7",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 8,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 922
+    },
+    {
+      "label": "scrambleDepth10:8",
+      "wrongWingBefore": 10,
+      "wrongWingAfter": 10,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1294
+    },
+    {
+      "label": "scrambleDepth10:9",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1017
+    },
+    {
+      "label": "scrambleDepth20:0",
+      "wrongWingBefore": 5,
+      "wrongWingAfter": 5,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1346
+    },
+    {
+      "label": "scrambleDepth20:1",
+      "wrongWingBefore": 9,
+      "wrongWingAfter": 9,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1133
+    },
+    {
+      "label": "scrambleDepth20:2",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1048
+    },
+    {
+      "label": "scrambleDepth20:3",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 709
+    },
+    {
+      "label": "scrambleDepth20:4",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "SETUP",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1085
+    },
+    {
+      "label": "scrambleDepth20:5",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1029
+    },
+    {
+      "label": "scrambleDepth20:6",
+      "wrongWingBefore": 5,
+      "wrongWingAfter": 5,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1114
+    },
+    {
+      "label": "scrambleDepth20:7",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 8,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1006
+    },
+    {
+      "label": "scrambleDepth20:8",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1091
+    },
+    {
+      "label": "scrambleDepth20:9",
+      "wrongWingBefore": 12,
+      "wrongWingAfter": 11,
+      "chosenType": "MIXED_COMMUTATOR",
+      "mcmShortCircuited": false,
+      "improved": true,
+      "trueRegression": false,
+      "wallMs": 616
+    },
+    {
+      "label": "scrambleDepth30:0",
+      "wrongWingBefore": 12,
+      "wrongWingAfter": 10,
+      "chosenType": "MIXED_COMMUTATOR",
+      "mcmShortCircuited": false,
+      "improved": true,
+      "trueRegression": false,
+      "wallMs": 919
+    },
+    {
+      "label": "scrambleDepth30:1",
+      "wrongWingBefore": 11,
+      "wrongWingAfter": 11,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1062
+    },
+    {
+      "label": "scrambleDepth30:2",
+      "wrongWingBefore": 11,
+      "wrongWingAfter": 11,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1111
+    },
+    {
+      "label": "scrambleDepth30:3",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1010
+    },
+    {
+      "label": "scrambleDepth30:4",
+      "wrongWingBefore": 5,
+      "wrongWingAfter": 5,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1104
+    },
+    {
+      "label": "scrambleDepth30:5",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 8,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1198
+    },
+    {
+      "label": "scrambleDepth30:6",
+      "wrongWingBefore": 11,
+      "wrongWingAfter": 11,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 812
+    },
+    {
+      "label": "scrambleDepth30:7",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1023
+    },
+    {
+      "label": "scrambleDepth30:8",
+      "wrongWingBefore": 10,
+      "wrongWingAfter": 9,
+      "chosenType": "MIXED_COMMUTATOR",
+      "mcmShortCircuited": false,
+      "improved": true,
+      "trueRegression": false,
+      "wallMs": 559
+    },
+    {
+      "label": "scrambleDepth30:9",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 8,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1057
+    },
+    {
+      "label": "scrambleDepth40:0",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "SETUP",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1001
+    },
+    {
+      "label": "scrambleDepth40:1",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1184
+    },
+    {
+      "label": "scrambleDepth40:2",
+      "wrongWingBefore": 10,
+      "wrongWingAfter": 10,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1192
+    },
+    {
+      "label": "scrambleDepth40:3",
+      "wrongWingBefore": 9,
+      "wrongWingAfter": 9,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1012
+    },
+    {
+      "label": "scrambleDepth40:4",
+      "wrongWingBefore": 9,
+      "wrongWingAfter": 9,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 696
+    },
+    {
+      "label": "scrambleDepth40:5",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 745
+    },
+    {
+      "label": "scrambleDepth40:6",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1083
+    },
+    {
+      "label": "scrambleDepth40:7",
+      "wrongWingBefore": 10,
+      "wrongWingAfter": 10,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1010
+    },
+    {
+      "label": "scrambleDepth40:8",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 851
+    },
+    {
+      "label": "scrambleDepth40:9",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1005
+    },
+    {
+      "label": "scrambleDepth50:0",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 8,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 808
+    },
+    {
+      "label": "scrambleDepth50:1",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1026
+    },
+    {
+      "label": "scrambleDepth50:2",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 7,
+      "chosenType": "CCR",
+      "mcmShortCircuited": false,
+      "improved": true,
+      "trueRegression": false,
+      "wallMs": 1517
+    },
+    {
+      "label": "scrambleDepth50:3",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 8,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 822
+    },
+    {
+      "label": "scrambleDepth50:4",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1099
+    },
+    {
+      "label": "scrambleDepth50:5",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 8,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1183
+    },
+    {
+      "label": "scrambleDepth50:6",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 8,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1056
+    },
+    {
+      "label": "scrambleDepth50:7",
+      "wrongWingBefore": 6,
+      "wrongWingAfter": 6,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1072
+    },
+    {
+      "label": "scrambleDepth50:8",
+      "wrongWingBefore": 12,
+      "wrongWingAfter": 11,
+      "chosenType": "CCR",
+      "mcmShortCircuited": false,
+      "improved": true,
+      "trueRegression": false,
+      "wallMs": 1034
+    },
+    {
+      "label": "scrambleDepth50:9",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 722
+    },
+    {
+      "label": "scrambleDepth100:0",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 8,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1012
+    },
+    {
+      "label": "scrambleDepth100:1",
+      "wrongWingBefore": 10,
+      "wrongWingAfter": 10,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1010
+    },
+    {
+      "label": "scrambleDepth100:2",
+      "wrongWingBefore": 5,
+      "wrongWingAfter": 5,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1001
+    },
+    {
+      "label": "scrambleDepth100:3",
+      "wrongWingBefore": 10,
+      "wrongWingAfter": 10,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1047
+    },
+    {
+      "label": "scrambleDepth100:4",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 8,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1005
+    },
+    {
+      "label": "scrambleDepth100:5",
+      "wrongWingBefore": 10,
+      "wrongWingAfter": 10,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1151
+    },
+    {
+      "label": "scrambleDepth100:6",
+      "wrongWingBefore": 8,
+      "wrongWingAfter": 8,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1020
+    },
+    {
+      "label": "scrambleDepth100:7",
+      "wrongWingBefore": 7,
+      "wrongWingAfter": 7,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 753
+    },
+    {
+      "label": "scrambleDepth100:8",
+      "wrongWingBefore": 5,
+      "wrongWingAfter": 5,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1215
+    },
+    {
+      "label": "scrambleDepth100:9",
+      "wrongWingBefore": 12,
+      "wrongWingAfter": 12,
+      "chosenType": "none",
+      "mcmShortCircuited": false,
+      "improved": false,
+      "trueRegression": false,
+      "wallMs": 1157
+    }
+  ]
+}
