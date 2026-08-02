@@ -195,7 +195,7 @@ function App() {
               <button
                 key={size}
                 type="button"
-                className={gridSize === size ? "primary" : ""}
+                className={`size-${size}${gridSize === size ? " selected" : ""}`}
                 onClick={() => handlePickSize(size)}
               >
                 {size}×{size}
