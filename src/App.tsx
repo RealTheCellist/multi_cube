@@ -105,14 +105,14 @@ function App() {
     setHasScrambled(false);
   }, []);
 
-  const handlePickSize = useCallback((size: number) => {
-    setGridSize(size);
-  }, []);
-
-  const handleEnterGame = useCallback(() => {
-    resetGameState();
-    setScreen("game");
-  }, [resetGameState]);
+  const handlePickSize = useCallback(
+    (size: number) => {
+      setGridSize(size);
+      resetGameState();
+      setScreen("game");
+    },
+    [resetGameState],
+  );
 
   const handleBackToHome = useCallback(() => {
     setScreen("home");
@@ -202,10 +202,6 @@ function App() {
               </button>
             ))}
           </div>
-
-          <button type="button" className="start-button" onClick={handleEnterGame}>
-            시작하기
-          </button>
         </div>
       </div>
     );
