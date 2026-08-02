@@ -182,7 +182,6 @@ function App() {
         <div className="above-cube">
           <header className="app-header">
             <h1>Poly Puzzle</h1>
-            <p className="subtitle">큐브 크기를 선택하세요</p>
           </header>
         </div>
 
