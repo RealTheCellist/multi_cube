@@ -1,7 +1,12 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import CubeView, { type CubeViewHandle } from "./CubeView";
+import { getLeaderboard, submitScore, type LeaderboardEntry } from "./leaderboard";
 import "./App.css";
+
+function formatEntryDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("ko-KR", { year: "2-digit", month: "numeric", day: "numeric" });
+}
 
 // Shown after a solver-button click: moveLabel is the letter notation for
 // puzzles that have one (2x2x2/3x3x3), or null for puzzles that only
@@ -27,25 +32,40 @@ function App() {
   const [hint, setHint] = useState<HintDisplay | null>(null);
   const [solveError, setSolveError] = useState(false);
   const [fourByFourUnsolved, setFourByFourUnsolved] = useState(false);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [lastRank, setLastRank] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (screen === "game") {
+      setLeaderboard(getLeaderboard(gridSize));
+    }
+  }, [screen, gridSize]);
 
   const handleMoveCountChange = useCallback((count: number) => {
     setMoveCount(count);
   }, []);
 
-  const handleSolvedChange = useCallback((solved: boolean) => {
-    setHasScrambled((currentlyScrambled) => {
-      if (solved && currentlyScrambled) {
-        setJustSolved(true);
-        confetti({
-          particleCount: 150,
-          spread: 80,
-          origin: { y: 0.6 },
-        });
-        return false;
-      }
-      return currentlyScrambled;
-    });
-  }, []);
+  const handleSolvedChange = useCallback(
+    (solved: boolean) => {
+      setHasScrambled((currentlyScrambled) => {
+        if (solved && currentlyScrambled) {
+          setJustSolved(true);
+          confetti({
+            particleCount: 150,
+            spread: 80,
+            origin: { y: 0.6 },
+          });
+          const { entries, rank } = submitScore(gridSize, moveCount);
+          setLeaderboard(entries);
+          setLastRank(rank);
+          return false;
+        }
+        return currentlyScrambled;
+      });
+    },
+    [gridSize, moveCount],
+  );
 
   const handleScramble = useCallback(async () => {
     setMode("look");
@@ -54,6 +74,7 @@ function App() {
     setHint(null);
     setSolveError(false);
     setFourByFourUnsolved(false);
+    setLastRank(null);
     await cubeRef.current?.scramble();
     setHasScrambled(true);
   }, []);
@@ -66,6 +87,7 @@ function App() {
     setHint(null);
     setSolveError(false);
     setFourByFourUnsolved(false);
+    setLastRank(null);
     setHasScrambled(false);
   }, []);
 
@@ -80,6 +102,8 @@ function App() {
     setHint(null);
     setSolveError(false);
     setFourByFourUnsolved(false);
+    setLastRank(null);
+    setShowLeaderboard(false);
     setHasScrambled(false);
   }, []);
 
@@ -188,6 +212,9 @@ function App() {
           <button type="button" className="home-link" onClick={handleBackToHome}>
             ← 크기 변경
           </button>
+          <button type="button" className="home-link leaderboard-link" onClick={() => setShowLeaderboard(true)}>
+            리더보드
+          </button>
         </header>
 
         <div className="stat-row">
@@ -224,7 +251,12 @@ function App() {
           onFirstMove={() => {}}
           onSolvedChange={handleSolvedChange}
         />
-        {justSolved && <div className="solved-banner">Solved! 🎉</div>}
+        {justSolved && (
+          <div className="solved-banner">
+            Solved! 🎉
+            {lastRank && <span className="solved-rank">{lastRank}위 기록!</span>}
+          </div>
+        )}
       </div>
 
       <div className="bottom-controls">
@@ -269,6 +301,34 @@ function App() {
           </button>
         </div>
       </div>
+
+      {showLeaderboard && (
+        <div className="leaderboard-overlay" onClick={() => setShowLeaderboard(false)}>
+          <div className="leaderboard-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="leaderboard-panel-header">
+              <h2>
+                {gridSize}×{gridSize} 리더보드
+              </h2>
+              <button type="button" className="leaderboard-close" onClick={() => setShowLeaderboard(false)}>
+                ✕
+              </button>
+            </div>
+            {leaderboard.length === 0 ? (
+              <p className="leaderboard-empty">아직 기록이 없어요 — 스크램블 후 풀어보세요!</p>
+            ) : (
+              <ol className="leaderboard-list">
+                {leaderboard.map((entry, index) => (
+                  <li key={`${entry.date}-${index}`} className={lastRank === index + 1 ? "leaderboard-new" : ""}>
+                    <span className="leaderboard-rank">{index + 1}</span>
+                    <span className="leaderboard-moves">{entry.moves}수</span>
+                    <span className="leaderboard-date">{formatEntryDate(entry.date)}</span>
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
