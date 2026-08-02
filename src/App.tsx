@@ -147,6 +147,16 @@ function App() {
           <p className="subtitle">큐브 크기를 선택하세요</p>
         </header>
 
+        <div className="home-cube-stage">
+          <CubeView
+            orbitMode
+            gridSize={3}
+            onMoveCountChange={() => {}}
+            onFirstMove={() => {}}
+            onSolvedChange={() => {}}
+          />
+        </div>
+
         <div className="size-select">
           {[2, 3, 4, 5].map((size) => (
             <button
