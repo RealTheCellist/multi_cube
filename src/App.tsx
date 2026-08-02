@@ -19,6 +19,13 @@ interface HintDisplay {
   moveLabel: string | null;
 }
 
+const SIZE_COLORS: Record<number, string> = {
+  2: "btn-blue",
+  3: "btn-green",
+  4: "btn-orange",
+  5: "btn-rose",
+};
+
 function App() {
   const cubeRef = useRef<CubeViewHandle>(null);
 
@@ -195,7 +202,7 @@ function App() {
               <button
                 key={size}
                 type="button"
-                className={`size-${size}${gridSize === size ? " selected" : ""}`}
+                className={`btn3d ${SIZE_COLORS[size]}${gridSize === size ? " selected" : ""}`}
                 onClick={() => handlePickSize(size)}
               >
                 {size}×{size}
@@ -299,7 +306,7 @@ function App() {
         <div className="control-row">
           <button
             type="button"
-            className={mode === "look" ? "primary" : ""}
+            className={`btn3d btn-blue${mode === "look" ? " selected" : ""}`}
             onClick={handleLookAround}
             disabled={isSolving}
           >
@@ -307,7 +314,7 @@ function App() {
           </button>
           <button
             type="button"
-            className={mode === "play" ? "primary" : ""}
+            className={`btn3d btn-green${mode === "play" ? " selected" : ""}`}
             onClick={handleStart}
             disabled={isSolving}
           >
@@ -315,11 +322,12 @@ function App() {
           </button>
         </div>
         <div className="control-row">
-          <button type="button" onClick={handleReset} disabled={isSolving}>
+          <button type="button" className="btn3d btn-orange" onClick={handleReset} disabled={isSolving}>
             리셋
           </button>
           <button
             type="button"
+            className="btn3d btn-accent"
             onClick={handleSolve}
             disabled={isSolving}
             title={
@@ -332,7 +340,7 @@ function App() {
           >
             솔브
           </button>
-          <button type="button" onClick={handleScramble} disabled={isSolving}>
+          <button type="button" className="btn3d btn-rose" onClick={handleScramble} disabled={isSolving}>
             스크램블
           </button>
         </div>

@@ -92,9 +92,13 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  width: 100%;
+  width: calc(100% - 32px);
   max-width: 420px;
-  margin-top: auto;
+  position: fixed;
+  left: 50%;
+  top: 75%;
+  transform: translateX(-50%);
+  z-index: 5;
 }
 
 .size-select {
@@ -104,11 +108,10 @@
   width: 100%;
 }
 
-.size-select button {
+/* Shared 3D button system -- used by both the home size-picker and the
+   in-game controls so the two screens look like one design, not two. */
+.btn3d {
   font-family: var(--sans);
-  font-size: 16px;
-  padding: 14px 0;
-  flex: 1;
   border-radius: 10px;
   border: 1px solid transparent;
   color: #fff;
@@ -116,7 +119,7 @@
   transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
-.size-select button.size-2 {
+.btn-blue {
   background: linear-gradient(180deg, #7fb2ff, #3b7cf5);
   border-color: #2f66d9;
   box-shadow:
@@ -126,7 +129,7 @@
     0 3px 8px rgba(44, 92, 199, 0.4);
 }
 
-.size-select button.size-3 {
+.btn-green {
   background: linear-gradient(180deg, #74e0a3, #1fb865);
   border-color: #189950;
   box-shadow:
@@ -136,7 +139,7 @@
     0 3px 8px rgba(20, 140, 78, 0.4);
 }
 
-.size-select button.size-4 {
+.btn-orange {
   background: linear-gradient(180deg, #ffbf70, #f5891e);
   border-color: #dd7311;
   box-shadow:
@@ -146,7 +149,7 @@
     0 3px 8px rgba(204, 106, 15, 0.4);
 }
 
-.size-select button.size-5 {
+.btn-rose {
   background: linear-gradient(180deg, #ff92a8, #f5395f);
   border-color: #d9224a;
   box-shadow:
@@ -156,7 +159,17 @@
     0 3px 8px rgba(199, 33, 74, 0.4);
 }
 
-.size-select button.selected {
+.btn-accent {
+  background: linear-gradient(180deg, var(--btn-primary-top), var(--btn-primary-bottom));
+  border-color: var(--btn-primary-bottom);
+  box-shadow:
+    inset 0 1px 0 var(--btn-primary-highlight),
+    inset 0 -2px 1px rgba(0, 0, 0, 0.18),
+    0 2px 0 var(--btn-primary-shadow),
+    0 3px 8px var(--btn-primary-shadow);
+}
+
+.btn3d.selected {
   transform: translateY(-2px);
   box-shadow:
     0 0 0 3px var(--bg),
@@ -166,19 +179,31 @@
     0 5px 10px rgba(0, 0, 0, 0.3);
 }
 
-.size-select button:active {
+.btn3d:active:not(:disabled) {
   transform: translateY(2px);
   box-shadow:
     inset 0 2px 4px rgba(0, 0, 0, 0.3),
     inset 0 -1px 0 rgba(255, 255, 255, 0.35);
 }
 
-.size-select button.selected:active {
+.btn3d.selected:active:not(:disabled) {
   transform: translateY(0);
   box-shadow:
     0 0 0 3px var(--bg),
     0 0 0 6px var(--text-h),
     inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.btn3d:disabled {
+  cursor: default;
+  opacity: 0.55;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 1px rgba(0, 0, 0, 0.15);
+}
+
+.size-select button {
+  font-size: 16px;
+  padding: 14px 0;
+  flex: 1;
 }
 
 .stat-row {
@@ -267,7 +292,12 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  width: 100%;
+  width: calc(100% - 32px);
+  position: fixed;
+  left: 50%;
+  top: 75%;
+  transform: translateX(-50%);
+  z-index: 5;
 }
 
 .control-row {
@@ -277,50 +307,8 @@
 }
 
 .bottom-controls button {
-  font-family: var(--sans);
   font-size: 16px;
   padding: 10px 22px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: linear-gradient(180deg, var(--btn-top), var(--btn-bottom));
-  color: var(--text-h);
-  cursor: pointer;
-  box-shadow:
-    inset 0 1px 0 var(--btn-highlight),
-    inset 0 -2px 1px var(--btn-inner-shadow),
-    0 2px 0 var(--btn-outer-shadow-soft),
-    0 3px 6px var(--btn-outer-shadow);
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
-}
-
-.bottom-controls button.primary {
-  background: linear-gradient(180deg, var(--btn-primary-top), var(--btn-primary-bottom));
-  border-color: var(--btn-primary-bottom);
-  color: #fff;
-  box-shadow:
-    inset 0 1px 0 var(--btn-primary-highlight),
-    inset 0 -2px 1px rgba(0, 0, 0, 0.18),
-    0 2px 0 var(--btn-primary-shadow),
-    0 3px 8px var(--btn-primary-shadow);
-}
-
-.bottom-controls button:active:not(:disabled) {
-  transform: translateY(2px);
-  box-shadow:
-    inset 0 2px 3px var(--btn-inner-shadow),
-    inset 0 -1px 0 var(--btn-highlight);
-}
-
-.bottom-controls button.primary:active:not(:disabled) {
-  box-shadow:
-    inset 0 2px 4px rgba(0, 0, 0, 0.3),
-    inset 0 -1px 0 var(--btn-primary-highlight);
-}
-
-.bottom-controls button:disabled {
-  cursor: default;
-  opacity: 0.55;
-  box-shadow: inset 0 1px 0 var(--btn-highlight), inset 0 -1px 1px var(--btn-inner-shadow);
 }
 
 .leaderboard-page {
