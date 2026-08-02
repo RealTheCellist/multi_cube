@@ -230,55 +230,10 @@
   transform: translateY(1px);
 }
 
-.leaderboard-overlay {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  background: rgba(0, 0, 0, 0.45);
-  box-sizing: border-box;
-  z-index: 10;
-}
-
-.leaderboard-panel {
+.leaderboard-page {
   width: 100%;
-  max-width: 360px;
-  max-height: 80vh;
-  overflow-y: auto;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 20px;
-  box-sizing: border-box;
-  box-shadow: var(--shadow);
-}
-
-.leaderboard-panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.leaderboard-panel-header h2 {
-  margin: 0;
-  font-size: 20px;
-}
-
-.leaderboard-close {
-  font-family: var(--sans);
-  font-size: 16px;
-  color: var(--text);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px 8px;
-}
-
-.leaderboard-close:hover {
-  color: var(--text-h);
+  max-width: 420px;
+  margin-top: 32px;
 }
 
 .leaderboard-empty {

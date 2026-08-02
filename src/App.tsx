@@ -22,7 +22,7 @@ interface HintDisplay {
 function App() {
   const cubeRef = useRef<CubeViewHandle>(null);
 
-  const [screen, setScreen] = useState<"home" | "game">("home");
+  const [screen, setScreen] = useState<"home" | "game" | "leaderboard">("home");
   const [mode, setMode] = useState<"look" | "play">("look");
   const [gridSize, setGridSize] = useState(3);
   const [moveCount, setMoveCount] = useState(0);
@@ -33,11 +33,10 @@ function App() {
   const [solveError, setSolveError] = useState(false);
   const [fourByFourUnsolved, setFourByFourUnsolved] = useState(false);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
-  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [lastRank, setLastRank] = useState<number | null>(null);
 
   useEffect(() => {
-    if (screen === "game") {
+    if (screen === "game" || screen === "leaderboard") {
       setLeaderboard(getLeaderboard(gridSize));
     }
   }, [screen, gridSize]);
@@ -103,7 +102,6 @@ function App() {
     setSolveError(false);
     setFourByFourUnsolved(false);
     setLastRank(null);
-    setShowLeaderboard(false);
     setHasScrambled(false);
   }, []);
 
@@ -118,6 +116,14 @@ function App() {
 
   const handleBackToHome = useCallback(() => {
     setScreen("home");
+  }, []);
+
+  const handleOpenLeaderboard = useCallback(() => {
+    setScreen("leaderboard");
+  }, []);
+
+  const handleBackToGame = useCallback(() => {
+    setScreen("game");
   }, []);
 
   const handleStart = useCallback(() => {
@@ -205,6 +211,37 @@ function App() {
     );
   }
 
+  if (screen === "leaderboard") {
+    return (
+      <div className="app">
+        <header className="app-header with-back">
+          <button type="button" className="home-link" onClick={handleBackToGame}>
+            ← 뒤로
+          </button>
+          <p className="subtitle">
+            {gridSize}×{gridSize} 리더보드
+          </p>
+        </header>
+
+        <div className="leaderboard-page">
+          {leaderboard.length === 0 ? (
+            <p className="leaderboard-empty">아직 기록이 없어요 — 스크램블 후 풀어보세요!</p>
+          ) : (
+            <ol className="leaderboard-list">
+              {leaderboard.map((entry, index) => (
+                <li key={`${entry.date}-${index}`} className={lastRank === index + 1 ? "leaderboard-new" : ""}>
+                  <span className="leaderboard-rank">{index + 1}</span>
+                  <span className="leaderboard-moves">{entry.moves}수</span>
+                  <span className="leaderboard-date">{formatEntryDate(entry.date)}</span>
+                </li>
+              ))}
+            </ol>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="app">
       <div className="above-cube">
@@ -212,7 +249,7 @@ function App() {
           <button type="button" className="home-link" onClick={handleBackToHome}>
             ← 크기 변경
           </button>
-          <button type="button" className="home-link leaderboard-link" onClick={() => setShowLeaderboard(true)}>
+          <button type="button" className="home-link leaderboard-link" onClick={handleOpenLeaderboard}>
             리더보드
           </button>
         </header>
@@ -301,34 +338,6 @@ function App() {
           </button>
         </div>
       </div>
-
-      {showLeaderboard && (
-        <div className="leaderboard-overlay" onClick={() => setShowLeaderboard(false)}>
-          <div className="leaderboard-panel" onClick={(e) => e.stopPropagation()}>
-            <div className="leaderboard-panel-header">
-              <h2>
-                {gridSize}×{gridSize} 리더보드
-              </h2>
-              <button type="button" className="leaderboard-close" onClick={() => setShowLeaderboard(false)}>
-                ✕
-              </button>
-            </div>
-            {leaderboard.length === 0 ? (
-              <p className="leaderboard-empty">아직 기록이 없어요 — 스크램블 후 풀어보세요!</p>
-            ) : (
-              <ol className="leaderboard-list">
-                {leaderboard.map((entry, index) => (
-                  <li key={`${entry.date}-${index}`} className={lastRank === index + 1 ? "leaderboard-new" : ""}>
-                    <span className="leaderboard-rank">{index + 1}</span>
-                    <span className="leaderboard-moves">{entry.moves}수</span>
-                    <span className="leaderboard-date">{formatEntryDate(entry.date)}</span>
-                  </li>
-                ))}
-              </ol>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
