@@ -83,14 +83,14 @@ function App() {
     setHasScrambled(false);
   }, []);
 
-  const handleSelectSize = useCallback(
-    (size: number) => {
-      setGridSize(size);
-      resetGameState();
-      setScreen("game");
-    },
-    [resetGameState],
-  );
+  const handlePickSize = useCallback((size: number) => {
+    setGridSize(size);
+  }, []);
+
+  const handleEnterGame = useCallback(() => {
+    resetGameState();
+    setScreen("game");
+  }, [resetGameState]);
 
   const handleBackToHome = useCallback(() => {
     setScreen("home");
@@ -157,17 +157,23 @@ function App() {
           />
         </div>
 
-        <div className="size-select">
-          {[2, 3, 4, 5].map((size) => (
-            <button
-              key={size}
-              type="button"
-              className={gridSize === size ? "primary" : ""}
-              onClick={() => handleSelectSize(size)}
-            >
-              {size}×{size}
-            </button>
-          ))}
+        <div className="home-bottom-controls">
+          <div className="size-select">
+            {[2, 3, 4, 5].map((size) => (
+              <button
+                key={size}
+                type="button"
+                className={gridSize === size ? "primary" : ""}
+                onClick={() => handlePickSize(size)}
+              >
+                {size}×{size}
+              </button>
+            ))}
+          </div>
+
+          <button type="button" className="start-button" onClick={handleEnterGame}>
+            시작하기
+          </button>
         </div>
       </div>
     );

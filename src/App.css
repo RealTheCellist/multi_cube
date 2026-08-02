@@ -56,12 +56,21 @@
   margin: 24px 0;
 }
 
+.home-bottom-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 420px;
+  margin-top: auto;
+}
+
 .size-select {
   display: flex;
   justify-content: center;
   gap: 10px;
   width: 100%;
-  max-width: 420px;
 }
 
 .size-select button {
@@ -83,6 +92,22 @@
 }
 
 .size-select button:active {
+  transform: translateY(1px);
+}
+
+.start-button {
+  width: 100%;
+  font-family: var(--sans);
+  font-size: 17px;
+  padding: 14px 0;
+  border-radius: 10px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+.start-button:active {
   transform: translateY(1px);
 }
 
