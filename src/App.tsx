@@ -30,7 +30,7 @@ function App() {
   const cubeRef = useRef<CubeViewHandle>(null);
 
   const [screen, setScreen] = useState<"home" | "game" | "leaderboard">("home");
-  const [mode, setMode] = useState<"look" | "play">("look");
+  const [mode, setMode] = useState<"look" | "play">("play");
   const [gridSize, setGridSize] = useState(3);
   const [moveCount, setMoveCount] = useState(0);
   const [, setHasScrambled] = useState(false);
@@ -74,6 +74,10 @@ function App() {
   );
 
   const handleScramble = useCallback(async () => {
+    // Orbit mode while the scramble animation plays -- keeps the swipe
+    // controller disabled so a finger on the cube can't fight the
+    // programmatic moves. Switches back to play once it settles so the
+    // very next swipe turns a layer instead of just orbiting the camera.
     setMode("look");
     setJustSolved(false);
     setMoveCount(0);
@@ -83,11 +87,12 @@ function App() {
     setLastRank(null);
     await cubeRef.current?.scramble();
     setHasScrambled(true);
+    setMode("play");
   }, []);
 
   const handleReset = useCallback(() => {
     cubeRef.current?.resetToSolved();
-    setMode("look");
+    setMode("play");
     setJustSolved(false);
     setMoveCount(0);
     setHint(null);
@@ -102,7 +107,7 @@ function App() {
   }, []);
 
   const resetGameState = useCallback(() => {
-    setMode("look");
+    setMode("play");
     setJustSolved(false);
     setMoveCount(0);
     setHint(null);
