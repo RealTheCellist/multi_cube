@@ -1,7 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import CubeView, { type CubeViewHandle } from "./CubeView";
-import { formatTime, useTimer } from "./useTimer";
 import "./App.css";
 
 // Shown after a solver-button click: moveLabel is the letter notation for
@@ -17,8 +16,8 @@ interface HintDisplay {
 
 function App() {
   const cubeRef = useRef<CubeViewHandle>(null);
-  const timer = useTimer();
 
+  const [screen, setScreen] = useState<"home" | "game">("home");
   const [mode, setMode] = useState<"look" | "play">("look");
   const [gridSize, setGridSize] = useState(3);
   const [moveCount, setMoveCount] = useState(0);
@@ -33,28 +32,20 @@ function App() {
     setMoveCount(count);
   }, []);
 
-  const handleFirstMove = useCallback(() => {
-    timer.start();
-  }, [timer]);
-
-  const handleSolvedChange = useCallback(
-    (solved: boolean) => {
-      setHasScrambled((currentlyScrambled) => {
-        if (solved && currentlyScrambled) {
-          timer.stop();
-          setJustSolved(true);
-          confetti({
-            particleCount: 150,
-            spread: 80,
-            origin: { y: 0.6 },
-          });
-          return false;
-        }
-        return currentlyScrambled;
-      });
-    },
-    [timer],
-  );
+  const handleSolvedChange = useCallback((solved: boolean) => {
+    setHasScrambled((currentlyScrambled) => {
+      if (solved && currentlyScrambled) {
+        setJustSolved(true);
+        confetti({
+          particleCount: 150,
+          spread: 80,
+          origin: { y: 0.6 },
+        });
+        return false;
+      }
+      return currentlyScrambled;
+    });
+  }, []);
 
   const handleScramble = useCallback(async () => {
     setMode("look");
@@ -63,10 +54,9 @@ function App() {
     setHint(null);
     setSolveError(false);
     setFourByFourUnsolved(false);
-    timer.reset();
     await cubeRef.current?.scramble();
     setHasScrambled(true);
-  }, [timer]);
+  }, []);
 
   const handleReset = useCallback(() => {
     cubeRef.current?.resetToSolved();
@@ -77,35 +67,40 @@ function App() {
     setSolveError(false);
     setFourByFourUnsolved(false);
     setHasScrambled(false);
-    timer.reset();
-  }, [timer]);
+  }, []);
 
   const handleLookAround = useCallback(() => {
     setMode("look");
   }, []);
 
-  const handleGridSizeChange = useCallback(
+  const resetGameState = useCallback(() => {
+    setMode("look");
+    setJustSolved(false);
+    setMoveCount(0);
+    setHint(null);
+    setSolveError(false);
+    setFourByFourUnsolved(false);
+    setHasScrambled(false);
+  }, []);
+
+  const handleSelectSize = useCallback(
     (size: number) => {
       setGridSize(size);
-      setMode("look");
-      setJustSolved(false);
-      setMoveCount(0);
-      setHint(null);
-      setSolveError(false);
-      setFourByFourUnsolved(false);
-      setHasScrambled(false);
-      timer.reset();
+      resetGameState();
+      setScreen("game");
     },
-    [timer],
+    [resetGameState],
   );
+
+  const handleBackToHome = useCallback(() => {
+    setScreen("home");
+  }, []);
 
   const handleStart = useCallback(() => {
     setMode("play");
   }, []);
 
   const handleSolve = useCallback(async () => {
-    const wasTimerRunning = timer.running;
-    if (wasTimerRunning) timer.pause();
     setIsSolving(true);
     setFourByFourUnsolved(false);
     try {
@@ -141,36 +136,43 @@ function App() {
       setHint(null);
     } finally {
       setIsSolving(false);
-      if (wasTimerRunning) timer.resume();
     }
-  }, [timer, gridSize]);
+  }, [gridSize]);
+
+  if (screen === "home") {
+    return (
+      <div className="app">
+        <header className="app-header">
+          <h1>Poly Puzzle</h1>
+          <p className="subtitle">큐브 크기를 선택하세요</p>
+        </header>
+
+        <div className="size-select">
+          {[2, 3, 4, 5].map((size) => (
+            <button
+              key={size}
+              type="button"
+              className={gridSize === size ? "primary" : ""}
+              onClick={() => handleSelectSize(size)}
+            >
+              {size}×{size}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="app">
-      <header className="app-header">
-        <h1>Poly Puzzle</h1>
+      <header className="app-header with-back">
+        <button type="button" className="home-link" onClick={handleBackToHome}>
+          ← 크기 변경
+        </button>
         <p className="subtitle">정6면체 {gridSize}×{gridSize} 프로토타입</p>
       </header>
 
-      <div className="controls" style={{ marginBottom: "0.5rem" }}>
-        {[2, 3, 4, 5].map((size) => (
-          <button
-            key={size}
-            type="button"
-            className={gridSize === size ? "primary" : ""}
-            onClick={() => handleGridSizeChange(size)}
-            disabled={isSolving}
-          >
-            {size}×{size}
-          </button>
-        ))}
-      </div>
-
       <div className="stat-row">
-        <div className="stat">
-          <span className="stat-label">시간</span>
-          <span className="stat-value">{formatTime(timer.elapsedMs)}</span>
-        </div>
         <div className="stat">
           <span className="stat-label">이동수</span>
           <span className="stat-value">{moveCount}</span>
@@ -202,49 +204,53 @@ function App() {
           orbitMode={mode === "look"}
           gridSize={gridSize}
           onMoveCountChange={handleMoveCountChange}
-          onFirstMove={handleFirstMove}
+          onFirstMove={() => {}}
           onSolvedChange={handleSolvedChange}
         />
         {justSolved && <div className="solved-banner">Solved! 🎉</div>}
       </div>
 
-      <div className="controls">
-        <button
-          type="button"
-          className={mode === "look" ? "primary" : ""}
-          onClick={handleLookAround}
-          disabled={isSolving}
-        >
-          둘러보기
-        </button>
-        <button
-          type="button"
-          className={mode === "play" ? "primary" : ""}
-          onClick={handleStart}
-          disabled={isSolving}
-        >
-          시작하기
-        </button>
-        <button type="button" onClick={handleScramble} disabled={isSolving}>
-          스크램블
-        </button>
-        <button type="button" onClick={handleReset} disabled={isSolving}>
-          리셋
-        </button>
-        <button
-          type="button"
-          onClick={handleSolve}
-          disabled={isSolving}
-          title={
-            gridSize === 5
-              ? "3×3처럼 다음 수를 미리보기만 해요 (일부 스크램블은 여러 번 눌러야 끝까지 풀릴 수 있어요)"
-              : gridSize === 4
-                ? "3×3처럼 다음 수를 미리보기만 해요"
-                : undefined
-          }
-        >
-          솔버
-        </button>
+      <div className="bottom-controls">
+        <div className="control-row">
+          <button
+            type="button"
+            className={mode === "look" ? "primary" : ""}
+            onClick={handleLookAround}
+            disabled={isSolving}
+          >
+            둘러보기
+          </button>
+          <button
+            type="button"
+            className={mode === "play" ? "primary" : ""}
+            onClick={handleStart}
+            disabled={isSolving}
+          >
+            시작하기
+          </button>
+        </div>
+        <div className="control-row">
+          <button type="button" onClick={handleReset} disabled={isSolving}>
+            리셋
+          </button>
+          <button
+            type="button"
+            onClick={handleSolve}
+            disabled={isSolving}
+            title={
+              gridSize === 5
+                ? "3×3처럼 다음 수를 미리보기만 해요 (일부 스크램블은 여러 번 눌러야 끝까지 풀릴 수 있어요)"
+                : gridSize === 4
+                  ? "3×3처럼 다음 수를 미리보기만 해요"
+                  : undefined
+            }
+          >
+            솔브
+          </button>
+          <button type="button" onClick={handleScramble} disabled={isSolving}>
+            스크램블
+          </button>
+        </div>
       </div>
     </div>
   );
