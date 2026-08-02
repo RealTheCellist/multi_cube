@@ -142,12 +142,14 @@ function App() {
   if (screen === "home") {
     return (
       <div className="app">
-        <header className="app-header">
-          <h1>Poly Puzzle</h1>
-          <p className="subtitle">큐브 크기를 선택하세요</p>
-        </header>
+        <div className="above-cube">
+          <header className="app-header">
+            <h1>Poly Puzzle</h1>
+            <p className="subtitle">큐브 크기를 선택하세요</p>
+          </header>
+        </div>
 
-        <div className="home-cube-stage">
+        <div className="cube-stage">
           <CubeView
             orbitMode
             gridSize={3}
@@ -181,38 +183,37 @@ function App() {
 
   return (
     <div className="app">
-      <header className="app-header with-back">
-        <button type="button" className="home-link" onClick={handleBackToHome}>
-          ← 크기 변경
-        </button>
-        <p className="subtitle">정6면체 {gridSize}×{gridSize} 프로토타입</p>
-      </header>
+      <div className="above-cube">
+        <header className="app-header with-back">
+          <button type="button" className="home-link" onClick={handleBackToHome}>
+            ← 크기 변경
+          </button>
+        </header>
 
-      <div className="stat-row">
-        <div className="stat">
-          <span className="stat-label">이동수</span>
-          <span className="stat-value">{moveCount}</span>
+        <div className="stat-row">
+          <div className="stat">
+            <span className="stat-label">이동수</span>
+            <span className="stat-value">{moveCount}</span>
+          </div>
         </div>
-      </div>
 
-      <p className="mode-hint">
-        {isSolving
-          ? gridSize === 4
-            ? "다음 수 미리보기 계산 중... (처음 누르면 몇 분 걸릴 수 있어요)"
-            : gridSize === 5
-              ? "다음 수 미리보기 계산 중... (처음 누르면 몇 초 걸릴 수 있어요)"
-              : "다음 수 미리보기 재생 중..."
-          : solveError
-            ? "솔버 실행 중 오류가 발생했습니다. 다시 시도해보세요"
-            : hint
-              ? (hint.moveLabel ? `다음 수: ${hint.moveLabel} — 직접 돌려보세요` : "다음 수를 미리보기했어요 — 애니메이션을 보고 직접 돌려보세요") +
-                (fourByFourUnsolved ? " (이 스크램블은 끝까지 못 풀 수도 있어요)" : "")
-              : fourByFourUnsolved
-                ? "이 스크램블은 아직 끝까지 풀지 못했어요 (패리티 케이스일 수 있어요) — 다시 시도해보세요"
-                : mode === "look"
-                  ? "드래그해서 큐브를 둘러보세요"
-                  : "스와이프로 면을 돌려보세요"}
-      </p>
+        <p className="mode-hint">
+          {isSolving
+            ? gridSize === 4
+              ? "다음 수 미리보기 계산 중... (처음 누르면 몇 분 걸릴 수 있어요)"
+              : gridSize === 5
+                ? "다음 수 미리보기 계산 중... (처음 누르면 몇 초 걸릴 수 있어요)"
+                : "다음 수 미리보기 재생 중..."
+            : solveError
+              ? "솔버 실행 중 오류가 발생했습니다. 다시 시도해보세요"
+              : hint
+                ? (hint.moveLabel ? `다음 수: ${hint.moveLabel} — 직접 돌려보세요` : "다음 수를 미리보기했어요 — 애니메이션을 보고 직접 돌려보세요") +
+                  (fourByFourUnsolved ? " (이 스크램블은 끝까지 못 풀 수도 있어요)" : "")
+                : fourByFourUnsolved
+                  ? "이 스크램블은 아직 끝까지 풀지 못했어요 (패리티 케이스일 수 있어요) — 다시 시도해보세요"
+                  : ""}
+        </p>
+      </div>
 
       <div className="cube-stage">
         <CubeView
