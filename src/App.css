@@ -1,3 +1,31 @@
+:root {
+  --btn-top: #fcfbf7;
+  --btn-bottom: #e7e5d9;
+  --btn-highlight: rgba(255, 255, 255, 0.85);
+  --btn-inner-shadow: rgba(0, 0, 0, 0.06);
+  --btn-outer-shadow: rgba(30, 27, 15, 0.16);
+  --btn-outer-shadow-soft: rgba(30, 27, 15, 0.08);
+  --btn-primary-top: #c266ff;
+  --btn-primary-bottom: #8f2ee0;
+  --btn-primary-highlight: rgba(255, 255, 255, 0.45);
+  --btn-primary-shadow: rgba(122, 27, 199, 0.45);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --btn-top: #2a2c37;
+    --btn-bottom: #18191f;
+    --btn-highlight: rgba(255, 255, 255, 0.08);
+    --btn-inner-shadow: rgba(0, 0, 0, 0.35);
+    --btn-outer-shadow: rgba(0, 0, 0, 0.55);
+    --btn-outer-shadow-soft: rgba(0, 0, 0, 0.35);
+    --btn-primary-top: #d7aeff;
+    --btn-primary-bottom: #9d5ce0;
+    --btn-primary-highlight: rgba(255, 255, 255, 0.3);
+    --btn-primary-shadow: rgba(0, 0, 0, 0.5);
+  }
+}
+
 .app {
   flex: 1;
   display: flex;
@@ -83,19 +111,39 @@
   flex: 1;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: var(--code-bg);
+  background: linear-gradient(180deg, var(--btn-top), var(--btn-bottom));
   color: var(--text-h);
   cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 var(--btn-highlight),
+    inset 0 -2px 1px var(--btn-inner-shadow),
+    0 2px 0 var(--btn-outer-shadow-soft),
+    0 3px 6px var(--btn-outer-shadow);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
 .size-select button.primary {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: linear-gradient(180deg, var(--btn-primary-top), var(--btn-primary-bottom));
+  border-color: var(--btn-primary-bottom);
   color: #fff;
+  box-shadow:
+    inset 0 1px 0 var(--btn-primary-highlight),
+    inset 0 -2px 1px rgba(0, 0, 0, 0.18),
+    0 2px 0 var(--btn-primary-shadow),
+    0 3px 8px var(--btn-primary-shadow);
 }
 
 .size-select button:active {
-  transform: translateY(1px);
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 2px 3px var(--btn-inner-shadow),
+    inset 0 -1px 0 var(--btn-highlight);
+}
+
+.size-select button.primary:active {
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 -1px 0 var(--btn-primary-highlight);
 }
 
 .start-button {
@@ -104,14 +152,23 @@
   font-size: 17px;
   padding: 14px 0;
   border-radius: 10px;
-  border: 1px solid var(--accent);
-  background: var(--accent);
+  border: 1px solid var(--btn-primary-bottom);
+  background: linear-gradient(180deg, var(--btn-primary-top), var(--btn-primary-bottom));
   color: #fff;
   cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 var(--btn-primary-highlight),
+    inset 0 -2px 1px rgba(0, 0, 0, 0.18),
+    0 3px 0 var(--btn-primary-shadow),
+    0 5px 10px var(--btn-primary-shadow);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
 .start-button:active {
-  transform: translateY(1px);
+  transform: translateY(3px);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 -1px 0 var(--btn-primary-highlight);
 }
 
 .stat-row {
@@ -215,19 +272,45 @@
   padding: 10px 22px;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: var(--code-bg);
+  background: linear-gradient(180deg, var(--btn-top), var(--btn-bottom));
   color: var(--text-h);
   cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 var(--btn-highlight),
+    inset 0 -2px 1px var(--btn-inner-shadow),
+    0 2px 0 var(--btn-outer-shadow-soft),
+    0 3px 6px var(--btn-outer-shadow);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
 .bottom-controls button.primary {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: linear-gradient(180deg, var(--btn-primary-top), var(--btn-primary-bottom));
+  border-color: var(--btn-primary-bottom);
   color: #fff;
+  box-shadow:
+    inset 0 1px 0 var(--btn-primary-highlight),
+    inset 0 -2px 1px rgba(0, 0, 0, 0.18),
+    0 2px 0 var(--btn-primary-shadow),
+    0 3px 8px var(--btn-primary-shadow);
 }
 
-.bottom-controls button:active {
-  transform: translateY(1px);
+.bottom-controls button:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 2px 3px var(--btn-inner-shadow),
+    inset 0 -1px 0 var(--btn-highlight);
+}
+
+.bottom-controls button.primary:active:not(:disabled) {
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 -1px 0 var(--btn-primary-highlight);
+}
+
+.bottom-controls button:disabled {
+  cursor: default;
+  opacity: 0.55;
+  box-shadow: inset 0 1px 0 var(--btn-highlight), inset 0 -1px 1px var(--btn-inner-shadow);
 }
 
 .leaderboard-page {
@@ -236,45 +319,108 @@
   margin-top: 32px;
 }
 
+.leaderboard-caption {
+  font-size: 13px;
+  color: var(--text);
+  text-align: left;
+  margin: 0 0 10px 4px;
+}
+
 .leaderboard-empty {
   color: var(--text);
   font-size: 15px;
-  margin: 16px 0;
+  margin: 24px 0;
+  padding: 36px 20px;
+  text-align: center;
+  border: 1px dashed var(--border);
+  border-radius: 16px;
+  background: var(--code-bg);
 }
 
 .leaderboard-list {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 6px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow:
+    inset 0 1px 0 var(--btn-highlight),
+    0 4px 12px var(--btn-outer-shadow-soft);
 }
 
 .leaderboard-list li {
   display: grid;
-  grid-template-columns: 28px 1fr auto;
+  grid-template-columns: 36px 1fr auto;
   align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  border-radius: 8px;
+  gap: 12px;
+  padding: 11px 10px;
+  border-radius: 10px;
+}
+
+.leaderboard-list li:not(:last-child) {
+  border-bottom: 1px solid var(--border);
 }
 
 .leaderboard-list li.leaderboard-new {
   background: var(--accent-bg);
   border: 1px solid var(--accent-border);
+  animation: pop-in 0.3s ease-out;
 }
 
 .leaderboard-rank {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--mono);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.leaderboard-rank.rank-other {
+  background: var(--btn-bottom);
   color: var(--text);
-  text-align: center;
+  box-shadow: inset 0 1px 0 var(--btn-highlight), inset 0 -1px 1px var(--btn-inner-shadow);
+}
+
+.leaderboard-rank.rank-1 {
+  background: linear-gradient(160deg, #ffe9a8, #d9a441 75%);
+  color: #5b3d05;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 -2px 2px rgba(0, 0, 0, 0.18),
+    0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.leaderboard-rank.rank-2 {
+  background: linear-gradient(160deg, #f2f4f7, #b7bcc4 75%);
+  color: #3d4148;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -2px 2px rgba(0, 0, 0, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.22);
+}
+
+.leaderboard-rank.rank-3 {
+  background: linear-gradient(160deg, #e8b489, #a86636 75%);
+  color: #452405;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -2px 2px rgba(0, 0, 0, 0.2),
+    0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
 .leaderboard-moves {
   font-family: var(--mono);
   color: var(--text-h);
   font-size: 17px;
+  font-weight: 600;
+  text-align: left;
 }
 
 .leaderboard-date {

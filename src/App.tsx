@@ -227,15 +227,18 @@ function App() {
           {leaderboard.length === 0 ? (
             <p className="leaderboard-empty">아직 기록이 없어요 — 스크램블 후 풀어보세요!</p>
           ) : (
-            <ol className="leaderboard-list">
-              {leaderboard.map((entry, index) => (
-                <li key={`${entry.date}-${index}`} className={lastRank === index + 1 ? "leaderboard-new" : ""}>
-                  <span className="leaderboard-rank">{index + 1}</span>
-                  <span className="leaderboard-moves">{entry.moves}수</span>
-                  <span className="leaderboard-date">{formatEntryDate(entry.date)}</span>
-                </li>
-              ))}
-            </ol>
+            <>
+              <p className="leaderboard-caption">이동수가 적을수록 상위예요</p>
+              <ol className="leaderboard-list">
+                {leaderboard.map((entry, index) => (
+                  <li key={`${entry.date}-${index}`} className={lastRank === index + 1 ? "leaderboard-new" : ""}>
+                    <span className={`leaderboard-rank rank-${index < 3 ? index + 1 : "other"}`}>{index + 1}</span>
+                    <span className="leaderboard-moves">{entry.moves}수</span>
+                    <span className="leaderboard-date">{formatEntryDate(entry.date)}</span>
+                  </li>
+                ))}
+              </ol>
+            </>
           )}
         </div>
       </div>
