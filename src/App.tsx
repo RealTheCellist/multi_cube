@@ -11,17 +11,6 @@ function formatEntryDate(iso: string): string {
   return new Date(iso).toLocaleDateString("ko-KR", { year: "2-digit", month: "numeric", day: "numeric" });
 }
 
-// Shown after a solver-button click: moveLabel is the letter notation for
-// puzzles that have one (2x2x2/3x3x3), or null for puzzles that only
-// preview via animation (4x4x4, and whatever's added next -- see
-// handleSolve). Deliberately carries no move count: the total moves needed
-// can be recomputed differently between clicks (the 4x4x4 solver restarts
-// itself with randomized ordering), so displaying it as a stable number
-// would be misleading.
-interface HintDisplay {
-  moveLabel: string | null;
-}
-
 const SIZE_COLORS: Record<number, string> = {
   2: "btn-blue",
   3: "btn-green",
@@ -46,7 +35,6 @@ function App() {
     }
   });
   const [isSolving, setIsSolving] = useState(false);
-  const [hint, setHint] = useState<HintDisplay | null>(null);
   const [solveError, setSolveError] = useState(false);
   const [fourByFourUnsolved, setFourByFourUnsolved] = useState(false);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
@@ -90,7 +78,6 @@ function App() {
     // very next swipe turns a layer instead of just orbiting the camera.
     setMode("look");
     setMoveCount(0);
-    setHint(null);
     setSolveError(false);
     setFourByFourUnsolved(false);
     setLastRank(null);
@@ -103,7 +90,6 @@ function App() {
     cubeRef.current?.resetToSolved();
     setMode("play");
     setMoveCount(0);
-    setHint(null);
     setSolveError(false);
     setFourByFourUnsolved(false);
     setLastRank(null);
@@ -118,7 +104,6 @@ function App() {
     setMode("play");
     setShowCompletionModal(false);
     setMoveCount(0);
-    setHint(null);
     setSolveError(false);
     setFourByFourUnsolved(false);
     setLastRank(null);
@@ -188,17 +173,16 @@ function App() {
     setFourByFourUnsolved(false);
     try {
       if (gridSize === 4 || gridSize === 5) {
-        // Same preview-and-revert idea as the 2x2x2/3x3x3 hint below: the
-        // user performs the actual swipe themselves, since there's no
-        // letter-notation move history to hint against for a 4x4x4/5x5x5
-        // (see cubeState.ts). The 5x5x5 path now caches a Plan across
-        // presses instead of recomputing everything fresh each time (see
-        // fiveByFiveEdgeSolverEngine.ts) -- previewNextFiveByFive still goes
-        // stale-safely if the user's own swipes diverge from it, since the
-        // engine itself detects that via a state hash and rebuilds.
+        // The user performs the actual swipe themselves after seeing the
+        // preview animation -- there's no letter-notation move history to
+        // hint against for a 4x4x4/5x5x5 (see cubeState.ts). The 5x5x5 path
+        // now caches a Plan across presses instead of recomputing everything
+        // fresh each time (see fiveByFiveEdgeSolverEngine.ts) --
+        // previewNextFiveByFive still goes stale-safely if the user's own
+        // swipes diverge from it, since the engine itself detects that via a
+        // state hash and rebuilds.
         const result = gridSize === 4 ? await cubeRef.current?.previewNextFourByFour() : await cubeRef.current?.previewNextFiveByFive();
         setSolveError(false);
-        setHint(result?.hasMove ? { moveLabel: null } : null);
         // Reflects the PLAN's own solved flag directly, not gated on
         // whether there happened to be a move to preview -- a scramble the
         // solver can't fully resolve still produces plenty of legitimate
@@ -207,16 +191,14 @@ function App() {
         // all for exactly the case it was meant to catch.
         setFourByFourUnsolved(result ? !result.solved : true);
       } else {
-        const result = await cubeRef.current?.solveNextMove();
+        await cubeRef.current?.solveNextMove();
         setSolveError(false);
-        setHint(result?.move ? { moveLabel: result.move } : null);
       }
     } catch {
       // The solver is a third-party library reached through an experimental
       // API — keep the button from getting stuck disabled forever if it
       // ever throws for a reason we haven't seen yet.
       setSolveError(true);
-      setHint(null);
     } finally {
       setIsSolving(false);
     }
@@ -341,12 +323,9 @@ function App() {
                 : "다음 수 미리보기 재생 중..."
             : solveError
               ? "솔버 실행 중 오류가 발생했습니다. 다시 시도해보세요"
-              : hint
-                ? (hint.moveLabel ? `다음 수: ${hint.moveLabel} — 직접 돌려보세요` : "다음 수를 미리보기했어요 — 애니메이션을 보고 직접 돌려보세요") +
-                  (fourByFourUnsolved ? " (이 스크램블은 끝까지 못 풀 수도 있어요)" : "")
-                : fourByFourUnsolved
-                  ? "이 스크램블은 아직 끝까지 풀지 못했어요 (패리티 케이스일 수 있어요) — 다시 시도해보세요"
-                  : ""}
+              : fourByFourUnsolved
+                ? "이 스크램블은 아직 끝까지 풀지 못했어요 (패리티 케이스일 수 있어요) — 다시 시도해보세요"
+                : ""}
         </p>
       </div>
 
