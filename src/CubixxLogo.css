@@ -16,14 +16,14 @@
   width: 60px;
   height: 60px;
   transform-style: preserve-3d;
-  animation: cubixx-spin 3.4s cubic-bezier(0.45, 0, 0.2, 1) 1 forwards;
+  animation: cubixx-spin 8s cubic-bezier(0.45, 0, 0.2, 1) 1 forwards;
 }
 
 @keyframes cubixx-spin {
   0% {
     transform: rotateY(0deg);
   }
-  35%,
+  22.5%,
   100% {
     transform: rotateY(360deg);
   }
@@ -33,15 +33,15 @@
   position: absolute;
   inset: 0;
   transform-style: preserve-3d;
-  animation: cubixx-unfold 3.4s cubic-bezier(0.45, 0, 0.2, 1) 1 forwards;
+  animation: cubixx-unfold 8s cubic-bezier(0.45, 0, 0.2, 1) 1 forwards;
 }
 
 @keyframes cubixx-unfold {
   0%,
-  35% {
+  22.5% {
     transform: rotateX(var(--assembled-rx)) rotateY(var(--assembled-ry)) translateZ(var(--tz));
   }
-  50%,
+  37.5%,
   100% {
     transform: translateX(var(--row-x)) translateZ(0);
   }
@@ -68,19 +68,19 @@
     0 3px 0 rgba(58, 36, 24, 0.35),
     inset 0 2px 0 rgba(255, 255, 255, 0.35);
   backface-visibility: hidden;
-  animation: cubixx-wave 3.4s cubic-bezier(0.45, 0, 0.2, 1) 1 forwards;
+  animation: cubixx-wave 8s cubic-bezier(0.45, 0, 0.2, 1) 1 forwards;
   animation-delay: var(--wave-delay);
 }
 
 @keyframes cubixx-wave {
   0%,
-  55% {
+  82.5% {
     transform: translateY(0);
   }
-  60% {
+  87% {
     transform: translateY(-12px);
   }
-  65%,
+  91.5%,
   100% {
     transform: translateY(0);
   }
