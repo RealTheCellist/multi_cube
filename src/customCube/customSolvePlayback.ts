@@ -95,11 +95,15 @@ export async function previewNextSolveMove(scene: CustomCubeScene): Promise<Solv
   const magnitude = suffix === "2" ? 2 : 1;
   const target = canonicalSign * dirSign * magnitude;
 
-  scene.beginTurn(axis, layer);
-  await animateProgress(scene, 0, target, MOVE_ANIMATION_MS);
-  await sleep(HOLD_MS);
-  await animateProgress(scene, target, 0, MOVE_ANIMATION_MS);
-  scene.endTurn(null);
+  // See the matching check in previewNextFourByFourMove -- if the scene's
+  // turn is already owned (e.g. a live user drag), just skip the preview
+  // animation instead of stealing or fighting it.
+  if (scene.beginTurn(axis, layer)) {
+    await animateProgress(scene, 0, target, MOVE_ANIMATION_MS);
+    await sleep(HOLD_MS);
+    await animateProgress(scene, target, 0, MOVE_ANIMATION_MS);
+    scene.endTurn(null);
+  }
 
   return hint;
 }
@@ -173,11 +177,18 @@ export async function previewNextFourByFourMove(scene: CustomCubeScene): Promise
   if (plan.moves.length === 0) return { hasMove: false, movesRemaining: 0, solved: plan.solved };
 
   const [axis, layer, sign] = plan.moves[0];
-  scene.beginTurn(axis, layer);
-  await animateProgress(scene, 0, sign, MOVE_ANIMATION_MS);
-  await sleep(HOLD_MS);
-  await animateProgress(scene, sign, 0, MOVE_ANIMATION_MS);
-  scene.endTurn(null);
+  // If something else already owns the scene's turn (most likely: the user
+  // started dragging the cube themselves while this plan was computing --
+  // computeFourByFourSolveMoves can take a while), skip the preview
+  // animation rather than fight or steal it. The plan itself was computed
+  // against a clone, so the live cube and its move count are untouched
+  // either way -- only the visual hint is lost for this press.
+  if (scene.beginTurn(axis, layer)) {
+    await animateProgress(scene, 0, sign, MOVE_ANIMATION_MS);
+    await sleep(HOLD_MS);
+    await animateProgress(scene, sign, 0, MOVE_ANIMATION_MS);
+    scene.endTurn(null);
+  }
 
   return { hasMove: true, movesRemaining: plan.moves.length - 1, solved: plan.solved };
 }
@@ -214,7 +225,10 @@ let edgeLibrariesWarmed = false;
 
 async function previewMoves(scene: CustomCubeScene, moves: readonly Move[]): Promise<void> {
   const [axis, layer, sign] = moves[0];
-  scene.beginTurn(axis, layer);
+  // See the matching check in previewNextFourByFourMove -- if the scene's
+  // turn is already owned (e.g. a live user drag), just skip the preview
+  // animation instead of stealing or fighting it.
+  if (!scene.beginTurn(axis, layer)) return;
   await animateProgress(scene, 0, sign, MOVE_ANIMATION_MS);
   await sleep(HOLD_MS);
   await animateProgress(scene, sign, 0, MOVE_ANIMATION_MS);

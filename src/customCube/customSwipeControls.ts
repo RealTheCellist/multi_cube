@@ -216,7 +216,17 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
       const chosen = fit0.error <= fit1.error ? c0 : c1;
       const screenDir = screenTangent(scene, drag.hitPoint, chosen.axis, rect);
       const fullTurnPx = rect.width * FULL_TURN_FRACTION_OF_WIDTH;
-      scene.beginTurn(chosen.axis, chosen.layer);
+      // Someone else (a solve-preview animation, most likely) already owns
+      // the scene's turn -- e.g. this finger was resting on the cube, below
+      // the drag threshold, when a preview started. Abandon the gesture
+      // rather than faking a locked drag: without this check, the drag
+      // below still tracks progress and fires startRelease()/onCommit() on
+      // release even though no move was ever actually applied, desyncing
+      // the move counter from the real cube state.
+      if (!scene.beginTurn(chosen.axis, chosen.layer)) {
+        drag = null;
+        return;
+      }
       const projected = dx * screenDir.x + dy * screenDir.y;
       const progress = Math.max(-1, Math.min(1, projected / fullTurnPx));
       scene.setTurnProgress(progress);

@@ -185,9 +185,17 @@ export class CustomCubeScene {
     this.controls.enabled = enabled;
   }
 
-  /** Starts a live-scrubbable turn: reparents the layer's meshes under a pivot group. */
-  beginTurn(axis: Axis, layer: number): void {
-    if (this.activeTurn) return;
+  /**
+   * Starts a live-scrubbable turn: reparents the layer's meshes under a
+   * pivot group. Returns whether it actually started one -- false means
+   * someone else (a live drag, a solve-preview animation, ...) already
+   * owns the current turn, so this call was a no-op. Callers must check
+   * this before assuming a matching endTurn() of theirs will do anything;
+   * otherwise a caller can believe it committed a move (and count it as
+   * one) when it silently didn't, or worse, end a turn it never owned.
+   */
+  beginTurn(axis: Axis, layer: number): boolean {
+    if (this.activeTurn) return false;
     const layerCubies = cubiesInLayer(this.cubies, axis, layer);
     const group = new THREE.Group();
     this.cubeGroup.add(group);
@@ -196,6 +204,7 @@ export class CustomCubeScene {
       group.attach(mesh);
     }
     this.activeTurn = { axis, layer, group, cubieIds: new Set(layerCubies.map((c) => c.id)) };
+    return true;
   }
 
   /**
