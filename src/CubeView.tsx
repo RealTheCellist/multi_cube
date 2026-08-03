@@ -25,10 +25,14 @@ interface CubeViewProps {
   onSolvedChange: (solved: boolean) => void;
   orbitMode: boolean;
   gridSize: number;
+  // Fully static, non-orbit, non-turnable preview (the home screen's
+  // decorative cube) -- distinct from orbitMode, which still lets the
+  // user drag to look around.
+  interactive?: boolean;
 }
 
 const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
-  { onMoveCountChange, onFirstMove, onSolvedChange, orbitMode, gridSize },
+  { onMoveCountChange, onFirstMove, onSolvedChange, orbitMode, gridSize, interactive = true },
   ref,
 ) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -38,6 +42,8 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
   const moveCountRef = useRef(0);
   const orbitModeRef = useRef(orbitMode);
   orbitModeRef.current = orbitMode;
+  const interactiveRef = useRef(interactive);
+  interactiveRef.current = interactive;
 
   const callbacksRef = useRef({ onMoveCountChange, onFirstMove, onSolvedChange });
   callbacksRef.current = { onMoveCountChange, onFirstMove, onSolvedChange };
@@ -49,10 +55,10 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
     moveCountRef.current = 0;
     const scene = new CustomCubeScene(container, gridSize);
     sceneRef.current = scene;
-    scene.setOrbitEnabled(orbitModeRef.current);
+    scene.setOrbitEnabled(interactiveRef.current && orbitModeRef.current);
 
     const controller = attachCustomSwipeTurning(scene, moveCountRef);
-    controller.setEnabled(!orbitModeRef.current);
+    controller.setEnabled(interactiveRef.current && !orbitModeRef.current);
     controller.onCommit = (count) => {
       callbacksRef.current.onMoveCountChange(count);
       if (count > 0 && !hasMovedRef.current) {
@@ -76,9 +82,9 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
   }, [gridSize]);
 
   useEffect(() => {
-    sceneRef.current?.setOrbitEnabled(orbitMode);
-    controllerRef.current?.setEnabled(!orbitMode);
-  }, [orbitMode]);
+    sceneRef.current?.setOrbitEnabled(interactive && orbitMode);
+    controllerRef.current?.setEnabled(interactive && !orbitMode);
+  }, [orbitMode, interactive]);
 
   useImperativeHandle(ref, () => ({
     scramble: async () => {
@@ -100,7 +106,7 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
       try {
         return await previewNextSolveMove(scene);
       } finally {
-        controllerRef.current?.setEnabled(!orbitModeRef.current);
+        controllerRef.current?.setEnabled(interactiveRef.current && !orbitModeRef.current);
       }
     },
     previewNextFourByFour: async () => {
@@ -110,7 +116,7 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
       try {
         return await previewNextFourByFourMove(scene);
       } finally {
-        controllerRef.current?.setEnabled(!orbitModeRef.current);
+        controllerRef.current?.setEnabled(interactiveRef.current && !orbitModeRef.current);
       }
     },
     previewNextFiveByFive: async () => {
@@ -120,7 +126,7 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
       try {
         return await previewNextFiveByFiveMove(scene);
       } finally {
-        controllerRef.current?.setEnabled(!orbitModeRef.current);
+        controllerRef.current?.setEnabled(interactiveRef.current && !orbitModeRef.current);
       }
     },
     isSolved: () => sceneRef.current?.isSolved() ?? false,

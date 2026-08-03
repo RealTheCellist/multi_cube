@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import CubeView, { type CubeViewHandle } from "./CubeView";
+import CubixxLogo from "./CubixxLogo";
 import { getLeaderboard, submitScore, type LeaderboardEntry } from "./leaderboard";
 import "./App.css";
+
+const NICKNAME_STORAGE_KEY = "poly-puzzle-nickname";
 
 function formatEntryDate(iso: string): string {
   return new Date(iso).toLocaleDateString("ko-KR", { year: "2-digit", month: "numeric", day: "numeric" });
@@ -34,44 +37,51 @@ function App() {
   const [gridSize, setGridSize] = useState(3);
   const [moveCount, setMoveCount] = useState(0);
   const [, setHasScrambled] = useState(false);
-  const [justSolved, setJustSolved] = useState(false);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [nickname, setNickname] = useState(() => {
+    try {
+      return localStorage.getItem(NICKNAME_STORAGE_KEY) ?? "";
+    } catch {
+      return "";
+    }
+  });
   const [isSolving, setIsSolving] = useState(false);
   const [hint, setHint] = useState<HintDisplay | null>(null);
   const [solveError, setSolveError] = useState(false);
   const [fourByFourUnsolved, setFourByFourUnsolved] = useState(false);
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [leaderboardSize, setLeaderboardSize] = useState(3);
+  const [leaderboardOrigin, setLeaderboardOrigin] = useState<"home" | "game">("game");
   const [lastRank, setLastRank] = useState<number | null>(null);
 
   useEffect(() => {
-    if (screen === "game" || screen === "leaderboard") {
-      setLeaderboard(getLeaderboard(gridSize));
+    if (screen === "leaderboard") {
+      setLeaderboard(getLeaderboard(leaderboardSize));
     }
-  }, [screen, gridSize]);
+  }, [screen, leaderboardSize]);
 
   const handleMoveCountChange = useCallback((count: number) => {
     setMoveCount(count);
   }, []);
 
-  const handleSolvedChange = useCallback(
-    (solved: boolean) => {
-      setHasScrambled((currentlyScrambled) => {
-        if (solved && currentlyScrambled) {
-          setJustSolved(true);
-          confetti({
-            particleCount: 150,
-            spread: 80,
-            origin: { y: 0.6 },
-          });
-          const { entries, rank } = submitScore(gridSize, moveCount);
-          setLeaderboard(entries);
-          setLastRank(rank);
-          return false;
-        }
-        return currentlyScrambled;
-      });
-    },
-    [gridSize, moveCount],
-  );
+  // Fires on real solved-state detection (the player actually lined up
+  // every layer via swipes) -- not tied to the solve-hint button, which
+  // only ever previews one move. Registration (nickname + leaderboard
+  // submit) happens from the completion modal, not automatically here.
+  const handleSolvedChange = useCallback((solved: boolean) => {
+    setHasScrambled((currentlyScrambled) => {
+      if (solved && currentlyScrambled) {
+        confetti({
+          particleCount: 150,
+          spread: 80,
+          origin: { y: 0.6 },
+        });
+        setShowCompletionModal(true);
+        return false;
+      }
+      return currentlyScrambled;
+    });
+  }, []);
 
   const handleScramble = useCallback(async () => {
     // Orbit mode while the scramble animation plays -- keeps the swipe
@@ -79,7 +89,6 @@ function App() {
     // programmatic moves. Switches back to play once it settles so the
     // very next swipe turns a layer instead of just orbiting the camera.
     setMode("look");
-    setJustSolved(false);
     setMoveCount(0);
     setHint(null);
     setSolveError(false);
@@ -93,7 +102,6 @@ function App() {
   const handleReset = useCallback(() => {
     cubeRef.current?.resetToSolved();
     setMode("play");
-    setJustSolved(false);
     setMoveCount(0);
     setHint(null);
     setSolveError(false);
@@ -108,7 +116,7 @@ function App() {
 
   const resetGameState = useCallback(() => {
     setMode("play");
-    setJustSolved(false);
+    setShowCompletionModal(false);
     setMoveCount(0);
     setHint(null);
     setSolveError(false);
@@ -131,11 +139,44 @@ function App() {
   }, []);
 
   const handleOpenLeaderboard = useCallback(() => {
+    setLeaderboardOrigin("game");
+    setLeaderboardSize(gridSize);
     setScreen("leaderboard");
+  }, [gridSize]);
+
+  const handleOpenLeaderboardFromHome = useCallback(() => {
+    setLeaderboardOrigin("home");
+    setLeaderboardSize(gridSize);
+    setScreen("leaderboard");
+  }, [gridSize]);
+
+  const handleSelectLeaderboardTab = useCallback((size: number) => {
+    setLeaderboardSize(size);
   }, []);
 
-  const handleBackToGame = useCallback(() => {
-    setScreen("game");
+  const handleLeaderboardBack = useCallback(() => {
+    setScreen(leaderboardOrigin === "home" ? "home" : "game");
+  }, [leaderboardOrigin]);
+
+  const handleRegisterScore = useCallback(() => {
+    const finalNickname = nickname.trim();
+    try {
+      localStorage.setItem(NICKNAME_STORAGE_KEY, finalNickname);
+    } catch {
+      // Same fallback as leaderboard.ts -- registering the score for this
+      // session still works even if persisting the nickname doesn't.
+    }
+    const { entries, rank } = submitScore(gridSize, moveCount, finalNickname);
+    setLeaderboard(entries);
+    setLastRank(rank);
+    setShowCompletionModal(false);
+    setLeaderboardOrigin("game");
+    setLeaderboardSize(gridSize);
+    setScreen("leaderboard");
+  }, [nickname, gridSize, moveCount]);
+
+  const handleSkipRegister = useCallback(() => {
+    setShowCompletionModal(false);
   }, []);
 
   const handleStart = useCallback(() => {
@@ -186,13 +227,14 @@ function App() {
       <div className="app">
         <div className="above-cube">
           <header className="app-header">
-            <h1>Poly Puzzle</h1>
+            <CubixxLogo />
           </header>
         </div>
 
         <div className="cube-stage">
           <CubeView
-            orbitMode
+            orbitMode={false}
+            interactive={false}
             gridSize={3}
             onMoveCountChange={() => {}}
             onFirstMove={() => {}}
@@ -213,6 +255,9 @@ function App() {
               </button>
             ))}
           </div>
+          <button type="button" className="leaderboard-text-link" onClick={handleOpenLeaderboardFromHome}>
+            리더보드 보기
+          </button>
         </div>
       </div>
     );
@@ -222,15 +267,25 @@ function App() {
     return (
       <div className="app">
         <header className="app-header with-back">
-          <button type="button" className="home-link" onClick={handleBackToGame}>
+          <button type="button" className="home-link" onClick={handleLeaderboardBack}>
             ← 뒤로
           </button>
-          <p className="subtitle">
-            {gridSize}×{gridSize} 리더보드
-          </p>
         </header>
 
         <div className="leaderboard-page">
+          <div className="leaderboard-tabs">
+            {[2, 3, 4, 5].map((size) => (
+              <button
+                key={size}
+                type="button"
+                className={`btn3d ${SIZE_COLORS[size]}${leaderboardSize === size ? " selected" : ""}`}
+                onClick={() => handleSelectLeaderboardTab(size)}
+              >
+                {size}×{size}
+              </button>
+            ))}
+          </div>
+
           {leaderboard.length === 0 ? (
             <p className="leaderboard-empty">아직 기록이 없어요 — 스크램블 후 풀어보세요!</p>
           ) : (
@@ -238,10 +293,16 @@ function App() {
               <p className="leaderboard-caption">이동수가 적을수록 상위예요</p>
               <ol className="leaderboard-list">
                 {leaderboard.map((entry, index) => (
-                  <li key={`${entry.date}-${index}`} className={lastRank === index + 1 ? "leaderboard-new" : ""}>
+                  <li
+                    key={`${entry.date}-${index}`}
+                    className={leaderboardSize === gridSize && lastRank === index + 1 ? "leaderboard-new" : ""}
+                  >
                     <span className={`leaderboard-rank rank-${index < 3 ? index + 1 : "other"}`}>{index + 1}</span>
+                    <span className="leaderboard-name-date">
+                      <span className="leaderboard-nickname">{entry.nickname}</span>
+                      <span className="leaderboard-date">{formatEntryDate(entry.date)}</span>
+                    </span>
                     <span className="leaderboard-moves">{entry.moves}수</span>
-                    <span className="leaderboard-date">{formatEntryDate(entry.date)}</span>
                   </li>
                 ))}
               </ol>
@@ -298,12 +359,6 @@ function App() {
           onFirstMove={() => {}}
           onSolvedChange={handleSolvedChange}
         />
-        {justSolved && (
-          <div className="solved-banner">
-            Solved! 🎉
-            {lastRank && <span className="solved-rank">{lastRank}위 기록!</span>}
-          </div>
-        )}
       </div>
 
       <div className="bottom-controls">
@@ -349,6 +404,36 @@ function App() {
           </button>
         </div>
       </div>
+
+      {showCompletionModal && (
+        <div className="modal-overlay">
+          <div className="modal-card">
+            <h2>🎉 완성!</h2>
+            <p className="modal-summary">
+              <strong>
+                {gridSize}×{gridSize}
+              </strong>{" "}
+              · 이동수 <strong>{moveCount}</strong>
+            </p>
+            <input
+              type="text"
+              className="nickname-input"
+              placeholder="닉네임을 입력하세요"
+              maxLength={12}
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+            />
+            <div className="modal-actions">
+              <button type="button" className="btn3d btn-green" onClick={handleRegisterScore}>
+                리더보드 등록
+              </button>
+              <button type="button" className="modal-later" onClick={handleSkipRegister}>
+                나중에 하기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
