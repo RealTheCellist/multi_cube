@@ -84,15 +84,27 @@ export class CustomCubeScene {
     this.spacing = (CUBE_EXTENT / gridSize) * SPACING_RATIO;
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
-    // Same viewing angle as the original (5.4, 4.5, 6.6), scaled 10% closer
-    // to the origin so the cube fills more of the canvas -- makes each
-    // cubie face bigger on screen, which is what actually matters for
-    // swipe-gesture testing (more pixels per cubie = easier to land a
-    // precise swipe). Checked against clipping: the cube's rendered corner
-    // is ~2.67 world units from center, and at this distance/FOV the
-    // visible half-extent is still comfortably larger even at a corner-on
-    // orbit view (verified visually, not just computed).
-    this.camera.position.set(5.4 * 0.9, 4.5 * 0.9, 6.6 * 0.9);
+    // Same distance/zoom as the original 10%-closer position (5.4*0.9,
+    // 4.5*0.9, 6.6*0.9), scaled 10% closer to the origin so the cube fills
+    // more of the canvas -- makes each cubie face bigger on screen, which is
+    // what actually matters for swipe-gesture testing (more pixels per
+    // cubie = easier to land a precise swipe). Checked against clipping:
+    // the cube's rendered corner is ~2.67 world units from center, and at
+    // this distance/FOV the visible half-extent is still comfortably
+    // larger even at a corner-on orbit view (verified visually).
+    //
+    // Yawed -5 degrees from that original azimuth (see
+    // docs/CAMERA_ANGLE_OPTIMIZATION_VALIDATION_V1.md): a 7x6-point margin
+    // sweep across 5 camera candidates (baseline, pitch +-5, yaw +-5) found
+    // this yaw increases the screen-space angular separation between the
+    // two candidate turn-axes on the top/right faces -- the structural
+    // cause of the axis mis-recognition bug -- cutting the near-tied
+    // (margin<0.05) sample rate from 10.3% to 5.1% and roughly halving
+    // gesture mis-recognition at a representative top-face point (40%/42%
+    // -> 24%/18%, N=50/direction, tremor model) with zero change to
+    // front-face accuracy (still 0% mis-recognition, N=300) and no visible
+    // change in how natural the view looks.
+    this.camera.position.set(4.3238, 4.05, 6.341);
     this.camera.lookAt(0, 0, 0);
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
