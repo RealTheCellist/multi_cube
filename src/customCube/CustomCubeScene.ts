@@ -84,7 +84,15 @@ export class CustomCubeScene {
     this.spacing = (CUBE_EXTENT / gridSize) * SPACING_RATIO;
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
-    this.camera.position.set(5.4, 4.5, 6.6);
+    // Same viewing angle as the original (5.4, 4.5, 6.6), scaled 10% closer
+    // to the origin so the cube fills more of the canvas -- makes each
+    // cubie face bigger on screen, which is what actually matters for
+    // swipe-gesture testing (more pixels per cubie = easier to land a
+    // precise swipe). Checked against clipping: the cube's rendered corner
+    // is ~2.67 world units from center, and at this distance/FOV the
+    // visible half-extent is still comfortably larger even at a corner-on
+    // orbit view (verified visually, not just computed).
+    this.camera.position.set(5.4 * 0.9, 4.5 * 0.9, 6.6 * 0.9);
     this.camera.lookAt(0, 0, 0);
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
