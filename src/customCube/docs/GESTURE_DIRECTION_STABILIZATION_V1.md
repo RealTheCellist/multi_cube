@@ -292,7 +292,11 @@ VERTICAL (intent=90deg):  n=100 correct=100 wrong=0 noop=0 misrecognition=0.0%
 DIAGONAL (intent=55deg, geometrically H-leaning): n=100 correct=100 wrong=0 noop=0 misrecognition=0.0%
 ```
 
-(Exact figures inserted from the completed run below.)
+300/300 trials resolved to the correct axis. 0 no-ops (every trial used a
+long-enough final swipe to comfortably clear the new decision window, so
+the STEP 5b trade-off doesn't show up in this particular test shape --
+that trade-off only bites swipes whose *total* length is short, which
+this category doesn't test; see 5b for that measurement specifically).
 
 ### 5d. Regression report (existing features)
 
@@ -305,3 +309,53 @@ DIAGONAL (intent=55deg, geometrically H-leaning): n=100 correct=100 wrong=0 noop
 | 힌트/솔브(다음 수 미리보기, "리플레이"에 해당하는 재생 메커니즘) | 정상 -- 연속 클릭도 정상 동작 |
 | Solver 호출 | 정상 (솔브 버튼이 곧 solver 호출 경로) |
 | **짧은 스와이프 커밋 거리** | **회귀 있음 (측정됨, 5b 참고)** -- 최소 커밋 거리 ~18px -> ~25px |
+
+## 성공 기준 판정
+
+| Level | 기준 | 판정 |
+|---|---|---|
+| Level 1 | 현재 Gesture 구조를 실제 코드 기준으로 문서화 | **PASS** (STEP 1) |
+| Level 2 | Prototype 구현 완료 | **PASS** (STEP 4, `customSwipeControls.ts`만 수정) |
+| Level 3 | 대각선 입력에서 기존 대비 오인식 감소 | **PASS** -- 실측 실패 사례(11px 훅) 100% 수정, N=100x3 실측 오인식률 0.0% |
+| Level 3 | Regression 없음 | **부분 PASS** -- 스크램블/힌트-솔브/카메라 궤도/멀티터치/일반 스와이프는 회귀 없음. 단, 짧은 스와이프의 최소 커밋 거리가 ~18px -> ~25px로 늘어나는 **국소적이고 정량화된 트레이드오프 1건**을 발견해 그대로 공개함 (5b) |
+
+## Decision: **B — 트레이드오프를 명시하고 그대로 채택 (Adopt with disclosed trade-off)**
+
+- 이번 스프린트가 실제로 고치려던 문제(사용자가 보고한 "대각선 스와이프
+  오인식")는 근본 원인(짧은 훅으로 인한 확신에 찬 오답)을 실측으로
+  규명하고, 동일한 실패 사례에서 100% 수정을 확인했다. N=100x3 규모의
+  현실적인(훅이 섞인) 스와이프 실측에서도 오인식률 0%.
+- 발견된 유일한 트레이드오프(짧은 스와이프 최소 커밋 거리 증가)는 국소적이고
+  ~7px 수준으로 작으며, 다른 모든 기존 기능(스크램블/힌트/카메라/멀티터치)에는
+  회귀가 없다.
+- Strategy C(순수 재평가형 Hysteresis)로 더 정교하게 절충할 수도 있었지만,
+  진행 중인 회전 애니메이션과 상호작용하는 상태 기계를 새로 설계해야 해
+  이번 스프린트의 "저위험 변경" 취지와 "Three.js Scene 구조 자체 변경 금지"
+  제약에 부딪힐 위험이 있어 채택하지 않았다 (STEP 3에서 기각).
+- 따라서: **현재 구현(SETTLE_PX=6, DECISION_PX=8)을 그대로 배포하고, 짧은
+  스와이프 민감도 트레이드오프는 후속 스프린트의 후보 과제로 남긴다**
+  (예: STEP 3에서 설계했던 "빠른 판단과 재확인 판단이 일치하면 즉시 잠그고,
+  불일치할 때만 대기" 방식의 적응형 접근 -- 이번 실측에서 12px 시점의
+  부분 데이터가 아직 신뢰할 만큼 무르익지 않아 정확도가 떨어짐을 확인했으므로,
+  후속 스프린트에서 더 큰 설계 변경으로 별도 다뤄야 한다).
+
+## Deliverable 목록
+
+1. Gesture Decision Flow 문서 -- STEP 1 (이 문서)
+2. 기존 판정 방식 분석 결과 -- STEP 1, STEP 2, STEP 2b (이 문서)
+3. 개선 Blueprint -- STEP 3 (이 문서)
+4. Prototype 구현 -- `src/customCube/customSwipeControls.ts` (커밋 `d48d87d`)
+5. Validation 결과 -- STEP 5a, 5c (이 문서)
+6. Regression Report -- STEP 5b, 5d (이 문서)
+7. 최종 Decision -- 위 "Decision: B" 참고
+
+## 변경 범위 확인
+
+- 수정 파일: `src/customCube/customSwipeControls.ts` 단 1개.
+- Production Solver / Primitive / Planner / Recovery / Budget / Validation
+  Framework / Cube Solve Logic / Replay Logic / Hint Logic: 미변경.
+- Three.js Scene 구조, 큐브 상태 표현, 회전 알고리즘: 미변경.
+- 5x5 frozen baseline 5개 파일(`fiveByFiveEdgeRecovery.ts`,
+  `fiveByFiveEdgePlanner.ts`, `fiveByFiveEdgeExecutor.ts`,
+  `fiveByFiveEdgeSolverEngine.ts`, `fiveByFiveEdges.ts`): 미변경 (`git diff`
+  로 확인 완료).
