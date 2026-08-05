@@ -14,6 +14,22 @@ const DRAG_THRESHOLD_PX = 12;
 // past that reference the finger has to move before the axis locks.
 const SETTLE_PX = 6;
 const DECISION_PX = 8;
+// On faces viewed at an oblique angle (e.g. the top/right faces in the
+// default 3-face camera pose), the two candidate axes' screen tangents can
+// end up nearly parallel instead of close to perpendicular -- a sweep
+// across the visible canvas found 27% of sampled points on those faces had
+// an axis-alignment margin under 0.25, several under 0.02 (see
+// docs/GESTURE_AXIS_MAPPING_VALIDATION_V2.md). At that margin the winning
+// candidate is effectively decided by hand-tremor noise in a single
+// snapshot. When the margin is this low, wait for more drag distance past
+// the normal decision point before locking -- a longer real swipe's
+// direction is a more stable signal than a short one, the same reasoning
+// SETTLE_PX/DECISION_PX already rely on for the hook problem. This never
+// fires on well-separated faces (front-face margins measured consistently
+// >=0.3), so it leaves that already-validated 0%-misrecognition behavior
+// untouched.
+const LOW_CONFIDENCE_MARGIN = 0.15;
+const LOW_CONFIDENCE_EXTRA_PX = 20;
 // How much of the canvas width a full 90-degree drag needs to cover.
 const FULL_TURN_FRACTION_OF_WIDTH = 0.14;
 const COMMIT_PROGRESS_THRESHOLD = 0.3;
@@ -307,6 +323,14 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
       const tangent1 = screenTangent(scene, drag.hitPoint, c1.axis, rect);
       const align0 = axisAlignment(dragDir, tangent0);
       const align1 = axisAlignment(dragDir, tangent1);
+      // See LOW_CONFIDENCE_MARGIN above -- on an oblique-angle face the two
+      // candidates can be nearly tied here. Don't lock on a low-confidence
+      // snapshot; wait for more real drag distance (up to the extended
+      // cap) so a longer, steadier swipe gets to resolve the tie instead of
+      // a single noisy sample deciding it.
+      if (Math.abs(align0 - align1) < LOW_CONFIDENCE_MARGIN && Math.hypot(rdx, rdy) < DECISION_PX + LOW_CONFIDENCE_EXTRA_PX) {
+        return;
+      }
       const useC0 = align0 >= align1;
       const chosen = useC0 ? c0 : c1;
       const screenDir = useC0 ? tangent0 : tangent1;
