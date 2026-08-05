@@ -52,45 +52,18 @@ function screenTangent(scene: CustomCubeScene, hitPoint: THREE.Vector3, axis: Ax
   return b.sub(a).normalize();
 }
 
-// The same rotation setTurnProgress() applies visually to the live layer
-// group (axisVector(axis), angle = progress * 90 degrees) -- reusing that
-// exact convention here means a predicted screen position for a given
-// progress always matches what the user would actually see mid-scrub.
-function rotatedPoint(point: THREE.Vector3, axis: Axis, progress: number): THREE.Vector3 {
-  const q = new THREE.Quaternion().setFromAxisAngle(axisVector(axis), progress * (Math.PI / 2));
-  return point.clone().applyQuaternion(q);
-}
-
-// Finds the turn progress (in units of quarter-turns, unclamped) whose
-// predicted screen position for `hitPoint` best matches `targetScreen` --
-// a coarse-then-refined 1D search over the actual nonlinear rotation
-// trajectory, not a linear approximation. Used ONLY to decide which of the
-// two candidate axes a drag means (see below) -- NOT for the ongoing
-// progress value, since "closest point on this axis's finite trajectory
-// curve to the pointer's absolute screen position" doesn't grow without
-// bound as the user keeps dragging in a straight line (verified directly:
-// a sustained straight drag can asymptote at a residual well under the
-// commit threshold if the line's bearing doesn't closely match the curve's
-// overall bearing, i.e. dragging further would never commit the turn no
-// matter how far you go). Ongoing progress instead reuses the original
-// fixed-tangent linear projection once an axis is chosen, which is
-// monotonic and unbounded by construction.
-function bestFitProgress(scene: CustomCubeScene, hitPoint: THREE.Vector3, axis: Axis, rect: DOMRect, targetScreen: THREE.Vector2): { progress: number; error: number } {
-  function errorAt(progress: number): number {
-    const predicted = worldToScreen(scene, rotatedPoint(hitPoint, axis, progress), rect);
-    return predicted.distanceToSquared(targetScreen);
-  }
-  let best = { progress: 0, error: errorAt(0) };
-  for (let p = -1.6; p <= 1.6 + 1e-9; p += 0.05) {
-    const error = errorAt(p);
-    if (error < best.error) best = { progress: p, error };
-  }
-  const center = best.progress;
-  for (let p = center - 0.05; p <= center + 0.05 + 1e-9; p += 0.002) {
-    const error = errorAt(p);
-    if (error < best.error) best = { progress: p, error };
-  }
-  return best;
+// Which of the two candidate axes a drag means is decided by direct angle
+// comparison: the swipe's screen-space direction against each axis's local
+// screen tangent LINE at the touch point (see screenTangent below). "Line"
+// because a candidate can be dragged either way along its tangent -- a
+// swipe pointing along +tangent or -tangent both mean that axis -- so the
+// comparison is sign-agnostic (|dot| of the normalized directions, i.e. how
+// parallel the two lines are) rather than a signed vector match. Picking
+// the axis whose tangent line the swipe is more nearly parallel to is a
+// direct geometric answer with no ambiguity except at the exact angle
+// bisector between the two tangents (an actual 50/50 case, not a bug).
+function axisAlignment(dragDir: THREE.Vector2, tangent: THREE.Vector2): number {
+  return Math.abs(dragDir.dot(tangent));
 }
 
 export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: { current: number }): CustomSwipeController {
@@ -253,12 +226,15 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
     if (!drag.locked) {
       if (Math.hypot(dx, dy) < DRAG_THRESHOLD_PX) return;
       const rect = dom.getBoundingClientRect();
-      const targetScreen = new THREE.Vector2(e.clientX - rect.left, e.clientY - rect.top);
+      const dragDir = new THREE.Vector2(dx, dy).normalize();
       const [c0, c1] = drag.candidates!;
-      const fit0 = bestFitProgress(scene, drag.hitPoint, c0.axis, rect, targetScreen);
-      const fit1 = bestFitProgress(scene, drag.hitPoint, c1.axis, rect, targetScreen);
-      const chosen = fit0.error <= fit1.error ? c0 : c1;
-      const screenDir = screenTangent(scene, drag.hitPoint, chosen.axis, rect);
+      const tangent0 = screenTangent(scene, drag.hitPoint, c0.axis, rect);
+      const tangent1 = screenTangent(scene, drag.hitPoint, c1.axis, rect);
+      const align0 = axisAlignment(dragDir, tangent0);
+      const align1 = axisAlignment(dragDir, tangent1);
+      const useC0 = align0 >= align1;
+      const chosen = useC0 ? c0 : c1;
+      const screenDir = useC0 ? tangent0 : tangent1;
       const fullTurnPx = rect.width * FULL_TURN_FRACTION_OF_WIDTH;
       // Someone else (a solve-preview animation, most likely) already owns
       // the scene's turn -- e.g. this finger was resting on the cube, below
