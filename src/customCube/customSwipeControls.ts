@@ -164,12 +164,42 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
     requestAnimationFrame(step);
   }
 
+  // Adjacent cubie meshes don't actually touch -- there's a real (if thin)
+  // 3D gap between them (see CUBIE_SIZE_RATIO in CustomCubeScene.ts), which
+  // is what makes the black grid lines read as gaps rather than seams. A
+  // touch landing in that gap, or just past a corner cubie's rounded bevel,
+  // hits nothing at all -- most likely exactly where three faces meet
+  // (a corner cubie), since that's where the most gap-edges converge. Retry
+  // with a small ring of pixel offsets around the exact point before giving
+  // up, so a touch that's a few pixels off a boundary still finds the cubie
+  // the user was obviously aiming for instead of silently doing nothing.
+  const MISS_RETRY_OFFSETS_PX: readonly [number, number][] = [
+    [0, 0],
+    [-6, 0],
+    [6, 0],
+    [0, -6],
+    [0, 6],
+    [-6, -6],
+    [6, -6],
+    [-6, 6],
+    [6, 6],
+  ];
+
+  function raycastNear(clientX: number, clientY: number, rect: DOMRect): THREE.Intersection | null {
+    for (const [dx, dy] of MISS_RETRY_OFFSETS_PX) {
+      const ndcEvent = { clientX: clientX + dx, clientY: clientY + dy } as PointerEvent;
+      raycaster.setFromCamera(ndcFromEvent(ndcEvent, rect), scene.camera);
+      const [hit] = raycaster.intersectObjects(scene.raycastableObjects(), false);
+      if (hit && hit.face) return hit;
+    }
+    return null;
+  }
+
   function onPointerDown(e: PointerEvent) {
     if (!enabled || e.button !== 0) return;
     if (releaseCancel) interruptRelease();
     const rect = dom.getBoundingClientRect();
-    raycaster.setFromCamera(ndcFromEvent(e, rect), scene.camera);
-    const [hit] = raycaster.intersectObjects(scene.raycastableObjects(), false);
+    const hit = raycastNear(e.clientX, e.clientY, rect);
     if (!hit || !hit.face) return;
     const cubieId = scene.cubieIdForMesh(hit.object);
     const cubie = cubieId === null ? undefined : scene.getCubieById(cubieId);
