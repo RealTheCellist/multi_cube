@@ -18,6 +18,19 @@ const DECISION_PX = 8;
 const FULL_TURN_FRACTION_OF_WIDTH = 0.14;
 const COMMIT_PROGRESS_THRESHOLD = 0.3;
 const RELEASE_ANIMATION_MS = 220;
+// The instant the axis locks, `progress` is already computed from
+// displacement measured all the way back at the touchdown pixel -- by the
+// time SETTLE_PX/DECISION_PX have been satisfied that's already ~20px, so
+// the very first frame of visible feedback used to jump straight to
+// roughly a third of a quarter-turn instead of starting from zero (see
+// docs/GESTURE_FEEL_OPTIMIZATION_V1.md STEP 1 -- measured, not assumed:
+// screenshots at 19px vs 20px go from a fully static cube to one already
+// rotated ~34 degrees in a single frame). CATCH_UP_MS smooths that jump
+// into a short eased ramp from 0, reusing the same easeOutCubic +
+// requestAnimationFrame shape already proven in startRelease() below.
+// This only touches how an ALREADY-DECIDED axis's progress is displayed;
+// it cannot change which axis gets chosen or when.
+const CATCH_UP_MS = 80;
 
 export interface CustomSwipeController {
   setEnabled(enabled: boolean): void;
@@ -36,6 +49,13 @@ interface LockedTurn {
   screenDir: THREE.Vector2;
   fullTurnPx: number;
   progress: number;
+}
+
+interface CatchUpTween {
+  startTime: number;
+  fromProgress: number;
+  toProgress: number;
+  displayed: number;
 }
 
 interface DragState {
@@ -89,6 +109,7 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
   let drag: DragState | null = null;
   let releaseCancel: (() => void) | null = null;
   let releaseTarget: 1 | -1 | null = null;
+  let catchUp: CatchUpTween | null = null;
   const controller: CustomSwipeController = {
     onCommit: null,
     setEnabled(value: boolean) {
@@ -151,6 +172,28 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
       }
     }
     requestAnimationFrame(step);
+  }
+
+  // Runs only for the first CATCH_UP_MS after an axis locks, easing the
+  // displayed progress from 0 up to whatever the live drag distance
+  // already implies (see CATCH_UP_MS above) instead of snapping straight
+  // there. `toProgress` keeps getting updated by onPointerMove while this
+  // is in flight, so a continuing drag blends smoothly into live 1:1
+  // tracking rather than fighting this tween once it finishes.
+  function stepCatchUp(now: number) {
+    if (!catchUp || !drag?.locked) {
+      catchUp = null;
+      return;
+    }
+    const t = Math.max(0, Math.min((now - catchUp.startTime) / CATCH_UP_MS, 1));
+    const eased = easeOutCubic(t);
+    catchUp.displayed = catchUp.fromProgress + eased * (catchUp.toProgress - catchUp.fromProgress);
+    scene.setTurnProgress(catchUp.displayed);
+    if (t < 1) {
+      requestAnimationFrame(stepCatchUp);
+    } else {
+      catchUp = null;
+    }
   }
 
   // Adjacent cubie meshes don't actually touch -- there's a real (if thin)
@@ -281,8 +324,10 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
       }
       const projected = dx * screenDir.x + dy * screenDir.y;
       const progress = Math.max(-1, Math.min(1, projected / fullTurnPx));
-      scene.setTurnProgress(progress);
       drag.locked = { axis: chosen.axis, layer: chosen.layer, screenDir, fullTurnPx, progress };
+      scene.setTurnProgress(0);
+      catchUp = { startTime: performance.now(), fromProgress: 0, toProgress: progress, displayed: 0 };
+      requestAnimationFrame(stepCatchUp);
       return;
     }
 
@@ -290,12 +335,25 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
     const projected = dx * screenDir.x + dy * screenDir.y;
     const progress = Math.max(-1, Math.min(1, projected / fullTurnPx));
     drag.locked.progress = progress;
-    scene.setTurnProgress(progress);
+    if (catchUp) {
+      catchUp.toProgress = progress;
+    } else {
+      scene.setTurnProgress(progress);
+    }
   }
 
   function onPointerUp(e: PointerEvent) {
     if (!drag || e.pointerId !== drag.pointerId) return;
-    if (drag.locked) startRelease(drag.locked.progress);
+    if (drag.locked) {
+      // If the catch-up tween is still mid-flight, release from whatever
+      // is actually ON SCREEN right now (catchUp.displayed), not from the
+      // already-locked target progress -- starting the release tween from
+      // the target would itself snap the display straight to that value
+      // first, reintroducing the exact jump this sprint removes.
+      const fromProgress = catchUp ? catchUp.displayed : drag.locked.progress;
+      catchUp = null;
+      startRelease(fromProgress);
+    }
     drag = null;
   }
 
