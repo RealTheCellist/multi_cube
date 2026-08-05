@@ -145,6 +145,19 @@ export class CustomCubeScene {
     return typeof mesh.userData.cubieId === "number" ? mesh.userData.cubieId : null;
   }
 
+  /**
+   * Converts one world-space coordinate (e.g. a raycast hit point's x/y/z)
+   * into the same grid units cubie.position uses (mesh.position ==
+   * cubie.position * spacing, see syncMeshTransform) -- lets a caller work
+   * from the exact 3D point a touch landed on rather than snapping straight
+   * to whichever cubie's mesh happened to get raycast, which can be the
+   * wrong neighbor right at a row/column boundary (rounded-bevel meshes
+   * don't end exactly where the flat face they belong to does).
+   */
+  worldToGrid(worldCoordinate: number): number {
+    return worldCoordinate / this.spacing;
+  }
+
   getCubieById(id: number): Cubie | undefined {
     return this.cubies.find((c) => c.id === id);
   }

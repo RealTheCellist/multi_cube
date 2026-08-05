@@ -214,16 +214,30 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
     const az = Math.abs(worldNormal.z);
     const faceAxis: Axis = ax >= ay && ax >= az ? "x" : ay >= az ? "y" : "z";
     const otherAxes: Axis[] = (["x", "y", "z"] as Axis[]).filter((a) => a !== faceAxis);
+    // A valid grid coordinate is an exact integer for odd grid sizes and an
+    // exact half-integer for even ones (see cubeState.ts's buildSolvedCube:
+    // coordinate = index - (gridSize-1)/2). Rounding to the nearest half
+    // unconditionally -- as this used to -- is only correct for even grids;
+    // on an odd grid like 3x3 it can snap a hit point to e.g. 0.5, a layer
+    // that doesn't exist, silently producing an empty turn group (the move
+    // counter still increments since beginTurn succeeds, but no cubie
+    // actually moves). Round to the parity this gridSize actually uses.
+    const isEvenGrid = scene.gridSize % 2 === 0;
     const candidates = otherAxes.map((axis) => {
-      // A valid grid coordinate is an exact integer for odd grid sizes and
-      // an exact half-integer for even ones (see cubeState.ts) -- snapping
-      // to the nearest integer here would be wrong for a 4x4's inner layers
-      // (e.g. 1.5 rounds to 2, a layer that doesn't exist). 0 specifically
-      // means a middle-slice (M/E/S) turn on a 3x3x3 -- a touched edge or
-      // center piece has one or both of its non-face-axis coordinates at 0.
-      // CustomCubeScene.endTurn knows how to commit and name that turn, so
-      // this is passed through as-is rather than forced to an outer layer.
-      const layer = Math.round(cubie.position[axis] * 2) / 2;
+      // 0 specifically means a middle-slice (M/E/S) turn on a 3x3x3 -- a
+      // touched edge or center piece has one or both of its non-face-axis
+      // coordinates at 0. CustomCubeScene.endTurn knows how to commit and
+      // name that turn, so this is passed through as-is rather than forced
+      // to an outer layer.
+      //
+      // Snapped from the raycast hit POINT, not the hit cubie's own center:
+      // right at a row/column boundary, the ray can land on a neighboring
+      // cubie's rounded bevel instead of the one the touch visually landed
+      // on (rounded-corner meshes don't end exactly where their flat face
+      // does), which would silently turn the wrong layer if snapped to
+      // that neighbor's center instead of to where the touch actually was.
+      const raw = scene.worldToGrid(hit.point[axis]);
+      const layer = isEvenGrid ? Math.round(raw * 2) / 2 : Math.round(raw);
       return { axis, layer };
     }) as [Candidate, Candidate];
 
