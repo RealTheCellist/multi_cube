@@ -3,6 +3,17 @@ import type { CustomCubeScene } from "./CustomCubeScene";
 import { type Axis, axisVector } from "./cubeMath";
 
 const DRAG_THRESHOLD_PX = 12;
+// A real finger "hooks" through a short, incidental off-axis segment
+// before settling into the direction it actually means (see
+// docs/GESTURE_DIRECTION_STABILIZATION_V1.md STEP 2b -- measured with a
+// synthetic hooked swipe: an 11px off-axis hook followed by a long, clean,
+// unambiguous swipe was still classified by the hook's direction, because
+// the axis lock used to fire on displacement from the touchdown pixel
+// itself). SETTLE_PX is the length of hook this is willing to absorb by
+// re-anchoring the direction reference past it; DECISION_PX is how far
+// past that reference the finger has to move before the axis locks.
+const SETTLE_PX = 6;
+const DECISION_PX = 8;
 // How much of the canvas width a full 90-degree drag needs to cover.
 const FULL_TURN_FRACTION_OF_WIDTH = 0.14;
 const COMMIT_PROGRESS_THRESHOLD = 0.3;
@@ -34,6 +45,11 @@ interface DragState {
   hitPoint: THREE.Vector3;
   candidates: [Candidate, Candidate] | null;
   locked: LockedTurn | null;
+  // Set once total displacement from (startX, startY) first clears
+  // SETTLE_PX -- the direction decision is then based on movement from
+  // THIS point, not from the touchdown pixel, so a short initial hook
+  // doesn't dominate the snapshot the axis gets decided from.
+  settleRef: { x: number; y: number } | null;
 }
 
 function easeOutCubic(t: number): number {
@@ -215,7 +231,7 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
     }) as [Candidate, Candidate];
 
     dom.setPointerCapture(e.pointerId);
-    drag = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, hitPoint: hit.point.clone(), candidates, locked: null };
+    drag = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, hitPoint: hit.point.clone(), candidates, locked: null, settleRef: null };
   }
 
   function onPointerMove(e: PointerEvent) {
@@ -225,8 +241,24 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
 
     if (!drag.locked) {
       if (Math.hypot(dx, dy) < DRAG_THRESHOLD_PX) return;
+
+      // Dead zone: don't decide the axis from the touchdown pixel itself.
+      // Wait for total displacement to clear SETTLE_PX, re-anchor the
+      // direction reference there (absorbing a short hook as settling
+      // noise), then require DECISION_PX more movement past that anchor
+      // before actually locking. See GESTURE_DIRECTION_STABILIZATION_V1.md
+      // STEP 2b for the measured hooked-swipe failure this fixes.
+      if (!drag.settleRef) {
+        if (Math.hypot(dx, dy) < SETTLE_PX) return;
+        drag.settleRef = { x: e.clientX, y: e.clientY };
+        return;
+      }
+      const rdx = e.clientX - drag.settleRef.x;
+      const rdy = e.clientY - drag.settleRef.y;
+      if (Math.hypot(rdx, rdy) < DECISION_PX) return;
+
       const rect = dom.getBoundingClientRect();
-      const dragDir = new THREE.Vector2(dx, dy).normalize();
+      const dragDir = new THREE.Vector2(rdx, rdy).normalize();
       const [c0, c1] = drag.candidates!;
       const tangent0 = screenTangent(scene, drag.hitPoint, c0.axis, rect);
       const tangent1 = screenTangent(scene, drag.hitPoint, c1.axis, rect);
