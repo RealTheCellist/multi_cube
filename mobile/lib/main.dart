@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 
 // This app is a thin native shell around the real cube game
 // (src/App.tsx + src/CubeView.tsx + src/customCube/, this repo), built by
@@ -34,9 +36,28 @@ class _CubeGameWebViewState extends State<CubeGameWebView> {
   @override
   void initState() {
     super.initState();
+    // Lets `chrome://inspect` on the desktop attach to this WebView (Android
+    // only -- no-op on iOS) so console/network/rendering can be inspected
+    // directly, not just via debugPrint below.
+    if (WebViewPlatform.instance is AndroidWebViewPlatform) {
+      AndroidWebViewController.enableDebugging(true);
+    }
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(Colors.black)
+      ..setOnConsoleMessage((message) {
+        debugPrint('[WebView console] ${message.level.name}: ${message.message}');
+      })
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (url) => debugPrint('[WebView] page started: $url'),
+          onPageFinished: (url) => debugPrint('[WebView] page finished: $url'),
+          onWebResourceError: (error) => debugPrint(
+            '[WebView] resource error: ${error.errorCode} ${error.description} '
+            '(url=${error.url}, mainFrame=${error.isForMainFrame})',
+          ),
+        ),
+      )
       ..loadFlutterAsset('assets/webapp/index.html');
   }
 

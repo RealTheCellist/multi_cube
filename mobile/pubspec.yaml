@@ -23,6 +23,10 @@ dependencies:
   # specifically for "bundle a whole built SPA as Flutter assets and serve
   # it" -- no local HTTP server or file:// relative-path workarounds needed.
   webview_flutter: ^4.10.0
+  # Needed directly (not just transitively) to call
+  # AndroidWebViewController.enableDebugging() for chrome://inspect access
+  # while diagnosing the black-screen report.
+  webview_flutter_android: ^4.10.0
 
 dev_dependencies:
   flutter_test:
