@@ -115,11 +115,7 @@ export interface SlotCycleState {
 }
 
 export const slotCycleModel: CubeModel<SlotCycleState> = {
-  // Winner of Cube Model Experiment Sprint v1 (see docs/CUBE_MODEL_EXPERIMENT_V1.md)
-  // -- correctness-equivalent to production at every gridSize and the
-  // fastest of the 3 candidates under the realistic "resolve every turn"
-  // benchmark, so it's named after the app per the user's own instruction.
-  name: "CUBIXX (Slot-Cycle)",
+  name: "Slot-Cycle",
   summary: "턴마다 기하 계산 대신, gridSize당 1회 미리 계산해 둔 슬롯 순열 사이클을 정수 배열로만 적용",
 
   buildSolved(gridSize: number): SlotCycleState {
