@@ -1,9 +1,8 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart' show AssetManifest, rootBundle;
 import 'package:path_provider/path_provider.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_static/shelf_static.dart';
@@ -97,9 +96,11 @@ class _CubeGameWebViewState extends State<CubeGameWebView> {
   // real directory shelf_static can serve from. Re-extracted on every
   // launch (cheap, a few MB) so there's no stale-copy risk across updates.
   Future<Directory> _extractWebapp() async {
-    final manifestJson = await rootBundle.loadString('AssetManifest.json');
-    final manifest = json.decode(manifestJson) as Map<String, dynamic>;
-    final assetKeys = manifest.keys.where((key) => key.startsWith('assets/webapp/'));
+    // AssetManifest.json is no longer bundled by current Flutter's build
+    // system (only the binary AssetManifest.bin) -- AssetManifest.
+    // loadFromAssetBundle() is the supported way to read either format.
+    final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
+    final assetKeys = manifest.listAssets().where((key) => key.startsWith('assets/webapp/'));
 
     final tempDir = await getTemporaryDirectory();
     final docRoot = Directory('${tempDir.path}/webapp');
