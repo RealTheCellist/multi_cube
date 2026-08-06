@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android blocks cleartext (plain HTTP) traffic by default since API 28.
+  The WebView loads the game from a local shelf_static server on
+  127.0.0.1 (see lib/main.dart's _startAndLoad) to work around
+  file://'s CORS restrictions on ES module scripts -- that loopback
+  traffic never leaves the device, so it's exempted here instead of
+  permitting cleartext device-wide.
+-->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">127.0.0.1</domain>
+        <domain includeSubdomains="false">localhost</domain>
+    </domain-config>
+</network-security-config>
