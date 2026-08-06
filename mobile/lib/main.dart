@@ -66,26 +66,34 @@ class _CubeGameWebViewState extends State<CubeGameWebView> {
     final server = await shelf_io.serve(handler, InternetAddress.loopbackIPv4, 0);
     _localServer = server;
 
-    if (WebViewPlatform.instance is AndroidWebViewPlatform) {
+    // Remote debugging (chrome://inspect) and the console/navigation
+    // debugPrint hooks below were only ever needed to diagnose the
+    // black-screen bug -- keeping enableDebugging() on in release builds
+    // leaves the DevTools protocol bridge attached permanently, which adds
+    // real input-latency overhead. Debug builds only.
+    if (kDebugMode && WebViewPlatform.instance is AndroidWebViewPlatform) {
       AndroidWebViewController.enableDebugging(true);
     }
     final controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(Colors.black)
-      ..setOnConsoleMessage((message) {
-        debugPrint('[WebView console] ${message.level.name}: ${message.message}');
-      })
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: (url) => debugPrint('[WebView] page started: $url'),
-          onPageFinished: (url) => debugPrint('[WebView] page finished: $url'),
-          onWebResourceError: (error) => debugPrint(
-            '[WebView] resource error: ${error.errorCode} ${error.description} '
-            '(url=${error.url}, mainFrame=${error.isForMainFrame})',
+      ..setBackgroundColor(Colors.black);
+    if (kDebugMode) {
+      controller
+        ..setOnConsoleMessage((message) {
+          debugPrint('[WebView console] ${message.level.name}: ${message.message}');
+        })
+        ..setNavigationDelegate(
+          NavigationDelegate(
+            onPageStarted: (url) => debugPrint('[WebView] page started: $url'),
+            onPageFinished: (url) => debugPrint('[WebView] page finished: $url'),
+            onWebResourceError: (error) => debugPrint(
+              '[WebView] resource error: ${error.errorCode} ${error.description} '
+              '(url=${error.url}, mainFrame=${error.isForMainFrame})',
+            ),
           ),
-        ),
-      )
-      ..loadRequest(Uri.parse('http://127.0.0.1:${server.port}/index.html'));
+        );
+    }
+    controller.loadRequest(Uri.parse('http://127.0.0.1:${server.port}/index.html'));
 
     if (!mounted) return;
     setState(() => _controller = controller);
