@@ -46,6 +46,14 @@
 
 body {
   margin: 0;
+  /* No text inputs anywhere in this app -- every touch is a button press
+     or a cube swipe. Without this, a real touchscreen (unlike a desktop
+     mouse click, which this was only ever tested with before) treats a
+     button press as a text-selection gesture, highlighting its label (and
+     often neighboring text) blue instead of registering the tap. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 
 h1,
