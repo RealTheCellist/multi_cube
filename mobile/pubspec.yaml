@@ -19,14 +19,25 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  # Official Flutter team WebView package. loadFlutterAsset() is built
-  # specifically for "bundle a whole built SPA as Flutter assets and serve
-  # it" -- no local HTTP server or file:// relative-path workarounds needed.
+  # Official Flutter team WebView package.
   webview_flutter: ^4.10.0
   # Needed directly (not just transitively) to call
   # AndroidWebViewController.enableDebugging() for chrome://inspect access
   # while diagnosing the black-screen report.
   webview_flutter_android: ^4.10.0
+  # loadFlutterAsset() serves local files over file://, which Chromium
+  # gives an opaque ("null") origin -- and it refuses ANY CORS-mode fetch
+  # (which <script type="module"> and code-split dynamic import() always
+  # are, unconditionally, per spec) against file://. The built web app uses
+  # both, so loadFlutterAsset() renders a black screen with every JS/CSS
+  # chunk "blocked by CORS policy". These three packages instead extract
+  # the same, unmodified build into a real directory and serve it over a
+  # local http://127.0.0.1 origin, which is subject to normal same-origin
+  # rules (not the file:// CORS ban) -- the standard fix for this exact
+  # class of problem, without touching the web app's build output at all.
+  path_provider: ^2.1.4
+  shelf: ^1.4.1
+  shelf_static: ^1.1.3
 
 dev_dependencies:
   flutter_test:
