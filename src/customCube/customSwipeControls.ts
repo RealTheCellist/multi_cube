@@ -253,17 +253,11 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
   }
 
   function onPointerDown(e: PointerEvent) {
-    // eslint-disable-next-line no-console
-    console.log("[MOBILE_PROBE] down", { pointerId: e.pointerId, pointerType: e.pointerType, button: e.button, enabled });
     if (!enabled || e.button !== 0) return;
     if (releaseCancel) interruptRelease();
     const rect = dom.getBoundingClientRect();
     const hit = raycastNear(e.clientX, e.clientY, rect);
-    if (!hit || !hit.face) {
-      // eslint-disable-next-line no-console
-      console.log("[MOBILE_PROBE] down: raycast missed");
-      return;
-    }
+    if (!hit || !hit.face) return;
     // Note: this no longer requires hit.object to resolve to a real cubie.
     // A hit against the edgeGestureProxy fallback (see raycastNear above)
     // never does -- everything below only reads hit.face/hit.point/
@@ -319,12 +313,7 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
   }
 
   function onPointerMove(e: PointerEvent) {
-    if (!drag) return;
-    if (e.pointerId !== drag.pointerId) {
-      // eslint-disable-next-line no-console
-      console.log("[MOBILE_PROBE] move: pointerId mismatch", { got: e.pointerId, want: drag.pointerId });
-      return;
-    }
+    if (!drag || e.pointerId !== drag.pointerId) return;
     const dx = e.clientX - drag.startX;
     const dy = e.clientY - drag.startY;
 
@@ -379,8 +368,6 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
       const projected = dx * screenDir.x + dy * screenDir.y;
       const progress = Math.max(-1, Math.min(1, projected / fullTurnPx));
       drag.locked = { axis: chosen.axis, layer: chosen.layer, screenDir, fullTurnPx, progress };
-      // eslint-disable-next-line no-console
-      console.log("[MOBILE_PROBE] locked", { axis: chosen.axis, layer: chosen.layer, progress });
       scene.setTurnProgress(0);
       catchUp = { startTime: performance.now(), fromProgress: 0, toProgress: progress, displayed: 0 };
       requestAnimationFrame(stepCatchUp);

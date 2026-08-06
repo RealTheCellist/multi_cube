@@ -54,6 +54,12 @@ body {
   user-select: none;
   -webkit-user-select: none;
   -webkit-touch-callout: none;
+  /* Chromium's default tap-feedback: a translucent rectangle flashed over
+     whatever was tapped. Distinct from the text-selection highlight above
+     -- this one shows even with user-select:none. The buttons already have
+     their own designed :active press state (App.css), so this default
+     box just doubles (and looks like) an unwanted selection outline. */
+  -webkit-tap-highlight-color: transparent;
 }
 
 h1,
