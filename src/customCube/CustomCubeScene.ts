@@ -186,7 +186,7 @@ export class CustomCubeScene {
     // half a cubie's spacing on every side, sized empirically against the
     // silhouette-miss gap measured in docs/EDGE_GESTURE_HIT_EXPANSION_V1.md.
     const trueHalfExtent = ((this.gridSize - 1) / 2) * this.spacing + (this.spacing * CUBIE_SIZE_RATIO) / 2;
-    const EDGE_MARGIN_RATIO = 0.6;
+    const EDGE_MARGIN_RATIO = 0.75;
     const proxyHalfExtent = trueHalfExtent + this.spacing * EDGE_MARGIN_RATIO;
     const size = proxyHalfExtent * 2;
     const geometry = new THREE.BoxGeometry(size, size, size);
