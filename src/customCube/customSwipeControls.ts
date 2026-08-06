@@ -240,7 +240,16 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
       const [hit] = raycaster.intersectObjects(scene.raycastableObjects(), false);
       if (hit && hit.face) return hit;
     }
-    return null;
+    // Every real cubie missed, even with the retry ring above -- try the
+    // enlarged invisible proxy (see CustomCubeScene.ts's edgeGestureProxy)
+    // before giving up entirely. Only the exact touch point is tried here
+    // (no retry ring): the proxy is already generously padded past the
+    // cube's true surface, so a further pixel ring would just widen an
+    // already-forgiving fallback into over-triggering on background touches.
+    const ndcEvent = { clientX, clientY } as PointerEvent;
+    raycaster.setFromCamera(ndcFromEvent(ndcEvent, rect), scene.camera);
+    const [proxyHit] = raycaster.intersectObjects(scene.edgeGestureProxyObjects(), false);
+    return proxyHit && proxyHit.face ? proxyHit : null;
   }
 
   function onPointerDown(e: PointerEvent) {
@@ -249,9 +258,10 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
     const rect = dom.getBoundingClientRect();
     const hit = raycastNear(e.clientX, e.clientY, rect);
     if (!hit || !hit.face) return;
-    const cubieId = scene.cubieIdForMesh(hit.object);
-    const cubie = cubieId === null ? undefined : scene.getCubieById(cubieId);
-    if (!cubie) return;
+    // Note: this no longer requires hit.object to resolve to a real cubie.
+    // A hit against the edgeGestureProxy fallback (see raycastNear above)
+    // never does -- everything below only reads hit.face/hit.point/
+    // hit.object.matrixWorld, none of which need an actual cubie.
 
     // Rounded-corner geometry means the raw normal isn't always exactly
     // axis-aligned near a bevel -- pick the dominant component instead of
@@ -271,6 +281,14 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
     // counter still increments since beginTurn succeeds, but no cubie
     // actually moves). Round to the parity this gridSize actually uses.
     const isEvenGrid = scene.gridSize % 2 === 0;
+    // A proxy-fallback hit point sits past the cube's true surface (that's
+    // the whole point of the padding), so its raw grid coordinate can round
+    // to a layer index one past the outermost real layer -- clamp back to
+    // the outermost valid layer rather than producing a layer with no
+    // cubies in it (an empty turn group: beginTurn "succeeds" but nothing
+    // visibly moves, indistinguishable from the original miss this exists
+    // to fix).
+    const maxLayer = (scene.gridSize - 1) / 2;
     const candidates = otherAxes.map((axis) => {
       // 0 specifically means a middle-slice (M/E/S) turn on a 3x3x3 -- a
       // touched edge or center piece has one or both of its non-face-axis
@@ -285,7 +303,8 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
       // does), which would silently turn the wrong layer if snapped to
       // that neighbor's center instead of to where the touch actually was.
       const raw = scene.worldToGrid(hit.point[axis]);
-      const layer = isEvenGrid ? Math.round(raw * 2) / 2 : Math.round(raw);
+      const rounded = isEvenGrid ? Math.round(raw * 2) / 2 : Math.round(raw);
+      const layer = Math.max(-maxLayer, Math.min(maxLayer, rounded));
       return { axis, layer };
     }) as [Candidate, Candidate];
 

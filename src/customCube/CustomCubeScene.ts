@@ -68,6 +68,18 @@ export class CustomCubeScene {
   private container: HTMLElement;
   private cubies: Cubie[];
   private meshById = new Map<number, THREE.Mesh>();
+  // Invisible box slightly larger than the assembled cube's true rendered
+  // surface, raycast only as a FALLBACK when a touch misses every real
+  // cubie mesh (see customSwipeControls.ts's raycastNear). Swipes started
+  // right at the cube's screen silhouette -- near a face-to-face boundary,
+  // where perspective foreshortening narrows the true hit target -- land in
+  // the few-pixel gap between "visually on the cube" and "actually
+  // intersects a cubie mesh" often enough to feel like the gesture did
+  // nothing (see docs/EDGE_GESTURE_HIT_EXPANSION_V1.md). This never
+  // participates in the primary raycast (raycastableObjects() below), so it
+  // cannot change which cubie/axis a touch that already lands on a real
+  // cubie resolves to.
+  private edgeGestureProxy: THREE.Mesh;
   private activeTurn: ActiveTurn | null = null;
   private resizeObserver: ResizeObserver;
   private disposed = false;
@@ -135,6 +147,9 @@ export class CustomCubeScene {
       this.cubeGroup.add(mesh);
     }
 
+    this.edgeGestureProxy = this.buildEdgeGestureProxy();
+    this.cubeGroup.add(this.edgeGestureProxy);
+
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enablePan = false;
     this.controls.enabled = false;
@@ -163,8 +178,38 @@ export class CustomCubeScene {
     return mesh;
   }
 
+  private buildEdgeGestureProxy(): THREE.Mesh {
+    // trueHalfExtent: the assembled cube's actual outer surface, in world
+    // units -- the same geometry buildCubieMesh derives each cubie's size
+    // and position from (outermost grid coordinate's cubie center, plus
+    // half that cubie's own size). EDGE_MARGIN pads beyond that by roughly
+    // half a cubie's spacing on every side, sized empirically against the
+    // silhouette-miss gap measured in docs/EDGE_GESTURE_HIT_EXPANSION_V1.md.
+    const trueHalfExtent = ((this.gridSize - 1) / 2) * this.spacing + (this.spacing * CUBIE_SIZE_RATIO) / 2;
+    const EDGE_MARGIN_RATIO = 0.6;
+    const proxyHalfExtent = trueHalfExtent + this.spacing * EDGE_MARGIN_RATIO;
+    const size = proxyHalfExtent * 2;
+    const geometry = new THREE.BoxGeometry(size, size, size);
+    // opacity 0 (not `visible = false`) -- Three.js's Raycaster does not
+    // consult `.visible`, only the renderer's draw pass does, so opacity is
+    // what keeps this out of the rendered frame while staying raycastable.
+    const material = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
+    const mesh = new THREE.Mesh(geometry, material);
+    return mesh;
+  }
+
   raycastableObjects(): THREE.Object3D[] {
     return [...this.meshById.values()];
+  }
+
+  /**
+   * Fallback-only raycast target for touches that miss every real cubie --
+   * see edgeGestureProxy above. Deliberately excluded from
+   * raycastableObjects() so callers must try that first and only fall back
+   * to this on a genuine miss.
+   */
+  edgeGestureProxyObjects(): THREE.Object3D[] {
+    return [this.edgeGestureProxy];
   }
 
   cubieIdForMesh(mesh: THREE.Object3D): number | null {
@@ -363,6 +408,7 @@ export class CustomCubeScene {
     this.renderer.setAnimationLoop(null);
     this.controls.dispose();
     for (const mesh of this.meshById.values()) mesh.geometry.dispose();
+    this.edgeGestureProxy.geometry.dispose();
     this.renderer.dispose();
     this.renderer.domElement.remove();
   }
