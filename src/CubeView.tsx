@@ -2,11 +2,11 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import { CustomCubeScene } from "./customCube/CustomCubeScene";
 import { attachCustomSwipeTurning, type CustomSwipeController } from "./customCube/customSwipeControls";
 import {
+  applyNextFiveByFiveMove,
+  applyNextFourByFourMove,
+  applyNextSolveMove,
   type FiveByFiveHint,
   type FourByFourHint,
-  previewNextFiveByFiveMove,
-  previewNextFourByFourMove,
-  previewNextSolveMove,
 } from "./customCube/customSolvePlayback";
 import type { SolveHint } from "./solvePlayback";
 
@@ -14,9 +14,10 @@ export interface CubeViewHandle {
   scramble: () => Promise<void>;
   resetToSolved: () => void;
   solveNextMove: () => Promise<SolveHint>;
-  previewNextFourByFour: () => Promise<FourByFourHint>;
-  previewNextFiveByFive: () => Promise<FiveByFiveHint>;
+  solveNextFourByFour: () => Promise<FourByFourHint>;
+  solveNextFiveByFive: () => Promise<FiveByFiveHint>;
   isSolved: () => boolean;
+  undoLastMove: () => boolean;
 }
 
 interface CubeViewProps {
@@ -86,6 +87,24 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
     controllerRef.current?.setEnabled(interactive && !orbitMode);
   }, [orbitMode, interactive]);
 
+  // Solve-hint presses now actually commit the move (see customSolvePlayback.ts)
+  // instead of a preview-then-revert -- so, exactly like a real swipe commit,
+  // they must feed moveCount/onFirstMove/onSolvedChange too. A hint move can
+  // apply more than one quarter turn in a single press (e.g. a "R2" hint),
+  // so the applied count comes from the scene's own undo-stack delta rather
+  // than assuming +1.
+  function reportSolveCommit(scene: CustomCubeScene, before: number): void {
+    const applied = scene.getUndoCount() - before;
+    if (applied <= 0) return;
+    moveCountRef.current += applied;
+    callbacksRef.current.onMoveCountChange(moveCountRef.current);
+    if (!hasMovedRef.current) {
+      hasMovedRef.current = true;
+      callbacksRef.current.onFirstMove();
+    }
+    callbacksRef.current.onSolvedChange(scene.isSolved());
+  }
+
   useImperativeHandle(ref, () => ({
     scramble: async () => {
       hasMovedRef.current = false;
@@ -103,33 +122,50 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
       const scene = sceneRef.current;
       if (!scene) return { move: null, movesRemaining: 0 };
       controllerRef.current?.setEnabled(false);
+      const before = scene.getUndoCount();
       try {
-        return await previewNextSolveMove(scene);
+        return await applyNextSolveMove(scene);
       } finally {
+        reportSolveCommit(scene, before);
         controllerRef.current?.setEnabled(interactiveRef.current && !orbitModeRef.current);
       }
     },
-    previewNextFourByFour: async () => {
+    solveNextFourByFour: async () => {
       const scene = sceneRef.current;
       if (!scene) return { hasMove: false, movesRemaining: 0, solved: false };
       controllerRef.current?.setEnabled(false);
+      const before = scene.getUndoCount();
       try {
-        return await previewNextFourByFourMove(scene);
+        return await applyNextFourByFourMove(scene);
       } finally {
+        reportSolveCommit(scene, before);
         controllerRef.current?.setEnabled(interactiveRef.current && !orbitModeRef.current);
       }
     },
-    previewNextFiveByFive: async () => {
+    solveNextFiveByFive: async () => {
       const scene = sceneRef.current;
       if (!scene) return { hasMove: false, movesRemaining: 0, solved: false };
       controllerRef.current?.setEnabled(false);
+      const before = scene.getUndoCount();
       try {
-        return await previewNextFiveByFiveMove(scene);
+        return await applyNextFiveByFiveMove(scene);
       } finally {
+        reportSolveCommit(scene, before);
         controllerRef.current?.setEnabled(interactiveRef.current && !orbitModeRef.current);
       }
     },
     isSolved: () => sceneRef.current?.isSolved() ?? false,
+    undoLastMove: () => {
+      const scene = sceneRef.current;
+      if (!scene) return false;
+      const didUndo = scene.undoLastMove();
+      if (didUndo) {
+        moveCountRef.current = Math.max(0, moveCountRef.current - 1);
+        callbacksRef.current.onMoveCountChange(moveCountRef.current);
+        callbacksRef.current.onSolvedChange(scene.isSolved());
+      }
+      return didUndo;
+    },
   }));
 
   return <div className="cube-view" ref={containerRef} />;

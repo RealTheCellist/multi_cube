@@ -77,6 +77,12 @@ export class CustomCubeScene {
   // reproduces the exact current state without this renderer having to
   // know anything about cubing.js's own piece/orientation encoding.
   private moveHistory: string[] = [];
+  // One entry per committed endTurn() (any gridSize, unlike moveHistory
+  // above which is letter-notation-only for 2x2x2/3x3x3) -- lets
+  // undoLastMove() replay the inverse turn without needing a full letter
+  // scheme. Never touched by scramble/hint-preview (both bypass this via
+  // applyInstantMove or endTurn(null), see cubeState.ts/customSolvePlayback.ts).
+  private undoStack: { axis: Axis; layer: number; sign: 1 | -1 }[] = [];
 
   constructor(container: HTMLElement, gridSize = 3) {
     this.container = container;
@@ -261,6 +267,7 @@ export class CustomCubeScene {
     try {
       if (commitSign !== null) {
         applyRawQuarterTurn(this.cubies, turn.axis, turn.layer, commitSign);
+        this.undoStack.push({ axis: turn.axis, layer: turn.layer, sign: commitSign });
         // Letter-notation move history only makes sense (and is only ever
         // read, by the solver) for sizes with a well-defined scheme -- the
         // 3x3x3 (one middle slice + two outer layers per axis) and the
@@ -301,12 +308,39 @@ export class CustomCubeScene {
     return [...this.moveHistory];
   }
 
+  // Count of committed turns since the last resetToSolved(), any gridSize --
+  // callers that need to know how many quarter turns a batch of solve-hint
+  // commits just produced (a hint move can be a double, e.g. "R2") compare
+  // this before/after rather than parsing move tokens themselves.
+  getUndoCount(): number {
+    return this.undoStack.length;
+  }
+
+  /**
+   * Reverts the last committed turn (from a real swipe, any gridSize).
+   * Returns false as a safe no-op when there's nothing to undo or a turn
+   * is currently live (mid-drag) -- callers don't need to check either
+   * condition themselves.
+   */
+  undoLastMove(): boolean {
+    if (this.activeTurn) return false;
+    const last = this.undoStack.pop();
+    if (!last) return false;
+    applyRawQuarterTurn(this.cubies, last.axis, last.layer, last.sign === 1 ? -1 : 1);
+    for (const cubie of this.cubies) this.syncMeshTransform(cubie);
+    if (this.gridSize === 3 || this.gridSize === 2) {
+      this.moveHistory.pop();
+    }
+    return true;
+  }
+
   resetToSolved(): void {
     this.cubies = buildSolvedCube(this.gridSize);
     for (const cubie of this.cubies) {
       this.syncMeshTransform(cubie);
     }
     this.moveHistory = [];
+    this.undoStack = [];
   }
 
   scramble(): void {

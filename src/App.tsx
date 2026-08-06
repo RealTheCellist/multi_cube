@@ -100,6 +100,14 @@ function App() {
     setMode("look");
   }, []);
 
+  const handleUndo = useCallback(() => {
+    const didUndo = cubeRef.current?.undoLastMove();
+    if (didUndo) {
+      setSolveError(false);
+      setFourByFourUnsolved(false);
+    }
+  }, []);
+
   const resetGameState = useCallback(() => {
     setMode("play");
     setShowCompletionModal(false);
@@ -173,15 +181,15 @@ function App() {
     setFourByFourUnsolved(false);
     try {
       if (gridSize === 4 || gridSize === 5) {
-        // The user performs the actual swipe themselves after seeing the
-        // preview animation -- there's no letter-notation move history to
-        // hint against for a 4x4x4/5x5x5 (see cubeState.ts). The 5x5x5 path
-        // now caches a Plan across presses instead of recomputing everything
-        // fresh each time (see fiveByFiveEdgeSolverEngine.ts) --
-        // previewNextFiveByFive still goes stale-safely if the user's own
-        // swipes diverge from it, since the engine itself detects that via a
-        // state hash and rebuilds.
-        const result = gridSize === 4 ? await cubeRef.current?.previewNextFourByFour() : await cubeRef.current?.previewNextFiveByFive();
+        // Plays the move for real (see customSolvePlayback.ts) -- there's no
+        // letter-notation move history to hint against for a 4x4x4/5x5x5
+        // (see cubeState.ts), so the plan is recomputed fresh every press.
+        // The 5x5x5 path caches a Plan across presses instead of
+        // recomputing everything from scratch each time (see
+        // fiveByFiveEdgeSolverEngine.ts) -- solveNextFiveByFive still goes
+        // stale-safely if the user's own swipes diverge from it, since the
+        // engine itself detects that via a state hash and rebuilds.
+        const result = gridSize === 4 ? await cubeRef.current?.solveNextFourByFour() : await cubeRef.current?.solveNextFiveByFive();
         setSolveError(false);
         // Reflects the PLAN's own solved flag directly, not gated on
         // whether there happened to be a move to preview -- a scramble the
@@ -317,10 +325,10 @@ function App() {
         <p className="mode-hint">
           {isSolving
             ? gridSize === 4
-              ? "다음 수 미리보기 계산 중... (처음 누르면 몇 분 걸릴 수 있어요)"
+              ? "다음 수 계산 중... (처음 누르면 몇 분 걸릴 수 있어요)"
               : gridSize === 5
-                ? "다음 수 미리보기 계산 중... (처음 누르면 몇 초 걸릴 수 있어요)"
-                : "다음 수 미리보기 재생 중..."
+                ? "다음 수 계산 중... (처음 누르면 몇 초 걸릴 수 있어요)"
+                : "다음 수 진행 중..."
             : solveError
               ? "솔버 실행 중 오류가 발생했습니다. 다시 시도해보세요"
               : fourByFourUnsolved
@@ -370,9 +378,9 @@ function App() {
             disabled={isSolving}
             title={
               gridSize === 5
-                ? "3×3처럼 다음 수를 미리보기만 해요 (일부 스크램블은 여러 번 눌러야 끝까지 풀릴 수 있어요)"
+                ? "다음 수를 바로 진행해요 (일부 스크램블은 여러 번 눌러야 끝까지 풀릴 수 있어요)"
                 : gridSize === 4
-                  ? "3×3처럼 다음 수를 미리보기만 해요"
+                  ? "다음 수를 바로 진행해요"
                   : undefined
             }
           >
@@ -380,6 +388,11 @@ function App() {
           </button>
           <button type="button" className="btn3d btn-rose" onClick={handleScramble} disabled={isSolving}>
             스크램블
+          </button>
+        </div>
+        <div className="control-row">
+          <button type="button" className="btn3d btn-slate" onClick={handleUndo} disabled={isSolving || moveCount === 0}>
+            실행취소
           </button>
         </div>
       </div>
