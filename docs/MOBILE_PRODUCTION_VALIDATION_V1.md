@@ -81,7 +81,49 @@ cubing.js 내부 솔버 워커가 top-level `await`를 쓰고 있어 IIFE로 묶
 
 **Asset/Rendering: 성공.**
 
-## STEP 3~8
+## STEP 3/4 — Performance & Gesture Validation
 
-미착수. 게임플레이, 제스처, 솔버 연동, 성능, 장시간 세션, Desktop
-대비 리그레션 확인이 남아있음. 사용자 로컬 환경에서 진행 예정.
+**증상 1**: "반응이 느려 그리고 스와이프대로 움직이지도 않고" — 릴리즈
+빌드에서도 지연 지속.
+
+**오정정 사항**: 진단 중 "2x2/3x3/4x4는 cubing.js의 twisty-player를
+쓴다"고 잘못 안내했음 — 실제로는 `CubeView.tsx`가 전 사이즈(2x2~5x5)에
+`CustomCubeScene` + `customSwipeControls.ts`를 동일하게 사용. twisty-player
+경로는 현재 프로덕션에 존재하지 않음. 이 정정 이후 문제를 정확한
+위치에서 다시 진단.
+
+**진단**: `mobile/lib/main.dart`에 STEP 2 진단 과정에서 추가한
+`AndroidWebViewController.enableDebugging(true)`가 release 빌드에서도
+무조건 켜져 있어, Chrome DevTools 프로토콜 브릿지가 상시 연결된 상태로
+남아 입력 처리에 실제 오버헤드를 주고 있었음. `kDebugMode`로 게이팅해
+release에서는 완전히 꺼지도록 수정.
+
+**증상 2**: "스와이프시 움직임이 없는것을 해결해야 할듯" (간헐적).
+`customSwipeControls.ts`에 임시 `[MOBILE_PROBE]` 진단 로그를 추가해
+실기 로그 확보를 시도했으나, 이후 성능 수정만으로 문제가 해결되어
+로그 확보 전에 진단 완료 — pointerId 불일치 등 다른 원인 가설은 검증
+불필요. 임시 로그는 `git checkout`으로 즉시 원복(diff 0줄 확인).
+
+**결과**: 사용자 확인 — "무브먼트도 자연스럽고 반응성도 괜찮네".
+
+**Performance & Gesture: 성공.**
+
+## 부가 발견 — 모바일 전용 UX 버그 2건
+
+데스크톱 마우스 테스트로는 절대 드러나지 않는, 실제 터치스크린에서만
+나타나는 브라우저 기본 동작 두 가지를 실기 테스트에서 처음 발견·수정:
+
+1. **버튼 텍스트 전체선택**: 이 앱에는 텍스트 입력이 전혀 없는데
+   `user-select: none`이 없어, 버튼을 터치하면 라벨이 파랗게 선택됨.
+   `src/index.css`에 `user-select`/`-webkit-user-select`/
+   `-webkit-touch-callout: none` 추가.
+2. **버튼 주변 탭 하이라이트 박스**: Chromium의 기본 탭 피드백
+   오버레이(텍스트 선택과 별개). 버튼은 이미 자체 `:active` 프레스
+   스타일이 있어 이 기본 박스가 순수 잡음이었음.
+   `-webkit-tap-highlight-color: transparent` 추가.
+
+## STEP 5~8
+
+미착수 (솔버 힌트 UX, 장시간 세션, Desktop 대비 정밀 리그레션 감사 등).
+사용자 판단: "실기 테스트는 이정도면 충분한거 같아" — STEP 1~4 + 부가
+UX 수정으로 실기 검증 라운드 종료.
