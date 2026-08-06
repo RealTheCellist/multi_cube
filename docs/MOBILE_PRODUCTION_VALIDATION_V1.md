@@ -36,8 +36,52 @@ Proxy/Validation Framework는 수정하지 않는다.
 **Android Build: 성공.** iOS는 이 환경/이 사용자 로컬(Windows)에서는
 검증 불가 — Mac + Xcode 필요.
 
-## STEP 2~8
+## STEP 2 — Asset/Rendering Validation
 
-미착수. 실제 기기 또는 에뮬레이터에 APK를 설치해 에셋 로드, 렌더링,
-게임플레이, 제스처, 솔버 연동, 성능, Desktop 대비 리그레션을 확인해야
-한다. 사용자 로컬 환경에서 진행 예정.
+**증상**: 실기(Samsung SM N981N)에 설치 후 검은 화면만 표시, 게임이
+전혀 렌더링되지 않음.
+
+**진단 (실기 `flutter run` 로그로 확정)**: `loadFlutterAsset()`가 앱을
+`file://`로 서빙 → Chromium은 `file://`에 오리진을 `null`(opaque)로
+부여하고 CORS 모드 요청을 전면 거부. 빌드된 웹앱의
+`<script type="module">`과 코드분할 `dynamic import()` 청크는 스펙상
+무조건 CORS 모드 요청이라, 모든 JS/CSS 청크가 정확히
+`blocked by CORS policy`로 막혀 페이지가 아예 그려지지 않았음. 검은
+화면의 진짜 원인.
+
+**시도했다가 폐기한 접근**: 모바일 전용 Vite 설정으로 ES 모듈 없는
+단일 IIFE 번들을 시도. 원격 세션에서 직접 `vite build`로 재현 —
+cubing.js 내부 솔버 워커가 top-level `await`를 쓰고 있어 IIFE로 묶을
+수 없음이 확인되어 폐기 (production 웹 빌드는 건드리지 않는 것으로
+확정).
+
+**실제 적용한 수정 (웹 빌드는 전혀 건드리지 않음)**: `mobile/lib/main.dart`가
+앱 시작 시 `assets/webapp/`를 실제 디렉터리로 복사한 뒤
+`shelf`+`shelf_static`으로 로컬 `http://127.0.0.1` 서버를 띄우고 그
+주소를 로드하도록 변경. 같은 오리진에서 서빙되므로 CORS 제한이
+적용되지 않음.
+
+이 변경 과정에서 실기 로그로 순차적으로 드러난 3개의 추가 결함, 모두
+같은 라운드에서 수정:
+
+1. `AssetManifest.json`을 직접 파싱하려 했으나 `Unable to load asset`
+   예외 발생 — 현재 Flutter 빌드 시스템은 바이너리 `AssetManifest.bin`만
+   번들하고 JSON은 더 이상 만들지 않음. `AssetManifest.loadFromAssetBundle()`
+   API로 교체.
+2. `net::ERR_CLEARTEXT_NOT_PERMITTED` — Android가 API 28부터 평문
+   HTTP를 기본 차단. 기기 전체에 cleartext를 허용하는 대신
+   `127.0.0.1`/`localhost`에만 한정한 `network_security_config.xml`
+   추가.
+3. 그 `network_security_config.xml`의 주석 안에 `--`가 포함되어
+   XML 주석 문법 위반 → Gradle 리소스 파서가 빌드 자체를 거부.
+   주석에서 `--` 제거.
+
+**결과**: 사용자가 실기에서 확인 — "실기 화면 떴어". 검은 화면 문제
+해결, 게임 화면이 실제로 렌더링됨.
+
+**Asset/Rendering: 성공.**
+
+## STEP 3~8
+
+미착수. 게임플레이, 제스처, 솔버 연동, 성능, 장시간 세션, Desktop
+대비 리그레션 확인이 남아있음. 사용자 로컬 환경에서 진행 예정.
