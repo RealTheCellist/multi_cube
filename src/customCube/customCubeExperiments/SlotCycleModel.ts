@@ -16,22 +16,29 @@ import { rotateGridVector90 } from "../cubeMath";
 import { buildSolvedCube, roundedComponent, type Cubie, type Sticker } from "../cubeState";
 import type { Axis } from "../cubeMath";
 import type { CubeModel, Turn } from "./ExperimentTypes";
-import { buildRotationGroup } from "./RotationGroup";
+import { buildRotationGroup, type RotationGroup } from "./RotationGroup";
 import * as THREE from "three";
 
-interface TurnTable {
+// TurnTable/PrecomputedGrid/getPrecomputedGrid/turnKey/applyTurnToArrays are
+// exported (not just used internally by slotCycleModel below) so that the
+// other "Slot-Cycle plus one idea" variants in this experiment family
+// (Compose-Batched, Object-Pool, Zobrist-Hash) can reuse this same
+// precompute and shuffle logic instead of each re-deriving it independently
+// -- this file isn't a protected production file, it's shared experiment
+// infrastructure like ExperimentHarness.ts/RotationGroup.ts already are.
+export interface TurnTable {
   cycles: number[][]; // each entry is a cyclic sequence of slot indices a turn permutes
   genIndex: number; // rotation-group generator index every piece in this turn picks up
 }
 
-interface PrecomputedGrid {
+export interface PrecomputedGrid {
   slotPosition: THREE.Vector3[]; // slotIndex -> fixed physical position (never mutated after precompute)
   originalPosition: THREE.Vector3[]; // pieceId -> its solved-state position (== slotPosition[pieceId], kept separate to mirror Cubie's own originalPosition field)
   stickers: Sticker[][]; // pieceId -> fixed sticker set
   turnTables: Map<string, TurnTable>;
 }
 
-function turnKey(axis: Axis, layer: number, sign: 1 | -1): string {
+export function turnKey(axis: Axis, layer: number, sign: 1 | -1): string {
   return `${axis}|${layer}|${sign}`;
 }
 
@@ -99,13 +106,39 @@ function buildPrecomputedGrid(gridSize: number): PrecomputedGrid {
   return { slotPosition, originalPosition, stickers, turnTables };
 }
 
-function getPrecomputedGrid(gridSize: number): PrecomputedGrid {
+export function getPrecomputedGrid(gridSize: number): PrecomputedGrid {
   let grid = gridCache.get(gridSize);
   if (!grid) {
     grid = buildPrecomputedGrid(gridSize);
     gridCache.set(gridSize, grid);
   }
   return grid;
+}
+
+// The exact shuffle slotCycleModel.applyTurn below performs, factored out
+// so variant models can apply the same turn table to their OWN
+// slotToPiece/pieceOrientation arrays (e.g. Compose-Batched replaying a
+// whole log, or Object-Pool/TypedArray-Cycle which only change how state is
+// stored, not how a turn is applied to it) without re-deriving the cycle
+// logic a second time.
+export function applyTurnToArrays(slotToPiece: number[], pieceOrientation: number[], table: TurnTable, rotationGroup: RotationGroup): void {
+  const affectedPieceIds: number[] = [];
+  for (const cycle of table.cycles) {
+    for (const slot of cycle) affectedPieceIds.push(slotToPiece[slot]);
+  }
+
+  for (const cycle of table.cycles) {
+    if (cycle.length < 2) continue;
+    const carry = slotToPiece[cycle[cycle.length - 1]];
+    for (let i = cycle.length - 1; i > 0; i--) {
+      slotToPiece[cycle[i]] = slotToPiece[cycle[i - 1]];
+    }
+    slotToPiece[cycle[0]] = carry;
+  }
+
+  for (const pieceId of affectedPieceIds) {
+    pieceOrientation[pieceId] = rotationGroup.multiplyTable[table.genIndex][pieceOrientation[pieceId]];
+  }
 }
 
 export interface SlotCycleState {
@@ -133,26 +166,7 @@ export const slotCycleModel: CubeModel<SlotCycleState> = {
     const grid = getPrecomputedGrid(state.gridSize);
     const table = grid.turnTables.get(turnKey(turn.axis, turn.layer, turn.sign));
     if (!table) return;
-    const rotationGroup = buildRotationGroup();
-
-    // Collect affected piece ids before the shuffle overwrites slotToPiece.
-    const affectedPieceIds: number[] = [];
-    for (const cycle of table.cycles) {
-      for (const slot of cycle) affectedPieceIds.push(state.slotToPiece[slot]);
-    }
-
-    for (const cycle of table.cycles) {
-      if (cycle.length < 2) continue;
-      const carry = state.slotToPiece[cycle[cycle.length - 1]];
-      for (let i = cycle.length - 1; i > 0; i--) {
-        state.slotToPiece[cycle[i]] = state.slotToPiece[cycle[i - 1]];
-      }
-      state.slotToPiece[cycle[0]] = carry;
-    }
-
-    for (const pieceId of affectedPieceIds) {
-      state.pieceOrientation[pieceId] = rotationGroup.multiplyTable[table.genIndex][state.pieceOrientation[pieceId]];
-    }
+    applyTurnToArrays(state.slotToPiece, state.pieceOrientation, table, buildRotationGroup());
   },
 
   toCubies(state: SlotCycleState): Cubie[] {
