@@ -122,11 +122,45 @@ Front는 이미 D=35에서 0%로 포화된 상태라 영향 없고, Top face는 
   핵심 로직은 정상 작동함을 확인했다 — 근접-동률 지점 좌표 재보정은
   후속 과제로 남긴다.
 
+## 실기(real-device) 회귀 — COMMIT_DISTANCE_PX가 고정 픽셀이었던 문제
+
+D=80을 배포하고 GitHub Pages 실기 링크에서 사용자가 직접 만져본 뒤 두 가지를
+보고했다: "실기 감이 많이 떨어지네... 그리고 안그랬던 부분에서도 미스무빙이
+일어나고있어" — 체감 반응성 저하와, 이전엔 문제없던 지점(Front face 등)에서도
+새로 발생하는 오인식.
+
+원인은 하나였다. `fullTurnPx`(90도 전체 회전에 필요한 픽셀 거리)는
+`캔버스 너비 * 0.14`로 화면 크기에 비례하는데, `COMMIT_DISTANCE_PX`는
+고정 80px이었다. 테스트에 쓴 550px 캔버스에서는 `fullTurnPx≈77px`로 D=80과
+비슷했지만, 실제 폰 너비 캔버스(350~430px)에서는 `fullTurnPx`가 49~60px밖에
+안 된다 — 즉 커밋 거리가 전체 회전 한 바퀴보다 더 길었다. 그 결과:
+
+1. **체감 반응성**: 화면에 아무것도 안 보이는 채로 이미 "한 바퀴 분량"보다
+   더 긴 드래그를 하고 나서야 뭔가 나타나고, 나타나자마자 이미 거의 다 돈
+   상태로 스냅됐다 — "실기 감이 많이 떨어지네"의 직접 원인.
+2. **오인식 회귀**: 헤드리스 검증에 쓴 손떨림 모델은 "직선 + 매 스텝
+   독립적인 노이즈"만 가정했는데, 실제 사람 손의 드래그 경로는 그보다
+   훨씬 더 길게 이어지는 자연스러운 곡률(curvature)을 가진다. 판정은
+   `settleRef`부터 현재까지의 **누적 방향 벡터 전체**로 하므로, 커밋
+   거리가 길어질수록 이 곡률이 판정을 실제 의도에서 벗어나게 만들 여지가
+   커진다 — 합성 시뮬레이션은 직선 모델이라 이 실패 양상을 구조적으로
+   볼 수 없었다. "안그랬던 부분에서도 미스무빙"의 원인으로 추정된다.
+
+**수정**: `COMMIT_DISTANCE_PX`(고정 80px)를
+`COMMIT_DISTANCE_FRACTION_OF_FULL_TURN`(=0.4, `fullTurnPx`에 대한 비율)로
+교체 — `onPointerMove`에서 `rect.width * FULL_TURN_FRACTION_OF_WIDTH * 0.4`로
+매 프레임 계산한다. 이제 어떤 화면 크기에서도 커밋 거리가 전체 회전
+거리를 넘을 수 없고(항상 그 40%), 캔버스가 좁을수록 커밋 거리도 비례해서
+짧아져 실제 손 곡률이 누적될 시간도 함께 줄어든다. 좁은 폰 캔버스(390px)와
+데스크톱(550/900px) 양쪽에서 재검증(정상 회전 스와이프 + 짧은 플릭) 통과.
+
 ## 변경 범위
 
 - `src/customCube/customSwipeControls.ts` — `DECISION_PX`,
   `LOW_CONFIDENCE_MARGIN`, `LOW_CONFIDENCE_MAX_EXTRA_PX`,
   `lowConfidenceExtraPx()`, `CORRECTION_MARGIN`, `DragState.corrected` 전부
-  제거. `COMMIT_DISTANCE_PX=80`, `DragState.pending`, `commitPending()`
-  추가. `onPointerMove`/`onPointerUp` 판정 로직 전체 재작성.
+  제거. `COMMIT_DISTANCE_FRACTION_OF_FULL_TURN=0.4`(캔버스 크기에 비례,
+  최초엔 고정 `COMMIT_DISTANCE_PX=80`이었다가 실기 회귀로 교체),
+  `DragState.pending`, `commitPending()` 추가. `onPointerMove`/
+  `onPointerUp` 판정 로직 전체 재작성.
 - 이 문서.
