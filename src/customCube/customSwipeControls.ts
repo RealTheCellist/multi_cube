@@ -42,6 +42,19 @@ const LOW_CONFIDENCE_MAX_EXTRA_PX = 80;
 function lowConfidenceExtraPx(margin: number): number {
   return LOW_CONFIDENCE_MAX_EXTRA_PX * (1 - margin / LOW_CONFIDENCE_MARGIN);
 }
+// A genuinely near-tied touch point (the two candidate tangents almost
+// parallel on screen) can still lock wrong even after the low-confidence
+// wait above -- waiting longer only shrinks the ANGULAR NOISE in the
+// cumulative drag vector, and for a small enough true margin that noise
+// can still dominate at the point of locking (see
+// docs/GESTURE_AXIS_MAPPING_LATE_CORRECTION_V1.md). Rather than stop
+// re-evaluating once locked, keep comparing both candidates against the
+// same cumulative direction (now with more real drag distance behind it)
+// for a single follow-up correction if the picture becomes unambiguous.
+// Reusing LOW_CONFIDENCE_MARGIN as the "confident enough to act on" bar
+// keeps one meaning for "confident" everywhere in this file, rather than
+// introducing an unexplained second threshold.
+const CORRECTION_MARGIN = LOW_CONFIDENCE_MARGIN;
 // How much of the canvas width a full 90-degree drag needs to cover.
 const FULL_TURN_FRACTION_OF_WIDTH = 0.14;
 const COMMIT_PROGRESS_THRESHOLD = 0.3;
@@ -98,6 +111,11 @@ interface DragState {
   // THIS point, not from the touchdown pixel, so a short initial hook
   // doesn't dominate the snapshot the axis gets decided from.
   settleRef: { x: number; y: number } | null;
+  // Whether the one-shot late correction (see CORRECTION_MARGIN) has
+  // already fired for this gesture -- capped at one to avoid oscillating
+  // back and forth between the two candidates on a genuinely borderline
+  // drag.
+  corrected: boolean;
 }
 
 function easeOutCubic(t: number): number {
@@ -321,13 +339,14 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
     }) as [Candidate, Candidate];
 
     dom.setPointerCapture(e.pointerId);
-    drag = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, hitPoint: hit.point.clone(), candidates, locked: null, settleRef: null };
+    drag = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, hitPoint: hit.point.clone(), candidates, locked: null, settleRef: null, corrected: false };
   }
 
   function onPointerMove(e: PointerEvent) {
     if (!drag || e.pointerId !== drag.pointerId) return;
     const dx = e.clientX - drag.startX;
     const dy = e.clientY - drag.startY;
+    const rect = dom.getBoundingClientRect();
 
     if (!drag.locked) {
       if (Math.hypot(dx, dy) < DRAG_THRESHOLD_PX) return;
@@ -347,7 +366,6 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
       const rdy = e.clientY - drag.settleRef.y;
       if (Math.hypot(rdx, rdy) < DECISION_PX) return;
 
-      const rect = dom.getBoundingClientRect();
       const dragDir = new THREE.Vector2(rdx, rdy).normalize();
       const [c0, c1] = drag.candidates!;
       const tangent0 = screenTangent(scene, drag.hitPoint, c0.axis, rect);
@@ -385,6 +403,55 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
       catchUp = { startTime: performance.now(), fromProgress: 0, toProgress: progress, displayed: 0 };
       requestAnimationFrame(stepCatchUp);
       return;
+    }
+
+    // A lock made under LOW_CONFIDENCE_MARGIN can still land on the wrong
+    // candidate -- waiting longer before locking only shrinks the ANGULAR
+    // NOISE in the cumulative drag vector, which for a small enough true
+    // margin can still exceed it right at the moment of locking. Keep
+    // comparing both candidates against the same settleRef-anchored
+    // direction (now backed by more real drag distance) for one follow-up
+    // correction, rather than freezing the decision forever the instant it
+    // first clears the gate. Well-separated faces never trigger this (their
+    // margin is already far above CORRECTION_MARGIN at lock time, so the
+    // "other" candidate can never look confidently better), so this cannot
+    // regress the case that was already solved.
+    if (!drag.corrected && drag.settleRef) {
+      const rdx = e.clientX - drag.settleRef.x;
+      const rdy = e.clientY - drag.settleRef.y;
+      const dragDir = new THREE.Vector2(rdx, rdy).normalize();
+      const [c0, c1] = drag.candidates!;
+      const tangent0 = screenTangent(scene, drag.hitPoint, c0.axis, rect);
+      const tangent1 = screenTangent(scene, drag.hitPoint, c1.axis, rect);
+      const align0 = axisAlignment(dragDir, tangent0);
+      const align1 = axisAlignment(dragDir, tangent1);
+      const margin = Math.abs(align0 - align1);
+      const leader = align0 >= align1 ? c0 : c1;
+      const leaderScreenDir = align0 >= align1 ? tangent0 : tangent1;
+      if (margin >= CORRECTION_MARGIN && leader.axis !== drag.locked.axis) {
+        drag.corrected = true;
+        // Undo the wrong turn's visual state (no move was ever committed,
+        // so this is a pure revert) and start the correct one in its
+        // place, exactly like the initial lock does.
+        scene.endTurn(null);
+        if (scene.beginTurn(leader.axis, leader.layer)) {
+          const fullTurnPx = rect.width * FULL_TURN_FRACTION_OF_WIDTH;
+          const projected = dx * leaderScreenDir.x + dy * leaderScreenDir.y;
+          const progress = Math.max(-1, Math.min(1, projected / fullTurnPx));
+          drag.locked = { axis: leader.axis, layer: leader.layer, screenDir: leaderScreenDir, fullTurnPx, progress };
+          scene.setTurnProgress(0);
+          catchUp = { startTime: performance.now(), fromProgress: 0, toProgress: progress, displayed: 0 };
+          requestAnimationFrame(stepCatchUp);
+          return;
+        }
+        // beginTurn() failing here would mean someone else grabbed the
+        // scene's turn in the instant between our endTurn(null) and this
+        // call -- not expected on a single-pointer gesture, but abandon
+        // cleanly rather than track progress against a turn that doesn't
+        // exist.
+        drag = null;
+        return;
+      }
     }
 
     const { screenDir, fullTurnPx } = drag.locked;
