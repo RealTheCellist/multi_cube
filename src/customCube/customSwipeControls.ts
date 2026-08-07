@@ -10,75 +10,53 @@ const DRAG_THRESHOLD_PX = 12;
 // unambiguous swipe was still classified by the hook's direction, because
 // the axis lock used to fire on displacement from the touchdown pixel
 // itself). SETTLE_PX is the length of hook this is willing to absorb by
-// re-anchoring the direction reference past it; DECISION_PX is how far
-// past that reference the finger has to move before the axis locks.
+// re-anchoring the direction reference past it, and also the minimum
+// distance past that reference before even attempting a candidate read
+// (see docs/GESTURE_DEFERRED_COMMIT_V1.md).
 const SETTLE_PX = 6;
-const DECISION_PX = 8;
-// On faces viewed at an oblique angle (e.g. the top/right faces in the
-// default 3-face camera pose), the two candidate axes' screen tangents can
-// end up nearly parallel instead of close to perpendicular -- a sweep
-// across the visible canvas found 27% of sampled points on those faces had
-// an axis-alignment margin under 0.25, several under 0.02 (see
-// docs/GESTURE_AXIS_MAPPING_VALIDATION_V2.md). At that margin the winning
-// candidate is effectively decided by hand-tremor noise in a single
-// snapshot. When the margin is this low, wait for more drag distance past
-// the normal decision point before locking -- a longer real swipe's
-// direction is a more stable signal than a short one, the same reasoning
-// SETTLE_PX/DECISION_PX already rely on for the hook problem. This never
-// fires on well-separated faces (front-face margins measured consistently
-// >=0.3), so it leaves that already-validated 0%-misrecognition behavior
-// untouched.
-const LOW_CONFIDENCE_MARGIN = 0.15;
-// Extra wait distance is scaled continuously by how low the observed margin
-// actually is, rather than one fixed amount for every margin under the
-// threshold (see docs/GESTURE_AXIS_MAPPING_VALIDATION_V4.md) -- margin near
-// 0 (two candidate tangents nearly identical on screen) waits up to
-// LOW_CONFIDENCE_MAX_EXTRA_PX, while margin near LOW_CONFIDENCE_MARGIN
-// itself waits close to nothing extra, matching the old fixed-20px
-// behavior at that boundary exactly (so this never waits LESS than the
-// previous behavior did, only ever more for the worse-margin cases that
-// previously got the same flat 20px as everything else).
-const LOW_CONFIDENCE_MAX_EXTRA_PX = 80;
-function lowConfidenceExtraPx(margin: number): number {
-  return LOW_CONFIDENCE_MAX_EXTRA_PX * (1 - margin / LOW_CONFIDENCE_MARGIN);
-}
-// A genuinely near-tied touch point (the two candidate tangents almost
-// parallel on screen) can still lock wrong even after the low-confidence
-// wait above -- waiting longer only shrinks the ANGULAR NOISE in the
-// cumulative drag vector, and for a small enough true margin that noise
-// can still dominate at the point of locking (see
-// docs/GESTURE_AXIS_MAPPING_LATE_CORRECTION_V1.md). Rather than stop
-// re-evaluating once locked, keep comparing both candidates against the
-// same cumulative direction (now with more real drag distance behind it)
-// for a single follow-up correction if the picture becomes unambiguous.
-// Deliberately lower than LOW_CONFIDENCE_MARGIN (0.15): that threshold
-// governs whether to lock AT ALL, where a wrong early lock is the only
-// failure mode, so it stays conservative. Once already locked, a
-// correction is judged against whatever the CURRENT lock is -- flipping
-// to a candidate that's merely somewhat ahead is still strictly more
-// accurate than the coin flip a near-zero true margin already is
-// (measured: N=500 headless sweep in
-// docs/GESTURE_AXIS_MAPPING_LATE_CORRECTION_V1.md shows accuracy keeps
-// improving as this is lowered toward 0, at the cost of a rising
-// mid-gesture flip rate -- 0.07 trades more flips for more accuracy than
-// the initial 0.15 choice).
-const CORRECTION_MARGIN = 0.07;
+// This file used to carry a layered gate/correction system built up
+// across three separate sprints -- a pixel gate (DECISION_PX), a
+// margin-scaled extra wait on top of it (LOW_CONFIDENCE_MARGIN /
+// LOW_CONFIDENCE_MAX_EXTRA_PX), and a one-shot post-lock correction
+// (CORRECTION_MARGIN) -- four constants answering the same underlying
+// question in three different ways (see
+// docs/GESTURE_AXIS_MAPPING_VALIDATION_V4.md and
+// docs/GESTURE_AXIS_MAPPING_LATE_CORRECTION_V1.md for that history). All
+// of it is replaced by one rule: don't reveal ANY axis until the
+// cumulative settleRef-anchored direction has traveled this far, then
+// decide once from the most current reading and never revisit it. A
+// headless sweep (N=800/point, see docs/GESTURE_DEFERRED_COMMIT_V1.md)
+// showed this distance-vs-accuracy relationship is cleanly monotonic --
+// longer wait is never worse, right up to the ~98px a real gesture has
+// left before release. Two attempts at making this distance adaptive per
+// touch point were tried and rejected on evidence, not guesswork (see
+// docs/GESTURE_DEFERRED_COMMIT_V1.md "Adaptive distance" section): a
+// pre-drag geometric proxy (screen-tangent separation at the touch point)
+// didn't correlate with actual difficulty at all, and reading the
+// earliest live margin (right when settleRef resolves) to size the wait
+// backfired, because that first reading is itself too noisy to trust --
+// it would lock in a short wait at exactly the points that most needed a
+// long one. A single well-chosen fixed distance beat both. 80px is picked
+// off the sweep's elbow -- Right/Front are already at their 0% floor by
+// D=35, and Top face's gains past 80 are small (80->98 bought ~2-4
+// points versus 65->80's ~5-8) -- trading the last few points of ceiling
+// accuracy for a visibly snappier reveal on every other touch.
+const COMMIT_DISTANCE_PX = 80;
 // How much of the canvas width a full 90-degree drag needs to cover.
 const FULL_TURN_FRACTION_OF_WIDTH = 0.14;
 const COMMIT_PROGRESS_THRESHOLD = 0.3;
 const RELEASE_ANIMATION_MS = 220;
-// The instant the axis locks, `progress` is already computed from
-// displacement measured all the way back at the touchdown pixel -- by the
-// time SETTLE_PX/DECISION_PX have been satisfied that's already ~20px, so
-// the very first frame of visible feedback used to jump straight to
-// roughly a third of a quarter-turn instead of starting from zero (see
+// The instant an axis reveals, `progress` is already computed from
+// displacement measured all the way back at the touchdown pixel -- by
+// COMMIT_DISTANCE_PX that's a large fraction of a full turn already (see
 // docs/GESTURE_FEEL_OPTIMIZATION_V1.md STEP 1 -- measured, not assumed:
 // screenshots at 19px vs 20px go from a fully static cube to one already
-// rotated ~34 degrees in a single frame). CATCH_UP_MS smooths that jump
-// into a short eased ramp from 0, reusing the same easeOutCubic +
-// requestAnimationFrame shape already proven in startRelease() below.
-// This only touches how an ALREADY-DECIDED axis's progress is displayed;
-// it cannot change which axis gets chosen or when.
+// rotated ~34 degrees in a single frame, under the old, much shorter
+// gate). CATCH_UP_MS smooths that jump into a short eased ramp from 0,
+// reusing the same easeOutCubic + requestAnimationFrame shape already
+// proven in startRelease() below. This only touches how an
+// ALREADY-DECIDED axis's progress is displayed; it cannot change which
+// axis gets chosen or when.
 const CATCH_UP_MS = 80;
 
 export interface CustomSwipeController {
@@ -100,6 +78,11 @@ interface LockedTurn {
   progress: number;
 }
 
+interface PendingPick {
+  candidate: Candidate;
+  screenDir: THREE.Vector2;
+}
+
 interface CatchUpTween {
   startTime: number;
   fromProgress: number;
@@ -119,11 +102,13 @@ interface DragState {
   // THIS point, not from the touchdown pixel, so a short initial hook
   // doesn't dominate the snapshot the axis gets decided from.
   settleRef: { x: number; y: number } | null;
-  // Whether the one-shot late correction (see CORRECTION_MARGIN) has
-  // already fired for this gesture -- capped at one to avoid oscillating
-  // back and forth between the two candidates on a genuinely borderline
-  // drag.
-  corrected: boolean;
+  // Continuously updated with whichever candidate the cumulative
+  // settleRef-anchored direction currently favors, from the first instant
+  // there's enough signal to compute one. This is the ONLY axis-decision
+  // state left (see COMMIT_DISTANCE_PX above) -- committed once distance
+  // clears COMMIT_DISTANCE_PX, or read as-is at release for a gesture
+  // that ends before then.
+  pending: PendingPick | null;
 }
 
 function easeOutCubic(t: number): number {
@@ -250,6 +235,37 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
     }
   }
 
+  // Commits whatever axis is currently pending: starts the actual layer
+  // turn and its initial catch-up tween (see CATCH_UP_MS above). Called
+  // both from onPointerMove once COMMIT_DISTANCE_PX is cleared, and from
+  // onPointerUp as a release-time fallback for gestures that end before
+  // then. Returns whether the turn actually started (false only if
+  // beginTurn lost a race against something else already owning the
+  // scene's turn).
+  function commitPending(dx: number, dy: number, rect: DOMRect): boolean {
+    if (!drag || !drag.pending) return false;
+    const { candidate, screenDir } = drag.pending;
+    // Someone else (a solve-preview animation, most likely) already owns
+    // the scene's turn -- e.g. this finger was resting on the cube, below
+    // the drag threshold, when a preview started. Abandon the gesture
+    // rather than faking a locked drag: without this check, the drag
+    // below still tracks progress and fires startRelease()/onCommit() on
+    // release even though no move was ever actually applied, desyncing
+    // the move counter from the real cube state.
+    if (!scene.beginTurn(candidate.axis, candidate.layer)) {
+      drag = null;
+      return false;
+    }
+    const fullTurnPx = rect.width * FULL_TURN_FRACTION_OF_WIDTH;
+    const projected = dx * screenDir.x + dy * screenDir.y;
+    const progress = Math.max(-1, Math.min(1, projected / fullTurnPx));
+    drag.locked = { axis: candidate.axis, layer: candidate.layer, screenDir, fullTurnPx, progress };
+    scene.setTurnProgress(0);
+    catchUp = { startTime: performance.now(), fromProgress: 0, toProgress: progress, displayed: 0 };
+    requestAnimationFrame(stepCatchUp);
+    return true;
+  }
+
   // Adjacent cubie meshes don't actually touch -- there's a real (if thin)
   // 3D gap between them (see CUBIE_SIZE_RATIO in CustomCubeScene.ts), which
   // is what makes the black grid lines read as gaps rather than seams. A
@@ -347,7 +363,7 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
     }) as [Candidate, Candidate];
 
     dom.setPointerCapture(e.pointerId);
-    drag = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, hitPoint: hit.point.clone(), candidates, locked: null, settleRef: null, corrected: false };
+    drag = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, hitPoint: hit.point.clone(), candidates, locked: null, settleRef: null, pending: null };
   }
 
   function onPointerMove(e: PointerEvent) {
@@ -362,9 +378,9 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
       // Dead zone: don't decide the axis from the touchdown pixel itself.
       // Wait for total displacement to clear SETTLE_PX, re-anchor the
       // direction reference there (absorbing a short hook as settling
-      // noise), then require DECISION_PX more movement past that anchor
-      // before actually locking. See GESTURE_DIRECTION_STABILIZATION_V1.md
-      // STEP 2b for the measured hooked-swipe failure this fixes.
+      // noise) before reading any candidate at all. See
+      // docs/GESTURE_DIRECTION_STABILIZATION_V1.md STEP 2b for the
+      // measured hooked-swipe failure this fixes.
       if (!drag.settleRef) {
         if (Math.hypot(dx, dy) < SETTLE_PX) return;
         drag.settleRef = { x: e.clientX, y: e.clientY };
@@ -372,7 +388,10 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
       }
       const rdx = e.clientX - drag.settleRef.x;
       const rdy = e.clientY - drag.settleRef.y;
-      if (Math.hypot(rdx, rdy) < DECISION_PX) return;
+      const dist = Math.hypot(rdx, rdy);
+      // Same minimum again, now measured from settleRef -- avoids reading
+      // a candidate from a near-zero-length (numerically noisy) vector.
+      if (dist < SETTLE_PX) return;
 
       const dragDir = new THREE.Vector2(rdx, rdy).normalize();
       const [c0, c1] = drag.candidates!;
@@ -380,86 +399,18 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
       const tangent1 = screenTangent(scene, drag.hitPoint, c1.axis, rect);
       const align0 = axisAlignment(dragDir, tangent0);
       const align1 = axisAlignment(dragDir, tangent1);
-      // See LOW_CONFIDENCE_MARGIN above -- on an oblique-angle face the two
-      // candidates can be nearly tied here. Don't lock on a low-confidence
-      // snapshot; wait for more real drag distance (up to the extended
-      // cap) so a longer, steadier swipe gets to resolve the tie instead of
-      // a single noisy sample deciding it.
-      const margin = Math.abs(align0 - align1);
-      if (margin < LOW_CONFIDENCE_MARGIN && Math.hypot(rdx, rdy) < DECISION_PX + lowConfidenceExtraPx(margin)) {
-        return;
-      }
       const useC0 = align0 >= align1;
-      const chosen = useC0 ? c0 : c1;
-      const screenDir = useC0 ? tangent0 : tangent1;
-      const fullTurnPx = rect.width * FULL_TURN_FRACTION_OF_WIDTH;
-      // Someone else (a solve-preview animation, most likely) already owns
-      // the scene's turn -- e.g. this finger was resting on the cube, below
-      // the drag threshold, when a preview started. Abandon the gesture
-      // rather than faking a locked drag: without this check, the drag
-      // below still tracks progress and fires startRelease()/onCommit() on
-      // release even though no move was ever actually applied, desyncing
-      // the move counter from the real cube state.
-      if (!scene.beginTurn(chosen.axis, chosen.layer)) {
-        drag = null;
-        return;
-      }
-      const projected = dx * screenDir.x + dy * screenDir.y;
-      const progress = Math.max(-1, Math.min(1, projected / fullTurnPx));
-      drag.locked = { axis: chosen.axis, layer: chosen.layer, screenDir, fullTurnPx, progress };
-      scene.setTurnProgress(0);
-      catchUp = { startTime: performance.now(), fromProgress: 0, toProgress: progress, displayed: 0 };
-      requestAnimationFrame(stepCatchUp);
-      return;
-    }
+      // Keep updating this on every move regardless of distance -- it's
+      // the read onPointerUp falls back to if the gesture ends before
+      // COMMIT_DISTANCE_PX (see docs/GESTURE_DEFERRED_COMMIT_V1.md).
+      drag.pending = { candidate: useC0 ? c0 : c1, screenDir: useC0 ? tangent0 : tangent1 };
 
-    // A lock made under LOW_CONFIDENCE_MARGIN can still land on the wrong
-    // candidate -- waiting longer before locking only shrinks the ANGULAR
-    // NOISE in the cumulative drag vector, which for a small enough true
-    // margin can still exceed it right at the moment of locking. Keep
-    // comparing both candidates against the same settleRef-anchored
-    // direction (now backed by more real drag distance) for one follow-up
-    // correction, rather than freezing the decision forever the instant it
-    // first clears the gate. Well-separated faces never trigger this (their
-    // margin is already far above CORRECTION_MARGIN at lock time, so the
-    // "other" candidate can never look confidently better), so this cannot
-    // regress the case that was already solved.
-    if (!drag.corrected && drag.settleRef) {
-      const rdx = e.clientX - drag.settleRef.x;
-      const rdy = e.clientY - drag.settleRef.y;
-      const dragDir = new THREE.Vector2(rdx, rdy).normalize();
-      const [c0, c1] = drag.candidates!;
-      const tangent0 = screenTangent(scene, drag.hitPoint, c0.axis, rect);
-      const tangent1 = screenTangent(scene, drag.hitPoint, c1.axis, rect);
-      const align0 = axisAlignment(dragDir, tangent0);
-      const align1 = axisAlignment(dragDir, tangent1);
-      const margin = Math.abs(align0 - align1);
-      const leader = align0 >= align1 ? c0 : c1;
-      const leaderScreenDir = align0 >= align1 ? tangent0 : tangent1;
-      if (margin >= CORRECTION_MARGIN && leader.axis !== drag.locked.axis) {
-        drag.corrected = true;
-        // Undo the wrong turn's visual state (no move was ever committed,
-        // so this is a pure revert) and start the correct one in its
-        // place, exactly like the initial lock does.
-        scene.endTurn(null);
-        if (scene.beginTurn(leader.axis, leader.layer)) {
-          const fullTurnPx = rect.width * FULL_TURN_FRACTION_OF_WIDTH;
-          const projected = dx * leaderScreenDir.x + dy * leaderScreenDir.y;
-          const progress = Math.max(-1, Math.min(1, projected / fullTurnPx));
-          drag.locked = { axis: leader.axis, layer: leader.layer, screenDir: leaderScreenDir, fullTurnPx, progress };
-          scene.setTurnProgress(0);
-          catchUp = { startTime: performance.now(), fromProgress: 0, toProgress: progress, displayed: 0 };
-          requestAnimationFrame(stepCatchUp);
-          return;
-        }
-        // beginTurn() failing here would mean someone else grabbed the
-        // scene's turn in the instant between our endTurn(null) and this
-        // call -- not expected on a single-pointer gesture, but abandon
-        // cleanly rather than track progress against a turn that doesn't
-        // exist.
-        drag = null;
-        return;
-      }
+      // See COMMIT_DISTANCE_PX above -- nothing is revealed before this
+      // distance, so there's nothing to revisit or correct once it does
+      // commit.
+      if (dist < COMMIT_DISTANCE_PX) return;
+      commitPending(dx, dy, rect);
+      return;
     }
 
     const { screenDir, fullTurnPx } = drag.locked;
@@ -475,16 +426,32 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
 
   function onPointerUp(e: PointerEvent) {
     if (!drag || e.pointerId !== drag.pointerId) return;
+    let fromProgress: number | null = null;
     if (drag.locked) {
-      // If the catch-up tween is still mid-flight, release from whatever
-      // is actually ON SCREEN right now (catchUp.displayed), not from the
-      // already-locked target progress -- starting the release tween from
-      // the target would itself snap the display straight to that value
-      // first, reintroducing the exact jump this sprint removes.
-      const fromProgress = catchUp ? catchUp.displayed : drag.locked.progress;
-      catchUp = null;
-      startRelease(fromProgress);
+      // Already committed during an earlier onPointerMove -- release from
+      // whatever's actually ON SCREEN right now (catchUp.displayed), not
+      // the already-locked target progress, so a still-mid-flight
+      // catch-up tween doesn't get its jump reintroduced by snapping
+      // straight to the target first.
+      fromProgress = catchUp ? catchUp.displayed : drag.locked.progress;
+    } else if (drag.pending) {
+      // Gesture ended before COMMIT_DISTANCE_PX (see
+      // docs/GESTURE_DEFERRED_COMMIT_V1.md) -- decide right now from
+      // whatever direction was accumulated, instead of silently dropping
+      // a short but deliberate swipe. There's nothing already on screen
+      // to preserve (this is the first and only reveal), so no catch-up
+      // tween is needed -- release straight from the freshly computed
+      // progress.
+      const dx = e.clientX - drag.startX;
+      const dy = e.clientY - drag.startY;
+      const rect = dom.getBoundingClientRect();
+      if (commitPending(dx, dy, rect)) {
+        catchUp = null;
+        fromProgress = drag.locked!.progress;
+      }
     }
+    catchUp = null;
+    if (fromProgress !== null) startRelease(fromProgress);
     drag = null;
   }
 
