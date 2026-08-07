@@ -51,10 +51,18 @@ function lowConfidenceExtraPx(margin: number): number {
 // re-evaluating once locked, keep comparing both candidates against the
 // same cumulative direction (now with more real drag distance behind it)
 // for a single follow-up correction if the picture becomes unambiguous.
-// Reusing LOW_CONFIDENCE_MARGIN as the "confident enough to act on" bar
-// keeps one meaning for "confident" everywhere in this file, rather than
-// introducing an unexplained second threshold.
-const CORRECTION_MARGIN = LOW_CONFIDENCE_MARGIN;
+// Deliberately lower than LOW_CONFIDENCE_MARGIN (0.15): that threshold
+// governs whether to lock AT ALL, where a wrong early lock is the only
+// failure mode, so it stays conservative. Once already locked, a
+// correction is judged against whatever the CURRENT lock is -- flipping
+// to a candidate that's merely somewhat ahead is still strictly more
+// accurate than the coin flip a near-zero true margin already is
+// (measured: N=500 headless sweep in
+// docs/GESTURE_AXIS_MAPPING_LATE_CORRECTION_V1.md shows accuracy keeps
+// improving as this is lowered toward 0, at the cost of a rising
+// mid-gesture flip rate -- 0.07 trades more flips for more accuracy than
+// the initial 0.15 choice).
+const CORRECTION_MARGIN = 0.07;
 // How much of the canvas width a full 90-degree drag needs to cover.
 const FULL_TURN_FRACTION_OF_WIDTH = 0.14;
 const COMMIT_PROGRESS_THRESHOLD = 0.3;
