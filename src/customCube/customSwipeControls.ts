@@ -29,7 +29,19 @@ const DECISION_PX = 8;
 // >=0.3), so it leaves that already-validated 0%-misrecognition behavior
 // untouched.
 const LOW_CONFIDENCE_MARGIN = 0.15;
-const LOW_CONFIDENCE_EXTRA_PX = 20;
+// Extra wait distance is scaled continuously by how low the observed margin
+// actually is, rather than one fixed amount for every margin under the
+// threshold (see docs/GESTURE_AXIS_MAPPING_VALIDATION_V4.md) -- margin near
+// 0 (two candidate tangents nearly identical on screen) waits up to
+// LOW_CONFIDENCE_MAX_EXTRA_PX, while margin near LOW_CONFIDENCE_MARGIN
+// itself waits close to nothing extra, matching the old fixed-20px
+// behavior at that boundary exactly (so this never waits LESS than the
+// previous behavior did, only ever more for the worse-margin cases that
+// previously got the same flat 20px as everything else).
+const LOW_CONFIDENCE_MAX_EXTRA_PX = 80;
+function lowConfidenceExtraPx(margin: number): number {
+  return LOW_CONFIDENCE_MAX_EXTRA_PX * (1 - margin / LOW_CONFIDENCE_MARGIN);
+}
 // How much of the canvas width a full 90-degree drag needs to cover.
 const FULL_TURN_FRACTION_OF_WIDTH = 0.14;
 const COMMIT_PROGRESS_THRESHOLD = 0.3;
@@ -347,7 +359,8 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
       // snapshot; wait for more real drag distance (up to the extended
       // cap) so a longer, steadier swipe gets to resolve the tie instead of
       // a single noisy sample deciding it.
-      if (Math.abs(align0 - align1) < LOW_CONFIDENCE_MARGIN && Math.hypot(rdx, rdy) < DECISION_PX + LOW_CONFIDENCE_EXTRA_PX) {
+      const margin = Math.abs(align0 - align1);
+      if (margin < LOW_CONFIDENCE_MARGIN && Math.hypot(rdx, rdy) < DECISION_PX + lowConfidenceExtraPx(margin)) {
         return;
       }
       const useC0 = align0 >= align1;
