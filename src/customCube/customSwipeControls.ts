@@ -27,21 +27,25 @@ const SETTLE_PX = 6;
 // decide once from the most current reading and never revisit it. A
 // headless sweep (N=800/point, see docs/GESTURE_DEFERRED_COMMIT_V1.md)
 // showed this distance-vs-accuracy relationship is cleanly monotonic --
-// longer wait is never worse, right up to the ~98px a real gesture has
-// left before release. Two attempts at making this distance adaptive per
-// touch point were tried and rejected on evidence, not guesswork (see
-// docs/GESTURE_DEFERRED_COMMIT_V1.md "Adaptive distance" section): a
-// pre-drag geometric proxy (screen-tangent separation at the touch point)
-// didn't correlate with actual difficulty at all, and reading the
-// earliest live margin (right when settleRef resolves) to size the wait
-// backfired, because that first reading is itself too noisy to trust --
-// it would lock in a short wait at exactly the points that most needed a
-// long one. A single well-chosen fixed distance beat both. 80px is picked
-// off the sweep's elbow -- Right/Front are already at their 0% floor by
-// D=35, and Top face's gains past 80 are small (80->98 bought ~2-4
-// points versus 65->80's ~5-8) -- trading the last few points of ceiling
-// accuracy for a visibly snappier reveal on every other touch.
-const COMMIT_DISTANCE_PX = 80;
+// longer wait is never worse -- but that sweep only modeled a straight
+// line plus independent per-step noise, and a first real-device pass
+// (see docs/GESTURE_DEFERRED_COMMIT_V1.md "Real-device regression")
+// caught two things that model missed. First, a FIXED 80px was picked
+// against a ~550px test canvas (fullTurnPx there is ~77px), but on a
+// phone-width canvas (350-430px) fullTurnPx is only 49-60px -- meaning
+// the commit distance was routinely LONGER than a full 90-degree turn,
+// so nothing was ever revealed until the drag had already overshot a
+// full turn, then it snapped straight to an already-maxed rotation the
+// instant it appeared. Second, a real hand's path curves over that much
+// travel in a way independent per-step noise never does, and deciding
+// from the FULL cumulative settleRef-to-current vector gave that
+// curvature much more room to drift the decision off-axis the longer
+// the required distance -- a failure mode the synthetic sweep, being
+// straight-line, was structurally blind to. Both point the same
+// direction: keep this distance short, and scale it with the canvas
+// instead of a fixed pixel count so it can't exceed a full turn on any
+// screen size again.
+const COMMIT_DISTANCE_FRACTION_OF_FULL_TURN = 0.4;
 // How much of the canvas width a full 90-degree drag needs to cover.
 const FULL_TURN_FRACTION_OF_WIDTH = 0.14;
 const COMMIT_PROGRESS_THRESHOLD = 0.3;
@@ -405,10 +409,13 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
       // COMMIT_DISTANCE_PX (see docs/GESTURE_DEFERRED_COMMIT_V1.md).
       drag.pending = { candidate: useC0 ? c0 : c1, screenDir: useC0 ? tangent0 : tangent1 };
 
-      // See COMMIT_DISTANCE_PX above -- nothing is revealed before this
-      // distance, so there's nothing to revisit or correct once it does
-      // commit.
-      if (dist < COMMIT_DISTANCE_PX) return;
+      // See COMMIT_DISTANCE_FRACTION_OF_FULL_TURN above -- nothing is
+      // revealed before this distance, so there's nothing to revisit or
+      // correct once it does commit. Scaled off the canvas's own
+      // fullTurnPx rather than a fixed pixel count, so it can never
+      // exceed a full turn's worth of drag on any screen size.
+      const commitDistancePx = rect.width * FULL_TURN_FRACTION_OF_WIDTH * COMMIT_DISTANCE_FRACTION_OF_FULL_TURN;
+      if (dist < commitDistancePx) return;
       commitPending(dx, dy, rect);
       return;
     }
