@@ -296,7 +296,12 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
       const ndcEvent = { clientX: clientX + dx, clientY: clientY + dy } as PointerEvent;
       raycaster.setFromCamera(ndcFromEvent(ndcEvent, rect), scene.camera);
       const [hit] = raycaster.intersectObjects(scene.raycastableObjects(), false);
-      if (hit && hit.face) return hit;
+      // A hit that lands on bare plastic (no sticker) means the ray slipped
+      // through the gap between two cubies onto a neighbor's interior face
+      // -- see CustomCubeScene.isStickerFaceHit. That's not the cubie the
+      // touch visually landed on, so treat it the same as a miss and keep
+      // retrying the offset ring instead of accepting a bogus axis pair.
+      if (hit && hit.face && scene.isStickerFaceHit(hit.object, hit.face.materialIndex)) return hit;
     }
     // Every real cubie missed, even with the retry ring above -- try the
     // enlarged invisible proxy (see CustomCubeScene.ts's edgeGestureProxy)

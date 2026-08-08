@@ -217,6 +217,24 @@ export class CustomCubeScene {
   }
 
   /**
+   * True only if a raycast hit landed on a real sticker face. Adjacent
+   * cubies leave a small gap (CUBIE_SIZE_RATIO < 1) so a ray aimed right at
+   * a grid line between two cubies can slip past the intended sticker and
+   * land on a neighboring cubie's bare-plastic INTERIOR face instead (one
+   * of the 6 box faces with no sticker.direction match in buildCubieMesh).
+   * That hit is real (raycastableObjects() found *something*), but its
+   * face/normal belongs to a face the touch was never meant to land on --
+   * treating it as a legitimate candidate silently offers a completely
+   * different axis pair than the sticker the user was visibly aiming at.
+   */
+  isStickerFaceHit(object: THREE.Object3D, materialIndex: number | undefined): boolean {
+    if (typeof materialIndex !== "number") return false;
+    const materials = (object as THREE.Mesh).material;
+    const material = Array.isArray(materials) ? materials[materialIndex] : materials;
+    return material !== undefined && material !== PLASTIC_MATERIAL;
+  }
+
+  /**
    * Converts one world-space coordinate (e.g. a raycast hit point's x/y/z)
    * into the same grid units cubie.position uses (mesh.position ==
    * cubie.position * spacing, see syncMeshTransform) -- lets a caller work
