@@ -8,16 +8,15 @@ import {
   FACE_COLORS,
   FACE_TURNS,
   MIDDLE_SLICE_TURNS,
-  applyMoveToken,
-  applyRawQuarterTurn,
-  buildSolvedCube,
   cubiesInLayer,
   faceLetterForAxisSign,
+  generateRandomLayerTurns,
   isSolved,
   middleSliceLetterForAxis,
-  randomLayerScramble,
+  outerLayerCoordinate,
   randomScramble,
 } from "./cubeState";
+import { objectPoolModel, type ObjectPoolState } from "./customCubeExperiments/ObjectPoolModel";
 
 // The whole cube always spans roughly this many world units regardless of
 // gridSize, so switching between 2x2/3x3/4x4 doesn't change how big the
@@ -66,6 +65,14 @@ export class CustomCubeScene {
   readonly gridSize: number;
   private spacing: number;
   private container: HTMLElement;
+  // Backing state for `cubies` below -- see ObjectPoolModel.ts. `cubies`
+  // itself is the SAME array/object references every call (refreshed via
+  // objectPoolModel.toCubies after every mutation), which is why every
+  // internal turn-application path in this class goes through
+  // applyRawTurn()/resetPoolToSolved() rather than mutating `cubies`
+  // directly -- doing so would desync it from poolState until the next
+  // refresh silently overwrote the change.
+  private poolState: ObjectPoolState;
   private cubies: Cubie[];
   private meshById = new Map<number, THREE.Mesh>();
   // Invisible box slightly larger than the assembled cube's true rendered
@@ -140,7 +147,8 @@ export class CustomCubeScene {
     this.cubeGroup = new THREE.Group();
     this.scene.add(this.cubeGroup);
 
-    this.cubies = buildSolvedCube(this.gridSize);
+    this.poolState = objectPoolModel.buildSolved(this.gridSize);
+    this.cubies = objectPoolModel.toCubies(this.poolState);
     for (const cubie of this.cubies) {
       const mesh = this.buildCubieMesh(cubie);
       this.meshById.set(cubie.id, mesh);
@@ -251,6 +259,33 @@ export class CustomCubeScene {
     return this.cubies.find((c) => c.id === id);
   }
 
+  /** The only place a raw (axis, layer, sign) turn is applied to `poolState` -- keeps `cubies` in sync every time. */
+  private applyRawTurn(axis: Axis, layer: number, sign: 1 | -1): void {
+    objectPoolModel.applyTurn(this.poolState, { axis, layer, sign });
+    this.cubies = objectPoolModel.toCubies(this.poolState);
+  }
+
+  // Local mirror of cubeState.ts's applyMoveToken, routed through
+  // applyRawTurn() instead of applyRawQuarterTurn -- cubeState.ts's own
+  // applyMoveToken mutates a passed-in Cubie[] directly, which would desync
+  // poolState if called on `cubies` (see the field comment above). Kept in
+  // sync with cubeState.ts's face-letter tables (FACE_TURNS/
+  // MIDDLE_SLICE_TURNS/outerLayerCoordinate) by importing them rather than
+  // re-deriving anything.
+  private applyMoveTokenToPool(token: string): void {
+    const face = token[0] as Face | "M" | "E" | "S";
+    const suffix = token.slice(1);
+    const times = suffix === "2" ? 2 : suffix === "'" ? 3 : 1;
+    if (face === "M" || face === "E" || face === "S") {
+      const { axis, sign } = MIDDLE_SLICE_TURNS[face];
+      for (let i = 0; i < times; i++) this.applyRawTurn(axis, 0, sign);
+      return;
+    }
+    const { axis, sign } = FACE_TURNS[face];
+    const layer = outerLayerCoordinate(face, this.gridSize);
+    for (let i = 0; i < times; i++) this.applyRawTurn(axis, layer, sign);
+  }
+
   private syncMeshTransform(cubie: Cubie, mesh = this.meshById.get(cubie.id)!): void {
     mesh.position.copy(cubie.position).multiplyScalar(this.spacing);
     mesh.quaternion.copy(cubie.orientation);
@@ -329,7 +364,7 @@ export class CustomCubeScene {
     // every future beginTurn() call silently no-ops forever.
     try {
       if (commitSign !== null) {
-        applyRawQuarterTurn(this.cubies, turn.axis, turn.layer, commitSign);
+        this.applyRawTurn(turn.axis, turn.layer, commitSign);
         this.undoStack.push({ axis: turn.axis, layer: turn.layer, sign: commitSign });
         // Letter-notation move history only makes sense (and is only ever
         // read, by the solver) for sizes with a well-defined scheme -- the
@@ -362,7 +397,7 @@ export class CustomCubeScene {
   }
 
   applyInstantMove(token: string): void {
-    applyMoveToken(this.cubies, token, this.gridSize);
+    this.applyMoveTokenToPool(token);
     for (const cubie of this.cubies) this.syncMeshTransform(cubie);
     this.moveHistory.push(token);
   }
@@ -389,7 +424,7 @@ export class CustomCubeScene {
     if (this.activeTurn) return false;
     const last = this.undoStack.pop();
     if (!last) return false;
-    applyRawQuarterTurn(this.cubies, last.axis, last.layer, last.sign === 1 ? -1 : 1);
+    this.applyRawTurn(last.axis, last.layer, last.sign === 1 ? -1 : 1);
     for (const cubie of this.cubies) this.syncMeshTransform(cubie);
     if (this.gridSize === 3 || this.gridSize === 2) {
       this.moveHistory.pop();
@@ -398,7 +433,8 @@ export class CustomCubeScene {
   }
 
   resetToSolved(): void {
-    this.cubies = buildSolvedCube(this.gridSize);
+    this.poolState = objectPoolModel.buildSolved(this.gridSize);
+    this.cubies = objectPoolModel.toCubies(this.poolState);
     for (const cubie of this.cubies) {
       this.syncMeshTransform(cubie);
     }
@@ -414,7 +450,7 @@ export class CustomCubeScene {
     if (this.gridSize === 3 || this.gridSize === 2) {
       for (const move of randomScramble()) this.applyInstantMove(move);
     } else {
-      randomLayerScramble(this.cubies, this.gridSize);
+      for (const { axis, layer, sign } of generateRandomLayerTurns(this.gridSize)) this.applyRawTurn(axis, layer, sign);
       for (const cubie of this.cubies) this.syncMeshTransform(cubie);
     }
   }

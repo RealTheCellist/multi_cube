@@ -229,20 +229,30 @@ export function randomScramble(length = 20): string[] {
 
 const ALL_AXES: Axis[] = ["x", "y", "z"];
 
+export interface RawTurn {
+  axis: Axis;
+  layer: number;
+  sign: 1 | -1;
+}
+
 /**
- * Scrambles a cube of any size by applying raw (axis, layer, sign) turns
- * directly, with no letter notation involved -- the only option for sizes
+ * Picks a random sequence of (axis, layer, sign) turns for a cube of any
+ * size, with no letter notation involved -- the only option for sizes
  * without a single well-defined face-letter scheme (2x2 has no fixed layer
  * at all per axis to call "the" R layer by convention; 4x4 has two inner
  * layers per axis instead of one center). Avoids immediately repeating the
- * same (axis, layer) pair back-to-back so consecutive scramble turns don't
- * trivially cancel out.
+ * same (axis, layer) pair back-to-back so consecutive turns don't trivially
+ * cancel out. Pure data generation, separate from applying it, so callers
+ * with a different state representation than Cubie[] (see
+ * CustomCubeScene.ts's pooled state) can drive the same sequence through
+ * their own turn-application path instead of applyRawQuarterTurn.
  */
-export function randomLayerScramble(cubies: Cubie[], gridSize: number, length = 25): void {
+export function generateRandomLayerTurns(gridSize: number, length = 25): RawTurn[] {
   const offset = (gridSize - 1) / 2;
   const layers: number[] = [];
   for (let i = 0; i < gridSize; i++) layers.push(i - offset);
 
+  const turns: RawTurn[] = [];
   let lastKey = "";
   for (let i = 0; i < length; i++) {
     let axis: Axis;
@@ -254,7 +264,19 @@ export function randomLayerScramble(cubies: Cubie[], gridSize: number, length = 
       key = `${axis}:${layer}`;
     } while (key === lastKey);
     lastKey = key;
-    const sign = Math.random() < 0.5 ? 1 : -1;
+    const sign: 1 | -1 = Math.random() < 0.5 ? 1 : -1;
+    turns.push({ axis, layer, sign });
+  }
+  return turns;
+}
+
+/**
+ * Scrambles a cube of any size by applying raw (axis, layer, sign) turns
+ * directly -- see generateRandomLayerTurns for why raw turns instead of
+ * letter notation.
+ */
+export function randomLayerScramble(cubies: Cubie[], gridSize: number, length = 25): void {
+  for (const { axis, layer, sign } of generateRandomLayerTurns(gridSize, length)) {
     applyRawQuarterTurn(cubies, axis, layer, sign);
   }
 }
