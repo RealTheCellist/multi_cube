@@ -348,6 +348,17 @@ export class CustomCubeScene {
   private syncMeshTransform(cubie: Cubie, mesh = this.meshById.get(cubie.id)!): void {
     mesh.position.copy(cubie.position).multiplyScalar(this.spacing);
     mesh.quaternion.copy(cubie.orientation);
+    // Setting position/quaternion alone only touches the LOCAL transform --
+    // mesh.matrixWorld (what raycasting and axisForMaterialIndex's
+    // transformDirection actually read) stays stale until the next render
+    // frame's automatic scene.updateMatrixWorld() call. A new gesture that
+    // starts synchronously right after this (e.g. onPointerDown's
+    // interruptRelease() -> endTurn() -> syncMeshTransform(), all before
+    // the next requestAnimationFrame) would raycast against a mesh whose
+    // world matrix still reflects its pre-turn orientation, misreading
+    // which world axis its faces currently point along -- exactly the
+    // failure this method exists to prevent. Force it current immediately.
+    mesh.updateMatrixWorld(true);
   }
 
   private resize(): void {

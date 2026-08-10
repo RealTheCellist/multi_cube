@@ -112,12 +112,47 @@ user was experiencing.
 
 - `npx tsc --noEmit`, `npm run build`: pass.
 
+## Follow-up (same sprint): stale matrixWorld on rapid consecutive swipes
+
+A second real-device recording, taken right after this fix deployed,
+still showed one inconsistent case:
+`DOWN: faceAxis=z hit=(1.59,1.05,-1.09)` -- x is at the true surface
+(+half), but z (the reported face axis's own coordinate) is nowhere near
++/-half. The recording showed very fast, back-to-back swiping -- each new
+touch landing before the previous turn's release animation had visibly
+settled.
+
+Root cause: `syncMeshTransform` (called from `endTurn`'s `finally` block,
+including via `onPointerDown`'s `interruptRelease()` -> `endTurn()` path
+for a new gesture that starts while the previous one is still animating)
+only sets `mesh.position`/`mesh.quaternion` -- the LOCAL transform.
+`mesh.matrixWorld` -- what raycasting and `axisForMaterialIndex`'s
+`transformDirection` actually read -- isn't recomputed until the next
+render frame's automatic `updateMatrixWorld()`. A new gesture's raycast,
+happening synchronously in the same event handler right after
+`interruptRelease()` forces an immediate `endTurn()`, can run before that
+next frame -- reading a stale world matrix that still reflects the
+mesh's pre-turn orientation.
+
+Fix: `syncMeshTransform` now calls `mesh.updateMatrixWorld(true)`
+immediately after setting position/quaternion, so every call site
+(committed turns, undo, reset, scramble) is guaranteed current the
+instant it returns, regardless of whether a render frame has happened
+since.
+
+**Measured** (real app, cube scrambled, 40 rapid swipes with only a 40ms
+gap between release and the next touchdown -- deliberately overlapping
+`RELEASE_ANIMATION_MS`/`CATCH_UP_MS`, which a literal 0ms gap mostly just
+drops instead of exercising): confirmed the test reproduces the bug
+without the fix (1 mismatch reproduced on a small sample after reverting
+just this change), and **0/40 mismatches with the fix in place**.
+
 ## Verdict
 
-This -- not any of the three axis-decision algorithms tried this session
--- was the real cause of the user's "wrong axis everywhere, over half the
-time" report. Ships together with the face-plane raycast decision logic
-from the previous sprint.
+Between the two fixes in this sprint -- neither of which touched the
+axis-decision algorithm at all -- this is the real cause of the user's
+"wrong axis everywhere, over half the time" report. Ships together with
+the face-plane raycast decision logic from the previous sprint.
 
 ## Still temporary: debug overlay
 
