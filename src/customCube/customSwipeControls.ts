@@ -99,6 +99,9 @@ interface DragState {
   startX: number;
   startY: number;
   hitPoint: THREE.Vector3;
+  // Static plane of the touched face (through hitPoint, normal = face
+  // axis), fixed at touchdown -- see classifyByFacePlane above.
+  facePlane: THREE.Plane;
   candidates: [Candidate, Candidate] | null;
   locked: LockedTurn | null;
   // Set once total displacement from (startX, startY) first clears
@@ -131,18 +134,55 @@ function screenTangent(scene: CustomCubeScene, hitPoint: THREE.Vector3, axis: Ax
   return b.sub(a).normalize();
 }
 
-// Which of the two candidate axes a drag means is decided by direct angle
-// comparison: the swipe's screen-space direction against each axis's local
-// screen tangent LINE at the touch point (see screenTangent below). "Line"
-// because a candidate can be dragged either way along its tangent -- a
-// swipe pointing along +tangent or -tangent both mean that axis -- so the
-// comparison is sign-agnostic (|dot| of the normalized directions, i.e. how
-// parallel the two lines are) rather than a signed vector match. Picking
-// the axis whose tangent line the swipe is more nearly parallel to is a
-// direct geometric answer with no ambiguity except at the exact angle
-// bisector between the two tangents (an actual 50/50 case, not a bug).
-function axisAlignment(dragDir: THREE.Vector2, tangent: THREE.Vector2): number {
-  return Math.abs(dragDir.dot(tangent));
+function componentOf(v: THREE.Vector3, axis: Axis): number {
+  return axis === "x" ? v.x : axis === "y" ? v.y : v.z;
+}
+
+// Which of the two candidate axes a drag means is decided by raycasting
+// the CURRENT pointer position onto the touched face's own flat plane (a
+// static proxy plane through the original hit point, not the rotated
+// cube), not by comparing the swipe's direction against each candidate's
+// instantaneous screen tangent LINE at the touch point (the old method --
+// see git history and docs/GESTURE_MATERIALINDEX_REWRITE_AND_MATH_FLOOR_V1.md
+// for why that's proven mathematically incapable of 100% accuracy: real
+// points exist on every face where the two candidates' tangent lines are
+// under 0.2 degrees apart, which no direction comparison can resolve).
+//
+// The idea is adapted from cubing.js's twisty-player (see
+// docs/GESTURE_ENDPOINT_MATCH_V1.md), which raycasts the CURRENT drag
+// position against invisible per-facelet hit-plane proxies rather than
+// comparing an instantaneous 2D screen direction. An earlier version of
+// this rewrite instead predicted a point FORWARD from hitPoint by an
+// assumed rotation angle (derived from raw drag pixels) and compared
+// absolute screen positions -- that conflates direction error with
+// magnitude error, since whichever candidate's assumed angle-to-pixel
+// rate happens to numerically match the actual drag length wins,
+// regardless of whether its direction is right (measured: 66.7% wrong in
+// the real app despite 0% wrong in an idealized math model that never
+// exercised this mismatch). Raycasting the real current screen position
+// onto the face's own flat plane avoids that: the two in-plane axes are
+// exactly the two candidates, so splitting the raycasted point's
+// displacement into those two components and picking the OTHER candidate
+// whenever one dominates is direction-only, immune to any pixel/angle
+// scale assumption, and correct by construction (front face, candidates
+// x/y: a drag that moves the raycasted point mostly along x means "turn
+// around y" -- a horizontal drag turns the row -- and vice versa).
+function classifyByFacePlane(
+  raycaster: THREE.Raycaster,
+  scene: CustomCubeScene,
+  ndc: THREE.Vector2,
+  hitPoint: THREE.Vector3,
+  facePlane: THREE.Plane,
+  candidates: readonly [Candidate, Candidate],
+): Candidate {
+  raycaster.setFromCamera(ndc, scene.camera);
+  const current = new THREE.Vector3();
+  const [c0, c1] = candidates;
+  if (!raycaster.ray.intersectPlane(facePlane, current)) return c0;
+  const delta = current.sub(hitPoint);
+  const comp0 = Math.abs(componentOf(delta, c0.axis));
+  const comp1 = Math.abs(componentOf(delta, c1.axis));
+  return comp0 >= comp1 ? c1 : c0;
 }
 
 export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: { current: number }): CustomSwipeController {
@@ -381,8 +421,10 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
       return { axis, layer };
     }) as [Candidate, Candidate];
 
+    const facePlane = new THREE.Plane(axisVector(faceAxis), -axisVector(faceAxis).dot(hit.point));
+
     dom.setPointerCapture(e.pointerId);
-    drag = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, hitPoint: hit.point.clone(), candidates, locked: null, settleRef: null, pending: null };
+    drag = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, hitPoint: hit.point.clone(), facePlane, candidates, locked: null, settleRef: null, pending: null };
   }
 
   function onPointerMove(e: PointerEvent) {
@@ -412,17 +454,19 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
       // a candidate from a near-zero-length (numerically noisy) vector.
       if (dist < SETTLE_PX) return;
 
-      const dragDir = new THREE.Vector2(rdx, rdy).normalize();
-      const [c0, c1] = drag.candidates!;
-      const tangent0 = screenTangent(scene, drag.hitPoint, c0.axis, rect);
-      const tangent1 = screenTangent(scene, drag.hitPoint, c1.axis, rect);
-      const align0 = axisAlignment(dragDir, tangent0);
-      const align1 = axisAlignment(dragDir, tangent1);
-      const useC0 = align0 >= align1;
+      // See classifyByFacePlane above -- raycast the CURRENT pointer
+      // position onto the touched face's own flat plane and pick whichever
+      // candidate the resulting in-plane displacement favors.
+      const chosen = classifyByFacePlane(raycaster, scene, ndcFromEvent(e, rect), drag.hitPoint, drag.facePlane, drag.candidates!);
+      // screenDir still comes from the chosen candidate's tangent LINE --
+      // that's for tracking live progress/sign smoothly once locked (see
+      // commitPending/onPointerMove's locked branch below), a different
+      // concern from which axis to pick in the first place.
+      const screenDir = screenTangent(scene, drag.hitPoint, chosen.axis, rect);
       // Keep updating this on every move regardless of distance -- it's
       // the read onPointerUp falls back to if the gesture ends before
       // COMMIT_DISTANCE_PX (see docs/GESTURE_DEFERRED_COMMIT_V1.md).
-      drag.pending = { candidate: useC0 ? c0 : c1, screenDir: useC0 ? tangent0 : tangent1 };
+      drag.pending = { candidate: chosen, screenDir };
 
       // See COMMIT_DISTANCE_FRACTION_OF_FULL_TURN above -- nothing is
       // revealed before this distance, so there's nothing to revisit or
