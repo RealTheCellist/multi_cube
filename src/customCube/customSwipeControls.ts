@@ -185,6 +185,47 @@ function classifyByFacePlane(
   return comp0 >= comp1 ? c1 : c0;
 }
 
+/* TEMP DEBUG OVERLAY -- remove before final commit. On-screen (not
+ * console) diagnostic panel for real-device testing, gated behind
+ * ?gestureDebug=1 in the URL so it's invisible in normal play. Shows the
+ * live per-move classification (candidates/comp values/chosen axis) and a
+ * scrolling history of the last few locked turns, so a screen recording on
+ * an actual phone captures exactly what the classifier saw and decided,
+ * without needing devtools access on the device. */
+const DEBUG_OVERLAY_ENABLED =
+  typeof window !== "undefined" && typeof window.location !== "undefined" && new URLSearchParams(window.location.search).has("gestureDebug");
+let debugOverlayLiveEl: HTMLDivElement | null = null;
+let debugOverlayHistoryEl: HTMLDivElement | null = null;
+const debugHistoryLines: string[] = [];
+function ensureDebugOverlay(): void {
+  if (debugOverlayLiveEl && debugOverlayHistoryEl) return;
+  const root = document.createElement("div");
+  root.style.cssText =
+    "position:fixed;top:0;left:0;right:0;z-index:99999;background:rgba(0,0,0,0.82);color:#0f0;font:11px/1.4 monospace;padding:6px 8px;pointer-events:none;max-height:46vh;overflow:auto;";
+  const live = document.createElement("div");
+  live.style.cssText = "white-space:pre-wrap;color:#0ff;border-bottom:1px solid #444;padding-bottom:4px;margin-bottom:4px;";
+  const history = document.createElement("div");
+  history.style.cssText = "white-space:pre-wrap;";
+  root.appendChild(live);
+  root.appendChild(history);
+  document.body.appendChild(root);
+  debugOverlayLiveEl = live;
+  debugOverlayHistoryEl = history;
+}
+function debugLive(text: string): void {
+  if (!DEBUG_OVERLAY_ENABLED) return;
+  ensureDebugOverlay();
+  debugOverlayLiveEl!.textContent = text;
+}
+function debugHistory(text: string): void {
+  if (!DEBUG_OVERLAY_ENABLED) return;
+  ensureDebugOverlay();
+  debugHistoryLines.unshift(text);
+  debugHistoryLines.length = Math.min(debugHistoryLines.length, 8);
+  debugOverlayHistoryEl!.textContent = debugHistoryLines.join("\n---\n");
+}
+/* END TEMP DEBUG OVERLAY setup -- usage sites below are also marked TEMP DEBUG. */
+
 export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: { current: number }): CustomSwipeController {
   const dom = scene.renderer.domElement;
   const raycaster = new THREE.Raycaster();
@@ -289,6 +330,9 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
   function commitPending(dx: number, dy: number, rect: DOMRect): boolean {
     if (!drag || !drag.pending) return false;
     const { candidate, screenDir } = drag.pending;
+    /* TEMP DEBUG */ if (DEBUG_OVERLAY_ENABLED) {
+      debugHistory(`LOCK: axis=${candidate.axis} layer=${candidate.layer} dx=${dx.toFixed(0)} dy=${dy.toFixed(0)} @ ${new Date().toLocaleTimeString()}`);
+    }
     // Someone else (a solve-preview animation, most likely) already owns
     // the scene's turn -- e.g. this finger was resting on the cube, below
     // the drag threshold, when a preview started. Abandon the gesture
@@ -423,6 +467,12 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
 
     const facePlane = new THREE.Plane(axisVector(faceAxis), -axisVector(faceAxis).dot(hit.point));
 
+    /* TEMP DEBUG */ if (DEBUG_OVERLAY_ENABLED) {
+      debugHistory(
+        `DOWN: faceAxis=${faceAxis} hit=(${hit.point.x.toFixed(2)},${hit.point.y.toFixed(2)},${hit.point.z.toFixed(2)}) candidates=[${candidates.map((c) => `${c.axis}:${c.layer}`).join(", ")}] @ ${new Date().toLocaleTimeString()}`,
+      );
+    }
+
     dom.setPointerCapture(e.pointerId);
     drag = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, hitPoint: hit.point.clone(), facePlane, candidates, locked: null, settleRef: null, pending: null };
   }
@@ -458,6 +508,22 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
       // position onto the touched face's own flat plane and pick whichever
       // candidate the resulting in-plane displacement favors.
       const chosen = classifyByFacePlane(raycaster, scene, ndcFromEvent(e, rect), drag.hitPoint, drag.facePlane, drag.candidates!);
+      /* TEMP DEBUG */ if (DEBUG_OVERLAY_ENABLED) {
+        const [c0, c1] = drag.candidates!;
+        raycaster.setFromCamera(ndcFromEvent(e, rect), scene.camera);
+        const cur = new THREE.Vector3();
+        raycaster.ray.intersectPlane(drag.facePlane, cur);
+        const delta = cur.sub(drag.hitPoint);
+        const comp0 = componentOf(delta, c0.axis);
+        const comp1 = componentOf(delta, c1.axis);
+        debugLive(
+          `dx=${dx.toFixed(0)} dy=${dy.toFixed(0)} dist=${dist.toFixed(0)}\n` +
+            `hitPoint=(${drag.hitPoint.x.toFixed(2)},${drag.hitPoint.y.toFixed(2)},${drag.hitPoint.z.toFixed(2)})\n` +
+            `candidates=[${c0.axis}:${c0.layer}, ${c1.axis}:${c1.layer}]\n` +
+            `comp(${c0.axis})=${comp0.toFixed(3)} comp(${c1.axis})=${comp1.toFixed(3)}\n` +
+            `chosen=${chosen.axis}:${chosen.layer}`,
+        );
+      }
       // screenDir still comes from the chosen candidate's tangent LINE --
       // that's for tracking live progress/sign smoothly once locked (see
       // commitPending/onPointerMove's locked branch below), a different
