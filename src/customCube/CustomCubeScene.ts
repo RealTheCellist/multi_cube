@@ -47,6 +47,9 @@ const LOCAL_FACE_SLOTS: { dir: THREE.Vector3 }[] = [
   { dir: new THREE.Vector3(0, 0, -1) },
 ];
 
+// Mirrors LOCAL_FACE_SLOTS' order -- see axisForMaterialIndex below.
+const AXIS_BY_MATERIAL_INDEX: readonly Axis[] = ["x", "x", "y", "y", "z", "z"];
+
 const PLASTIC_MATERIAL = new THREE.MeshLambertMaterial({ color: 0x141414 });
 const stickerMaterialCache = new Map<Face, THREE.MeshLambertMaterial>();
 function stickerMaterial(face: Face): THREE.MeshLambertMaterial {
@@ -249,6 +252,26 @@ export class CustomCubeScene {
     const materials = (object as THREE.Mesh).material;
     const material = Array.isArray(materials) ? materials[materialIndex] : materials;
     return material !== undefined && material !== PLASTIC_MATERIAL;
+  }
+
+  /**
+   * Which world axis a raycast hit's face belongs to, read from
+   * hit.face.materialIndex rather than the face's (possibly smoothly
+   * interpolated, non-axis-aligned) normal. BoxGeometry -- and
+   * RoundedBoxGeometry, which extends it and only bulges vertex
+   * positions/normals, never touching .groups -- always assigns its 6
+   * macro faces to groups in this exact order (px,nx,py,ny,pz,nz),
+   * matching LOCAL_FACE_SLOTS above, regardless of gridSize, bevel
+   * radius, or whether the mesh's own .material is an array or single
+   * material (edgeGestureProxy's plain BoxGeometry has the same 6 groups
+   * even though it renders with one material). materialIndex is exact by
+   * construction; the normal is a continuous quantity that legitimately
+   * drifts away from axis-aligned near a bevel, more so the larger the
+   * bevel radius -- undefined only means a non-grouped geometry, which
+   * none of raycastableObjects()/edgeGestureProxyObjects() are.
+   */
+  axisForMaterialIndex(materialIndex: number | undefined): Axis | undefined {
+    return typeof materialIndex === "number" ? AXIS_BY_MATERIAL_INDEX[materialIndex] : undefined;
   }
 
   /**

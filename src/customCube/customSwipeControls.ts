@@ -326,14 +326,24 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
     // never does -- everything below only reads hit.face/hit.point/
     // hit.object.matrixWorld, none of which need an actual cubie.
 
-    // Rounded-corner geometry means the raw normal isn't always exactly
-    // axis-aligned near a bevel -- pick the dominant component instead of
-    // requiring it to already be ~axis-aligned.
-    const worldNormal = hit.face.normal.clone().transformDirection(hit.object.matrixWorld);
-    const ax = Math.abs(worldNormal.x);
-    const ay = Math.abs(worldNormal.y);
-    const az = Math.abs(worldNormal.z);
-    const faceAxis: Axis = ax >= ay && ax >= az ? "x" : ay >= az ? "y" : "z";
+    // Which macro face was touched, read from the exact/discrete
+    // materialIndex rather than the face's normal -- see
+    // CustomCubeScene.axisForMaterialIndex. The normal is a continuous
+    // quantity that legitimately drifts away from axis-aligned near a
+    // bevel (more so the larger the bevel radius), where materialIndex is
+    // exact by construction regardless of curvature. Falls back to the
+    // normal's dominant component only for a hit with no materialIndex,
+    // which none of this app's own geometry produces in practice.
+    const matIdxAxis = scene.axisForMaterialIndex(hit.face.materialIndex);
+    const faceAxis: Axis =
+      matIdxAxis ??
+      (() => {
+        const worldNormal = hit.face!.normal.clone().transformDirection(hit.object.matrixWorld);
+        const ax = Math.abs(worldNormal.x);
+        const ay = Math.abs(worldNormal.y);
+        const az = Math.abs(worldNormal.z);
+        return ax >= ay && ax >= az ? "x" : ay >= az ? "y" : "z";
+      })();
     const otherAxes: Axis[] = (["x", "y", "z"] as Axis[]).filter((a) => a !== faceAxis);
     // A valid grid coordinate is an exact integer for odd grid sizes and an
     // exact half-integer for even ones (see cubeState.ts's buildSolvedCube:
