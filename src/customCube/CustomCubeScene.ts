@@ -17,6 +17,7 @@ import {
   randomScramble,
 } from "./cubeState";
 import { objectPoolModel, type ObjectPoolState } from "./customCubeExperiments/ObjectPoolModel";
+import { playTurnSound } from "./turnSound";
 
 // The whole cube always spans roughly this many world units regardless of
 // gridSize, so switching between 2x2/3x3/4x4 doesn't change how big the
@@ -26,8 +27,16 @@ import { objectPoolModel, type ObjectPoolState } from "./customCubeExperiments/O
 // instance's actual per-cubie dimensions are derived from.
 const CUBE_EXTENT = 3.18;
 const SPACING_RATIO = 1; // spacing == CUBE_EXTENT / gridSize
-const CUBIE_SIZE_RATIO = 0.96 / 1.06; // cubie size relative to spacing
-const CORNER_RADIUS_RATIO = 0.07 / 1.06; // bevel radius relative to spacing
+const CUBIE_SIZE_RATIO = 1; // cubie size relative to spacing -- 1 means cubies touch, no gap between them
+// Rounder look (was 0.07/1.06, ~4x smaller bevel) -- RoundedBoxGeometry
+// keeps the underlying BoxGeometry's 6 face groups intact regardless of
+// radius (only vertex positions/normals bulge), so a bigger bevel doesn't
+// reintroduce the inter-cubie-gap misfire from
+// INTER_CUBIE_GAP_HIT_FIX_V1.md: a ray landing on a cubie's own rounded
+// corner still reports that face's real materialIndex/sticker, and a ray
+// that slips into the physical gap between cubies still gets rejected by
+// isStickerFaceHit() the same as before, independent of bevel size.
+const CORNER_RADIUS_RATIO = 0.14 / 1.06;
 
 const LOCAL_FACE_SLOTS: { dir: THREE.Vector3 }[] = [
   { dir: new THREE.Vector3(1, 0, 0) },
@@ -365,6 +374,7 @@ export class CustomCubeScene {
     try {
       if (commitSign !== null) {
         this.applyRawTurn(turn.axis, turn.layer, commitSign);
+        playTurnSound();
         this.undoStack.push({ axis: turn.axis, layer: turn.layer, sign: commitSign });
         // Letter-notation move history only makes sense (and is only ever
         // read, by the solver) for sizes with a well-defined scheme -- the
@@ -425,6 +435,7 @@ export class CustomCubeScene {
     const last = this.undoStack.pop();
     if (!last) return false;
     this.applyRawTurn(last.axis, last.layer, last.sign === 1 ? -1 : 1);
+    playTurnSound();
     for (const cubie of this.cubies) this.syncMeshTransform(cubie);
     if (this.gridSize === 3 || this.gridSize === 2) {
       this.moveHistory.pop();

@@ -255,27 +255,17 @@
 }
 
 .bottom-controls {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 12px;
   width: calc(100% - 32px);
-  position: fixed;
-  left: 50%;
-  top: 75%;
-  transform: translateX(-50%);
-  z-index: 5;
-}
-
-.control-row {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
+  max-width: 420px;
 }
 
 .bottom-controls button {
   font-size: 16px;
-  padding: 10px 22px;
+  padding: 10px 0;
+  width: 100%;
 }
 
 .leaderboard-page {

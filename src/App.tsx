@@ -349,52 +349,46 @@ function App() {
       </div>
 
       <div className="bottom-controls">
-        <div className="control-row">
-          <button
-            type="button"
-            className={`btn3d btn-blue${mode === "look" ? " selected" : ""}`}
-            onClick={handleLookAround}
-            disabled={isSolving}
-          >
-            둘러보기
-          </button>
-          <button
-            type="button"
-            className={`btn3d btn-green${mode === "play" ? " selected" : ""}`}
-            onClick={handleStart}
-            disabled={isSolving}
-          >
-            시작하기
-          </button>
-        </div>
-        <div className="control-row">
-          <button type="button" className="btn3d btn-orange" onClick={handleReset} disabled={isSolving}>
-            리셋
-          </button>
-          <button
-            type="button"
-            className="btn3d btn-accent"
-            onClick={handleSolve}
-            disabled={isSolving}
-            title={
-              gridSize === 5
-                ? "다음 수를 바로 진행해요 (일부 스크램블은 여러 번 눌러야 끝까지 풀릴 수 있어요)"
-                : gridSize === 4
-                  ? "다음 수를 바로 진행해요"
-                  : undefined
-            }
-          >
-            솔브
-          </button>
-          <button type="button" className="btn3d btn-rose" onClick={handleScramble} disabled={isSolving}>
-            스크램블
-          </button>
-        </div>
-        <div className="control-row">
-          <button type="button" className="btn3d btn-slate" onClick={handleUndo} disabled={isSolving || moveCount === 0}>
-            실행취소
-          </button>
-        </div>
+        <button
+          type="button"
+          className={`btn3d btn-blue${mode === "look" ? " selected" : ""}`}
+          onClick={handleLookAround}
+          disabled={isSolving}
+        >
+          둘러보기
+        </button>
+        <button
+          type="button"
+          className={`btn3d btn-green${mode === "play" ? " selected" : ""}`}
+          onClick={handleStart}
+          disabled={isSolving}
+        >
+          시작하기
+        </button>
+        <button type="button" className="btn3d btn-orange" onClick={handleReset} disabled={isSolving}>
+          리셋
+        </button>
+        <button
+          type="button"
+          className="btn3d btn-accent"
+          onClick={handleSolve}
+          disabled={isSolving}
+          title={
+            gridSize === 5
+              ? "다음 수를 바로 진행해요 (일부 스크램블은 여러 번 눌러야 끝까지 풀릴 수 있어요)"
+              : gridSize === 4
+                ? "다음 수를 바로 진행해요"
+                : undefined
+          }
+        >
+          솔브
+        </button>
+        <button type="button" className="btn3d btn-rose" onClick={handleScramble} disabled={isSolving}>
+          스크램블
+        </button>
+        <button type="button" className="btn3d btn-slate" onClick={handleUndo} disabled={isSolving || moveCount === 0}>
+          실행취소
+        </button>
       </div>
 
       {showCompletionModal && (
