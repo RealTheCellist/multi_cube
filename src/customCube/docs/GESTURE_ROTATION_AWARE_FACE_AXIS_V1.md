@@ -154,9 +154,10 @@ axis-decision algorithm at all -- this is the real cause of the user's
 "wrong axis everywhere, over half the time" report. Ships together with
 the face-plane raycast decision logic from the previous sprint.
 
-## Still temporary: debug overlay
+## Debug overlay: removed
 
-The `?gestureDebug=1` on-screen overlay added to diagnose this is still
-in `customSwipeControls.ts`, left in for one more round of real-device
-confirmation. Remove it once the user confirms the fix on their own
-device.
+The `?gestureDebug=1` on-screen overlay served its purpose -- it's what
+caught both bugs in this doc from real-device recordings devtools
+couldn't reach. User confirmed both PC mouse and real iPhone touch
+testing now feel right; the overlay and its three call sites were removed
+from `customSwipeControls.ts` in a follow-up commit.
