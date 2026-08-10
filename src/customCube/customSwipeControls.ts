@@ -411,14 +411,13 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
     // hit.object.matrixWorld, none of which need an actual cubie.
 
     // Which macro face was touched, read from the exact/discrete
-    // materialIndex rather than the face's normal -- see
-    // CustomCubeScene.axisForMaterialIndex. The normal is a continuous
-    // quantity that legitimately drifts away from axis-aligned near a
-    // bevel (more so the larger the bevel radius), where materialIndex is
-    // exact by construction regardless of curvature. Falls back to the
-    // normal's dominant component only for a hit with no materialIndex,
-    // which none of this app's own geometry produces in practice.
-    const matIdxAxis = scene.axisForMaterialIndex(hit.face.materialIndex);
+    // materialIndex (transformed by the hit mesh's CURRENT world matrix,
+    // so it's correct for a cubie that's been turned, not just a
+    // freshly-reset one) rather than the raw hit normal -- see
+    // CustomCubeScene.axisForMaterialIndex. Falls back to the normal's own
+    // dominant component only for a hit with no materialIndex, which none
+    // of this app's own geometry produces in practice.
+    const matIdxAxis = scene.axisForMaterialIndex(hit.face.materialIndex, hit.object);
     const faceAxis: Axis =
       matIdxAxis ??
       (() => {

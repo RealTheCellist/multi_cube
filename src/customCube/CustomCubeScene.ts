@@ -47,9 +47,6 @@ const LOCAL_FACE_SLOTS: { dir: THREE.Vector3 }[] = [
   { dir: new THREE.Vector3(0, 0, -1) },
 ];
 
-// Mirrors LOCAL_FACE_SLOTS' order -- see axisForMaterialIndex below.
-const AXIS_BY_MATERIAL_INDEX: readonly Axis[] = ["x", "x", "y", "y", "z", "z"];
-
 const PLASTIC_MATERIAL = new THREE.MeshLambertMaterial({ color: 0x141414 });
 const stickerMaterialCache = new Map<Face, THREE.MeshLambertMaterial>();
 function stickerMaterial(face: Face): THREE.MeshLambertMaterial {
@@ -269,9 +266,39 @@ export class CustomCubeScene {
    * drifts away from axis-aligned near a bevel, more so the larger the
    * bevel radius -- undefined only means a non-grouped geometry, which
    * none of raycastableObjects()/edgeGestureProxyObjects() are.
+   *
+   * materialIndex alone is only a LOCAL (mesh-space) face slot, not a
+   * world axis -- a previous version of this method returned
+   * AXIS_BY_MATERIAL_INDEX[materialIndex] directly, silently assuming
+   * every cubie mesh is still in its solved-orientation transform. That's
+   * true right after a reset, but false for almost every cubie after any
+   * real turn: endTurn's cubeGroup.attach(mesh) bakes the turn's rotation
+   * into the mesh's permanent local transform, so materialIndex 0 ("local
+   * +x", assigned once at construction from that cubie's solved-state
+   * stickers) keeps meaning "local +x" forever, but local +x stops
+   * pointing at world +x the moment that cubie is turned. Measured (real
+   * app, scrambled cube, 27 face-center touches spread across all 3
+   * visible faces): 19/27 (70%) reported a faceAxis whose own hit-point
+   * coordinate wasn't even near the cube's true surface -- i.e. this
+   * silently picked the wrong pair of candidate turns entirely, upstream
+   * of and unfixable by anything in customSwipeControls.ts's own axis
+   * DECISION logic (which only ever chooses between whatever 2 candidates
+   * this method hands it). object's current world matrix is what actually
+   * answers "which world axis does this LOCAL face slot point at right
+   * now" -- LOCAL_FACE_SLOTS[materialIndex].dir is still exact (no bevel
+   * curvature involved, unlike the raw hit normal), so transforming it by
+   * the mesh's real, current rotation keeps both the original exactness
+   * and correctness after any amount of turning.
    */
-  axisForMaterialIndex(materialIndex: number | undefined): Axis | undefined {
-    return typeof materialIndex === "number" ? AXIS_BY_MATERIAL_INDEX[materialIndex] : undefined;
+  axisForMaterialIndex(materialIndex: number | undefined, object: THREE.Object3D): Axis | undefined {
+    if (typeof materialIndex !== "number") return undefined;
+    const localDir = LOCAL_FACE_SLOTS[materialIndex]?.dir;
+    if (!localDir) return undefined;
+    const worldDir = localDir.clone().transformDirection(object.matrixWorld);
+    const ax = Math.abs(worldDir.x);
+    const ay = Math.abs(worldDir.y);
+    const az = Math.abs(worldDir.z);
+    return ax >= ay && ax >= az ? "x" : ay >= az ? "y" : "z";
   }
 
   /**
