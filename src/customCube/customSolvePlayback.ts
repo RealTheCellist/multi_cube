@@ -5,11 +5,12 @@ import { experimentalSolve2x2x2 } from "cubing/search";
 import { computeSolveHint, type SolveHint } from "../solvePlayback";
 import type { Axis } from "./cubeMath";
 import type { CustomCubeScene } from "./CustomCubeScene";
-import { applyRawQuarterTurn, cloneCubies, FACE_TURNS, outerLayerCoordinate, type Cubie, type Face } from "./cubeState";
+import { cloneCubies, FACE_TURNS, outerLayerCoordinate, type Cubie, type Face } from "./cubeState";
 import { solveCenters } from "./fourByFourCenters";
 import { solveEdgePairing, warmupFourByFourEdgeLibrary } from "./fourByFourEdges";
 import { solveReduced, warmupFourByFourReductionSolver } from "./fourByFourReduction";
 import { computeFourByFourStateHash } from "./fourByFourStateHash";
+import { decideNextPlanMove, isCubiesStateAt } from "./planCursor";
 import { solveTrueCenterPositions5 } from "./fiveByFiveCenters";
 import { wrongWingCount5 } from "./fiveByFiveEdges";
 import { FiveByFiveEdgeSolverEngine, warmupFiveByFiveEdgeLibraries } from "./fiveByFiveEdgeSolverEngine";
@@ -177,14 +178,11 @@ interface FourByFourPlan {
   solved: boolean;
 }
 
-function applyMoveSeq(cubies: Cubie[], moves: readonly Move[]): void {
-  for (const [axis, layer, sign] of moves) applyRawQuarterTurn(cubies, axis, layer, sign);
-}
-
 /**
  * Plan-once/consume-many cache for the 4x4x4 solve hint, mirroring
  * FiveByFiveEdgeSolverEngine's own architecture (see fiveByFiveEdgeSolverEngine.ts's
- * header comment) -- both exist for the same reason. computeFourByFourSolveMoves's
+ * header comment) -- both exist for the same reason, and both share the same
+ * cursor-validation logic (see planCursor.ts). computeFourByFourSolveMoves's
  * plan is built from a library of multi-move algorithms that only pair/place
  * pieces once applied in FULL; an earlier version of this file recomputed the
  * whole plan from scratch every press and committed only its first quarter
@@ -223,46 +221,25 @@ class FourByFourSolverEngine {
    * "invalid" -- see syncAndPeekNextMove). */
   hasValidPlan(liveCubies: readonly Cubie[]): boolean {
     if (!this.plan || !this.planStartCubies) return false;
-    const expected = cloneCubies(this.planStartCubies);
-    applyMoveSeq(expected, this.plan.moveQueue.slice(0, this.plan.currentMove));
-    return computeFourByFourStateHash(liveCubies) === computeFourByFourStateHash(expected);
+    return isCubiesStateAt(this.planStartCubies, this.plan.moveQueue.slice(0, this.plan.currentMove), liveCubies, computeFourByFourStateHash);
   }
 
   /**
-   * Returns the next move from the cached plan, after a 3-way check against
-   * the live cube (mirrors FiveByFiveEdgeSolverEngine.syncAndPeekNextMove):
-   * 1. Live cube matches "plan replayed through move N+1" (this engine's own
-   *    previous press committed the previously-returned move) -> advance the
-   *    cursor, return the move after that.
-   * 2. Live cube matches "plan replayed through move N" (nothing changed
-   *    since the last call) -> re-return move N, no advancement.
-   * 3. Neither (an off-plan move, scramble, reset, undo) -> invalidate and
-   *    return null so the caller knows to build a fresh plan instead.
+   * Returns the next move from the cached plan, via the shared 3-way check
+   * (see planCursor.ts's decideNextPlanMove for exactly what it does).
    * Returns null (without invalidating) when the plan is still valid but its
-   * queue is simply exhausted -- callers distinguish that from case 3 via
-   * hasValidPlan.
+   * queue is simply exhausted -- callers distinguish that from a genuinely
+   * stale plan via hasValidPlan.
    */
   syncAndPeekNextMove(liveCubies: readonly Cubie[]): Move | null {
     if (!this.plan || !this.planStartCubies) return null;
-    const liveHash = computeFourByFourStateHash(liveCubies);
-
-    const atCurrent = cloneCubies(this.planStartCubies);
-    applyMoveSeq(atCurrent, this.plan.moveQueue.slice(0, this.plan.currentMove));
-    if (computeFourByFourStateHash(atCurrent) === liveHash) {
-      return this.plan.currentMove < this.plan.moveQueue.length ? this.plan.moveQueue[this.plan.currentMove] : null;
+    const decision = decideNextPlanMove(this.planStartCubies, this.plan.moveQueue, this.plan.currentMove, liveCubies, computeFourByFourStateHash);
+    if (decision.kind === "stale") {
+      this.invalidatePlan();
+      return null;
     }
-
-    if (this.plan.currentMove < this.plan.moveQueue.length) {
-      const atNext = cloneCubies(atCurrent);
-      applyMoveSeq(atNext, [this.plan.moveQueue[this.plan.currentMove]]);
-      if (computeFourByFourStateHash(atNext) === liveHash) {
-        this.plan.currentMove += 1;
-        return this.plan.currentMove < this.plan.moveQueue.length ? this.plan.moveQueue[this.plan.currentMove] : null;
-      }
-    }
-
-    this.invalidatePlan();
-    return null;
+    this.plan.currentMove = decision.currentMove;
+    return decision.move;
   }
 
   /** The cached plan's own verdict: whether its full move queue, once

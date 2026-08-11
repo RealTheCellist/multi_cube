@@ -19,13 +19,14 @@
 // messaging) rather than imply a guarantee this budget can't back up.
 import type { Cubie } from "./cubeState";
 import { cloneCubies } from "./cubeState";
-import { applySeq, buildCaseLibrary, buildFlipLibrary, buildWingLibrary, wrongWingCount5 } from "./fiveByFiveEdges";
+import { buildCaseLibrary, buildFlipLibrary, buildWingLibrary, wrongWingCount5 } from "./fiveByFiveEdges";
 import type { Move } from "./fiveByFiveEdges";
 import { computeEdgeSolverStateHash } from "./fiveByFiveEdgeStateHash";
 import { planEdgeTasks } from "./fiveByFiveEdgePlanner";
 import { executeTask, type ExecutorLibraries } from "./fiveByFiveEdgeExecutor";
 import type { SolvePlan, SolveTask, TraceEntry } from "./fiveByFiveEdgeSolverTypes";
 import type { EvaluatorWeights } from "./fiveByFiveEdgeEvaluator";
+import { decideNextPlanMove, isCubiesStateAt } from "./planCursor";
 
 export const PLAN_TIME_BUDGET_MS = 1000;
 
@@ -249,9 +250,7 @@ export class FiveByFiveEdgeSolverEngine {
    * just changes before the first move. */
   hasValidPlan(cubies: Cubie[]): boolean {
     if (!this.plan || !this.planStartCubies) return false;
-    const expected = cloneCubies(this.planStartCubies);
-    applySeq(expected, this.plan.moveQueue.slice(0, this.plan.currentMove));
-    return computeEdgeSolverStateHash(cubies) === computeEdgeSolverStateHash(expected);
+    return isCubiesStateAt(this.planStartCubies, this.plan.moveQueue.slice(0, this.plan.currentMove), cubies, computeEdgeSolverStateHash);
   }
 
   currentPlan(): SolvePlan | null {
@@ -279,34 +278,27 @@ export class FiveByFiveEdgeSolverEngine {
    */
   syncAndPeekNextMove(liveCubies: Cubie[]): Move | null {
     if (!this.plan || !this.planStartCubies) return null;
-    const liveHash = computeEdgeSolverStateHash(liveCubies);
+    const decision = decideNextPlanMove(this.planStartCubies, this.plan.moveQueue, this.plan.currentMove, liveCubies, computeEdgeSolverStateHash);
 
-    const atCurrent = cloneCubies(this.planStartCubies);
-    applySeq(atCurrent, this.plan.moveQueue.slice(0, this.plan.currentMove));
-    if (computeEdgeSolverStateHash(atCurrent) === liveHash) {
-      if (this.plan.currentMove < this.plan.moveQueue.length) return this.plan.moveQueue[this.plan.currentMove];
+    if (decision.kind === "stale") {
+      this.log("off-plan-detected", "라이브 큐브가 예상 상태와 불일치 -- Plan 폐기");
+      this.invalidatePlan();
+      return null;
+    }
+
+    if (decision.currentMove > this.plan.currentMove) {
+      this.plan.currentMove = decision.currentMove;
+      this.log("move-confirmed", `${this.plan.currentMove}/${this.plan.moveQueue.length}수 진행`);
+    }
+
+    if (decision.move === null) {
       // Queue exhausted with nothing left to offer -- invalidate here too
-      // (not just on an off-plan mismatch below), so the caller's own
+      // (not just on an off-plan mismatch above), so the caller's own
       // hasValidPlan() check reliably signals "build a fresh plan" instead
       // of reporting a stale plan as still valid with nothing in it.
       this.invalidatePlan();
       return null;
     }
-
-    if (this.plan.currentMove < this.plan.moveQueue.length) {
-      const atNext = cloneCubies(atCurrent);
-      applySeq(atNext, [this.plan.moveQueue[this.plan.currentMove]]);
-      if (computeEdgeSolverStateHash(atNext) === liveHash) {
-        this.plan.currentMove += 1;
-        this.log("move-confirmed", `${this.plan.currentMove}/${this.plan.moveQueue.length}수 진행`);
-        if (this.plan.currentMove < this.plan.moveQueue.length) return this.plan.moveQueue[this.plan.currentMove];
-        this.invalidatePlan();
-        return null;
-      }
-    }
-
-    this.log("off-plan-detected", "라이브 큐브가 예상 상태와 불일치 -- Plan 폐기");
-    this.invalidatePlan();
-    return null;
+    return decision.move;
   }
 }
