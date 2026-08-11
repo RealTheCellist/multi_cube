@@ -276,6 +276,18 @@ function buildEdgeLibrary(): EdgeLibrary {
   return cachedLibrary;
 }
 
+/**
+ * Forces the 3-cycle algorithm library (buildEdgeLibrary, memoized at module
+ * level) to build now rather than on the first real solve press -- cheap by
+ * itself (48 short applies against a solved cube), but still worth getting
+ * out of the way ahead of time alongside warmupFourByFourReductionSolver
+ * (see fourByFourReduction.ts), which is the more expensive part of a cold
+ * first press.
+ */
+export function warmupFourByFourEdgeLibrary(): void {
+  buildEdgeLibrary();
+}
+
 function wrongWings(cubies: Cubie[], partnerById: Map<number, number>): Cubie[] {
   const edges = cubies.filter((c) => pieceType(c) === "edge");
   const bySlot = new Map<string, Cubie[]>();

@@ -297,6 +297,28 @@ export interface ReductionSolveResult {
   moves: Move[];
 }
 
+let reductionSolverWarmed = false;
+
+/**
+ * Forces cubing/search's 3x3x3 reduction solver to finish its one-time setup
+ * (WASM/table loading, independent of which scramble is later solved) ahead
+ * of time, so the first real solve press after picking 4x4 doesn't have to
+ * pay for it -- mirrors warmupFiveByFiveEdgeLibraries's own reasoning. Only
+ * runs once per page load; failures are swallowed since this is purely a
+ * latency optimization; a cold tryReduce() call still works correctly (just
+ * slower) if this never ran or failed.
+ */
+export async function warmupFourByFourReductionSolver(): Promise<void> {
+  if (reductionSolverWarmed) return;
+  reductionSolverWarmed = true;
+  try {
+    const kpuzzle = await cube3x3x3.kpuzzle();
+    await experimentalSolve3x3x3IgnoringCenters(kpuzzle.defaultPattern());
+  } catch {
+    // Best-effort warmup only -- see docstring.
+  }
+}
+
 async function tryReduce(cubies: Cubie[], gridSize: number): Promise<ReductionSolveResult> {
   const pattern = await buildReducedPattern(cubies);
   let solutionAlg: Alg;

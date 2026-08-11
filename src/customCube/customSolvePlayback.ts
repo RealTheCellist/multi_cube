@@ -7,8 +7,8 @@ import type { Axis } from "./cubeMath";
 import type { CustomCubeScene } from "./CustomCubeScene";
 import { applyRawQuarterTurn, cloneCubies, FACE_TURNS, outerLayerCoordinate, type Cubie, type Face } from "./cubeState";
 import { solveCenters } from "./fourByFourCenters";
-import { solveEdgePairing } from "./fourByFourEdges";
-import { solveReduced } from "./fourByFourReduction";
+import { solveEdgePairing, warmupFourByFourEdgeLibrary } from "./fourByFourEdges";
+import { solveReduced, warmupFourByFourReductionSolver } from "./fourByFourReduction";
 import { computeFourByFourStateHash } from "./fourByFourStateHash";
 import { solveTrueCenterPositions5 } from "./fiveByFiveCenters";
 import { wrongWingCount5 } from "./fiveByFiveEdges";
@@ -104,6 +104,21 @@ export async function applyNextSolveMove(scene: CustomCubeScene): Promise<SolveH
   }
 
   return hint;
+}
+
+/**
+ * Kicks off the 4x4x4 solve pipeline's one-time, scramble-independent setup
+ * costs (the 3-cycle algorithm library, and cubing/search's reduction
+ * solver) ahead of the user's first solve press -- see
+ * warmupFourByFourEdgeLibrary/warmupFourByFourReductionSolver's own
+ * docstrings. Meant to be called (fire-and-forget, not awaited) as soon as
+ * the player picks 4x4, same spirit as warmupFiveByFiveEdgeLibraries for the
+ * 5x5. Cheap and safe to call more than once -- both warmups are internally
+ * memoized/guarded.
+ */
+export function warmupFourByFour(): void {
+  warmupFourByFourEdgeLibrary();
+  void warmupFourByFourReductionSolver();
 }
 
 export interface FourByFourSolvePlan {

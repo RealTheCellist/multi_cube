@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import CubeView, { type CubeViewHandle } from "./CubeView";
 import CubixxLogo from "./CubixxLogo";
+import { warmupFourByFour } from "./customCube/customSolvePlayback";
 import { getLeaderboard, submitScore, type LeaderboardEntry } from "./leaderboard";
 import "./App.css";
 
@@ -123,6 +124,11 @@ function App() {
       setGridSize(size);
       resetGameState();
       setScreen("game");
+      // Fire-and-forget: gets the 4x4 solver's one-time setup costs (algorithm
+      // library, cubing/search's reduction solver) out of the way before the
+      // player ever presses "솔브", instead of paying for them on that first
+      // press (see warmupFourByFour's own docstring).
+      if (size === 4) warmupFourByFour();
     },
     [resetGameState],
   );
