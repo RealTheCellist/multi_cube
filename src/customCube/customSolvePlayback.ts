@@ -5,10 +5,11 @@ import { experimentalSolve2x2x2 } from "cubing/search";
 import { computeSolveHint, type SolveHint } from "../solvePlayback";
 import type { Axis } from "./cubeMath";
 import type { CustomCubeScene } from "./CustomCubeScene";
-import { cloneCubies, FACE_TURNS, outerLayerCoordinate, type Face } from "./cubeState";
+import { applyRawQuarterTurn, cloneCubies, FACE_TURNS, outerLayerCoordinate, type Cubie, type Face } from "./cubeState";
 import { solveCenters } from "./fourByFourCenters";
 import { solveEdgePairing } from "./fourByFourEdges";
 import { solveReduced } from "./fourByFourReduction";
+import { computeFourByFourStateHash } from "./fourByFourStateHash";
 import { solveTrueCenterPositions5 } from "./fiveByFiveCenters";
 import { wrongWingCount5 } from "./fiveByFiveEdges";
 import { FiveByFiveEdgeSolverEngine, warmupFiveByFiveEdgeLibraries } from "./fiveByFiveEdgeSolverEngine";
@@ -113,11 +114,13 @@ export interface FourByFourSolvePlan {
 /**
  * Computes the full 4x4x4 solve plan -- edges, then centers, then reduction
  * (same order as a real solve, see the comment inside) -- entirely on a
- * clone of the scene's cubies, so the live scene isn't touched at all.
- * Always run fresh from the scene's actual current state (see
- * applyNextFourByFourMove below), never cached across calls. Can
- * legitimately take up to a couple of minutes to compute, for the edge
- * pairing's tail search on a hard scramble.
+ * clone of the scene's cubies, so the live scene isn't touched at all. This
+ * function itself is stateless (always runs fresh from whatever cubies it's
+ * handed); FourByFourSolverEngine below is what caches its result across
+ * presses so the (potentially expensive) computation doesn't repeat for
+ * every single quarter turn. Can legitimately take up to a couple of
+ * minutes to compute, for the edge pairing's tail search on a hard
+ * scramble.
  *
  * A minority of scrambles reduce to a pattern only reachable via a genuine
  * 4x4x4 move (OLL and/or PLL parity), which the 3x3x3 solver can't resolve
@@ -153,37 +156,166 @@ export interface FourByFourHint {
   solved: boolean;
 }
 
+interface FourByFourPlan {
+  moveQueue: Move[];
+  currentMove: number;
+  solved: boolean;
+}
+
+function applyMoveSeq(cubies: Cubie[], moves: readonly Move[]): void {
+  for (const [axis, layer, sign] of moves) applyRawQuarterTurn(cubies, axis, layer, sign);
+}
+
 /**
- * Solves for the scene's current actual state and plays the first move of
- * the plan for real: turns the layer and commits it, exactly as if the
- * player had swiped it themselves. Recomputes the whole plan from scratch
- * every call rather than caching/stepping through one precomputed sequence
- * -- an earlier version did cache and auto-commit each move, but that goes
- * stale the moment the user's own swipes diverge from the plan (there's no
- * letter-notation move history to replay against and re-solve from, unlike
- * the 2x2x2/3x3x3, so a cached plan can't be validated against what
- * actually happened). Recomputing fresh is what the 2x2x2/3x3x3 hint
- * already does (see currentPatternFor/computeSolveHint), so this just
- * extends the same approach to the 4x4x4's own solve pipeline instead of
- * cubing/search (which doesn't ship a 4x4x4 solver at all).
+ * Plan-once/consume-many cache for the 4x4x4 solve hint, mirroring
+ * FiveByFiveEdgeSolverEngine's own architecture (see fiveByFiveEdgeSolverEngine.ts's
+ * header comment) -- both exist for the same reason. computeFourByFourSolveMoves's
+ * plan is built from a library of multi-move algorithms that only pair/place
+ * pieces once applied in FULL; an earlier version of this file recomputed the
+ * whole plan from scratch every press and committed only its first quarter
+ * turn, discarding the rest -- since the next press's fresh (differently
+ * randomized) plan rarely continues the same algorithm, no single algorithm
+ * ever actually finished, so the cube could wander for hundreds of presses
+ * without making real progress even though every individual press
+ * legitimately computed a complete, valid solution from wherever the cube
+ * actually stood (that's also why the "couldn't fully solve" warning never
+ * fired -- a freshly recomputed plan almost always claims solved:true, since
+ * it's a real solution to *some* state, just one the live cube never actually
+ * reached). Caching the plan and stepping through its SAME move queue one
+ * press at a time -- rebuilding only when the live cube no longer matches
+ * where the cached plan expects it (scramble, reset, undo, or an off-plan
+ * move) -- is what actually lets those algorithms complete.
+ */
+class FourByFourSolverEngine {
+  private plan: FourByFourPlan | null = null;
+  private planStartCubies: Cubie[] | null = null;
+
+  async solve(scene: CustomCubeScene): Promise<void> {
+    const startCubies = cloneCubies(scene.getCubies());
+    const result = await computeFourByFourSolveMoves(scene);
+    this.plan = { moveQueue: result.moves, currentMove: 0, solved: result.solved };
+    this.planStartCubies = startCubies;
+  }
+
+  invalidatePlan(): void {
+    this.plan = null;
+    this.planStartCubies = null;
+  }
+
+  /** True only if a plan exists AND the live cube matches exactly where the
+   * plan's own move queue should have taken it by now. True even once the
+   * queue is fully consumed ("valid AND exhausted" is a distinct case from
+   * "invalid" -- see syncAndPeekNextMove). */
+  hasValidPlan(liveCubies: readonly Cubie[]): boolean {
+    if (!this.plan || !this.planStartCubies) return false;
+    const expected = cloneCubies(this.planStartCubies);
+    applyMoveSeq(expected, this.plan.moveQueue.slice(0, this.plan.currentMove));
+    return computeFourByFourStateHash(liveCubies) === computeFourByFourStateHash(expected);
+  }
+
+  /**
+   * Returns the next move from the cached plan, after a 3-way check against
+   * the live cube (mirrors FiveByFiveEdgeSolverEngine.syncAndPeekNextMove):
+   * 1. Live cube matches "plan replayed through move N+1" (this engine's own
+   *    previous press committed the previously-returned move) -> advance the
+   *    cursor, return the move after that.
+   * 2. Live cube matches "plan replayed through move N" (nothing changed
+   *    since the last call) -> re-return move N, no advancement.
+   * 3. Neither (an off-plan move, scramble, reset, undo) -> invalidate and
+   *    return null so the caller knows to build a fresh plan instead.
+   * Returns null (without invalidating) when the plan is still valid but its
+   * queue is simply exhausted -- callers distinguish that from case 3 via
+   * hasValidPlan.
+   */
+  syncAndPeekNextMove(liveCubies: readonly Cubie[]): Move | null {
+    if (!this.plan || !this.planStartCubies) return null;
+    const liveHash = computeFourByFourStateHash(liveCubies);
+
+    const atCurrent = cloneCubies(this.planStartCubies);
+    applyMoveSeq(atCurrent, this.plan.moveQueue.slice(0, this.plan.currentMove));
+    if (computeFourByFourStateHash(atCurrent) === liveHash) {
+      return this.plan.currentMove < this.plan.moveQueue.length ? this.plan.moveQueue[this.plan.currentMove] : null;
+    }
+
+    if (this.plan.currentMove < this.plan.moveQueue.length) {
+      const atNext = cloneCubies(atCurrent);
+      applyMoveSeq(atNext, [this.plan.moveQueue[this.plan.currentMove]]);
+      if (computeFourByFourStateHash(atNext) === liveHash) {
+        this.plan.currentMove += 1;
+        return this.plan.currentMove < this.plan.moveQueue.length ? this.plan.moveQueue[this.plan.currentMove] : null;
+      }
+    }
+
+    this.invalidatePlan();
+    return null;
+  }
+
+  /** The cached plan's own verdict: whether its full move queue, once
+   * entirely applied, actually reaches a solved cube. Only meaningful once
+   * the queue is exhausted. */
+  isSolved(): boolean {
+    return this.plan?.solved ?? false;
+  }
+
+  remainingMoves(): number {
+    return this.plan ? this.plan.moveQueue.length - this.plan.currentMove : 0;
+  }
+}
+
+const fourByFourEngine = new FourByFourSolverEngine();
+
+/**
+ * Solves for the scene's current actual state and plays the next move of a
+ * CACHED plan for real: turns the layer and commits it, exactly as if the
+ * player had swiped it themselves. The expensive full recompute
+ * (computeFourByFourSolveMoves, up to a couple of minutes) only happens when
+ * no valid cached plan remains for the live cube -- the first press after a
+ * scramble/reset/undo/off-plan move -- every other press just steps to the
+ * next move already sitting in that plan's queue (see FourByFourSolverEngine
+ * above for why stepping through the SAME plan, rather than recomputing a
+ * fresh one every press, is required for this correctly).
  */
 export async function applyNextFourByFourMove(scene: CustomCubeScene): Promise<FourByFourHint> {
-  const plan = await computeFourByFourSolveMoves(scene);
-  if (plan.moves.length === 0) return { hasMove: false, movesRemaining: 0, solved: plan.solved };
+  const liveCubies = scene.getCubies();
+  let move = fourByFourEngine.syncAndPeekNextMove(liveCubies);
 
-  const [axis, layer, sign] = plan.moves[0];
+  if (!move && fourByFourEngine.hasValidPlan(liveCubies)) {
+    // Plan is still valid (nothing diverged) but its queue is exhausted --
+    // this genuinely is the end of the solve, whatever it did or didn't
+    // achieve. Report its own verdict rather than recomputing (which would
+    // just find the exact same thing again).
+    const solved = fourByFourEngine.isSolved();
+    fourByFourEngine.invalidatePlan();
+    return { hasMove: false, movesRemaining: 0, solved };
+  }
+
+  if (!move) {
+    // No plan yet, or the live cube diverged from the cached one
+    // (scramble/reset/undo/a stray manual move) -- (re)build one fresh, from
+    // the actual current state.
+    await fourByFourEngine.solve(scene);
+    move = fourByFourEngine.syncAndPeekNextMove(liveCubies);
+    if (!move) {
+      const solved = fourByFourEngine.isSolved();
+      fourByFourEngine.invalidatePlan();
+      return { hasMove: false, movesRemaining: 0, solved };
+    }
+  }
+
+  const [axis, layer, sign] = move;
   // If something else already owns the scene's turn (most likely: the user
-  // started dragging the cube themselves while this plan was computing --
-  // computeFourByFourSolveMoves can take a while), skip this press rather
-  // than fight or steal it. The plan itself was computed against a clone,
-  // so the live cube is untouched either way -- only this press's move is
-  // lost, and the next press recomputes fresh against whatever the user did.
+  // started dragging the cube themselves while a plan was computing), skip
+  // this press rather than fight or steal it -- the cursor hasn't advanced,
+  // so the next press will offer this same move again.
   if (scene.beginTurn(axis, layer)) {
     await animateProgress(scene, 0, sign, MOVE_ANIMATION_MS);
     scene.endTurn(sign);
   }
 
-  return { hasMove: true, movesRemaining: plan.moves.length - 1, solved: plan.solved };
+  // Suppress the "couldn't fully solve" warning while the queue still has
+  // moves left -- that verdict only means something once it's exhausted
+  // (see the two early returns above).
+  return { hasMove: true, movesRemaining: fourByFourEngine.remainingMoves(), solved: true };
 }
 
 export interface FiveByFiveHint {
