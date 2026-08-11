@@ -415,7 +415,20 @@ export function attachCustomSwipeTurning(scene: CustomCubeScene, moveCountRef: {
       // does), which would silently turn the wrong layer if snapped to
       // that neighbor's center instead of to where the touch actually was.
       const raw = scene.worldToGrid(hit.point[axis]);
-      const rounded = isEvenGrid ? Math.round(raw * 2) / 2 : Math.round(raw);
+      // Math.round(raw * 2) / 2 rounds to the nearest multiple of 0.5 --
+      // which includes whole integers (0, 1, 2, ...) whenever raw is close
+      // to one. On an even grid, valid layers are ONLY odd multiples of
+      // 0.5 (0.5, 1.5, ...) -- there is no layer 0 -- so a raw value near
+      // an integer boundary (e.g. a touch near the seam between two
+      // columns, or a hit point read off a cubie mid-rotation from an
+      // interrupted previous turn, which isn't constrained to resting
+      // positions) could round to an invalid integer layer like 0 or -0.
+      // faceLetterForAxisSign then finds no FACE_TURNS entry for it and
+      // throws "unreachable" (confirmed via reproduction: rapid
+      // back-to-back swipes on a 2x2 logged turn.layer === -0 right before
+      // the crash). Math.floor(raw) + 0.5 always lands on the nearest odd
+      // multiple of 0.5, with no way to hit an invalid integer.
+      const rounded = isEvenGrid ? Math.floor(raw) + 0.5 : Math.round(raw);
       const layer = Math.max(-maxLayer, Math.min(maxLayer, rounded));
       return { axis, layer };
     }) as [Candidate, Candidate];
