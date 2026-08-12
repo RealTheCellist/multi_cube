@@ -48,16 +48,19 @@ function playClick(audioCtx: AudioContext, when: number, freq: number, q: number
   noise.stop(when + durationSec);
 }
 
-// How many clicks make up one rattle, and the base spacing between them --
-// close enough together (well under the ~50ms the ear needs to hear
-// separate events as fully distinct) to blur into a rattle/ratchet texture
-// rather than reading as N separate, countable ticks. Fixed at ~0.15s
-// total (measured via offline rendering) -- CLICK_COUNT/SPACING tuned
-// together rather than spacing alone, since a much wider spacing on its
-// own starts reading as separate countable ticks instead of one blurred
-// rattle.
-const RATTLE_CLICK_COUNT = 7;
-const RATTLE_CLICK_SPACING_SEC = 0.021;
+// How many clicks make up one rattle, and the spacing curve between them.
+// Tuned against a real speedcube recording (waveform + FFT analysis of ~17
+// isolated turn-clicks): a real click isn't evenly-spaced ticks -- it's a
+// dense micro-burst in the first ~15-20ms (many sub-transients packed
+// tighter than the ear's ~50ms separate-events threshold), then a smaller
+// secondary catch around 30-50ms, then a quiet granular tail out to
+// ~80-120ms. Spacing grows geometrically (each gap RATTLE_CLICK_SPACING_GROWTH
+// times the last, starting from RATTLE_CLICK_BASE_SPACING_SEC) to reproduce
+// that front-loaded-then-trailing-off shape instead of a flat, evenly-spaced
+// rattle -- still lands around the same ~0.15s total span as before.
+const RATTLE_CLICK_COUNT = 8;
+const RATTLE_CLICK_BASE_SPACING_SEC = 0.006;
+const RATTLE_CLICK_SPACING_GROWTH = 1.35;
 
 /**
  * Plays one turn-click. Called once per committed turn from
@@ -77,17 +80,21 @@ export function playTurnSound(): void {
   // detent rather than a robotically exact repeat. Overall amplitude
   // decays across the series so it reads as one settling event, not a
   // flat drum roll.
+  let offsetSec = 0;
+  let gapSec = RATTLE_CLICK_BASE_SPACING_SEC;
   for (let i = 0; i < RATTLE_CLICK_COUNT; i++) {
-    const jitterSec = (Math.random() - 0.5) * 0.006;
-    const when = Math.max(now, now + i * RATTLE_CLICK_SPACING_SEC + jitterSec);
-    // Lower + wider bandpass than the first pass (was 2400-4200Hz, narrow
-    // Q) -- that read as thin/bright. Centering lower with a broader
-    // resonance and a longer decay per click gives each one more low-mid
-    // body ("굵은 톤"/a thicker tone) while staying noise-based, not pitched.
-    const freq = 900 + Math.random() * 900;
+    const jitterSec = (Math.random() - 0.5) * 0.004;
+    const when = Math.max(now, now + offsetSec + jitterSec);
+    // Bandpass center matched to a real cube recording's FFT: the loudest
+    // frequency bin across several isolated clicks consistently landed
+    // around 550-750Hz (previously 900-1800Hz here, measurably too bright/
+    // thin against the reference).
+    const freq = 550 + Math.random() * 500;
     const decay = 1 - i / (RATTLE_CLICK_COUNT + 1);
     const gain = (0.28 + Math.random() * 0.08) * decay;
     playClick(audioCtx, when, freq, 0.8 + Math.random() * 0.5, gain, 0.016 + Math.random() * 0.008);
+    offsetSec += gapSec;
+    gapSec *= RATTLE_CLICK_SPACING_GROWTH;
   }
   // Body: a brief, quiet low-frequency thump underneath the first catch so
   // it doesn't read as thin -- lowpassed noise, not a pitched tone.
