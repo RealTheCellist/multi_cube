@@ -27,7 +27,7 @@ export default function CubixxLogo() {
             "--assembled-ry": `${face.ry}deg`,
             "--tz": `${CUBE_HALF}px`,
             "--row-x": `${(i - (FACES.length - 1) / 2) * ROW_STEP}px`,
-            "--wave-delay": `${i * 0.07}s`,
+            "--wave-delay": `${i * 0.08}s`,
           };
           return (
             <div className="cubixx-face" style={style} key={i}>
