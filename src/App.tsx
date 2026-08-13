@@ -368,7 +368,7 @@ function App() {
                   </span>
                   <span className="mission-card-difficulty">{MISSION_DIFFICULTY_LABELS[size]}</span>
                   <span className="mission-card-status">
-                    {status.completedToday ? `완료 · ${status.todayMoves}수` : `힌트 ${status.hintLimit}개`}
+                    {status.completedToday ? `완료 · ${status.todayMoves}수` : `🎁 보상 힌트 ${status.hintLimit}개`}
                   </span>
                   {status.streak > 0 && <span className="mission-card-streak">🔥 {status.streak}일 연속</span>}
                 </button>
