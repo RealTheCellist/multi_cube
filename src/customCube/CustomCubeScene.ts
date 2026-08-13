@@ -15,6 +15,7 @@ import {
   middleSliceLetterForAxis,
   outerLayerCoordinate,
   randomScramble,
+  type Rng,
 } from "./cubeState";
 import { objectPoolModel, type ObjectPoolState } from "./customCubeExperiments/ObjectPoolModel";
 import { playTurnSound } from "./turnSound";
@@ -514,15 +515,21 @@ export class CustomCubeScene {
     this.undoStack = [];
   }
 
-  scramble(): void {
+  /**
+   * `rng` defaults to `Math.random` (an ordinary, non-reproducible
+   * scramble). Pass a seeded one (see cubeState.ts's mulberry32) to get a
+   * reproducible scramble instead -- e.g. a daily mission, where every
+   * player needs the exact same puzzle.
+   */
+  scramble(rng: Rng = Math.random): void {
     this.resetToSolved();
     // Letter-notation scrambling (which also records move history for the
     // solver -- see applyInstantMove) works at any size with a full letter
     // scheme: 3x3x3 and 2x2x2. Other sizes fall back to raw layer turns.
     if (this.gridSize === 3 || this.gridSize === 2) {
-      for (const move of randomScramble()) this.applyInstantMove(move);
+      for (const move of randomScramble(20, rng)) this.applyInstantMove(move);
     } else {
-      for (const { axis, layer, sign } of generateRandomLayerTurns(this.gridSize)) this.applyRawTurn(axis, layer, sign);
+      for (const { axis, layer, sign } of generateRandomLayerTurns(this.gridSize, 25, rng)) this.applyRawTurn(axis, layer, sign);
       for (const cubie of this.cubies) this.syncMeshTransform(cubie);
     }
   }

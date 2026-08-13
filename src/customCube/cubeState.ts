@@ -212,16 +212,40 @@ export function isSolved(cubies: Cubie[]): boolean {
 const SCRAMBLE_FACES: Face[] = ["U", "D", "L", "R", "F", "B"];
 const OPPOSITE_AXIS: Record<Face, Axis> = { U: "y", D: "y", L: "x", R: "x", F: "z", B: "z" };
 
+/** A `Math.random`-shaped RNG -- swappable for a seeded one (see mulberry32)
+ * so the exact same scramble can be reproduced from a seed, e.g. a daily
+ * mission's "everyone gets today's puzzle" requirement. Defaults to
+ * `Math.random` everywhere it's threaded through, so ordinary scrambling is
+ * unaffected. */
+export type Rng = () => number;
+
+/**
+ * Deterministic RNG from a 32-bit integer seed (mulberry32 -- small, fast,
+ * good enough statistical quality for scramble generation, not
+ * cryptographic use). Same seed always produces the same sequence, which is
+ * exactly what a reproducible daily scramble needs.
+ */
+export function mulberry32(seed: number): Rng {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 /** Letter-notation scramble for the 3x3x3 -- also feeds the solver's move history. */
-export function randomScramble(length = 20): string[] {
+export function randomScramble(length = 20, rng: Rng = Math.random): string[] {
   const moves: string[] = [];
   let lastAxis: Axis | null = null;
   while (moves.length < length) {
-    const face = SCRAMBLE_FACES[Math.floor(Math.random() * SCRAMBLE_FACES.length)];
+    const face = SCRAMBLE_FACES[Math.floor(rng() * SCRAMBLE_FACES.length)];
     const axis = OPPOSITE_AXIS[face];
     if (axis === lastAxis) continue;
     lastAxis = axis;
-    const suffix = ["", "'", "2"][Math.floor(Math.random() * 3)];
+    const suffix = ["", "'", "2"][Math.floor(rng() * 3)];
     moves.push(face + suffix);
   }
   return moves;
@@ -247,7 +271,7 @@ export interface RawTurn {
  * CustomCubeScene.ts's pooled state) can drive the same sequence through
  * their own turn-application path instead of applyRawQuarterTurn.
  */
-export function generateRandomLayerTurns(gridSize: number, length = 25): RawTurn[] {
+export function generateRandomLayerTurns(gridSize: number, length = 25, rng: Rng = Math.random): RawTurn[] {
   const offset = (gridSize - 1) / 2;
   const layers: number[] = [];
   for (let i = 0; i < gridSize; i++) layers.push(i - offset);
@@ -259,12 +283,12 @@ export function generateRandomLayerTurns(gridSize: number, length = 25): RawTurn
     let layer: number;
     let key: string;
     do {
-      axis = ALL_AXES[Math.floor(Math.random() * ALL_AXES.length)];
-      layer = layers[Math.floor(Math.random() * layers.length)];
+      axis = ALL_AXES[Math.floor(rng() * ALL_AXES.length)];
+      layer = layers[Math.floor(rng() * layers.length)];
       key = `${axis}:${layer}`;
     } while (key === lastKey);
     lastKey = key;
-    const sign: 1 | -1 = Math.random() < 0.5 ? 1 : -1;
+    const sign: 1 | -1 = rng() < 0.5 ? 1 : -1;
     turns.push({ axis, layer, sign });
   }
   return turns;
@@ -275,8 +299,8 @@ export function generateRandomLayerTurns(gridSize: number, length = 25): RawTurn
  * directly -- see generateRandomLayerTurns for why raw turns instead of
  * letter notation.
  */
-export function randomLayerScramble(cubies: Cubie[], gridSize: number, length = 25): void {
-  for (const { axis, layer, sign } of generateRandomLayerTurns(gridSize, length)) {
+export function randomLayerScramble(cubies: Cubie[], gridSize: number, length = 25, rng: Rng = Math.random): void {
+  for (const { axis, layer, sign } of generateRandomLayerTurns(gridSize, length, rng)) {
     applyRawQuarterTurn(cubies, axis, layer, sign);
   }
 }

@@ -3,6 +3,7 @@ import confetti from "canvas-confetti";
 import CubeView, { type CubeViewHandle } from "./CubeView";
 import CubixxLogo from "./CubixxLogo";
 import { warmupFourByFour } from "./customCube/customSolvePlayback";
+import { getDailyScrambleRng, getMissionStatus, MISSION_HINT_LIMITS, recordMissionComplete, type MissionStatus } from "./dailyMission";
 import { getLeaderboard, submitScore, type LeaderboardEntry } from "./leaderboard";
 import "./App.css";
 
@@ -19,10 +20,17 @@ const SIZE_COLORS: Record<number, string> = {
   5: "btn-rose",
 };
 
+const MISSION_DIFFICULTY_LABELS: Record<number, string> = {
+  2: "이지",
+  3: "미들",
+  4: "하드",
+  5: "엑스하드",
+};
+
 function App() {
   const cubeRef = useRef<CubeViewHandle>(null);
 
-  const [screen, setScreen] = useState<"home" | "game" | "leaderboard">("home");
+  const [screen, setScreen] = useState<"home" | "game" | "leaderboard" | "missions">("home");
   const [mode, setMode] = useState<"look" | "play">("play");
   const [gridSize, setGridSize] = useState(3);
   const [moveCount, setMoveCount] = useState(0);
@@ -43,6 +51,15 @@ function App() {
   const [leaderboardOrigin, setLeaderboardOrigin] = useState<"home" | "game">("game");
   const [lastRank, setLastRank] = useState<number | null>(null);
 
+  // Daily mission mode: a fixed, date+size-seeded scramble (same puzzle for
+  // everyone, every replay) instead of the usual random one, with a capped
+  // number of solve-hint presses (see dailyMission.ts) so the mission can't
+  // just be button-mashed to an auto-solve. Independent of the regular
+  // per-size leaderboard -- completing a mission never auto-registers there.
+  const [missionMode, setMissionMode] = useState(false);
+  const [missionHintsUsed, setMissionHintsUsed] = useState(0);
+  const [missionCompleteResult, setMissionCompleteResult] = useState<{ streak: number; moves: number; hintsUsed: number } | null>(null);
+
   useEffect(() => {
     if (screen === "leaderboard") {
       setLeaderboard(getLeaderboard(leaderboardSize));
@@ -57,20 +74,31 @@ function App() {
   // every layer via swipes) -- not tied to the solve-hint button, which
   // only ever previews one move. Registration (nickname + leaderboard
   // submit) happens from the completion modal, not automatically here.
-  const handleSolvedChange = useCallback((solved: boolean) => {
-    setHasScrambled((currentlyScrambled) => {
-      if (solved && currentlyScrambled) {
-        confetti({
-          particleCount: 150,
-          spread: 80,
-          origin: { y: 0.6 },
-        });
-        setShowCompletionModal(true);
-        return false;
-      }
-      return currentlyScrambled;
-    });
-  }, []);
+  // A mission completion is recorded separately (dailyMission.ts) and never
+  // auto-registers to the regular leaderboard -- the two features stay
+  // independent.
+  const handleSolvedChange = useCallback(
+    (solved: boolean) => {
+      setHasScrambled((currentlyScrambled) => {
+        if (solved && currentlyScrambled) {
+          confetti({
+            particleCount: 150,
+            spread: 80,
+            origin: { y: 0.6 },
+          });
+          if (missionMode) {
+            const { streak } = recordMissionComplete(gridSize, moveCount, missionHintsUsed);
+            setMissionCompleteResult({ streak, moves: moveCount, hintsUsed: missionHintsUsed });
+          } else {
+            setShowCompletionModal(true);
+          }
+          return false;
+        }
+        return currentlyScrambled;
+      });
+    },
+    [missionMode, gridSize, moveCount, missionHintsUsed],
+  );
 
   const handleScramble = useCallback(async () => {
     // Orbit mode while the scramble animation plays -- keeps the swipe
@@ -82,10 +110,18 @@ function App() {
     setSolveError(false);
     setFourByFourUnsolved(false);
     setLastRank(null);
-    await cubeRef.current?.scramble();
+    if (missionMode) {
+      // "다시 시도" in mission mode -- re-applies the SAME daily scramble
+      // (not a new random one) and gives the hint budget back, since this is
+      // restarting today's fixed puzzle, not asking for a different one.
+      setMissionHintsUsed(0);
+      await cubeRef.current?.scramble(getDailyScrambleRng(gridSize));
+    } else {
+      await cubeRef.current?.scramble();
+    }
     setHasScrambled(true);
     setMode("play");
-  }, []);
+  }, [missionMode, gridSize]);
 
   const handleReset = useCallback(() => {
     cubeRef.current?.resetToSolved();
@@ -109,7 +145,7 @@ function App() {
     }
   }, []);
 
-  const resetGameState = useCallback(() => {
+  const resetGameState = useCallback((entersMissionMode = false) => {
     setMode("play");
     setShowCompletionModal(false);
     setMoveCount(0);
@@ -117,6 +153,9 @@ function App() {
     setFourByFourUnsolved(false);
     setLastRank(null);
     setHasScrambled(false);
+    setMissionMode(entersMissionMode);
+    setMissionHintsUsed(0);
+    setMissionCompleteResult(null);
   }, []);
 
   const handlePickSize = useCallback(
@@ -133,8 +172,45 @@ function App() {
     [resetGameState],
   );
 
-  const handleBackToHome = useCallback(() => {
+  const handlePickMission = useCallback(
+    (size: number) => {
+      setGridSize(size);
+      resetGameState(true);
+      // The game screen's CubeView applies today's scramble itself on mount
+      // (see its initialScrambleRng prop) -- this just needs to mark "there
+      // is a scramble to solve" so handleSolvedChange's completion check
+      // (solved && currentlyScrambled) fires correctly.
+      setHasScrambled(true);
+      setScreen("game");
+      if (size === 4) warmupFourByFour();
+    },
+    [resetGameState],
+  );
+
+  // The game screen's own back button: mission mode returns to the mission
+  // list (there's no "크기 변경" concept mid-mission -- you picked a
+  // specific mission, not a free size), everything else goes home.
+  const handleBackFromGame = useCallback(() => {
+    if (missionMode) {
+      setMissionMode(false);
+      setScreen("missions");
+    } else {
+      setScreen("home");
+    }
+  }, [missionMode]);
+
+  const handleOpenMissions = useCallback(() => {
+    setScreen("missions");
+  }, []);
+
+  const handleMissionsBack = useCallback(() => {
     setScreen("home");
+  }, []);
+
+  const handleMissionModalClose = useCallback(() => {
+    setMissionCompleteResult(null);
+    setMissionMode(false);
+    setScreen("missions");
   }, []);
 
   const handleOpenLeaderboard = useCallback(() => {
@@ -216,7 +292,11 @@ function App() {
     } finally {
       setIsSolving(false);
     }
-  }, [gridSize]);
+    if (missionMode) setMissionHintsUsed((n) => n + 1);
+  }, [gridSize, missionMode]);
+
+  const missionHintLimit = MISSION_HINT_LIMITS[gridSize] ?? 3;
+  const missionHintsExhausted = missionMode && missionHintsUsed >= missionHintLimit;
 
   if (screen === "home") {
     return (
@@ -251,9 +331,50 @@ function App() {
               </button>
             ))}
           </div>
+          <button type="button" className="btn3d btn-accent mission-cta" onClick={handleOpenMissions}>
+            오늘의 미션
+          </button>
           <button type="button" className="leaderboard-text-link" onClick={handleOpenLeaderboardFromHome}>
             리더보드 보기
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (screen === "missions") {
+    return (
+      <div className="app">
+        <header className="app-header with-back">
+          <button type="button" className="home-link" onClick={handleMissionsBack}>
+            ← 뒤로
+          </button>
+        </header>
+
+        <div className="missions-page">
+          <p className="missions-caption">매일 자정에 새로운 스크램블 — 모두가 같은 문제를 풀어요</p>
+          <div className="missions-list">
+            {[2, 3, 4, 5].map((size) => {
+              const status: MissionStatus = getMissionStatus(size);
+              return (
+                <button
+                  key={size}
+                  type="button"
+                  className={`mission-card mission-card-${SIZE_COLORS[size]}${status.completedToday ? " mission-card-done" : ""}`}
+                  onClick={() => handlePickMission(size)}
+                >
+                  <span className="mission-card-size">
+                    {size}×{size}
+                  </span>
+                  <span className="mission-card-difficulty">{MISSION_DIFFICULTY_LABELS[size]}</span>
+                  <span className="mission-card-status">
+                    {status.completedToday ? `완료 · ${status.todayMoves}수` : `힌트 ${status.hintLimit}개`}
+                  </span>
+                  {status.streak > 0 && <span className="mission-card-streak">🔥 {status.streak}일 연속</span>}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
     );
@@ -313,12 +434,14 @@ function App() {
     <div className="app">
       <div className="above-cube">
         <header className="app-header with-back">
-          <button type="button" className="home-link" onClick={handleBackToHome}>
-            ← 크기 변경
+          <button type="button" className="home-link" onClick={handleBackFromGame}>
+            {missionMode ? "← 미션 목록" : "← 크기 변경"}
           </button>
-          <button type="button" className="home-link leaderboard-link" onClick={handleOpenLeaderboard}>
-            리더보드
-          </button>
+          {!missionMode && (
+            <button type="button" className="home-link leaderboard-link" onClick={handleOpenLeaderboard}>
+              리더보드
+            </button>
+          )}
         </header>
 
         <div className="stat-row">
@@ -327,6 +450,12 @@ function App() {
             <span className="stat-value">{moveCount}</span>
           </div>
         </div>
+
+        {missionMode && (
+          <p className="mission-badge">
+            오늘의 미션 · 힌트 {Math.max(missionHintLimit - missionHintsUsed, 0)}/{missionHintLimit} 남음
+          </p>
+        )}
 
         <p className="mode-hint">
           {isSolving
@@ -339,7 +468,9 @@ function App() {
               ? "솔버 실행 중 오류가 발생했습니다. 다시 시도해보세요"
               : fourByFourUnsolved
                 ? "이 스크램블은 아직 끝까지 풀지 못했어요 (패리티 케이스일 수 있어요) — 다시 시도해보세요"
-                : ""}
+                : missionHintsExhausted
+                  ? "오늘의 힌트를 다 썼어요 — 여기서부턴 직접 풀어보세요"
+                  : ""}
         </p>
       </div>
 
@@ -348,6 +479,7 @@ function App() {
           ref={cubeRef}
           orbitMode={mode === "look"}
           gridSize={gridSize}
+          initialScrambleRng={missionMode ? getDailyScrambleRng(gridSize) : undefined}
           onMoveCountChange={handleMoveCountChange}
           onFirstMove={() => {}}
           onSolvedChange={handleSolvedChange}
@@ -378,19 +510,21 @@ function App() {
           type="button"
           className="btn3d btn-accent"
           onClick={handleSolve}
-          disabled={isSolving}
+          disabled={isSolving || missionHintsExhausted}
           title={
-            gridSize === 5
-              ? "다음 수를 바로 진행해요 (일부 스크램블은 여러 번 눌러야 끝까지 풀릴 수 있어요)"
-              : gridSize === 4
-                ? "다음 수를 바로 진행해요"
-                : undefined
+            missionMode
+              ? `오늘의 미션은 힌트를 ${missionHintLimit}번까지만 쓸 수 있어요`
+              : gridSize === 5
+                ? "다음 수를 바로 진행해요 (일부 스크램블은 여러 번 눌러야 끝까지 풀릴 수 있어요)"
+                : gridSize === 4
+                  ? "다음 수를 바로 진행해요"
+                  : undefined
           }
         >
           솔브
         </button>
         <button type="button" className="btn3d btn-rose" onClick={handleScramble} disabled={isSolving}>
-          스크램블
+          {missionMode ? "다시 시도" : "스크램블"}
         </button>
         <button type="button" className="btn3d btn-slate" onClick={handleUndo} disabled={isSolving || moveCount === 0}>
           실행취소
@@ -421,6 +555,28 @@ function App() {
               </button>
               <button type="button" className="modal-later" onClick={handleSkipRegister}>
                 나중에 하기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {missionCompleteResult && (
+        <div className="modal-overlay">
+          <div className="modal-card">
+            <h2>🎉 오늘의 미션 완료!</h2>
+            <p className="modal-summary">
+              <strong>
+                {gridSize}×{gridSize} · {MISSION_DIFFICULTY_LABELS[gridSize]}
+              </strong>
+              <br />
+              이동수 <strong>{missionCompleteResult.moves}</strong> · 힌트 <strong>{missionCompleteResult.hintsUsed}</strong>개 사용
+              <br />
+              🔥 <strong>{missionCompleteResult.streak}일</strong> 연속 완료
+            </p>
+            <div className="modal-actions">
+              <button type="button" className="btn3d btn-green" onClick={handleMissionModalClose}>
+                확인
               </button>
             </div>
           </div>

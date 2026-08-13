@@ -8,10 +8,11 @@ import {
   type FiveByFiveHint,
   type FourByFourHint,
 } from "./customCube/customSolvePlayback";
+import type { Rng } from "./customCube/cubeState";
 import type { SolveHint } from "./solvePlayback";
 
 export interface CubeViewHandle {
-  scramble: () => Promise<void>;
+  scramble: (rng?: Rng) => Promise<void>;
   resetToSolved: () => void;
   solveNextMove: () => Promise<SolveHint>;
   solveNextFourByFour: () => Promise<FourByFourHint>;
@@ -30,10 +31,22 @@ interface CubeViewProps {
   // decorative cube) -- distinct from orbitMode, which still lets the
   // user drag to look around.
   interactive?: boolean;
+  // When set, the freshly-created scene is scrambled with this RNG
+  // immediately on mount (before first paint) instead of starting solved --
+  // the daily mission flow's way of starting already on today's fixed
+  // puzzle. Deliberately read via a ref inside the SAME effect that builds
+  // the scene rather than left for a separate caller-side effect to apply
+  // after the fact: a parent effect calling the exposed `scramble()` handle
+  // right after this component mounts is NOT reliably ordered after this
+  // scene-creation effect in practice (confirmed by hand -- the parent-effect
+  // version silently no-opped against a scene that either wasn't there yet
+  // or was about to be replaced), so this has to happen inside the one
+  // effect that owns the scene's full lifecycle.
+  initialScrambleRng?: Rng;
 }
 
 const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
-  { onMoveCountChange, onFirstMove, onSolvedChange, orbitMode, gridSize, interactive = true },
+  { onMoveCountChange, onFirstMove, onSolvedChange, orbitMode, gridSize, interactive = true, initialScrambleRng },
   ref,
 ) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -45,6 +58,8 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
   orbitModeRef.current = orbitMode;
   const interactiveRef = useRef(interactive);
   interactiveRef.current = interactive;
+  const initialScrambleRngRef = useRef(initialScrambleRng);
+  initialScrambleRngRef.current = initialScrambleRng;
 
   const callbacksRef = useRef({ onMoveCountChange, onFirstMove, onSolvedChange });
   callbacksRef.current = { onMoveCountChange, onFirstMove, onSolvedChange };
@@ -56,6 +71,7 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
     moveCountRef.current = 0;
     const scene = new CustomCubeScene(container, gridSize);
     sceneRef.current = scene;
+    if (initialScrambleRngRef.current) scene.scramble(initialScrambleRngRef.current);
     scene.setOrbitEnabled(interactiveRef.current && orbitModeRef.current);
 
     const controller = attachCustomSwipeTurning(scene, moveCountRef);
@@ -106,10 +122,10 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
   }
 
   useImperativeHandle(ref, () => ({
-    scramble: async () => {
+    scramble: async (rng?: Rng) => {
       hasMovedRef.current = false;
       moveCountRef.current = 0;
-      sceneRef.current?.scramble();
+      sceneRef.current?.scramble(rng);
       callbacksRef.current.onMoveCountChange(0);
     },
     resetToSolved: () => {
