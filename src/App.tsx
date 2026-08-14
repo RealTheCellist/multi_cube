@@ -28,6 +28,8 @@ const MISSION_DIFFICULTY_LABELS: Record<number, string> = {
   5: "엑스하드",
 };
 
+const MISSION_AD_BONUS_HINTS = 5;
+
 function App() {
   const cubeRef = useRef<CubeViewHandle>(null);
 
@@ -308,16 +310,17 @@ function App() {
     if (missionMode) setMissionHintsUsed((n) => n + 1);
   }, [gridSize, missionMode]);
 
-  // A watched ad ("earned") grants one more hint on top of the size's base
-  // budget -- doesn't touch missionHintsUsed, so the completion record still
-  // shows exactly how many real hint presses happened either way.
+  // A watched ad ("earned") grants MISSION_AD_BONUS_HINTS more hints on top
+  // of the size's base budget -- doesn't touch missionHintsUsed, so the
+  // completion record still shows exactly how many real hint presses
+  // happened either way.
   const handleWatchAdForHint = useCallback(async () => {
     setIsWatchingAd(true);
     setAdUnavailable(false);
     const result = await requestRewardedAd();
     setIsWatchingAd(false);
     if (result === "earned") {
-      setMissionBonusHints((n) => n + 1);
+      setMissionBonusHints((n) => n + MISSION_AD_BONUS_HINTS);
     } else {
       setAdUnavailable(true);
     }
@@ -503,7 +506,7 @@ function App() {
 
         {missionHintsExhausted && isRewardedAdAvailable() && (
           <button type="button" className="btn3d btn-accent watch-ad-btn" onClick={handleWatchAdForHint} disabled={isWatchingAd}>
-            {isWatchingAd ? "광고 재생 중..." : "📺 광고 보고 힌트 1개 더 받기"}
+            {isWatchingAd ? "광고 재생 중..." : `📺 광고 보고 힌트 ${MISSION_AD_BONUS_HINTS}개 더 받기`}
           </button>
         )}
         {adUnavailable && <p className="ad-unavailable-hint">지금은 광고를 불러올 수 없어요 — 잠시 후 다시 시도해보세요</p>}
