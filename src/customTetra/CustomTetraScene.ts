@@ -15,7 +15,12 @@ const stickerMaterialCache = new Map<string, THREE.MeshLambertMaterial>();
 function stickerMaterial(color: string): THREE.MeshLambertMaterial {
   let mat = stickerMaterialCache.get(color);
   if (!mat) {
-    mat = new THREE.MeshLambertMaterial({ color });
+    // DoubleSide is required, not cosmetic: "up" and "down" grid cells wind
+    // in opposite directions (see buildSolvedTetra), so a front-only
+    // material backface-culls every axial (down-cell) sticker from the
+    // camera's side, leaving only its black backing visible -- exactly the
+    // "checkerboard of empty black tiles" bug this fixes.
+    mat = new THREE.MeshLambertMaterial({ color, side: THREE.DoubleSide });
     stickerMaterialCache.set(color, mat);
   }
   return mat;
