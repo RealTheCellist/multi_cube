@@ -2,12 +2,14 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import type { Rng } from "./customCube/cubeState";
 import { CustomTetraScene } from "./customTetra/CustomTetraScene";
 import { attachTetraSwipeTurning, type TetraSwipeController } from "./customTetra/tetraSwipeControls";
+import { applyNextTetraSolveMove, type TetraSolveHint } from "./customTetra/tetraSolvePlayback";
 
 export interface TetraViewHandle {
   scramble: (rng?: Rng) => void;
   resetToSolved: () => void;
   isSolved: () => boolean;
   undoLastMove: () => boolean;
+  solveNextMove: () => Promise<TetraSolveHint>;
 }
 
 interface TetraViewProps {
@@ -76,6 +78,22 @@ const TetraView = forwardRef<TetraViewHandle, TetraViewProps>(function TetraView
     controllerRef.current?.setEnabled(interactive);
   }, [interactive]);
 
+  // Solve-hint presses commit the move for real, exactly like a swipe --
+  // same reportSolveCommit contract as CubeView, using the scene's own
+  // undo-count delta rather than assuming +1 (a tetra hint move is always
+  // exactly one turn today, but this stays correct if that ever changes).
+  function reportSolveCommit(scene: CustomTetraScene, before: number): void {
+    const applied = scene.getUndoCount() - before;
+    if (applied <= 0) return;
+    moveCountRef.current += applied;
+    callbacksRef.current.onMoveCountChange(moveCountRef.current);
+    if (!hasMovedRef.current) {
+      hasMovedRef.current = true;
+      callbacksRef.current.onFirstMove();
+    }
+    callbacksRef.current.onSolvedChange(scene.isSolved());
+  }
+
   useImperativeHandle(ref, () => ({
     scramble: (rng?: Rng) => {
       hasMovedRef.current = false;
@@ -100,6 +118,18 @@ const TetraView = forwardRef<TetraViewHandle, TetraViewProps>(function TetraView
         callbacksRef.current.onSolvedChange(scene.isSolved());
       }
       return didUndo;
+    },
+    solveNextMove: async () => {
+      const scene = sceneRef.current;
+      if (!scene) return { move: null, movesRemaining: 0 };
+      controllerRef.current?.setEnabled(false);
+      const before = scene.getUndoCount();
+      try {
+        return await applyNextTetraSolveMove(scene);
+      } finally {
+        reportSolveCommit(scene, before);
+        controllerRef.current?.setEnabled(interactiveRef.current);
+      }
     },
   }));
 

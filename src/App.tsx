@@ -152,6 +152,7 @@ function App() {
   const handleScramble = useCallback(async () => {
     if (puzzleKind === "tetra") {
       setMoveCount(0);
+      setSolveError(false);
       setLastRank(null);
       tetraRef.current?.scramble();
       setHasScrambled(true);
@@ -187,6 +188,7 @@ function App() {
     if (puzzleKind === "tetra") {
       tetraRef.current?.resetToSolved();
       setMoveCount(0);
+      setSolveError(false);
       setLastRank(null);
       setHasScrambled(false);
       return;
@@ -206,7 +208,7 @@ function App() {
 
   const handleUndo = useCallback(() => {
     if (puzzleKind === "tetra") {
-      tetraRef.current?.undoLastMove();
+      if (tetraRef.current?.undoLastMove()) setSolveError(false);
       return;
     }
     const didUndo = cubeRef.current?.undoLastMove();
@@ -385,6 +387,23 @@ function App() {
   // of the size's base budget -- doesn't touch missionHintsUsed, so the
   // completion record still shows exactly how many real hint presses
   // happened either way.
+  // Tetra's solve-hint press -- same "commit one real move, report it like a
+  // swipe" contract as handleSolve's cube path, just against
+  // tetraSolvePlayback.ts instead. No 4x4/5x5-style plan caching (a 3-layer
+  // Pyraminx solve is effectively instant) and no mission hint budget (no
+  // tetra daily mission exists yet -- see dailyMission.ts).
+  const handleTetraSolve = useCallback(async () => {
+    setIsSolving(true);
+    try {
+      await tetraRef.current?.solveNextMove();
+      setSolveError(false);
+    } catch {
+      setSolveError(true);
+    } finally {
+      setIsSolving(false);
+    }
+  }, []);
+
   const handleWatchAdForHint = useCallback(async () => {
     setIsWatchingAd(true);
     setAdUnavailable(false);
@@ -608,6 +627,12 @@ function App() {
           </p>
         )}
 
+        {puzzleKind === "tetra" && (
+          <p className="mode-hint">
+            {isSolving ? "다음 수 진행 중..." : solveError ? "솔버 실행 중 오류가 발생했습니다. 다시 시도해보세요" : ""}
+          </p>
+        )}
+
         {puzzleKind === "cube" && (
           <p className="mode-hint">
             {isSolving
@@ -657,14 +682,23 @@ function App() {
       </div>
 
       {puzzleKind === "tetra" ? (
-        <div className="bottom-controls">
-          <button type="button" className="btn3d btn-orange" onClick={handleReset}>
+        <div className="bottom-controls bottom-controls--four">
+          <button type="button" className="btn3d btn-orange" onClick={handleReset} disabled={isSolving}>
             리셋
           </button>
-          <button type="button" className="btn3d btn-rose" onClick={handleScramble}>
+          <button
+            type="button"
+            className="btn3d btn-accent"
+            onClick={handleTetraSolve}
+            disabled={isSolving || tetraLayerCount !== 3}
+            title={tetraLayerCount !== 3 ? "지금은 Pyraminx(3레이어)만 솔버가 있어요" : "다음 수를 바로 진행해요"}
+          >
+            솔브
+          </button>
+          <button type="button" className="btn3d btn-rose" onClick={handleScramble} disabled={isSolving}>
             스크램블
           </button>
-          <button type="button" className="btn3d btn-slate" onClick={handleUndo} disabled={moveCount === 0}>
+          <button type="button" className="btn3d btn-slate" onClick={handleUndo} disabled={isSolving || moveCount === 0}>
             실행취소
           </button>
         </div>

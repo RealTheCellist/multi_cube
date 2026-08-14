@@ -317,6 +317,13 @@
   width: 100%;
 }
 
+/* Tetra's 4-button row (리셋/솔브/스크램블/실행취소) -- a clean 2x2 grid
+   reads better than the base 3-column template wrapping 4 items into an
+   awkward 3+1 layout. */
+.bottom-controls--four {
+  grid-template-columns: repeat(2, 1fr);
+}
+
 .leaderboard-page {
   width: 100%;
   max-width: 420px;

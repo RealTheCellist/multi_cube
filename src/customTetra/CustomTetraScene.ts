@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import type { Rng } from "../customCube/cubeState";
 import { axisVector, VERTICES, type VertexIndex } from "./tetraMath";
-import { applyRawThirdTurn, buildSolvedTetra, isSolved as isSolvedState, randomTetraScramble, stickersForTurn, type Sticker, type TetraState } from "./tetraState";
+import { applyRawThirdTurn, buildSolvedTetra, generateRandomThirdTurns, isSolved as isSolvedState, stickersForTurn, type Sticker, type TetraState } from "./tetraState";
 
 const PLASTIC_MATERIAL = new THREE.MeshLambertMaterial({ color: 0x141414, side: THREE.DoubleSide });
 // Same technique the approved concept render validated: each sticker
@@ -89,6 +89,13 @@ export class CustomTetraScene {
   private resizeObserver: ResizeObserver;
   private disposed = false;
   private undoStack: { vertexIndex: VertexIndex; depth: number; sign: 1 | -1 }[] = [];
+  // Every move since the last resetToSolved/scramble, INCLUDING scramble's
+  // own moves (unlike undoStack, which only ever holds user-committed turns
+  // -- see undoLastMove). Exists solely so a solver can reconstruct the
+  // current state by replaying from a known-solved cubing/kpuzzle pattern
+  // (see tetraSolvePlayback.ts), same role as CustomCubeScene's own
+  // moveHistory/applyInstantMove split.
+  private moveHistory: { vertexIndex: VertexIndex; depth: number; sign: 1 | -1 }[] = [];
 
   constructor(container: HTMLElement, layerCount = 3) {
     this.container = container;
@@ -261,6 +268,7 @@ export class CustomTetraScene {
       if (commitSign !== null) {
         applyRawThirdTurn(this.state, turn.vertexIndex, turn.depth, commitSign);
         this.undoStack.push({ vertexIndex: turn.vertexIndex, depth: turn.depth, sign: commitSign });
+        this.moveHistory.push({ vertexIndex: turn.vertexIndex, depth: turn.depth, sign: commitSign });
       }
     } finally {
       for (const sticker of this.state.stickers) {
@@ -283,12 +291,17 @@ export class CustomTetraScene {
     this.state = buildSolvedTetra(this.layerCount);
     this.refreshAllMeshes();
     this.undoStack = [];
+    this.moveHistory = [];
   }
 
   /** `rng` defaults to Math.random; pass a seeded one (cubeState's mulberry32) for a reproducible scramble. */
   scramble(rng: Rng = Math.random): void {
     this.resetToSolved();
-    randomTetraScramble(this.state, 20, rng);
+    const turns = generateRandomThirdTurns(this.layerCount, 20, rng);
+    for (const turn of turns) {
+      applyRawThirdTurn(this.state, turn.vertexIndex, turn.depth, turn.sign);
+      this.moveHistory.push(turn);
+    }
     this.refreshAllMeshes();
   }
 
@@ -298,8 +311,19 @@ export class CustomTetraScene {
     const last = this.undoStack.pop();
     if (!last) return false;
     applyRawThirdTurn(this.state, last.vertexIndex, last.depth, last.sign === 1 ? -1 : 1);
+    this.moveHistory.pop();
     this.refreshAllMeshes();
     return true;
+  }
+
+  /** Every move since the last resetToSolved/scramble, in application order -- see moveHistory's own comment. */
+  getMoveHistory(): { vertexIndex: VertexIndex; depth: number; sign: 1 | -1 }[] {
+    return [...this.moveHistory];
+  }
+
+  /** Count of committed user turns since the last resetToSolved() -- mirrors CustomCubeScene.getUndoCount. */
+  getUndoCount(): number {
+    return this.undoStack.length;
   }
 
   dispose(): void {
