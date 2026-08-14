@@ -40,12 +40,13 @@ function centroidOf(corners: readonly [THREE.Vector3, THREE.Vector3, THREE.Vecto
 /**
  * Builds a solved N-layer tetrahedron's stickers. Each face is subdivided
  * into layerCount^2 small triangles via a standard barycentric grid
- * (grid(i,j) = A*(1-i/N-j/N) + B*(i/N) + C*(j/N)); "up" cells are real
- * turnable stickers, "down" cells (the inverted triangles between them) are
- * always axial/fixed -- see the plan doc's N=3 cross-check against a real
- * Pyraminx's known piece counts (4 tips/12 stickers, 6 edges/12 stickers,
- * 12 axial stickers, tip turn moves 3, corner turn moves 9) for why down
- * cells never turn.
+ * (grid(i,j) = A*(1-i/N-j/N) + B*(i/N) + C*(j/N)); "up" cells are always
+ * turnable stickers. "down" cells (the inverted triangles between them) are
+ * labeled "axial" here, but that's a construction-time shape label, not a
+ * promise that they never turn -- see stickersForTurn's comment for why only
+ * one down-cell per face (the true fixed-core piece) is actually immovable
+ * once N>=4, and why the depth check there (not this label) is what decides
+ * turn membership.
  */
 export function buildSolvedTetra(layerCount: number): TetraState {
   const N = layerCount;
@@ -124,16 +125,29 @@ function minDepthFromVertex(corners: readonly [THREE.Vector3, THREE.Vector3, THR
 /**
  * Stickers that belong to a turn about `vertexIndex`'s axis at cutoff depth
  * `depth` (1..layerCount-1 -- 1 is the shallowest/tip-only turn, layerCount-1
- * is the deepest). Axial stickers never qualify; everything else is judged
- * by its LIVE position (works after any number of prior turns, not just at
- * the solved state), matching cubiesInLayer's live-position-based filtering
- * in cubeState.ts.
+ * is the deepest). Judged purely by LIVE depth (works after any number of
+ * prior turns, not just at the solved state), matching cubiesInLayer's
+ * live-position-based filtering in cubeState.ts.
+ *
+ * "axial" (down-cell) stickers are NOT blanket-excluded here, even though
+ * most of them are labeled "axial" at construction time. For N=3 that label
+ * happens to coincide with "never turns" (there's exactly one down-cell per
+ * face, and it really is the fixed core piece). For N>=4 it doesn't: only
+ * the innermost down-cell per face is genuinely fixed to the core, and the
+ * rest are down-cell facets of edge/center pieces that DO move with the
+ * appropriate turn. Excluding all of them by pieceType (an earlier version
+ * of this function did) leaves those live-adjacent down-cells behind when
+ * their up-cell neighbors turn, tearing a hole in the tetrahedron's surface
+ * (visible gaps + exposed backing plastic) at exactly the shared boundary --
+ * confirmed by an edge-adjacency tiling check (every triangle edge must be
+ * shared by exactly 2 stickers; the old code produced dozens of unshared
+ * edges after a single deep turn, even for N=3). The depth check alone
+ * already correctly leaves the true fixed-core piece behind: it sits at
+ * maximum depth from every vertex whose turns could reach its face, so
+ * minDepthFromVertex is never less than any valid cutoff.
  */
 export function stickersForTurn(state: TetraState, vertexIndex: VertexIndex, depth: number): Sticker[] {
-  return state.stickers.filter((s) => {
-    if (s.pieceType === "axial") return false;
-    return minDepthFromVertex(s.corners, vertexIndex, state.layerCount) < depth;
-  });
+  return state.stickers.filter((s) => minDepthFromVertex(s.corners, vertexIndex, state.layerCount) < depth);
 }
 
 /** Applies one raw +/-120-degree turn about `vertexIndex`'s axis at cutoff `depth`, in place. */
@@ -149,10 +163,14 @@ export function applyRawThirdTurn(state: TetraState, vertexIndex: VertexIndex, d
  * color it shows -- checked by which face its live centroid is nearest to,
  * not by exact original-cell identity, same spirit as cubeState.isSolved
  * (color-vs-facing-direction, not per-piece identity) since same-face
- * same-color stickers are visually interchangeable.
+ * same-color stickers are visually interchangeable. Checked for every
+ * sticker, including "axial"-labeled ones: for N>=4 most of those actually
+ * move with turns now (see stickersForTurn), so they need the same check as
+ * everything else -- only the true fixed-core piece is exempt in practice,
+ * and it trivially passes since it never leaves home.
  */
 export function isSolved(state: TetraState): boolean {
-  return state.stickers.every((s) => s.pieceType === "axial" || nearestFaceIndex(centroidOf(s.corners)) === s.homeFaceIndex);
+  return state.stickers.every((s) => nearestFaceIndex(centroidOf(s.corners)) === s.homeFaceIndex);
 }
 
 export interface RawTetraTurn {
