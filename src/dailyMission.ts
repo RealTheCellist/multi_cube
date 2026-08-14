@@ -1,17 +1,20 @@
 import { mulberry32, type Rng } from "./customCube/cubeState";
+import { type PuzzleId, puzzleKey } from "./puzzleKind";
 
-// How many solve-hint presses a daily mission attempt allows, per grid
-// size -- scaled to roughly how long a casual human solve actually runs
-// for that size (2x2 ~10-15 moves, 3x3 ~40-60, 4x4/5x5 100+), so the limit
-// reads as "a nudge or two when you're stuck" rather than either "free
-// auto-solve" (unlimited, the pre-mission behavior) or "basically useless"
-// (a flat small number applied to a 4x4/5x5's much longer solve).
-export const MISSION_HINT_LIMITS: Record<number, number> = { 2: 2, 3: 3, 4: 5, 5: 5 };
+// How many solve-hint presses a daily mission attempt allows, per puzzle --
+// scaled to roughly how long a casual human solve actually runs for that
+// size (2x2 ~10-15 moves, 3x3 ~40-60, 4x4/5x5 100+), so the limit reads as
+// "a nudge or two when you're stuck" rather than either "free auto-solve"
+// (unlimited, the pre-mission behavior) or "basically useless" (a flat
+// small number applied to a 4x4/5x5's much longer solve). Keys must match
+// puzzleKey()'s "kind-size" format -- missions are cube-only today (no
+// tetra solver to budget hints against), so only cube-* keys exist.
+export const MISSION_HINT_LIMITS: Record<string, number> = { "cube-2": 2, "cube-3": 3, "cube-4": 5, "cube-5": 5 };
 
 const STORAGE_PREFIX = "poly-puzzle-mission-";
 
-function storageKey(gridSize: number): string {
-  return `${STORAGE_PREFIX}${gridSize}`;
+function storageKey(id: PuzzleId): string {
+  return `${STORAGE_PREFIX}${puzzleKey(id)}`;
 }
 
 /** Local calendar date as YYYY-MM-DD -- the mission's own "day" boundary,
@@ -42,11 +45,11 @@ function hashSeed(str: string): number {
   return hash >>> 0;
 }
 
-/** The RNG that produces today's mission scramble for a given grid size --
- * same date + same size always reproduces the exact same scramble, so
+/** The RNG that produces today's mission scramble for a given puzzle --
+ * same date + same puzzle always reproduces the exact same scramble, so
  * every player (and every replay) sees the identical daily puzzle. */
-export function getDailyScrambleRng(gridSize: number, date: string = getTodayDateString()): Rng {
-  return mulberry32(hashSeed(`${date}:${gridSize}`));
+export function getDailyScrambleRng(id: PuzzleId, date: string = getTodayDateString()): Rng {
+  return mulberry32(hashSeed(`${date}:${puzzleKey(id)}`));
 }
 
 interface MissionStorage {
@@ -57,9 +60,9 @@ interface MissionStorage {
 
 const EMPTY_STORAGE: MissionStorage = { streak: 0, lastCompletedDate: null, today: null };
 
-function readStorage(gridSize: number): MissionStorage {
+function readStorage(id: PuzzleId): MissionStorage {
   try {
-    const raw = localStorage.getItem(storageKey(gridSize));
+    const raw = localStorage.getItem(storageKey(id));
     if (!raw) return EMPTY_STORAGE;
     const parsed: unknown = JSON.parse(raw);
     if (typeof parsed !== "object" || parsed === null) return EMPTY_STORAGE;
@@ -80,9 +83,9 @@ function readStorage(gridSize: number): MissionStorage {
   }
 }
 
-function writeStorage(gridSize: number, data: MissionStorage): void {
+function writeStorage(id: PuzzleId, data: MissionStorage): void {
   try {
-    localStorage.setItem(storageKey(gridSize), JSON.stringify(data));
+    localStorage.setItem(storageKey(id), JSON.stringify(data));
   } catch {
     // No persistence this session, but the in-memory result (streak, etc.)
     // returned to the caller still reflects reality for right now.
@@ -97,11 +100,11 @@ export interface MissionStatus {
   streak: number;
 }
 
-export function getMissionStatus(gridSize: number, today: string = getTodayDateString()): MissionStatus {
-  const data = readStorage(gridSize);
+export function getMissionStatus(id: PuzzleId, today: string = getTodayDateString()): MissionStatus {
+  const data = readStorage(id);
   const completedToday = data.today?.date === today;
   return {
-    hintLimit: MISSION_HINT_LIMITS[gridSize] ?? 3,
+    hintLimit: MISSION_HINT_LIMITS[puzzleKey(id)] ?? 3,
     completedToday,
     todayMoves: completedToday ? (data.today?.moves ?? null) : null,
     todayHintsUsed: completedToday ? (data.today?.hintsUsed ?? null) : null,
@@ -117,8 +120,8 @@ export function getMissionStatus(gridSize: number, today: string = getTodayDateS
  * after the last completed day extends it; any bigger gap (or no prior
  * completion) restarts it at 1.
  */
-export function recordMissionComplete(gridSize: number, moves: number, hintsUsed: number, today: string = getTodayDateString()): { streak: number } {
-  const data = readStorage(gridSize);
+export function recordMissionComplete(id: PuzzleId, moves: number, hintsUsed: number, today: string = getTodayDateString()): { streak: number } {
+  const data = readStorage(id);
   let streak: number;
   if (data.lastCompletedDate === today) {
     streak = data.streak;
@@ -127,6 +130,6 @@ export function recordMissionComplete(gridSize: number, moves: number, hintsUsed
   } else {
     streak = 1;
   }
-  writeStorage(gridSize, { streak, lastCompletedDate: today, today: { date: today, moves, hintsUsed } });
+  writeStorage(id, { streak, lastCompletedDate: today, today: { date: today, moves, hintsUsed } });
   return { streak };
 }

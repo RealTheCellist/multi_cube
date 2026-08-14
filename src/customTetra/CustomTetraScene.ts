@@ -201,6 +201,23 @@ export class CustomTetraScene {
     return this.state.stickers;
   }
 
+  /**
+   * Every sticker's front + backing mesh, for a swipe controller's
+   * raycaster. Unlike CustomCubeScene's cubie meshes (whose local face
+   * slots stop meaning a fixed world axis once turned -- see its
+   * axisForMaterialIndex), sticker geometry here is always rebuilt directly
+   * in world coordinates on every turn (refreshStickerMesh), so a raycast
+   * hit's world point alone is enough to classify a touch -- no mesh
+   * identity or material-index lookup needed downstream.
+   */
+  raycastableObjects(): THREE.Object3D[] {
+    const objects: THREE.Object3D[] = [];
+    for (const meshes of this.meshesById.values()) {
+      objects.push(meshes.sticker, meshes.backing);
+    }
+    return objects;
+  }
+
   isSolved(): boolean {
     return isSolvedState(this.state);
   }

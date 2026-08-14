@@ -6,6 +6,8 @@ import { warmupFourByFour } from "./customCube/customSolvePlayback";
 import { getDailyScrambleRng, getMissionStatus, MISSION_HINT_LIMITS, recordMissionComplete, type MissionStatus } from "./dailyMission";
 import { getLeaderboard, submitScore, type LeaderboardEntry } from "./leaderboard";
 import { isRewardedAdAvailable, requestRewardedAd } from "./nativeAds";
+import { cubePuzzleId, puzzleKey, type PuzzleKind } from "./puzzleKind";
+import TetraView, { type TetraViewHandle } from "./TetraView";
 import "./App.css";
 
 const NICKNAME_STORAGE_KEY = "poly-puzzle-nickname";
@@ -32,8 +34,13 @@ const MISSION_AD_BONUS_HINTS = 5;
 
 function App() {
   const cubeRef = useRef<CubeViewHandle>(null);
+  const tetraRef = useRef<TetraViewHandle>(null);
 
   const [screen, setScreen] = useState<"home" | "game" | "leaderboard" | "missions">("home");
+  // Which puzzle shape is active -- missions/leaderboard/solver are all
+  // cube-only today (no tetra solver yet), so this only ever changes via
+  // the home screen's dropdown and handlePickTetra/handlePickSize.
+  const [puzzleKind, setPuzzleKind] = useState<PuzzleKind>("cube");
   const [mode, setMode] = useState<"look" | "play">("play");
   const [gridSize, setGridSize] = useState(3);
   const [moveCount, setMoveCount] = useState(0);
@@ -70,7 +77,7 @@ function App() {
 
   useEffect(() => {
     if (screen === "leaderboard") {
-      setLeaderboard(getLeaderboard(leaderboardSize));
+      setLeaderboard(getLeaderboard(cubePuzzleId(leaderboardSize)));
     }
   }, [screen, leaderboardSize]);
 
@@ -95,7 +102,7 @@ function App() {
             origin: { y: 0.6 },
           });
           if (missionMode) {
-            const { streak } = recordMissionComplete(gridSize, moveCount, missionHintsUsed);
+            const { streak } = recordMissionComplete(cubePuzzleId(gridSize), moveCount, missionHintsUsed);
             setMissionCompleteResult({ streak, moves: moveCount, hintsUsed: missionHintsUsed });
           } else {
             setShowCompletionModal(true);
@@ -108,7 +115,27 @@ function App() {
     [missionMode, gridSize, moveCount, missionHintsUsed],
   );
 
+  // Tetra's own solved handler -- no leaderboard/mission side effects (no
+  // tetra solver to budget hints against, no tetra leaderboard yet, see
+  // puzzleKind.ts), just the same completion celebration.
+  const handleTetraSolvedChange = useCallback((solved: boolean) => {
+    setHasScrambled((currentlyScrambled) => {
+      if (solved && currentlyScrambled) {
+        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+        return false;
+      }
+      return currentlyScrambled;
+    });
+  }, []);
+
   const handleScramble = useCallback(async () => {
+    if (puzzleKind === "tetra") {
+      setMoveCount(0);
+      setLastRank(null);
+      tetraRef.current?.scramble();
+      setHasScrambled(true);
+      return;
+    }
     // Orbit mode while the scramble animation plays -- keeps the swipe
     // controller disabled so a finger on the cube can't fight the
     // programmatic moves. Switches back to play once it settles so the
@@ -127,15 +154,22 @@ function App() {
       setMissionHintsUsed(0);
       setMissionBonusHints(0);
       setAdUnavailable(false);
-      await cubeRef.current?.scramble(getDailyScrambleRng(gridSize));
+      await cubeRef.current?.scramble(getDailyScrambleRng(cubePuzzleId(gridSize)));
     } else {
       await cubeRef.current?.scramble();
     }
     setHasScrambled(true);
     setMode("play");
-  }, [missionMode, gridSize]);
+  }, [puzzleKind, missionMode, gridSize]);
 
   const handleReset = useCallback(() => {
+    if (puzzleKind === "tetra") {
+      tetraRef.current?.resetToSolved();
+      setMoveCount(0);
+      setLastRank(null);
+      setHasScrambled(false);
+      return;
+    }
     cubeRef.current?.resetToSolved();
     setMode("play");
     setMoveCount(0);
@@ -143,19 +177,23 @@ function App() {
     setFourByFourUnsolved(false);
     setLastRank(null);
     setHasScrambled(false);
-  }, []);
+  }, [puzzleKind]);
 
   const handleLookAround = useCallback(() => {
     setMode("look");
   }, []);
 
   const handleUndo = useCallback(() => {
+    if (puzzleKind === "tetra") {
+      tetraRef.current?.undoLastMove();
+      return;
+    }
     const didUndo = cubeRef.current?.undoLastMove();
     if (didUndo) {
       setSolveError(false);
       setFourByFourUnsolved(false);
     }
-  }, []);
+  }, [puzzleKind]);
 
   const resetGameState = useCallback((entersMissionMode = false) => {
     setMode("play");
@@ -175,6 +213,7 @@ function App() {
 
   const handlePickSize = useCallback(
     (size: number) => {
+      setPuzzleKind("cube");
       setGridSize(size);
       resetGameState();
       setScreen("game");
@@ -187,8 +226,18 @@ function App() {
     [resetGameState],
   );
 
+  // The dropdown's only other option -- only N=3 (Pyraminx) exists in the
+  // real app today (see TetraView.tsx), so there's no size to pick, just a
+  // single entry point straight into the game screen.
+  const handlePickTetra = useCallback(() => {
+    setPuzzleKind("tetra");
+    resetGameState();
+    setScreen("game");
+  }, [resetGameState]);
+
   const handlePickMission = useCallback(
     (size: number) => {
+      setPuzzleKind("cube");
       setGridSize(size);
       resetGameState(true);
       // The game screen's CubeView applies today's scramble itself on mount
@@ -256,7 +305,7 @@ function App() {
       // Same fallback as leaderboard.ts -- registering the score for this
       // session still works even if persisting the nickname doesn't.
     }
-    const { entries, rank } = submitScore(gridSize, moveCount, finalNickname);
+    const { entries, rank } = submitScore(cubePuzzleId(gridSize), moveCount, finalNickname);
     setLeaderboard(entries);
     setLastRank(rank);
     setShowCompletionModal(false);
@@ -326,7 +375,7 @@ function App() {
     }
   }, []);
 
-  const missionHintLimit = (MISSION_HINT_LIMITS[gridSize] ?? 3) + missionBonusHints;
+  const missionHintLimit = (MISSION_HINT_LIMITS[puzzleKey(cubePuzzleId(gridSize))] ?? 3) + missionBonusHints;
   const missionHintsExhausted = missionMode && missionHintsUsed >= missionHintLimit;
 
   if (screen === "home") {
@@ -339,35 +388,63 @@ function App() {
         </div>
 
         <div className="cube-stage">
-          <CubeView
-            orbitMode={false}
-            interactive={false}
-            gridSize={3}
-            onMoveCountChange={() => {}}
-            onFirstMove={() => {}}
-            onSolvedChange={() => {}}
-          />
+          {puzzleKind === "tetra" ? (
+            <TetraView interactive={false} onMoveCountChange={() => {}} onFirstMove={() => {}} onSolvedChange={() => {}} />
+          ) : (
+            <CubeView
+              orbitMode={false}
+              interactive={false}
+              gridSize={3}
+              onMoveCountChange={() => {}}
+              onFirstMove={() => {}}
+              onSolvedChange={() => {}}
+            />
+          )}
         </div>
 
         <div className="home-bottom-controls">
-          <div className="size-select">
-            {[2, 3, 4, 5].map((size) => (
-              <button
-                key={size}
-                type="button"
-                className={`btn3d ${SIZE_COLORS[size]}${gridSize === size ? " selected" : ""}`}
-                onClick={() => handlePickSize(size)}
-              >
-                {size}×{size}
-              </button>
-            ))}
+          <div className="puzzle-kind-row">
+            <label className="puzzle-kind-label" htmlFor="puzzle-kind">
+              퍼즐 모양
+            </label>
+            <select
+              id="puzzle-kind"
+              className="puzzle-kind-select"
+              value={puzzleKind}
+              onChange={(e) => setPuzzleKind(e.target.value as PuzzleKind)}
+            >
+              <option value="cube">3D 큐브</option>
+              <option value="tetra">사면체 (Pyraminx)</option>
+            </select>
           </div>
+
+          {puzzleKind === "cube" ? (
+            <div className="size-select">
+              {[2, 3, 4, 5].map((size) => (
+                <button
+                  key={size}
+                  type="button"
+                  className={`btn3d ${SIZE_COLORS[size]}${gridSize === size ? " selected" : ""}`}
+                  onClick={() => handlePickSize(size)}
+                >
+                  {size}×{size}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <button type="button" className="btn3d btn-green mission-cta" onClick={handlePickTetra}>
+              사면체 시작하기
+            </button>
+          )}
+
           <button type="button" className="btn3d btn-accent mission-cta" onClick={handleOpenMissions}>
             오늘의 미션
           </button>
-          <button type="button" className="leaderboard-text-link" onClick={handleOpenLeaderboardFromHome}>
-            리더보드 보기
-          </button>
+          {puzzleKind === "cube" && (
+            <button type="button" className="leaderboard-text-link" onClick={handleOpenLeaderboardFromHome}>
+              리더보드 보기
+            </button>
+          )}
         </div>
       </div>
     );
@@ -386,7 +463,7 @@ function App() {
           <p className="missions-caption">매일 자정에 새로운 스크램블 — 모두가 같은 문제를 풀어요</p>
           <div className="missions-list">
             {[2, 3, 4, 5].map((size) => {
-              const status: MissionStatus = getMissionStatus(size);
+              const status: MissionStatus = getMissionStatus(cubePuzzleId(size));
               return (
                 <button
                   key={size}
@@ -466,9 +543,9 @@ function App() {
       <div className="above-cube">
         <header className="app-header with-back">
           <button type="button" className="home-link" onClick={handleBackFromGame}>
-            {missionMode ? "← 미션 목록" : "← 크기 변경"}
+            {missionMode ? "← 미션 목록" : puzzleKind === "tetra" ? "← 모양 변경" : "← 크기 변경"}
           </button>
-          {!missionMode && (
+          {!missionMode && puzzleKind === "cube" && (
             <button type="button" className="home-link leaderboard-link" onClick={handleOpenLeaderboard}>
               리더보드
             </button>
@@ -488,21 +565,23 @@ function App() {
           </p>
         )}
 
-        <p className="mode-hint">
-          {isSolving
-            ? gridSize === 4
-              ? "다음 수 계산 중... (처음 누르면 몇 분 걸릴 수 있어요)"
-              : gridSize === 5
-                ? "다음 수 계산 중... (처음 누르면 몇 초 걸릴 수 있어요)"
-                : "다음 수 진행 중..."
-            : solveError
-              ? "솔버 실행 중 오류가 발생했습니다. 다시 시도해보세요"
-              : fourByFourUnsolved
-                ? "이 스크램블은 아직 끝까지 풀지 못했어요 (패리티 케이스일 수 있어요) — 다시 시도해보세요"
-                : missionHintsExhausted
-                  ? "오늘의 힌트를 다 썼어요 — 여기서부턴 직접 풀어보세요"
-                  : ""}
-        </p>
+        {puzzleKind === "cube" && (
+          <p className="mode-hint">
+            {isSolving
+              ? gridSize === 4
+                ? "다음 수 계산 중... (처음 누르면 몇 분 걸릴 수 있어요)"
+                : gridSize === 5
+                  ? "다음 수 계산 중... (처음 누르면 몇 초 걸릴 수 있어요)"
+                  : "다음 수 진행 중..."
+              : solveError
+                ? "솔버 실행 중 오류가 발생했습니다. 다시 시도해보세요"
+                : fourByFourUnsolved
+                  ? "이 스크램블은 아직 끝까지 풀지 못했어요 (패리티 케이스일 수 있어요) — 다시 시도해보세요"
+                  : missionHintsExhausted
+                    ? "오늘의 힌트를 다 썼어요 — 여기서부턴 직접 풀어보세요"
+                    : ""}
+          </p>
+        )}
 
         {missionHintsExhausted && isRewardedAdAvailable() && (
           <button type="button" className="btn3d btn-accent watch-ad-btn" onClick={handleWatchAdForHint} disabled={isWatchingAd}>
@@ -513,61 +592,79 @@ function App() {
       </div>
 
       <div className="cube-stage">
-        <CubeView
-          ref={cubeRef}
-          orbitMode={mode === "look"}
-          gridSize={gridSize}
-          initialScrambleRng={missionMode ? getDailyScrambleRng(gridSize) : undefined}
-          onMoveCountChange={handleMoveCountChange}
-          onFirstMove={() => {}}
-          onSolvedChange={handleSolvedChange}
-        />
+        {puzzleKind === "tetra" ? (
+          <TetraView ref={tetraRef} onMoveCountChange={handleMoveCountChange} onFirstMove={() => {}} onSolvedChange={handleTetraSolvedChange} />
+        ) : (
+          <CubeView
+            ref={cubeRef}
+            orbitMode={mode === "look"}
+            gridSize={gridSize}
+            initialScrambleRng={missionMode ? getDailyScrambleRng(cubePuzzleId(gridSize)) : undefined}
+            onMoveCountChange={handleMoveCountChange}
+            onFirstMove={() => {}}
+            onSolvedChange={handleSolvedChange}
+          />
+        )}
       </div>
 
-      <div className="bottom-controls">
-        <button
-          type="button"
-          className={`btn3d btn-blue${mode === "look" ? " selected" : ""}`}
-          onClick={handleLookAround}
-          disabled={isSolving}
-        >
-          둘러보기
-        </button>
-        <button
-          type="button"
-          className={`btn3d btn-green${mode === "play" ? " selected" : ""}`}
-          onClick={handleStart}
-          disabled={isSolving}
-        >
-          시작하기
-        </button>
-        <button type="button" className="btn3d btn-orange" onClick={handleReset} disabled={isSolving}>
-          리셋
-        </button>
-        <button
-          type="button"
-          className="btn3d btn-accent"
-          onClick={handleSolve}
-          disabled={isSolving || missionHintsExhausted}
-          title={
-            missionMode
-              ? `오늘의 미션은 힌트를 ${missionHintLimit}번까지만 쓸 수 있어요`
-              : gridSize === 5
-                ? "다음 수를 바로 진행해요 (일부 스크램블은 여러 번 눌러야 끝까지 풀릴 수 있어요)"
-                : gridSize === 4
-                  ? "다음 수를 바로 진행해요"
-                  : undefined
-          }
-        >
-          솔브
-        </button>
-        <button type="button" className="btn3d btn-rose" onClick={handleScramble} disabled={isSolving}>
-          {missionMode ? "다시 시도" : "스크램블"}
-        </button>
-        <button type="button" className="btn3d btn-slate" onClick={handleUndo} disabled={isSolving || moveCount === 0}>
-          실행취소
-        </button>
-      </div>
+      {puzzleKind === "tetra" ? (
+        <div className="bottom-controls">
+          <button type="button" className="btn3d btn-orange" onClick={handleReset}>
+            리셋
+          </button>
+          <button type="button" className="btn3d btn-rose" onClick={handleScramble}>
+            스크램블
+          </button>
+          <button type="button" className="btn3d btn-slate" onClick={handleUndo} disabled={moveCount === 0}>
+            실행취소
+          </button>
+        </div>
+      ) : (
+        <div className="bottom-controls">
+          <button
+            type="button"
+            className={`btn3d btn-blue${mode === "look" ? " selected" : ""}`}
+            onClick={handleLookAround}
+            disabled={isSolving}
+          >
+            둘러보기
+          </button>
+          <button
+            type="button"
+            className={`btn3d btn-green${mode === "play" ? " selected" : ""}`}
+            onClick={handleStart}
+            disabled={isSolving}
+          >
+            시작하기
+          </button>
+          <button type="button" className="btn3d btn-orange" onClick={handleReset} disabled={isSolving}>
+            리셋
+          </button>
+          <button
+            type="button"
+            className="btn3d btn-accent"
+            onClick={handleSolve}
+            disabled={isSolving || missionHintsExhausted}
+            title={
+              missionMode
+                ? `오늘의 미션은 힌트를 ${missionHintLimit}번까지만 쓸 수 있어요`
+                : gridSize === 5
+                  ? "다음 수를 바로 진행해요 (일부 스크램블은 여러 번 눌러야 끝까지 풀릴 수 있어요)"
+                  : gridSize === 4
+                    ? "다음 수를 바로 진행해요"
+                    : undefined
+            }
+          >
+            솔브
+          </button>
+          <button type="button" className="btn3d btn-rose" onClick={handleScramble} disabled={isSolving}>
+            {missionMode ? "다시 시도" : "스크램블"}
+          </button>
+          <button type="button" className="btn3d btn-slate" onClick={handleUndo} disabled={isSolving || moveCount === 0}>
+            실행취소
+          </button>
+        </div>
+      )}
 
       {showCompletionModal && (
         <div className="modal-overlay">

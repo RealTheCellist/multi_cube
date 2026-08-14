@@ -80,6 +80,31 @@
   width: 100%;
 }
 
+.puzzle-kind-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.puzzle-kind-label {
+  font-family: var(--heading);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.puzzle-kind-select {
+  font-family: var(--sans);
+  font-size: 15px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--btn-outer-shadow-soft);
+  background: var(--btn-top);
+  color: var(--text-h);
+}
+
 /* Shared 3D button system -- used by both the home size-picker and the
    in-game controls so the two screens look like one design, not two. */
 .btn3d {

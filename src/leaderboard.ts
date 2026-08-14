@@ -1,3 +1,5 @@
+import { type PuzzleId, puzzleKey } from "./puzzleKind";
+
 export interface LeaderboardEntry {
   nickname: string;
   moves: number;
@@ -9,13 +11,13 @@ const STORAGE_PREFIX = "poly-puzzle-leaderboard-";
 const MAX_ENTRIES = 7;
 const FALLBACK_NICKNAME = "플레이어";
 
-function storageKey(gridSize: number): string {
-  return `${STORAGE_PREFIX}${gridSize}`;
+function storageKey(id: PuzzleId): string {
+  return `${STORAGE_PREFIX}${puzzleKey(id)}`;
 }
 
-export function getLeaderboard(gridSize: number): LeaderboardEntry[] {
+export function getLeaderboard(id: PuzzleId): LeaderboardEntry[] {
   try {
-    const raw = localStorage.getItem(storageKey(gridSize));
+    const raw = localStorage.getItem(storageKey(id));
     if (!raw) return [];
     const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
@@ -45,13 +47,13 @@ export function getLeaderboard(gridSize: number): LeaderboardEntry[] {
 // keeping only the best MAX_ENTRIES (lowest move counts first). Returns
 // the updated top-7 list plus this entry's 1-indexed rank, or a null
 // rank if it didn't place.
-export function submitScore(gridSize: number, moves: number, nickname: string): { entries: LeaderboardEntry[]; rank: number | null } {
-  const current = getLeaderboard(gridSize);
+export function submitScore(id: PuzzleId, moves: number, nickname: string): { entries: LeaderboardEntry[]; rank: number | null } {
+  const current = getLeaderboard(id);
   const entry: LeaderboardEntry = { nickname: nickname.trim() || FALLBACK_NICKNAME, moves, date: new Date().toISOString() };
   const updated = [...current, entry].sort((a, b) => a.moves - b.moves).slice(0, MAX_ENTRIES);
   const rank = updated.indexOf(entry);
   try {
-    localStorage.setItem(storageKey(gridSize), JSON.stringify(updated));
+    localStorage.setItem(storageKey(id), JSON.stringify(updated));
   } catch {
     // Same fallback as above -- the current session still sees its rank,
     // it just won't be there on the next visit.
