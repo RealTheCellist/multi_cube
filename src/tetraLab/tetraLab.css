@@ -1,0 +1,185 @@
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #1b1410;
+  color: #f4ece2;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+#root {
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.lab-app {
+  width: 100%;
+  max-width: 480px;
+  padding: 20px 16px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lab-header {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.lab-header h1 {
+  font-size: 22px;
+  margin: 0 0 4px;
+}
+
+.lab-header p {
+  font-size: 13px;
+  color: #c9b8a8;
+  margin: 0;
+}
+
+.lab-model-picker {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.lab-model-btn {
+  flex: 1;
+  padding: 10px 6px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 1px solid #4a3a2c;
+  background: #2a2019;
+  color: #d8c8b8;
+  cursor: pointer;
+}
+
+.lab-model-btn.selected {
+  background: #7a4a2c;
+  border-color: #c9843e;
+  color: #fff;
+}
+
+.lab-stage {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: 420px;
+  margin: 12px 0;
+}
+
+.lab-tetra-view {
+  width: 100%;
+  height: 100%;
+}
+
+.lab-stat-row {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 12px;
+}
+
+.lab-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lab-stat-label {
+  font-size: 13px;
+  color: #c9b8a8;
+}
+
+.lab-stat-value {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.lab-solved-yes {
+  color: #6fbf8e;
+}
+
+.lab-solved-no {
+  color: #c9584e;
+}
+
+.lab-controls {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.lab-btn {
+  flex: 1;
+  padding: 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 999px;
+  border: 1px solid #4a3a2c;
+  background: #2a2019;
+  color: #d8c8b8;
+  cursor: pointer;
+}
+
+.lab-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.lab-btn-reset {
+  background: #7a3a3a;
+  border-color: #c9584e;
+  color: #fff;
+}
+
+.lab-turn-grid {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lab-turn-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.lab-turn-vertex {
+  font-size: 12px;
+  font-weight: 700;
+  width: 56px;
+  color: #c9b8a8;
+}
+
+.lab-turn-depth-group {
+  display: flex;
+  gap: 4px;
+}
+
+.lab-turn-btn {
+  padding: 6px 8px;
+  font-size: 12px;
+  border-radius: 8px;
+  border: 1px solid #4a3a2c;
+  background: #2a2019;
+  color: #d8c8b8;
+  cursor: pointer;
+}
+
+.lab-turn-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
