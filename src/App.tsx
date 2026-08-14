@@ -32,6 +32,23 @@ const MISSION_DIFFICULTY_LABELS: Record<number, string> = {
 
 const MISSION_AD_BONUS_HINTS = 5;
 
+// Same 4-color set as SIZE_COLORS -- the button styling is shape-agnostic,
+// so reused as-is rather than declaring a parallel palette.
+const TETRA_SIZE_COLORS: Record<number, string> = {
+  3: "btn-blue",
+  4: "btn-green",
+  5: "btn-orange",
+  6: "btn-rose",
+};
+
+// Real names of the puzzle family at each layer count.
+const TETRA_LAYER_NAMES: Record<number, string> = {
+  3: "Pyraminx",
+  4: "Master Pyraminx",
+  5: "Professor Pyraminx",
+  6: "Royal Pyraminx",
+};
+
 function App() {
   const cubeRef = useRef<CubeViewHandle>(null);
   const tetraRef = useRef<TetraViewHandle>(null);
@@ -41,6 +58,10 @@ function App() {
   // cube-only today (no tetra solver yet), so this only ever changes via
   // the home screen's dropdown and handlePickTetra/handlePickSize.
   const [puzzleKind, setPuzzleKind] = useState<PuzzleKind>("cube");
+  // 3 (Pyraminx) through 6 (Royal Pyraminx) -- independent of gridSize
+  // (the cube's own size state) so picking a tetra layer count never
+  // touches cube state or vice versa.
+  const [tetraLayerCount, setTetraLayerCount] = useState(3);
   const [mode, setMode] = useState<"look" | "play">("play");
   const [gridSize, setGridSize] = useState(3);
   const [moveCount, setMoveCount] = useState(0);
@@ -226,14 +247,15 @@ function App() {
     [resetGameState],
   );
 
-  // The dropdown's only other option -- only N=3 (Pyraminx) exists in the
-  // real app today (see TetraView.tsx), so there's no size to pick, just a
-  // single entry point straight into the game screen.
-  const handlePickTetra = useCallback(() => {
-    setPuzzleKind("tetra");
-    resetGameState();
-    setScreen("game");
-  }, [resetGameState]);
+  const handlePickTetra = useCallback(
+    (layerCount: number) => {
+      setPuzzleKind("tetra");
+      setTetraLayerCount(layerCount);
+      resetGameState();
+      setScreen("game");
+    },
+    [resetGameState],
+  );
 
   const handlePickMission = useCallback(
     (size: number) => {
@@ -389,7 +411,13 @@ function App() {
 
         <div className="cube-stage">
           {puzzleKind === "tetra" ? (
-            <TetraView interactive={false} onMoveCountChange={() => {}} onFirstMove={() => {}} onSolvedChange={() => {}} />
+            <TetraView
+              interactive={false}
+              layerCount={tetraLayerCount}
+              onMoveCountChange={() => {}}
+              onFirstMove={() => {}}
+              onSolvedChange={() => {}}
+            />
           ) : (
             <CubeView
               orbitMode={false}
@@ -432,9 +460,18 @@ function App() {
               ))}
             </div>
           ) : (
-            <button type="button" className="btn3d btn-green mission-cta" onClick={handlePickTetra}>
-              사면체 시작하기
-            </button>
+            <div className="size-select">
+              {[3, 4, 5, 6].map((layerCount) => (
+                <button
+                  key={layerCount}
+                  type="button"
+                  className={`btn3d ${TETRA_SIZE_COLORS[layerCount]}${tetraLayerCount === layerCount ? " selected" : ""}`}
+                  onClick={() => handlePickTetra(layerCount)}
+                >
+                  {layerCount}레이어
+                </button>
+              ))}
+            </div>
           )}
 
           <button type="button" className="btn3d btn-accent mission-cta" onClick={handleOpenMissions}>
@@ -565,6 +602,12 @@ function App() {
           </p>
         )}
 
+        {puzzleKind === "tetra" && (
+          <p className="mission-badge">
+            {TETRA_LAYER_NAMES[tetraLayerCount]} · {tetraLayerCount}레이어
+          </p>
+        )}
+
         {puzzleKind === "cube" && (
           <p className="mode-hint">
             {isSolving
@@ -593,7 +636,13 @@ function App() {
 
       <div className="cube-stage">
         {puzzleKind === "tetra" ? (
-          <TetraView ref={tetraRef} onMoveCountChange={handleMoveCountChange} onFirstMove={() => {}} onSolvedChange={handleTetraSolvedChange} />
+          <TetraView
+            ref={tetraRef}
+            layerCount={tetraLayerCount}
+            onMoveCountChange={handleMoveCountChange}
+            onFirstMove={() => {}}
+            onSolvedChange={handleTetraSolvedChange}
+          />
         ) : (
           <CubeView
             ref={cubeRef}

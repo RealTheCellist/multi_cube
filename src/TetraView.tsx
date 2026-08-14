@@ -14,6 +14,10 @@ interface TetraViewProps {
   onMoveCountChange: (count: number) => void;
   onFirstMove: () => void;
   onSolvedChange: (solved: boolean) => void;
+  // 3 (Pyraminx) through 6 (Royal Pyraminx) -- all four are already fully
+  // general in the model/rendering/gesture layers (verified for every N in
+  // earlier phases), so this is just which one the player picked.
+  layerCount: number;
   // Fully static, non-turnable preview (the home screen's decorative
   // shape) -- same spirit as CubeView's `interactive` prop. There's no
   // orbitMode/`둘러보기` equivalent here: CustomTetraScene has no
@@ -22,15 +26,8 @@ interface TetraViewProps {
   interactive?: boolean;
 }
 
-// Only N=3 (Pyraminx) is exposed in the real app -- 4/5/6 stay
-// tetra-lab.html-only for now. No gridSize-equivalent prop or teardown
-// effect is needed as a result: switching "shapes" already fully
-// unmounts/remounts via App.tsx's puzzleKind branch, same as switching
-// screens.
-const LAYER_COUNT = 3;
-
 const TetraView = forwardRef<TetraViewHandle, TetraViewProps>(function TetraView(
-  { onMoveCountChange, onFirstMove, onSolvedChange, interactive = true },
+  { onMoveCountChange, onFirstMove, onSolvedChange, layerCount, interactive = true },
   ref,
 ) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -49,7 +46,7 @@ const TetraView = forwardRef<TetraViewHandle, TetraViewProps>(function TetraView
     if (!container) return;
     hasMovedRef.current = false;
     moveCountRef.current = 0;
-    const scene = new CustomTetraScene(container, LAYER_COUNT);
+    const scene = new CustomTetraScene(container, layerCount);
     sceneRef.current = scene;
 
     const controller = attachTetraSwipeTurning(scene, moveCountRef);
@@ -70,7 +67,10 @@ const TetraView = forwardRef<TetraViewHandle, TetraViewProps>(function TetraView
       scene.dispose();
       sceneRef.current = null;
     };
-  }, []);
+    // layerCount changing forces a full teardown/rebuild, same rationale as
+    // CubeView's gridSize dependency -- switching sizes is a rare, explicit
+    // picker action, not a live resize.
+  }, [layerCount]);
 
   useEffect(() => {
     controllerRef.current?.setEnabled(interactive);
