@@ -237,6 +237,18 @@
   margin: 2px 0 0;
 }
 
+.watch-ad-btn {
+  margin: 10px 0 0;
+  padding: 10px 18px;
+  font-size: 14px;
+}
+
+.ad-unavailable-hint {
+  color: var(--text);
+  font-size: 12px;
+  margin: 6px 0 0;
+}
+
 .cube-stage {
   position: relative;
   width: min(100vw, 550px);

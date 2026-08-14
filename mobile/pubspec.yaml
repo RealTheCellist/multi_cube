@@ -38,6 +38,11 @@ dependencies:
   path_provider: ^2.1.4
   shelf: ^1.4.1
   shelf_static: ^1.1.3
+  # AdMob: a persistent banner (native, above the WebView -- see main.dart)
+  # plus a rewarded ad the web content can request through a JavaScript
+  # channel to grant an extra daily-mission solve hint (see ad_config.dart
+  # and src/nativeAds.ts on the web side for the bridge contract).
+  google_mobile_ads: ^5.3.1
 
 dev_dependencies:
   flutter_test:

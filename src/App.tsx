@@ -5,6 +5,7 @@ import CubixxLogo from "./CubixxLogo";
 import { warmupFourByFour } from "./customCube/customSolvePlayback";
 import { getDailyScrambleRng, getMissionStatus, MISSION_HINT_LIMITS, recordMissionComplete, type MissionStatus } from "./dailyMission";
 import { getLeaderboard, submitScore, type LeaderboardEntry } from "./leaderboard";
+import { isRewardedAdAvailable, requestRewardedAd } from "./nativeAds";
 import "./App.css";
 
 const NICKNAME_STORAGE_KEY = "poly-puzzle-nickname";
@@ -59,6 +60,11 @@ function App() {
   const [missionMode, setMissionMode] = useState(false);
   const [missionHintsUsed, setMissionHintsUsed] = useState(0);
   const [missionCompleteResult, setMissionCompleteResult] = useState<{ streak: number; moves: number; hintsUsed: number } | null>(null);
+  // Extra hints earned this attempt by watching a rewarded ad (see
+  // nativeAds.ts) -- on top of, not instead of, the size's base budget.
+  const [missionBonusHints, setMissionBonusHints] = useState(0);
+  const [isWatchingAd, setIsWatchingAd] = useState(false);
+  const [adUnavailable, setAdUnavailable] = useState(false);
 
   useEffect(() => {
     if (screen === "leaderboard") {
@@ -114,7 +120,11 @@ function App() {
       // "다시 시도" in mission mode -- re-applies the SAME daily scramble
       // (not a new random one) and gives the hint budget back, since this is
       // restarting today's fixed puzzle, not asking for a different one.
+      // Ad-earned bonus hints reset too -- otherwise retrying for free would
+      // let them stack across attempts.
       setMissionHintsUsed(0);
+      setMissionBonusHints(0);
+      setAdUnavailable(false);
       await cubeRef.current?.scramble(getDailyScrambleRng(gridSize));
     } else {
       await cubeRef.current?.scramble();
@@ -156,6 +166,9 @@ function App() {
     setMissionMode(entersMissionMode);
     setMissionHintsUsed(0);
     setMissionCompleteResult(null);
+    setMissionBonusHints(0);
+    setIsWatchingAd(false);
+    setAdUnavailable(false);
   }, []);
 
   const handlePickSize = useCallback(
@@ -295,7 +308,22 @@ function App() {
     if (missionMode) setMissionHintsUsed((n) => n + 1);
   }, [gridSize, missionMode]);
 
-  const missionHintLimit = MISSION_HINT_LIMITS[gridSize] ?? 3;
+  // A watched ad ("earned") grants one more hint on top of the size's base
+  // budget -- doesn't touch missionHintsUsed, so the completion record still
+  // shows exactly how many real hint presses happened either way.
+  const handleWatchAdForHint = useCallback(async () => {
+    setIsWatchingAd(true);
+    setAdUnavailable(false);
+    const result = await requestRewardedAd();
+    setIsWatchingAd(false);
+    if (result === "earned") {
+      setMissionBonusHints((n) => n + 1);
+    } else {
+      setAdUnavailable(true);
+    }
+  }, []);
+
+  const missionHintLimit = (MISSION_HINT_LIMITS[gridSize] ?? 3) + missionBonusHints;
   const missionHintsExhausted = missionMode && missionHintsUsed >= missionHintLimit;
 
   if (screen === "home") {
@@ -472,6 +500,13 @@ function App() {
                   ? "오늘의 힌트를 다 썼어요 — 여기서부턴 직접 풀어보세요"
                   : ""}
         </p>
+
+        {missionHintsExhausted && isRewardedAdAvailable() && (
+          <button type="button" className="btn3d btn-accent watch-ad-btn" onClick={handleWatchAdForHint} disabled={isWatchingAd}>
+            {isWatchingAd ? "광고 재생 중..." : "📺 광고 보고 힌트 1개 더 받기"}
+          </button>
+        )}
+        {adUnavailable && <p className="ad-unavailable-hint">지금은 광고를 불러올 수 없어요 — 잠시 후 다시 시도해보세요</p>}
       </div>
 
       <div className="cube-stage">

@@ -32,6 +32,13 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- AdMob app ID (see mobile/lib/ad_config.dart) -- required for the
+             SDK to initialize at all, regardless of which ad unit IDs get
+             requested. Always the real one; only the individual ad unit IDs
+             switch to Google's test IDs in non-release builds. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-8255207928404210~7784769011"/>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
