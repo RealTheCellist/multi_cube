@@ -629,7 +629,13 @@ function App() {
 
         {puzzleKind === "tetra" && (
           <p className="mode-hint">
-            {isSolving ? "다음 수 진행 중..." : solveError ? "솔버 실행 중 오류가 발생했습니다. 다시 시도해보세요" : ""}
+            {isSolving
+              ? tetraLayerCount === 4
+                ? "다음 수 계산 중... (몇 초 걸릴 수 있어요)"
+                : "다음 수 진행 중..."
+              : solveError
+                ? "솔버 실행 중 오류가 발생했습니다. 다시 시도해보세요"
+                : ""}
           </p>
         )}
 
@@ -690,8 +696,8 @@ function App() {
             type="button"
             className="btn3d btn-accent"
             onClick={handleTetraSolve}
-            disabled={isSolving || tetraLayerCount !== 3}
-            title={tetraLayerCount !== 3 ? "지금은 Pyraminx(3레이어)만 솔버가 있어요" : "다음 수를 바로 진행해요"}
+            disabled={isSolving || tetraLayerCount > 4}
+            title={tetraLayerCount > 4 ? "지금은 3~4레이어만 솔버가 있어요" : "다음 수를 바로 진행해요"}
           >
             솔브
           </button>

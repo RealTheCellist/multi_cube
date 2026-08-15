@@ -3,6 +3,7 @@ import type { Rng } from "./customCube/cubeState";
 import { CustomTetraScene } from "./customTetra/CustomTetraScene";
 import { attachTetraSwipeTurning, type TetraSwipeController } from "./customTetra/tetraSwipeControls";
 import { applyNextTetraSolveMove, type TetraSolveHint } from "./customTetra/tetraSolvePlayback";
+import { applyNextMasterTetraSolveMove } from "./customTetra/masterTetraminxSolver";
 
 export interface TetraViewHandle {
   scramble: (rng?: Rng) => void;
@@ -125,7 +126,12 @@ const TetraView = forwardRef<TetraViewHandle, TetraViewProps>(function TetraView
       controllerRef.current?.setEnabled(false);
       const before = scene.getUndoCount();
       try {
-        return await applyNextTetraSolveMove(scene);
+        // 3-layer Pyraminx has a dedicated fast solver (cubing.js's own);
+        // N>=4 (Master/Professor/Royal Pyraminx) has no such library, so it
+        // goes through the from-scratch bidirectional-BFS solver instead
+        // (see masterTetraminxSolver.ts for why -- neither a generic
+        // solver nor a hand-built commutator library worked for those).
+        return await (layerCount === 3 ? applyNextTetraSolveMove(scene) : applyNextMasterTetraSolveMove(scene));
       } finally {
         reportSolveCommit(scene, before);
         controllerRef.current?.setEnabled(interactiveRef.current);
