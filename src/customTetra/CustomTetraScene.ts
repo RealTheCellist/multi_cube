@@ -273,10 +273,25 @@ export class CustomTetraScene {
     } finally {
       for (const sticker of this.state.stickers) {
         if (!turn.stickerIds.has(sticker.id)) continue;
-        this.refreshStickerMesh(sticker);
         const meshes = this.meshesById.get(sticker.id)!;
-        this.tetraGroup.attach(meshes.sticker);
-        this.tetraGroup.attach(meshes.backing);
+        // Reparent BEFORE rebuilding geometry/resetting the transform, and
+        // with a plain add() rather than attach(). refreshStickerMesh always
+        // re-bakes each mesh's geometry directly from sticker.corners and
+        // resets position/quaternion to identity -- but doing that reset
+        // while the mesh is still a child of turn.group (whose quaternion
+        // still holds the just-finished rotation) makes attach()'s
+        // world-transform-preserving math copy that same rotation onto the
+        // mesh's new local quaternion, on top of geometry that already has
+        // the rotation baked into its vertex positions. Net effect: the
+        // rotation gets applied twice (a piece lands 240 degrees around
+        // instead of 120), which showed up as pieces overlapping their
+        // neighbors and exposing bare black backing/core through the gap
+        // they left behind. Reparenting first removes turn.group from the
+        // ancestor chain before that reset happens, so there's nothing left
+        // to double up.
+        this.tetraGroup.add(meshes.sticker);
+        this.tetraGroup.add(meshes.backing);
+        this.refreshStickerMesh(sticker);
       }
       this.tetraGroup.remove(turn.group);
       this.activeTurn = null;
