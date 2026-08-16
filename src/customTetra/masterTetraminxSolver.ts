@@ -33,6 +33,7 @@ function cloneState(state: TetraState): TetraState {
 
 interface PrecomputedMoves {
   ns: number;
+  layerCount: number;
   pieceTypes: PieceType[];
   referenceCentroids: THREE.Vector3[];
   permByMove: Map<string, number[]>;
@@ -89,7 +90,7 @@ function precompute(layerCount: number): PrecomputedMoves {
     permByMove.set(moveKey(move), permutation);
   }
 
-  const result: PrecomputedMoves = { ns, pieceTypes, referenceCentroids, permByMove, allMoves };
+  const result: PrecomputedMoves = { ns, layerCount, pieceTypes, referenceCentroids, permByMove, allMoves };
   precomputedCache.set(layerCount, result);
   return result;
 }
@@ -158,6 +159,24 @@ interface SearchEntry {
  * under a second each, 4-10 move solutions -- see the investigation this
  * grew out of).
  */
+/**
+ * Hard ceiling on total visited states (both search directions combined)
+ * for any single meetInMiddleSolve* call. Without this, a scramble whose
+ * true solution lies past maxDepthEachSide can grow the visited maps
+ * without bound and crash the whole process with an unrecoverable
+ * "JavaScript heap out of memory" -- confirmed to actually happen on a real
+ * N=5 scramble (see N5_EDGE_REPAIR_AND_FAILURE_SAFETY_VALIDATION Sprint).
+ * Calibrated empirically against real N=5 axial+center searches: successful
+ * 10-move solves peaked around ~1.07M visited states, so 2,000,000 leaves
+ * comfortable headroom for legitimate solves (N=4's much smaller
+ * axial+center target space stays far below this) while still aborting
+ * an unsolvable-within-budget case in ~30s on ordinary heap instead of
+ * exhausting memory. The check runs INSIDE each expansion loop (not just
+ * once per depth level) because a single depth level's own expansion can
+ * itself blow past any per-depth-only check before it ever runs.
+ */
+const MAX_SEARCH_STATES = 2_000_000;
+
 function meetInMiddleSolve(pre: PrecomputedMoves, startPieces: number[], targetTypes: ReadonlySet<PieceType>, maxDepthEachSide: number): TetraMove[] | null {
   const targetSlots: number[] = [];
   for (let i = 0; i < pre.ns; i++) if (targetTypes.has(pre.pieceTypes[i])) targetSlots.push(i);
@@ -178,6 +197,8 @@ function meetInMiddleSolve(pre: PrecomputedMoves, startPieces: number[], targetT
 
   if (fwdVisited.has(keyFor(solvedPieces))) return [];
 
+  const totalVisited = () => fwdVisited.size + bwdVisited.size;
+
   for (let depth = 1; depth <= maxDepthEachSide; depth++) {
     const newFwd = new Map<string, SearchEntry>();
     for (const { pieces, moves } of fwdFrontier) {
@@ -188,6 +209,7 @@ function meetInMiddleSolve(pre: PrecomputedMoves, startPieces: number[], targetT
           const entry: SearchEntry = { pieces: next, moves: [...moves, move] };
           fwdVisited.set(k, entry);
           newFwd.set(k, entry);
+          if (totalVisited() > MAX_SEARCH_STATES) return null;
         }
       }
     }
@@ -206,6 +228,7 @@ function meetInMiddleSolve(pre: PrecomputedMoves, startPieces: number[], targetT
           const entry: SearchEntry = { pieces: next, moves: [...moves, move] };
           bwdVisited.set(k, entry);
           newBwd.set(k, entry);
+          if (totalVisited() > MAX_SEARCH_STATES) return null;
         }
       }
     }
@@ -257,6 +280,184 @@ const EDGE_SAFE_GENERATORS: readonly (readonly TetraMove[])[] = [
   [{ vertexIndex: 0, depth: 1, sign: 1 }, { vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 2, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 1, sign: -1 }, { vertexIndex: 2, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 3, sign: -1 }],
 ];
 
+/**
+ * EDGE_SAFE_GENERATORS' 16 sequences were hand-derived for N=4's geometry
+ * (24 edges, depths 1-3) and are literal no-ops on N=5 (36 edges, depths
+ * 1-4): reusing the same (vertexIndex, depth, sign) tuples against N=5's
+ * different depth-to-layer mapping composes back to the identity permutation
+ * every time (verified computationally: all 16/16 are identity on N=5 --
+ * see N5_EDGE_REPAIR_AND_FAILURE_SAFETY_VALIDATION Sprint's Gate 0). This is
+ * N=5's own edge-safe generator library, derived the same way but from N=5's
+ * actual primitives.
+ *
+ * Simpler shape than EDGE_SAFE_GENERATORS: each is a plain 4-move commutator
+ * [S, M, S^-1, M^-1] where S and M are single primitives on two different
+ * vertices at "complementary" depths (depth 2 paired with depth 4, or depth
+ * 3 paired with depth 3 -- these are exactly the depth pairs whose
+ * axial+center displacement cancels out algebraically; every other pairing
+ * leaves axial+center residue and was excluded). Found via exhaustive search
+ * over all (S, M) primitive pairs, filtered to axial+center-identity AND
+ * edge-non-identity, then deduplicated by net edge effect: 144 distinct
+ * survive out of the 1,024 primitive pairs tried.
+ *
+ * All 144 (not a smaller coverage-optimized subset) are kept deliberately: a
+ * smaller ~24-generator subset chosen to touch every edge slot at least 4x
+ * over (the same "coverage" heuristic that worked for EDGE_SAFE_GENERATORS)
+ * was tried first and generates a group of only 729 elements under which
+ * NONE of the real scrambled edge states tested were reachable. The full
+ * 144-generator set was verified to actually solve real post-Phase-1 N=5
+ * edge states (2 of 3 control seeds solved within meetInMiddleSolveEdges's
+ * existing maxDepthEachSide=6 and the MAX_SEARCH_STATES budget below; the
+ * third exhausted the budget without a definitive answer either way, not a
+ * proof of impossibility).
+ */
+const EDGE_SAFE_GENERATORS_N5: readonly (readonly TetraMove[])[] = [
+  [{ vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 4, sign: -1 }, { vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 4, sign: 1 }],
+  [{ vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 4, sign: 1 }, { vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 4, sign: -1 }],
+  [{ vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 2, depth: 4, sign: -1 }, { vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 2, depth: 4, sign: 1 }],
+  [{ vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 2, depth: 4, sign: 1 }, { vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 2, depth: 4, sign: -1 }],
+  [{ vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 3, depth: 4, sign: -1 }, { vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 3, depth: 4, sign: 1 }],
+  [{ vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 3, depth: 4, sign: 1 }, { vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 3, depth: 4, sign: -1 }],
+  [{ vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 4, sign: -1 }, { vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 4, sign: 1 }],
+  [{ vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 4, sign: 1 }, { vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 4, sign: -1 }],
+  [{ vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 2, depth: 4, sign: -1 }, { vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 2, depth: 4, sign: 1 }],
+  [{ vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 2, depth: 4, sign: 1 }, { vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 2, depth: 4, sign: -1 }],
+  [{ vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 3, depth: 4, sign: -1 }, { vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 3, depth: 4, sign: 1 }],
+  [{ vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 3, depth: 4, sign: 1 }, { vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 3, depth: 4, sign: -1 }],
+  [{ vertexIndex: 0, depth: 3, sign: -1 }, { vertexIndex: 1, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: 1 }],
+  [{ vertexIndex: 0, depth: 3, sign: -1 }, { vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: -1 }],
+  [{ vertexIndex: 0, depth: 3, sign: -1 }, { vertexIndex: 2, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 2, depth: 3, sign: 1 }],
+  [{ vertexIndex: 0, depth: 3, sign: -1 }, { vertexIndex: 2, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 2, depth: 3, sign: -1 }],
+  [{ vertexIndex: 0, depth: 3, sign: -1 }, { vertexIndex: 3, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 3, depth: 3, sign: 1 }],
+  [{ vertexIndex: 0, depth: 3, sign: -1 }, { vertexIndex: 3, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 3, depth: 3, sign: -1 }],
+  [{ vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 3, sign: -1 }, { vertexIndex: 1, depth: 3, sign: 1 }],
+  [{ vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: -1 }, { vertexIndex: 1, depth: 3, sign: -1 }],
+  [{ vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 2, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 3, sign: -1 }, { vertexIndex: 2, depth: 3, sign: 1 }],
+  [{ vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 2, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: -1 }, { vertexIndex: 2, depth: 3, sign: -1 }],
+  [{ vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 3, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 3, sign: -1 }, { vertexIndex: 3, depth: 3, sign: 1 }],
+  [{ vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 3, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: -1 }, { vertexIndex: 3, depth: 3, sign: -1 }],
+  [{ vertexIndex: 0, depth: 4, sign: -1 }, { vertexIndex: 1, depth: 2, sign: -1 }, { vertexIndex: 0, depth: 4, sign: 1 }, { vertexIndex: 1, depth: 2, sign: 1 }],
+  [{ vertexIndex: 0, depth: 4, sign: -1 }, { vertexIndex: 1, depth: 2, sign: 1 }, { vertexIndex: 0, depth: 4, sign: 1 }, { vertexIndex: 1, depth: 2, sign: -1 }],
+  [{ vertexIndex: 0, depth: 4, sign: -1 }, { vertexIndex: 2, depth: 2, sign: -1 }, { vertexIndex: 0, depth: 4, sign: 1 }, { vertexIndex: 2, depth: 2, sign: 1 }],
+  [{ vertexIndex: 0, depth: 4, sign: -1 }, { vertexIndex: 2, depth: 2, sign: 1 }, { vertexIndex: 0, depth: 4, sign: 1 }, { vertexIndex: 2, depth: 2, sign: -1 }],
+  [{ vertexIndex: 0, depth: 4, sign: -1 }, { vertexIndex: 3, depth: 2, sign: -1 }, { vertexIndex: 0, depth: 4, sign: 1 }, { vertexIndex: 3, depth: 2, sign: 1 }],
+  [{ vertexIndex: 0, depth: 4, sign: -1 }, { vertexIndex: 3, depth: 2, sign: 1 }, { vertexIndex: 0, depth: 4, sign: 1 }, { vertexIndex: 3, depth: 2, sign: -1 }],
+  [{ vertexIndex: 0, depth: 4, sign: 1 }, { vertexIndex: 1, depth: 2, sign: -1 }, { vertexIndex: 0, depth: 4, sign: -1 }, { vertexIndex: 1, depth: 2, sign: 1 }],
+  [{ vertexIndex: 0, depth: 4, sign: 1 }, { vertexIndex: 1, depth: 2, sign: 1 }, { vertexIndex: 0, depth: 4, sign: -1 }, { vertexIndex: 1, depth: 2, sign: -1 }],
+  [{ vertexIndex: 0, depth: 4, sign: 1 }, { vertexIndex: 2, depth: 2, sign: -1 }, { vertexIndex: 0, depth: 4, sign: -1 }, { vertexIndex: 2, depth: 2, sign: 1 }],
+  [{ vertexIndex: 0, depth: 4, sign: 1 }, { vertexIndex: 2, depth: 2, sign: 1 }, { vertexIndex: 0, depth: 4, sign: -1 }, { vertexIndex: 2, depth: 2, sign: -1 }],
+  [{ vertexIndex: 0, depth: 4, sign: 1 }, { vertexIndex: 3, depth: 2, sign: -1 }, { vertexIndex: 0, depth: 4, sign: -1 }, { vertexIndex: 3, depth: 2, sign: 1 }],
+  [{ vertexIndex: 0, depth: 4, sign: 1 }, { vertexIndex: 3, depth: 2, sign: 1 }, { vertexIndex: 0, depth: 4, sign: -1 }, { vertexIndex: 3, depth: 2, sign: -1 }],
+  [{ vertexIndex: 1, depth: 2, sign: -1 }, { vertexIndex: 0, depth: 4, sign: -1 }, { vertexIndex: 1, depth: 2, sign: 1 }, { vertexIndex: 0, depth: 4, sign: 1 }],
+  [{ vertexIndex: 1, depth: 2, sign: -1 }, { vertexIndex: 0, depth: 4, sign: 1 }, { vertexIndex: 1, depth: 2, sign: 1 }, { vertexIndex: 0, depth: 4, sign: -1 }],
+  [{ vertexIndex: 1, depth: 2, sign: -1 }, { vertexIndex: 2, depth: 4, sign: -1 }, { vertexIndex: 1, depth: 2, sign: 1 }, { vertexIndex: 2, depth: 4, sign: 1 }],
+  [{ vertexIndex: 1, depth: 2, sign: -1 }, { vertexIndex: 2, depth: 4, sign: 1 }, { vertexIndex: 1, depth: 2, sign: 1 }, { vertexIndex: 2, depth: 4, sign: -1 }],
+  [{ vertexIndex: 1, depth: 2, sign: -1 }, { vertexIndex: 3, depth: 4, sign: -1 }, { vertexIndex: 1, depth: 2, sign: 1 }, { vertexIndex: 3, depth: 4, sign: 1 }],
+  [{ vertexIndex: 1, depth: 2, sign: -1 }, { vertexIndex: 3, depth: 4, sign: 1 }, { vertexIndex: 1, depth: 2, sign: 1 }, { vertexIndex: 3, depth: 4, sign: -1 }],
+  [{ vertexIndex: 1, depth: 2, sign: 1 }, { vertexIndex: 0, depth: 4, sign: -1 }, { vertexIndex: 1, depth: 2, sign: -1 }, { vertexIndex: 0, depth: 4, sign: 1 }],
+  [{ vertexIndex: 1, depth: 2, sign: 1 }, { vertexIndex: 0, depth: 4, sign: 1 }, { vertexIndex: 1, depth: 2, sign: -1 }, { vertexIndex: 0, depth: 4, sign: -1 }],
+  [{ vertexIndex: 1, depth: 2, sign: 1 }, { vertexIndex: 2, depth: 4, sign: -1 }, { vertexIndex: 1, depth: 2, sign: -1 }, { vertexIndex: 2, depth: 4, sign: 1 }],
+  [{ vertexIndex: 1, depth: 2, sign: 1 }, { vertexIndex: 2, depth: 4, sign: 1 }, { vertexIndex: 1, depth: 2, sign: -1 }, { vertexIndex: 2, depth: 4, sign: -1 }],
+  [{ vertexIndex: 1, depth: 2, sign: 1 }, { vertexIndex: 3, depth: 4, sign: -1 }, { vertexIndex: 1, depth: 2, sign: -1 }, { vertexIndex: 3, depth: 4, sign: 1 }],
+  [{ vertexIndex: 1, depth: 2, sign: 1 }, { vertexIndex: 3, depth: 4, sign: 1 }, { vertexIndex: 1, depth: 2, sign: -1 }, { vertexIndex: 3, depth: 4, sign: -1 }],
+  [{ vertexIndex: 1, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 3, sign: -1 }, { vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: 1 }],
+  [{ vertexIndex: 1, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: -1 }],
+  [{ vertexIndex: 1, depth: 3, sign: -1 }, { vertexIndex: 2, depth: 3, sign: -1 }, { vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 2, depth: 3, sign: 1 }],
+  [{ vertexIndex: 1, depth: 3, sign: -1 }, { vertexIndex: 2, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 2, depth: 3, sign: -1 }],
+  [{ vertexIndex: 1, depth: 3, sign: -1 }, { vertexIndex: 3, depth: 3, sign: -1 }, { vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 3, depth: 3, sign: 1 }],
+  [{ vertexIndex: 1, depth: 3, sign: -1 }, { vertexIndex: 3, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 3, depth: 3, sign: -1 }],
+  [{ vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: -1 }, { vertexIndex: 1, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 3, sign: 1 }],
+  [{ vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 3, sign: -1 }],
+  [{ vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 2, depth: 3, sign: -1 }, { vertexIndex: 1, depth: 3, sign: -1 }, { vertexIndex: 2, depth: 3, sign: 1 }],
+  [{ vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 2, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: -1 }, { vertexIndex: 2, depth: 3, sign: -1 }],
+  [{ vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 3, depth: 3, sign: -1 }, { vertexIndex: 1, depth: 3, sign: -1 }, { vertexIndex: 3, depth: 3, sign: 1 }],
+  [{ vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 3, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: -1 }, { vertexIndex: 3, depth: 3, sign: -1 }],
+  [{ vertexIndex: 1, depth: 4, sign: -1 }, { vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 4, sign: 1 }, { vertexIndex: 0, depth: 2, sign: 1 }],
+  [{ vertexIndex: 1, depth: 4, sign: -1 }, { vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 4, sign: 1 }, { vertexIndex: 0, depth: 2, sign: -1 }],
+  [{ vertexIndex: 1, depth: 4, sign: -1 }, { vertexIndex: 2, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 4, sign: 1 }, { vertexIndex: 2, depth: 2, sign: 1 }],
+  [{ vertexIndex: 1, depth: 4, sign: -1 }, { vertexIndex: 2, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 4, sign: 1 }, { vertexIndex: 2, depth: 2, sign: -1 }],
+  [{ vertexIndex: 1, depth: 4, sign: -1 }, { vertexIndex: 3, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 4, sign: 1 }, { vertexIndex: 3, depth: 2, sign: 1 }],
+  [{ vertexIndex: 1, depth: 4, sign: -1 }, { vertexIndex: 3, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 4, sign: 1 }, { vertexIndex: 3, depth: 2, sign: -1 }],
+  [{ vertexIndex: 1, depth: 4, sign: 1 }, { vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 4, sign: -1 }, { vertexIndex: 0, depth: 2, sign: 1 }],
+  [{ vertexIndex: 1, depth: 4, sign: 1 }, { vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 4, sign: -1 }, { vertexIndex: 0, depth: 2, sign: -1 }],
+  [{ vertexIndex: 1, depth: 4, sign: 1 }, { vertexIndex: 2, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 4, sign: -1 }, { vertexIndex: 2, depth: 2, sign: 1 }],
+  [{ vertexIndex: 1, depth: 4, sign: 1 }, { vertexIndex: 2, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 4, sign: -1 }, { vertexIndex: 2, depth: 2, sign: -1 }],
+  [{ vertexIndex: 1, depth: 4, sign: 1 }, { vertexIndex: 3, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 4, sign: -1 }, { vertexIndex: 3, depth: 2, sign: 1 }],
+  [{ vertexIndex: 1, depth: 4, sign: 1 }, { vertexIndex: 3, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 4, sign: -1 }, { vertexIndex: 3, depth: 2, sign: -1 }],
+  [{ vertexIndex: 2, depth: 2, sign: -1 }, { vertexIndex: 0, depth: 4, sign: -1 }, { vertexIndex: 2, depth: 2, sign: 1 }, { vertexIndex: 0, depth: 4, sign: 1 }],
+  [{ vertexIndex: 2, depth: 2, sign: -1 }, { vertexIndex: 0, depth: 4, sign: 1 }, { vertexIndex: 2, depth: 2, sign: 1 }, { vertexIndex: 0, depth: 4, sign: -1 }],
+  [{ vertexIndex: 2, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 4, sign: -1 }, { vertexIndex: 2, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 4, sign: 1 }],
+  [{ vertexIndex: 2, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 4, sign: 1 }, { vertexIndex: 2, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 4, sign: -1 }],
+  [{ vertexIndex: 2, depth: 2, sign: -1 }, { vertexIndex: 3, depth: 4, sign: -1 }, { vertexIndex: 2, depth: 2, sign: 1 }, { vertexIndex: 3, depth: 4, sign: 1 }],
+  [{ vertexIndex: 2, depth: 2, sign: -1 }, { vertexIndex: 3, depth: 4, sign: 1 }, { vertexIndex: 2, depth: 2, sign: 1 }, { vertexIndex: 3, depth: 4, sign: -1 }],
+  [{ vertexIndex: 2, depth: 2, sign: 1 }, { vertexIndex: 0, depth: 4, sign: -1 }, { vertexIndex: 2, depth: 2, sign: -1 }, { vertexIndex: 0, depth: 4, sign: 1 }],
+  [{ vertexIndex: 2, depth: 2, sign: 1 }, { vertexIndex: 0, depth: 4, sign: 1 }, { vertexIndex: 2, depth: 2, sign: -1 }, { vertexIndex: 0, depth: 4, sign: -1 }],
+  [{ vertexIndex: 2, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 4, sign: -1 }, { vertexIndex: 2, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 4, sign: 1 }],
+  [{ vertexIndex: 2, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 4, sign: 1 }, { vertexIndex: 2, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 4, sign: -1 }],
+  [{ vertexIndex: 2, depth: 2, sign: 1 }, { vertexIndex: 3, depth: 4, sign: -1 }, { vertexIndex: 2, depth: 2, sign: -1 }, { vertexIndex: 3, depth: 4, sign: 1 }],
+  [{ vertexIndex: 2, depth: 2, sign: 1 }, { vertexIndex: 3, depth: 4, sign: 1 }, { vertexIndex: 2, depth: 2, sign: -1 }, { vertexIndex: 3, depth: 4, sign: -1 }],
+  [{ vertexIndex: 2, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 3, sign: -1 }, { vertexIndex: 2, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: 1 }],
+  [{ vertexIndex: 2, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 2, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: -1 }],
+  [{ vertexIndex: 2, depth: 3, sign: -1 }, { vertexIndex: 1, depth: 3, sign: -1 }, { vertexIndex: 2, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: 1 }],
+  [{ vertexIndex: 2, depth: 3, sign: -1 }, { vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 2, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: -1 }],
+  [{ vertexIndex: 2, depth: 3, sign: -1 }, { vertexIndex: 3, depth: 3, sign: -1 }, { vertexIndex: 2, depth: 3, sign: 1 }, { vertexIndex: 3, depth: 3, sign: 1 }],
+  [{ vertexIndex: 2, depth: 3, sign: -1 }, { vertexIndex: 3, depth: 3, sign: 1 }, { vertexIndex: 2, depth: 3, sign: 1 }, { vertexIndex: 3, depth: 3, sign: -1 }],
+  [{ vertexIndex: 2, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: -1 }, { vertexIndex: 2, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 3, sign: 1 }],
+  [{ vertexIndex: 2, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 2, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 3, sign: -1 }],
+  [{ vertexIndex: 2, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: -1 }, { vertexIndex: 2, depth: 3, sign: -1 }, { vertexIndex: 1, depth: 3, sign: 1 }],
+  [{ vertexIndex: 2, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 2, depth: 3, sign: -1 }, { vertexIndex: 1, depth: 3, sign: -1 }],
+  [{ vertexIndex: 2, depth: 3, sign: 1 }, { vertexIndex: 3, depth: 3, sign: -1 }, { vertexIndex: 2, depth: 3, sign: -1 }, { vertexIndex: 3, depth: 3, sign: 1 }],
+  [{ vertexIndex: 2, depth: 3, sign: 1 }, { vertexIndex: 3, depth: 3, sign: 1 }, { vertexIndex: 2, depth: 3, sign: -1 }, { vertexIndex: 3, depth: 3, sign: -1 }],
+  [{ vertexIndex: 2, depth: 4, sign: -1 }, { vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 2, depth: 4, sign: 1 }, { vertexIndex: 0, depth: 2, sign: 1 }],
+  [{ vertexIndex: 2, depth: 4, sign: -1 }, { vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 2, depth: 4, sign: 1 }, { vertexIndex: 0, depth: 2, sign: -1 }],
+  [{ vertexIndex: 2, depth: 4, sign: -1 }, { vertexIndex: 1, depth: 2, sign: -1 }, { vertexIndex: 2, depth: 4, sign: 1 }, { vertexIndex: 1, depth: 2, sign: 1 }],
+  [{ vertexIndex: 2, depth: 4, sign: -1 }, { vertexIndex: 1, depth: 2, sign: 1 }, { vertexIndex: 2, depth: 4, sign: 1 }, { vertexIndex: 1, depth: 2, sign: -1 }],
+  [{ vertexIndex: 2, depth: 4, sign: -1 }, { vertexIndex: 3, depth: 2, sign: -1 }, { vertexIndex: 2, depth: 4, sign: 1 }, { vertexIndex: 3, depth: 2, sign: 1 }],
+  [{ vertexIndex: 2, depth: 4, sign: -1 }, { vertexIndex: 3, depth: 2, sign: 1 }, { vertexIndex: 2, depth: 4, sign: 1 }, { vertexIndex: 3, depth: 2, sign: -1 }],
+  [{ vertexIndex: 2, depth: 4, sign: 1 }, { vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 2, depth: 4, sign: -1 }, { vertexIndex: 0, depth: 2, sign: 1 }],
+  [{ vertexIndex: 2, depth: 4, sign: 1 }, { vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 2, depth: 4, sign: -1 }, { vertexIndex: 0, depth: 2, sign: -1 }],
+  [{ vertexIndex: 2, depth: 4, sign: 1 }, { vertexIndex: 1, depth: 2, sign: -1 }, { vertexIndex: 2, depth: 4, sign: -1 }, { vertexIndex: 1, depth: 2, sign: 1 }],
+  [{ vertexIndex: 2, depth: 4, sign: 1 }, { vertexIndex: 1, depth: 2, sign: 1 }, { vertexIndex: 2, depth: 4, sign: -1 }, { vertexIndex: 1, depth: 2, sign: -1 }],
+  [{ vertexIndex: 2, depth: 4, sign: 1 }, { vertexIndex: 3, depth: 2, sign: -1 }, { vertexIndex: 2, depth: 4, sign: -1 }, { vertexIndex: 3, depth: 2, sign: 1 }],
+  [{ vertexIndex: 2, depth: 4, sign: 1 }, { vertexIndex: 3, depth: 2, sign: 1 }, { vertexIndex: 2, depth: 4, sign: -1 }, { vertexIndex: 3, depth: 2, sign: -1 }],
+  [{ vertexIndex: 3, depth: 2, sign: -1 }, { vertexIndex: 0, depth: 4, sign: -1 }, { vertexIndex: 3, depth: 2, sign: 1 }, { vertexIndex: 0, depth: 4, sign: 1 }],
+  [{ vertexIndex: 3, depth: 2, sign: -1 }, { vertexIndex: 0, depth: 4, sign: 1 }, { vertexIndex: 3, depth: 2, sign: 1 }, { vertexIndex: 0, depth: 4, sign: -1 }],
+  [{ vertexIndex: 3, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 4, sign: -1 }, { vertexIndex: 3, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 4, sign: 1 }],
+  [{ vertexIndex: 3, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 4, sign: 1 }, { vertexIndex: 3, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 4, sign: -1 }],
+  [{ vertexIndex: 3, depth: 2, sign: -1 }, { vertexIndex: 2, depth: 4, sign: -1 }, { vertexIndex: 3, depth: 2, sign: 1 }, { vertexIndex: 2, depth: 4, sign: 1 }],
+  [{ vertexIndex: 3, depth: 2, sign: -1 }, { vertexIndex: 2, depth: 4, sign: 1 }, { vertexIndex: 3, depth: 2, sign: 1 }, { vertexIndex: 2, depth: 4, sign: -1 }],
+  [{ vertexIndex: 3, depth: 2, sign: 1 }, { vertexIndex: 0, depth: 4, sign: -1 }, { vertexIndex: 3, depth: 2, sign: -1 }, { vertexIndex: 0, depth: 4, sign: 1 }],
+  [{ vertexIndex: 3, depth: 2, sign: 1 }, { vertexIndex: 0, depth: 4, sign: 1 }, { vertexIndex: 3, depth: 2, sign: -1 }, { vertexIndex: 0, depth: 4, sign: -1 }],
+  [{ vertexIndex: 3, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 4, sign: -1 }, { vertexIndex: 3, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 4, sign: 1 }],
+  [{ vertexIndex: 3, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 4, sign: 1 }, { vertexIndex: 3, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 4, sign: -1 }],
+  [{ vertexIndex: 3, depth: 2, sign: 1 }, { vertexIndex: 2, depth: 4, sign: -1 }, { vertexIndex: 3, depth: 2, sign: -1 }, { vertexIndex: 2, depth: 4, sign: 1 }],
+  [{ vertexIndex: 3, depth: 2, sign: 1 }, { vertexIndex: 2, depth: 4, sign: 1 }, { vertexIndex: 3, depth: 2, sign: -1 }, { vertexIndex: 2, depth: 4, sign: -1 }],
+  [{ vertexIndex: 3, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 3, sign: -1 }, { vertexIndex: 3, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: 1 }],
+  [{ vertexIndex: 3, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 3, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: -1 }],
+  [{ vertexIndex: 3, depth: 3, sign: -1 }, { vertexIndex: 1, depth: 3, sign: -1 }, { vertexIndex: 3, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: 1 }],
+  [{ vertexIndex: 3, depth: 3, sign: -1 }, { vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 3, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: -1 }],
+  [{ vertexIndex: 3, depth: 3, sign: -1 }, { vertexIndex: 2, depth: 3, sign: -1 }, { vertexIndex: 3, depth: 3, sign: 1 }, { vertexIndex: 2, depth: 3, sign: 1 }],
+  [{ vertexIndex: 3, depth: 3, sign: -1 }, { vertexIndex: 2, depth: 3, sign: 1 }, { vertexIndex: 3, depth: 3, sign: 1 }, { vertexIndex: 2, depth: 3, sign: -1 }],
+  [{ vertexIndex: 3, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: -1 }, { vertexIndex: 3, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 3, sign: 1 }],
+  [{ vertexIndex: 3, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 3, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 3, sign: -1 }],
+  [{ vertexIndex: 3, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: -1 }, { vertexIndex: 3, depth: 3, sign: -1 }, { vertexIndex: 1, depth: 3, sign: 1 }],
+  [{ vertexIndex: 3, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 3, depth: 3, sign: -1 }, { vertexIndex: 1, depth: 3, sign: -1 }],
+  [{ vertexIndex: 3, depth: 3, sign: 1 }, { vertexIndex: 2, depth: 3, sign: -1 }, { vertexIndex: 3, depth: 3, sign: -1 }, { vertexIndex: 2, depth: 3, sign: 1 }],
+  [{ vertexIndex: 3, depth: 3, sign: 1 }, { vertexIndex: 2, depth: 3, sign: 1 }, { vertexIndex: 3, depth: 3, sign: -1 }, { vertexIndex: 2, depth: 3, sign: -1 }],
+  [{ vertexIndex: 3, depth: 4, sign: -1 }, { vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 3, depth: 4, sign: 1 }, { vertexIndex: 0, depth: 2, sign: 1 }],
+  [{ vertexIndex: 3, depth: 4, sign: -1 }, { vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 3, depth: 4, sign: 1 }, { vertexIndex: 0, depth: 2, sign: -1 }],
+  [{ vertexIndex: 3, depth: 4, sign: -1 }, { vertexIndex: 1, depth: 2, sign: -1 }, { vertexIndex: 3, depth: 4, sign: 1 }, { vertexIndex: 1, depth: 2, sign: 1 }],
+  [{ vertexIndex: 3, depth: 4, sign: -1 }, { vertexIndex: 1, depth: 2, sign: 1 }, { vertexIndex: 3, depth: 4, sign: 1 }, { vertexIndex: 1, depth: 2, sign: -1 }],
+  [{ vertexIndex: 3, depth: 4, sign: -1 }, { vertexIndex: 2, depth: 2, sign: -1 }, { vertexIndex: 3, depth: 4, sign: 1 }, { vertexIndex: 2, depth: 2, sign: 1 }],
+  [{ vertexIndex: 3, depth: 4, sign: -1 }, { vertexIndex: 2, depth: 2, sign: 1 }, { vertexIndex: 3, depth: 4, sign: 1 }, { vertexIndex: 2, depth: 2, sign: -1 }],
+  [{ vertexIndex: 3, depth: 4, sign: 1 }, { vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 3, depth: 4, sign: -1 }, { vertexIndex: 0, depth: 2, sign: 1 }],
+  [{ vertexIndex: 3, depth: 4, sign: 1 }, { vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 3, depth: 4, sign: -1 }, { vertexIndex: 0, depth: 2, sign: -1 }],
+  [{ vertexIndex: 3, depth: 4, sign: 1 }, { vertexIndex: 1, depth: 2, sign: -1 }, { vertexIndex: 3, depth: 4, sign: -1 }, { vertexIndex: 1, depth: 2, sign: 1 }],
+  [{ vertexIndex: 3, depth: 4, sign: 1 }, { vertexIndex: 1, depth: 2, sign: 1 }, { vertexIndex: 3, depth: 4, sign: -1 }, { vertexIndex: 1, depth: 2, sign: -1 }],
+  [{ vertexIndex: 3, depth: 4, sign: 1 }, { vertexIndex: 2, depth: 2, sign: -1 }, { vertexIndex: 3, depth: 4, sign: -1 }, { vertexIndex: 2, depth: 2, sign: 1 }],
+  [{ vertexIndex: 3, depth: 4, sign: 1 }, { vertexIndex: 2, depth: 2, sign: 1 }, { vertexIndex: 3, depth: 4, sign: -1 }, { vertexIndex: 2, depth: 2, sign: -1 }],
+];
+
 interface EdgeGeneratorMove {
   perm: number[];
   primitives: readonly TetraMove[];
@@ -268,7 +469,8 @@ const edgeGeneratorCache = new Map<number, EdgeGeneratorMove[]>();
 function edgeGeneratorMoves(pre: PrecomputedMoves): EdgeGeneratorMove[] {
   const cached = edgeGeneratorCache.get(pre.ns);
   if (cached) return cached;
-  const built = EDGE_SAFE_GENERATORS.map((seq) => {
+  const source = pre.layerCount === 5 ? EDGE_SAFE_GENERATORS_N5 : EDGE_SAFE_GENERATORS;
+  const built = source.map((seq) => {
     let perm = Array.from({ length: pre.ns }, (_, i) => i);
     for (const m of seq) perm = applyPerm(perm, pre.permByMove.get(moveKey(m))!);
     return { perm, primitives: seq, invPrimitives: [...seq].reverse().map(invertMove) };
@@ -312,6 +514,8 @@ function meetInMiddleSolveEdges(pre: PrecomputedMoves, startPieces: number[], ma
 
   if (fwdVisited.has(keyFor(solvedPieces))) return [];
 
+  const totalVisited = () => fwdVisited.size + bwdVisited.size;
+
   for (let depth = 1; depth <= maxDepthEachSide; depth++) {
     const newFwd = new Map<string, CompoundSearchEntry>();
     for (const { pieces, moves } of fwdFrontier) {
@@ -322,6 +526,7 @@ function meetInMiddleSolveEdges(pre: PrecomputedMoves, startPieces: number[], ma
           const entry: CompoundSearchEntry = { pieces: next, moves: [...moves, gm] };
           fwdVisited.set(k, entry);
           newFwd.set(k, entry);
+          if (totalVisited() > MAX_SEARCH_STATES) return null;
         }
       }
     }
@@ -340,6 +545,7 @@ function meetInMiddleSolveEdges(pre: PrecomputedMoves, startPieces: number[], ma
           const entry: CompoundSearchEntry = { pieces: next, moves: [...moves, gm] };
           bwdVisited.set(k, entry);
           newBwd.set(k, entry);
+          if (totalVisited() > MAX_SEARCH_STATES) return null;
         }
       }
     }
