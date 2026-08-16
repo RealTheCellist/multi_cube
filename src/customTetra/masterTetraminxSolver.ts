@@ -181,32 +181,46 @@ function meetInMiddleSolve(pre: PrecomputedMoves, startPieces: number[], targetT
   const targetSlots: number[] = [];
   for (let i = 0; i < pre.ns; i++) if (targetTypes.has(pre.pieceTypes[i])) targetSlots.push(i);
 
-  // Encodes each target slot's piece index as one UTF-16 code unit (+32 to
-  // keep it a simple, unambiguous single code unit -- pieces indices never
-  // exceed a few hundred for any layerCount this solver supports, nowhere
-  // near the 0xD800 surrogate boundary) instead of a comma-joined decimal
-  // string. Measured ~48.5% of this function's own runtime was spent in key
-  // generation alone (N5_PHASE1_SEARCH_EFFICIENCY_ANALYSIS Sprint); this
-  // encoding is ~5.5x faster in isolation and was verified byte-for-byte
-  // equivalent to the previous comma-joined key (same visited/goal-test
-  // behavior, identical solutions on all 20 fixed validation seeds, 0 key
-  // collisions across 500,000 sampled real states) before being applied here
-  // (N5_PHASE1_STATE_KEY_OPTIMIZATION_VALIDATION Sprint).
-  const keyFor = (pieces: readonly number[]) => String.fromCharCode(...targetSlots.map((i) => pieces[i] + 32));
+  // Every search state here only ever needs the `targetSlots.length` values
+  // this function actually reads (52 of the full 100 slots for N=5's
+  // axial+center target) -- so transitions and keys operate on a COMPACT
+  // local array indexed 0..targetSlots.length-1, not the full `pre.ns`-sized
+  // pieces array. This is lossless: legal moves never move a piece between
+  // different pieceType categories, so every primitive's full permutation,
+  // restricted to targetSlots, is itself a well-defined permutation of
+  // targetSlots -- composing on the local array produces EXACTLY the same
+  // targetSlots-projection as composing on the full array and projecting
+  // afterward. Verified before this was applied
+  // (N5_PHASE1_COMPACT_STATE_REPRESENTATION_VALIDATION Sprint): 0 mismatches
+  // across 160,000 sampled (state, move) transition pairs, 0 key-equivalence
+  // violations across 500,000 sampled states, byte-identical solutions on
+  // all 20 fixed validation seeds. The ~48% smaller per-state array (52 vs
+  // 100 elements) also shrinks the state-key strings built each visit (see
+  // N5_PHASE1_STATE_KEY_OPTIMIZATION_VALIDATION Sprint for that encoding).
+  const targetSlotPosition = new Map<number, number>(targetSlots.map((slot, i) => [slot, i]));
+  const localPermByMove = new Map<string, number[]>();
+  for (const move of pre.allMoves) {
+    const fullPerm = pre.permByMove.get(moveKey(move))!;
+    const localPerm = targetSlots.map((slot) => targetSlotPosition.get(fullPerm[slot])!);
+    localPermByMove.set(moveKey(move), localPerm);
+  }
+
+  const keyFor = (local: readonly number[]) => String.fromCharCode(...local.map((v) => v + 32));
   const buildPath = (fwdEntry: SearchEntry, bwdEntry: SearchEntry): TetraMove[] => [...fwdEntry.moves, ...[...bwdEntry.moves].reverse().map(invertMove)];
 
+  const startLocal = targetSlots.map((slot) => targetSlotPosition.get(startPieces[slot])!);
   const fwdVisited = new Map<string, SearchEntry>();
-  const startEntry: SearchEntry = { pieces: startPieces, moves: [] };
-  fwdVisited.set(keyFor(startPieces), startEntry);
+  const startEntry: SearchEntry = { pieces: startLocal, moves: [] };
+  fwdVisited.set(keyFor(startLocal), startEntry);
   let fwdFrontier: SearchEntry[] = [startEntry];
 
-  const solvedPieces = Array.from({ length: pre.ns }, (_, i) => i);
+  const solvedLocal = targetSlots.map((_slot, i) => i);
   const bwdVisited = new Map<string, SearchEntry>();
-  const solvedEntry: SearchEntry = { pieces: solvedPieces, moves: [] };
-  bwdVisited.set(keyFor(solvedPieces), solvedEntry);
+  const solvedEntry: SearchEntry = { pieces: solvedLocal, moves: [] };
+  bwdVisited.set(keyFor(solvedLocal), solvedEntry);
   let bwdFrontier: SearchEntry[] = [solvedEntry];
 
-  if (fwdVisited.has(keyFor(solvedPieces))) return [];
+  if (fwdVisited.has(keyFor(solvedLocal))) return [];
 
   const totalVisited = () => fwdVisited.size + bwdVisited.size;
 
@@ -214,7 +228,7 @@ function meetInMiddleSolve(pre: PrecomputedMoves, startPieces: number[], targetT
     const newFwd = new Map<string, SearchEntry>();
     for (const { pieces, moves } of fwdFrontier) {
       for (const move of pre.allMoves) {
-        const next = applyPerm(pieces, pre.permByMove.get(moveKey(move))!);
+        const next = applyPerm(pieces, localPermByMove.get(moveKey(move))!);
         const k = keyFor(next);
         if (!fwdVisited.has(k)) {
           const entry: SearchEntry = { pieces: next, moves: [...moves, move] };
@@ -233,7 +247,7 @@ function meetInMiddleSolve(pre: PrecomputedMoves, startPieces: number[], targetT
     const newBwd = new Map<string, SearchEntry>();
     for (const { pieces, moves } of bwdFrontier) {
       for (const move of pre.allMoves) {
-        const next = applyPerm(pieces, pre.permByMove.get(moveKey(move))!);
+        const next = applyPerm(pieces, localPermByMove.get(moveKey(move))!);
         const k = keyFor(next);
         if (!bwdVisited.has(k)) {
           const entry: SearchEntry = { pieces: next, moves: [...moves, move] };
