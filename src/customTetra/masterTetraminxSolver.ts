@@ -235,14 +235,16 @@ function meetInMiddleSolve(pre: PrecomputedMoves, startPieces: number[], targetT
           fwdVisited.set(k, entry);
           newFwd.set(k, entry);
           if (totalVisited() > MAX_SEARCH_STATES) return null;
+          // Check immediately, not just once per depth level: if the budget
+          // is hit partway through building this level's map, a deferred
+          // check would never run at all, silently skipping every state
+          // generated so far this level even if one already matched.
+          const hit = bwdVisited.get(k);
+          if (hit) return buildPath(entry, hit);
         }
       }
     }
     fwdFrontier = [...newFwd.values()];
-    for (const [k, entry] of newFwd) {
-      const hit = bwdVisited.get(k);
-      if (hit) return buildPath(entry, hit);
-    }
 
     const newBwd = new Map<string, SearchEntry>();
     for (const { pieces, moves } of bwdFrontier) {
@@ -254,14 +256,12 @@ function meetInMiddleSolve(pre: PrecomputedMoves, startPieces: number[], targetT
           bwdVisited.set(k, entry);
           newBwd.set(k, entry);
           if (totalVisited() > MAX_SEARCH_STATES) return null;
+          const hit = fwdVisited.get(k);
+          if (hit) return buildPath(hit, entry);
         }
       }
     }
     bwdFrontier = [...newBwd.values()];
-    for (const [k, entry] of newBwd) {
-      const hit = fwdVisited.get(k);
-      if (hit) return buildPath(hit, entry);
-    }
   }
 
   return null;
