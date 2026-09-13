@@ -101,6 +101,22 @@ function applyPerm(pieces: readonly number[], perm: readonly number[]): number[]
   return out;
 }
 
+/** Same as applyPerm but for Uint8Array state keys -- a plain number[] of a
+ * BFS state (meetInMiddleSolve/meetInMiddleSolveEdges) costs ~6-7x more
+ * memory per array than a Uint8Array of the same length (V8 boxes/pads a
+ * generic array's elements; a typed array is a flat byte buffer), which
+ * matters a lot once a search visits millions of states -- confirmed
+ * directly: this plus SearchEntry's parent-pointer path storage were both
+ * needed to stop an out-of-memory crash once the axial-only+center-cleanup
+ * fallback pushed maxStates past what the original 2,000,000 budget was
+ * ever measured against. Piece identities here max out at pre.ns-1 (well
+ * under 255), so Uint8Array is a safe, lossless fit. */
+function applyPermU8(pieces: Uint8Array, perm: readonly number[]): Uint8Array {
+  const out = new Uint8Array(pieces.length);
+  for (let i = 0; i < pieces.length; i++) out[i] = pieces[perm[i]];
+  return out;
+}
+
 /**
  * pieces[slot] = which solved-reference sticker id is currently sitting
  * there -- the same "pull" convention permByMove's arrays use (see
@@ -134,8 +150,23 @@ function patternFromState(state: TetraState, pre: PrecomputedMoves): number[] {
 }
 
 interface SearchEntry {
-  pieces: number[];
-  moves: TetraMove[];
+  pieces: Uint8Array;
+  move: TetraMove | null;
+  parent: SearchEntry | null;
+}
+
+/** Reconstructs the chronological move list from start by walking parent
+ * pointers -- O(path length) per call, done ONCE when a meeting point is
+ * found, instead of every entry carrying its own full copied array (which
+ * made memory scale with depth x states instead of just states, and was
+ * the direct cause of an out-of-memory crash once fallback callers pushed
+ * maxStates/maxDepthEachSide past the values this was originally tuned
+ * for). */
+function pathFromEntry(entry: SearchEntry): TetraMove[] {
+  const moves: TetraMove[] = [];
+  for (let e: SearchEntry | null = entry; e && e.move; e = e.parent) moves.push(e.move);
+  moves.reverse();
+  return moves;
 }
 
 /**
@@ -177,7 +208,7 @@ interface SearchEntry {
  */
 const MAX_SEARCH_STATES = 2_000_000;
 
-function meetInMiddleSolve(pre: PrecomputedMoves, startPieces: number[], targetTypes: ReadonlySet<PieceType>, maxDepthEachSide: number): TetraMove[] | null {
+function meetInMiddleSolve(pre: PrecomputedMoves, startPieces: number[], targetTypes: ReadonlySet<PieceType>, maxDepthEachSide: number, maxStates: number = MAX_SEARCH_STATES): TetraMove[] | null {
   const targetSlots: number[] = [];
   for (let i = 0; i < pre.ns; i++) if (targetTypes.has(pre.pieceTypes[i])) targetSlots.push(i);
 
@@ -206,17 +237,17 @@ function meetInMiddleSolve(pre: PrecomputedMoves, startPieces: number[], targetT
   }
 
   const keyFor = (local: readonly number[]) => String.fromCharCode(...local.map((v) => v + 32));
-  const buildPath = (fwdEntry: SearchEntry, bwdEntry: SearchEntry): TetraMove[] => [...fwdEntry.moves, ...[...bwdEntry.moves].reverse().map(invertMove)];
+  const buildPath = (fwdEntry: SearchEntry, bwdEntry: SearchEntry): TetraMove[] => [...pathFromEntry(fwdEntry), ...pathFromEntry(bwdEntry).reverse().map(invertMove)];
 
-  const startLocal = targetSlots.map((slot) => targetSlotPosition.get(startPieces[slot])!);
+  const startLocal = Uint8Array.from(targetSlots.map((slot) => targetSlotPosition.get(startPieces[slot])!));
   const fwdVisited = new Map<string, SearchEntry>();
-  const startEntry: SearchEntry = { pieces: startLocal, moves: [] };
+  const startEntry: SearchEntry = { pieces: startLocal, move: null, parent: null };
   fwdVisited.set(keyFor(startLocal), startEntry);
   let fwdFrontier: SearchEntry[] = [startEntry];
 
-  const solvedLocal = targetSlots.map((_slot, i) => i);
+  const solvedLocal = Uint8Array.from(targetSlots.map((_slot, i) => i));
   const bwdVisited = new Map<string, SearchEntry>();
-  const solvedEntry: SearchEntry = { pieces: solvedLocal, moves: [] };
+  const solvedEntry: SearchEntry = { pieces: solvedLocal, move: null, parent: null };
   bwdVisited.set(keyFor(solvedLocal), solvedEntry);
   let bwdFrontier: SearchEntry[] = [solvedEntry];
 
@@ -226,15 +257,15 @@ function meetInMiddleSolve(pre: PrecomputedMoves, startPieces: number[], targetT
 
   for (let depth = 1; depth <= maxDepthEachSide; depth++) {
     const newFwd = new Map<string, SearchEntry>();
-    for (const { pieces, moves } of fwdFrontier) {
+    for (const parentEntry of fwdFrontier) {
       for (const move of pre.allMoves) {
-        const next = applyPerm(pieces, localPermByMove.get(moveKey(move))!);
+        const next = applyPermU8(parentEntry.pieces, localPermByMove.get(moveKey(move))!);
         const k = keyFor(next);
         if (!fwdVisited.has(k)) {
-          const entry: SearchEntry = { pieces: next, moves: [...moves, move] };
+          const entry: SearchEntry = { pieces: next, move, parent: parentEntry };
           fwdVisited.set(k, entry);
           newFwd.set(k, entry);
-          if (totalVisited() > MAX_SEARCH_STATES) return null;
+          if (totalVisited() > maxStates) return null;
           // Check immediately, not just once per depth level: if the budget
           // is hit partway through building this level's map, a deferred
           // check would never run at all, silently skipping every state
@@ -247,15 +278,15 @@ function meetInMiddleSolve(pre: PrecomputedMoves, startPieces: number[], targetT
     fwdFrontier = [...newFwd.values()];
 
     const newBwd = new Map<string, SearchEntry>();
-    for (const { pieces, moves } of bwdFrontier) {
+    for (const parentEntry of bwdFrontier) {
       for (const move of pre.allMoves) {
-        const next = applyPerm(pieces, localPermByMove.get(moveKey(move))!);
+        const next = applyPermU8(parentEntry.pieces, localPermByMove.get(moveKey(move))!);
         const k = keyFor(next);
         if (!bwdVisited.has(k)) {
-          const entry: SearchEntry = { pieces: next, moves: [...moves, move] };
+          const entry: SearchEntry = { pieces: next, move, parent: parentEntry };
           bwdVisited.set(k, entry);
           newBwd.set(k, entry);
-          if (totalVisited() > MAX_SEARCH_STATES) return null;
+          if (totalVisited() > maxStates) return null;
           const hit = fwdVisited.get(k);
           if (hit) return buildPath(hit, entry);
         }
@@ -264,6 +295,189 @@ function meetInMiddleSolve(pre: PrecomputedMoves, startPieces: number[], targetT
     bwdFrontier = [...newBwd.values()];
   }
 
+  return null;
+}
+
+/**
+ * Fallback constructive solver for axial+center, used only when
+ * meetInMiddleSolve(["axial","center"]) exhausts its budget without a
+ * match -- confirmed (N5_AXIAL_CENTER_FALLBACK_VALIDATION investigation) to
+ * happen on a small number of adversarial scrambles whose true axial+center
+ * distance provably exceeds what a combined bidirectional search can prove
+ * within any practical budget (one such scramble's minimal distance was
+ * proven >=16 by exhaustive IDA* -- the search tree at that depth is far
+ * too large for real-time use).
+ *
+ * The fix: stop requiring axial and center to match SIMULTANEOUSLY.
+ * meetInMiddleSolve(["axial"]) alone (centers don't-care) turned out to be
+ * dramatically shallower for these same scrambles (length 11, found in
+ * seconds) -- solving axial+center together is hard, but solving axial
+ * ALONE is not. Once axial is fixed, any center disturbance left behind is
+ * cleaned up with this dedicated 3-cycle commutator: a 12-move sequence
+ * verified (by direct composition from the identity, independent of any
+ * live state) to touch EXACTLY 3 center slots as a pure 3-cycle, combined
+ * with a setup-move table (BFS over reachable ordered triples via
+ * conjugation) that reaches ALL 12x11x10=1,320 possible ordered triples of
+ * the puzzle's 12 center pieces -- i.e. it can cycle ANY 3 chosen centers,
+ * so this phase always succeeds once axial is solved (axial/center piece
+ * type is conserved by every move, verified, so this cleanup can never
+ * re-disturb the axial pieces the first phase just fixed).
+ *
+ * Trade-off: this fallback path produces much longer solutions (dozens to
+ * ~100 moves, vs 4-10 for the common case) -- acceptable ONLY as a rare
+ * safety net so a solve always completes, not as the primary strategy.
+ */
+interface CenterCommutatorTools {
+  cycleThreeMoves(fullSlotA: number, fullSlotB: number, fullSlotC: number): TetraMove[] | null;
+}
+
+const centerCommutatorCache = new Map<number, CenterCommutatorTools>();
+
+function buildCenterCommutatorTools(pre: PrecomputedMoves): CenterCommutatorTools {
+  const cached = centerCommutatorCache.get(pre.layerCount);
+  if (cached) return cached;
+
+  const targetSlots: number[] = [];
+  for (let i = 0; i < pre.ns; i++) if (pre.pieceTypes[i] === "axial" || pre.pieceTypes[i] === "center") targetSlots.push(i);
+  const targetSlotPosition = new Map<number, number>(targetSlots.map((slot, i) => [slot, i]));
+  const localPermByMove = new Map<string, number[]>();
+  for (const move of pre.allMoves) {
+    const fullPerm = pre.permByMove.get(moveKey(move))!;
+    const localPerm = targetSlots.map((slot) => targetSlotPosition.get(fullPerm[slot])!);
+    localPermByMove.set(moveKey(move), localPerm);
+  }
+  const n = targetSlots.length;
+  const identity = Array.from({ length: n }, (_, i) => i);
+  const composeLocal = (a: readonly number[], b: readonly number[]): number[] => {
+    const out = new Array<number>(n);
+    for (let i = 0; i < n; i++) out[i] = a[b[i]];
+    return out;
+  };
+
+  // Hand-found commutator [A,B]=A B A' B': verified below to be a pure
+  // 3-cycle on exactly 3 center slots (whichever 3 that turns out to be --
+  // derived from the actual permutation rather than assumed, so this stays
+  // correct even if precompute()'s internal slot ordering ever changes).
+  // This specific (A,B) pair was chosen out of 49 candidates found by an
+  // exhaustive length<=3+3 search (all pure-center-3-cycle, axial-identity)
+  // for the one with ZERO edge collateral disturbance -- earlier candidates
+  // (e.g. the first one found) touched ~8 edge slots per application, which
+  // compounded across the several rounds a hard scramble needs into edge
+  // damage too deep for meetInMiddleSolveEdges' budget to undo.
+  const A_MOVES: TetraMove[] = [
+    { vertexIndex: 0, depth: 2, sign: 1 },
+    { vertexIndex: 1, depth: 3, sign: 1 },
+    { vertexIndex: 1, depth: 4, sign: -1 },
+  ];
+  const B_MOVES: TetraMove[] = [
+    { vertexIndex: 0, depth: 4, sign: 1 },
+    { vertexIndex: 1, depth: 3, sign: 1 },
+    { vertexIndex: 0, depth: 4, sign: -1 },
+  ];
+  const COMM_MOVES: TetraMove[] = [...A_MOVES, ...B_MOVES, ...A_MOVES.slice().reverse().map(invertMove), ...B_MOVES.slice().reverse().map(invertMove)];
+  let commPerm = identity;
+  for (const m of COMM_MOVES) commPerm = composeLocal(commPerm, localPermByMove.get(moveKey(m))!);
+
+  const affected: number[] = [];
+  for (let i = 0; i < n; i++) if (commPerm[i] !== i) affected.push(i);
+  if (affected.length !== 3) throw new Error(`center commutator sanity check failed: support=${affected.length} (expected 3)`);
+  const c0 = affected[0];
+  const c1 = commPerm[c0];
+  const c2 = commPerm[c1];
+  if (commPerm[c2] !== c0 || pre.pieceTypes[targetSlots[c0]] !== "center") {
+    throw new Error("center commutator sanity check failed: not a pure 3-cycle on center slots");
+  }
+  const baseTriple: [number, number, number] = [c0, c1, c2];
+
+  // Setup-move table: BFS over ordered triples reachable from baseTriple by
+  // conjugation, so the base commutator can be relabeled onto ANY 3 chosen
+  // center slots (S . COMM_MOVES . S^-1 for whichever setup S maps
+  // baseTriple to the target triple).
+  const tripleKey = (a: number, b: number, c: number) => `${a},${b},${c}`;
+  const genKey = (m: TetraMove) => `${m.vertexIndex}_${m.depth}`;
+  const setupTable = new Map<string, TetraMove[]>();
+  setupTable.set(tripleKey(...baseTriple), []);
+  let frontier: { triple: [number, number, number]; lastGen: string | null; moves: TetraMove[] }[] = [{ triple: baseTriple, lastGen: null, moves: [] }];
+  for (let depth = 0; depth < 8 && frontier.length > 0; depth++) {
+    const next: typeof frontier = [];
+    for (const node of frontier) {
+      for (const move of pre.allMoves) {
+        const gk = genKey(move);
+        if (gk === node.lastGen) continue;
+        const perm = localPermByMove.get(moveKey(move))!;
+        const nt: [number, number, number] = [perm[node.triple[0]], perm[node.triple[1]], perm[node.triple[2]]];
+        const k = tripleKey(...nt);
+        if (!setupTable.has(k)) {
+          const moves = [...node.moves, move];
+          setupTable.set(k, moves);
+          next.push({ triple: nt, lastGen: gk, moves });
+        }
+      }
+    }
+    frontier = next;
+  }
+
+  function cycleThreeMoves(fullSlotA: number, fullSlotB: number, fullSlotC: number): TetraMove[] | null {
+    const p1 = targetSlotPosition.get(fullSlotA);
+    const p2 = targetSlotPosition.get(fullSlotB);
+    const p3 = targetSlotPosition.get(fullSlotC);
+    if (p1 === undefined || p2 === undefined || p3 === undefined) return null;
+    const entry = setupTable.get(tripleKey(p1, p2, p3));
+    if (!entry) return null;
+    // Setup-table moves compose as the REVERSE chronological sequence when
+    // read forward (verified empirically during this feature's
+    // investigation) -- reverse (not invert) for the setup, and invert
+    // without reversing for the setup's undo.
+    const setup = entry.slice().reverse();
+    const setupInv = entry.map(invertMove);
+    return [...setup, ...COMM_MOVES, ...setupInv];
+  }
+
+  const tools: CenterCommutatorTools = { cycleThreeMoves };
+  centerCommutatorCache.set(pre.layerCount, tools);
+  return tools;
+}
+
+/**
+ * Insertion-style solve: repeatedly take a misplaced center piece, trace
+ * its 3-cycle, apply cycleThreeMoves. Terminates in a bounded number of
+ * rounds (each fixes >=2 pieces) since the center commutator is fully
+ * transitive (any 3 chosen center slots are reachable).
+ */
+function solveCentersByCommutator(pre: PrecomputedMoves, currentFullPattern: readonly number[]): TetraMove[] | null {
+  const tools = buildCenterCommutatorTools(pre);
+  const centerSlots: number[] = [];
+  for (let i = 0; i < pre.ns; i++) if (pre.pieceTypes[i] === "center") centerSlots.push(i);
+
+  const pieces = new Map<number, number>(centerSlots.map((slot) => [slot, currentFullPattern[slot]]));
+  const allMoves: TetraMove[] = [];
+  const MAX_ROUNDS = 60;
+  for (let round = 0; round < MAX_ROUNDS; round++) {
+    const misplaced = centerSlots.filter((slot) => pieces.get(slot) !== slot);
+    if (misplaced.length === 0) return allMoves;
+    const p1 = misplaced[0];
+    const p2 = pieces.get(p1)!;
+    let p3 = pieces.get(p2)!;
+    if (p3 === p1) {
+      const borrow = misplaced.find((x) => x !== p1 && x !== p2);
+      if (borrow === undefined) return null; // single 2-cycle left -- should be impossible (parity)
+      p3 = borrow;
+    }
+    // Argument order here is tied to the SPECIFIC (A,B) commutator above --
+    // its cycle direction was verified empirically (a wrong order leaves
+    // misplaced count unchanged round after round instead of converging: it
+    // applies every insertion "backwards"). Re-verify this order if the
+    // commutator's move sequence ever changes.
+    const cycMoves = tools.cycleThreeMoves(p1, p2, p3);
+    if (!cycMoves) return null;
+    for (const m of cycMoves) {
+      const perm = pre.permByMove.get(moveKey(m))!;
+      const next = new Map<number, number>();
+      for (const slot of centerSlots) next.set(slot, pieces.get(perm[slot])!);
+      for (const [k, v] of next) pieces.set(k, v);
+    }
+    allMoves.push(...cycMoves);
+  }
   return null;
 }
 
@@ -336,7 +550,7 @@ const EDGE_SAFE_GENERATORS: readonly (readonly TetraMove[])[] = [
  * third exhausted the budget without a definitive answer either way, not a
  * proof of impossibility).
  */
-const EDGE_SAFE_GENERATORS_N5: readonly (readonly TetraMove[])[] = [
+export const EDGE_SAFE_GENERATORS_N5: readonly (readonly TetraMove[])[] = [
   [{ vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 4, sign: -1 }, { vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 4, sign: 1 }],
   [{ vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 1, depth: 4, sign: 1 }, { vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 1, depth: 4, sign: -1 }],
   [{ vertexIndex: 0, depth: 2, sign: -1 }, { vertexIndex: 2, depth: 4, sign: -1 }, { vertexIndex: 0, depth: 2, sign: 1 }, { vertexIndex: 2, depth: 4, sign: 1 }],
@@ -505,8 +719,19 @@ function edgeGeneratorMoves(pre: PrecomputedMoves): EdgeGeneratorMove[] {
 }
 
 interface CompoundSearchEntry {
-  pieces: number[];
-  moves: EdgeGeneratorMove[];
+  pieces: Uint8Array;
+  gm: EdgeGeneratorMove | null;
+  parent: CompoundSearchEntry | null;
+}
+
+/** Same rationale as pathFromEntry: reconstruct the generator-move path by
+ * walking parent pointers instead of every entry copying an ever-growing
+ * array. */
+function edgeGeneratorPathFromEntry(entry: CompoundSearchEntry): EdgeGeneratorMove[] {
+  const gms: EdgeGeneratorMove[] = [];
+  for (let e: CompoundSearchEntry | null = entry; e && e.gm; e = e.parent) gms.push(e.gm);
+  gms.reverse();
+  return gms;
 }
 
 /**
@@ -515,25 +740,26 @@ interface CompoundSearchEntry {
  * constant's comment for why. Target is always edge-only since every
  * generator is already a no-op elsewhere.
  */
-function meetInMiddleSolveEdges(pre: PrecomputedMoves, startPieces: number[], maxDepthEachSide: number): TetraMove[] | null {
+function meetInMiddleSolveEdges(pre: PrecomputedMoves, startPieces: number[], maxDepthEachSide: number, maxStates: number = MAX_SEARCH_STATES): TetraMove[] | null {
   const generators = edgeGeneratorMoves(pre);
   const targetSlots: number[] = [];
   for (let i = 0; i < pre.ns; i++) if (pre.pieceTypes[i] === "edge") targetSlots.push(i);
 
   const keyFor = (pieces: readonly number[]) => targetSlots.map((i) => pieces[i]).join(",");
   const buildPath = (fwdEntry: CompoundSearchEntry, bwdEntry: CompoundSearchEntry): TetraMove[] => [
-    ...fwdEntry.moves.flatMap((gm) => gm.primitives),
-    ...[...bwdEntry.moves].reverse().flatMap((gm) => gm.invPrimitives),
+    ...edgeGeneratorPathFromEntry(fwdEntry).flatMap((gm) => gm.primitives),
+    ...edgeGeneratorPathFromEntry(bwdEntry).reverse().flatMap((gm) => gm.invPrimitives),
   ];
 
   const fwdVisited = new Map<string, CompoundSearchEntry>();
-  const startEntry: CompoundSearchEntry = { pieces: startPieces, moves: [] };
-  fwdVisited.set(keyFor(startPieces), startEntry);
+  const startPiecesU8 = Uint8Array.from(startPieces);
+  const startEntry: CompoundSearchEntry = { pieces: startPiecesU8, gm: null, parent: null };
+  fwdVisited.set(keyFor(startPiecesU8), startEntry);
   let fwdFrontier: CompoundSearchEntry[] = [startEntry];
 
-  const solvedPieces = Array.from({ length: pre.ns }, (_, i) => i);
+  const solvedPieces = Uint8Array.from({ length: pre.ns }, (_, i) => i);
   const bwdVisited = new Map<string, CompoundSearchEntry>();
-  const solvedEntry: CompoundSearchEntry = { pieces: solvedPieces, moves: [] };
+  const solvedEntry: CompoundSearchEntry = { pieces: solvedPieces, gm: null, parent: null };
   bwdVisited.set(keyFor(solvedPieces), solvedEntry);
   let bwdFrontier: CompoundSearchEntry[] = [solvedEntry];
 
@@ -543,15 +769,15 @@ function meetInMiddleSolveEdges(pre: PrecomputedMoves, startPieces: number[], ma
 
   for (let depth = 1; depth <= maxDepthEachSide; depth++) {
     const newFwd = new Map<string, CompoundSearchEntry>();
-    for (const { pieces, moves } of fwdFrontier) {
+    for (const parentEntry of fwdFrontier) {
       for (const gm of generators) {
-        const next = applyPerm(pieces, gm.perm);
+        const next = applyPermU8(parentEntry.pieces, gm.perm);
         const k = keyFor(next);
         if (!fwdVisited.has(k)) {
-          const entry: CompoundSearchEntry = { pieces: next, moves: [...moves, gm] };
+          const entry: CompoundSearchEntry = { pieces: next, gm, parent: parentEntry };
           fwdVisited.set(k, entry);
           newFwd.set(k, entry);
-          if (totalVisited() > MAX_SEARCH_STATES) return null;
+          if (totalVisited() > maxStates) return null;
         }
       }
     }
@@ -562,15 +788,15 @@ function meetInMiddleSolveEdges(pre: PrecomputedMoves, startPieces: number[], ma
     }
 
     const newBwd = new Map<string, CompoundSearchEntry>();
-    for (const { pieces, moves } of bwdFrontier) {
+    for (const parentEntry of bwdFrontier) {
       for (const gm of generators) {
-        const next = applyPerm(pieces, gm.perm);
+        const next = applyPermU8(parentEntry.pieces, gm.perm);
         const k = keyFor(next);
         if (!bwdVisited.has(k)) {
-          const entry: CompoundSearchEntry = { pieces: next, moves: [...moves, gm] };
+          const entry: CompoundSearchEntry = { pieces: next, gm, parent: parentEntry };
           bwdVisited.set(k, entry);
           newBwd.set(k, entry);
-          if (totalVisited() > MAX_SEARCH_STATES) return null;
+          if (totalVisited() > maxStates) return null;
         }
       }
     }
@@ -647,15 +873,50 @@ export function computeMasterTetraSolveMoves(state: TetraState): MasterTetraSolv
     return true;
   };
 
+  let usedFallback = false;
   const axialCenterOk = applyPhase(meetInMiddleSolve(pre, patternFromState(working, pre), new Set<PieceType>(["axial", "center"]), 7));
-  if (!axialCenterOk) return { moves, solved: false };
+  if (!axialCenterOk) {
+    // Best-effort fallback (see solveCentersByCommutator's own comment for
+    // why): drop the requirement that axial and center match
+    // SIMULTANEOUSLY. Solve axial alone first (centers don't-care, and
+    // empirically far shallower even for scrambles the combined search
+    // above cannot resolve within its budget), then clean up whatever
+    // center disturbance is left with the fully transitive, edge-clean
+    // center commutator. NOT a full guarantee end-to-end: the axial-only
+    // phase itself can leave edges disturbed deeply enough (~30 wrong, on
+    // the hardest scrambles tested) that the edge phase below still fails
+    // within any browser-safe search budget -- confirmed this is a genuine
+    // resource wall, not a tuning problem (edge-only bidirectional search
+    // needs tens of millions of states by depth 6, whether using compound
+    // edge-safe generators or raw primitives, for that level of
+    // disturbance -- far beyond what a browser tab's heap can hold). A
+    // proper fix needs a dedicated efficient edge solver (e.g. an
+    // admissible-heuristic IDA* with its own backward perimeter, mirroring
+    // the axial+center approach) -- tracked as separate follow-up research,
+    // not yet implemented. Until then, this fallback still HELPS (turns
+    // some axial+center failures into full solves when the resulting edge
+    // disturbance is modest) without making anything worse (worst case is
+    // the same solved:false the common path would have returned anyway).
+    usedFallback = true;
+    const axialOnlyOk = applyPhase(meetInMiddleSolve(pre, patternFromState(working, pre), new Set<PieceType>(["axial"]), 10, 6_000_000));
+    if (!axialOnlyOk) return { moves, solved: false };
+    const centerCleanupMoves = solveCentersByCommutator(pre, patternFromState(working, pre));
+    if (!centerCleanupMoves || !applyPhase(centerCleanupMoves)) return { moves, solved: false };
+  }
 
   // Edges use EDGE_SAFE_GENERATORS instead of meetInMiddleSolve's raw
   // primitives: those generators are each already a no-op on axial+center
   // by construction, so this phase can't re-disturb what the previous phase
   // just fixed without needing a cumulative (and combinatorially unworkable
   // -- see EDGE_SAFE_GENERATORS' comment) target set.
-  const edgeOk = applyPhase(meetInMiddleSolveEdges(pre, patternFromState(working, pre), 6));
+  //
+  // The fallback path's axial-only phase (unlike the now-edge-clean center
+  // commutator) still doesn't guarantee edges untouched, so give this phase
+  // a bit more room only when the fallback ran -- see the fallback's own
+  // comment above for why this still isn't always enough.
+  const edgeOk = usedFallback
+    ? applyPhase(meetInMiddleSolveEdges(pre, patternFromState(working, pre), 8, 6_000_000))
+    : applyPhase(meetInMiddleSolveEdges(pre, patternFromState(working, pre), 6));
   if (!edgeOk) return { moves, solved: false };
 
   applyPhase(tipSolveMoves(working));
