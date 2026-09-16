@@ -20,6 +20,7 @@ import {
   preloadOuterPdb,
   tipSolveMoves,
   type MasterTetraSolveResult,
+  type SolveProgress,
   type TetraMove,
 } from "./masterTetraminxSolver";
 import { applyRawThirdTurn, isSolved, type TetraState } from "./tetraState";
@@ -55,53 +56,58 @@ export function computeMasterTetraSolveMoves(state: TetraState): MasterTetraSolv
 export async function computeMasterTetraSolveMovesAsync(state: TetraState): Promise<MasterTetraSolveResult> {
   const [{ preloadEdgePdbWorker, solveEdgesViaPdbWorker }, { preloadAxialWorker, solveAxialViaWorker }] = await Promise.all([import("./edgePdbClient"), import("./axialWorkerClient")]);
 
-  // Fire this before the synchronous phases below (which take "up to a
-  // second or two" per MasterTetraSolverEngine's own comment) so the
-  // worker's PDB fetch overlaps with that work instead of starting only
-  // after edges have already failed.
+  // Fire this before the axial worker call below so both workers' fetches
+  // (PDB asset, wasm asset) overlap with each other instead of queuing.
   preloadEdgePdbWorker();
   preloadAxialWorker();
 
   // Unlike the worker-based edge PDB above, this one genuinely needs an
   // `await` here, not just a fire-and-forget call -- see preloadOuterPdb's
-  // own comment for why a bare call was confirmed NOT enough (the long
-  // synchronous phases below starve its fetch callback of any chance to
-  // run). Raced against a short timeout so a slow/unavailable network never
-  // holds up a solve by more than that -- solveN5EdgesInTwoPhases degrades
-  // gracefully to its existing meet-in-the-middle attempt either way.
+  // own comment for why a bare call was confirmed NOT enough (a long
+  // synchronous phase starving its fetch callback of any chance to run --
+  // less likely to matter now that the axial phase below usually doesn't
+  // block synchronously at all, but N=5 edges still need this preloaded
+  // either way). Raced against a short timeout so a slow/unavailable
+  // network never holds up a solve by more than that --
+  // solveN5EdgesInTwoPhases degrades gracefully to its existing
+  // meet-in-the-middle attempt either way.
   await Promise.race([preloadOuterPdb(), new Promise<void>((resolve) => setTimeout(resolve, 3000))]);
 
-  let progress = computeMasterTetraSolveProgress(state);
+  const pre = precompute(state.layerCount);
+  // Try the worker's axial-only search (wasm-backed) FIRST, instead of
+  // computeMasterTetraSolveProgress's combined depth-7 attempt (which
+  // this file used to always run synchronously before ever reaching a
+  // worker). Measured (real browser, this investigation): axial-only via
+  // worker/wasm finishes in well under a second for easy/medium scrambles
+  // and ~6.4-6.7s even for the 3 known-hardest ones -- faster than the
+  // combined search's ~10-19s (JIT-dependent) across EVERY case tested,
+  // not just the hard ones the old fallback-on-failure logic targeted.
+  // Center gets cleaned up afterward by continueAfterAxialSolved's
+  // deterministic, essentially-always-succeeding commutator
+  // (solveCentersByCommutator) -- same "fallback" path already proven
+  // correct for the hard cases, now used unconditionally here.
+  const axialMoves = await solveAxialViaWorker(state.layerCount, patternFromState(state, pre), 10, 16_000_000);
 
-  if (progress.axialOnlyFailed) {
-    // Off the main thread, so the bigger budget that actually solves these
-    // scrambles (confirmed offline: depth<=6 each side, ~11,590,974 states)
-    // is safe -- see computeMasterTetraSolveProgress's fallback comment for
-    // why raising this budget IN PLACE on the main thread was rejected
-    // instead (measured ~130-150s synchronous block). Retries from the
-    // ORIGINAL scramble (not progress.working, which already has the
-    // synchronous fallback's greedy move baked in) so a real solve here
-    // isn't saddled with an extra, likely-unhelpful move first.
-    const pre = precompute(state.layerCount);
-    const axialMoves = await solveAxialViaWorker(state.layerCount, patternFromState(state, pre), 10, 16_000_000);
-    if (axialMoves) {
-      const working = cloneState(state);
-      const moves: TetraMove[] = [];
-      applyPhaseTo(working, moves, axialMoves);
-      const { edgePhaseFailed } = continueAfterAxialSolved(pre, working, moves, true);
-      progress = { moves, working, edgePhaseFailed, axialOnlyFailed: false };
-    }
-    // If the worker found nothing either, `progress` stays exactly what
-    // computeMasterTetraSolveProgress already returned (the synchronous
-    // greedy-move fallback) -- same degrade-gracefully contract as every
-    // other worker retry in this file.
+  let progress: SolveProgress;
+  if (axialMoves) {
+    const working = cloneState(state);
+    const moves: TetraMove[] = [];
+    applyPhaseTo(working, moves, axialMoves);
+    const { edgePhaseFailed } = continueAfterAxialSolved(pre, working, moves, true);
+    progress = { moves, working, edgePhaseFailed, axialOnlyFailed: false };
+  } else {
+    // Worker/Worker API unavailable, or the search genuinely failed within
+    // its 16,000,000-state budget (should be rare to never -- the 3
+    // known-hardest scrambles need ~11,590,974, confirmed earlier) -- fall
+    // back to the fully synchronous path so a hint press still returns
+    // something.
+    progress = computeMasterTetraSolveProgress(state);
   }
 
   if (!progress.edgePhaseFailed) {
     return { moves: progress.moves, solved: isSolved(progress.working) };
   }
 
-  const pre = precompute(progress.working.layerCount);
   // Off the main thread, so a much bigger budget than any sync search in
   // this file is safe -- see edgePdbClient.ts's own defaults/comment for
   // the reasoning (8,000,000 nodes comfortably clears the ~3,000,000-node

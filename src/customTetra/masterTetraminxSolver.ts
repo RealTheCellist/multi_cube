@@ -1669,8 +1669,31 @@ export function continueAfterAxialSolved(pre: PrecomputedMoves, working: TetraSt
  * before falling back to whatever this function already computed). Kept as
  * one function so the two never drift -- the async path's "fast case"
  * (everything already solved synchronously) does exactly what the sync
- * function does, no reimplementation. */
-export function computeMasterTetraSolveProgress(state: TetraState): SolveProgress {
+ * function does, no reimplementation.
+ *
+ * `trySyncAxialOnlyFallback` (default true, i.e. unchanged behavior) guards
+ * just the one expensive step below: the axial-only meetInMiddleSolve retry
+ * (depth<=10, up to 6,000,000 states) that only runs once the combined
+ * axial+center attempt has already failed. Measured directly (real browser,
+ * one of the 3 known-hardest N=5 scrambles): that retry alone accounted for
+ * 62.3s of a 74.2s total solve, and it CANNOT succeed for scrambles needing
+ * more than 6,000,000 states (these 3 need ~11,590,974, confirmed earlier)
+ * -- so for a caller with a worker available (computeMasterTetraSolveMovesAsync),
+ * paying for it is pure waste: the worker retry that follows uses a bigger
+ * budget AND a faster implementation (wasm/typed-hash-table vs this
+ * function's plain Map-based meetInMiddleSolve) regardless of whether this
+ * step ran. Passing false skips straight to the greedy-move safety net and
+ * axialOnlyFailed:true, exactly as if the skipped step had failed. The
+ * standalone sync API (computeMasterTetraSolveMoves) has no worker to fall
+ * back to, so it still needs this step and keeps the default.
+ *
+ * (A follow-up attempt to also move the depth-7 combined attempt itself off
+ * the main thread, so it wouldn't block on failure either, was tried and
+ * reverted: running the same meetInMiddleSolve call inside a Worker instead
+ * of here measured *slower* wall-clock time across all 30 scrambles in the
+ * validation set, not faster, for reasons not fully root-caused -- so the
+ * combined attempt stays here, synchronous, for the async caller too.) */
+export function computeMasterTetraSolveProgress(state: TetraState, trySyncAxialOnlyFallback = true): SolveProgress {
   const pre = precompute(state.layerCount);
   const working = cloneState(state);
   const moves: TetraMove[] = [];
@@ -1692,8 +1715,12 @@ export function computeMasterTetraSolveProgress(state: TetraState): SolveProgres
     // reverted after it turned out to cut off ~10 scrambles that genuinely
     // needed more than 8s but DID still succeed given their existing
     // 6,000,000-state budget -- confirmed as a real regression (27/30 ->
-    // 17/30 on the fixed validation set), not just a slower success.
-    const axialOnlyOk = applyPhase(meetInMiddleSolve(pre, patternFromState(working, pre), new Set<PieceType>(["axial"]), 10, 6_000_000));
+    // 17/30 on the fixed validation set), not just a slower success. Only
+    // run at all when trySyncAxialOnlyFallback is true -- see this
+    // function's own comment for why computeMasterTetraSolveMovesAsync
+    // passes false and skips straight to the same outcome as a failed
+    // attempt here.
+    const axialOnlyOk = trySyncAxialOnlyFallback && applyPhase(meetInMiddleSolve(pre, patternFromState(working, pre), new Set<PieceType>(["axial"]), 10, 6_000_000));
     if (!axialOnlyOk) {
       // The search can still fail outright within its own (large) node
       // budget on a genuine handful of scrambles -- confirmed directly
@@ -1706,12 +1733,15 @@ export function computeMasterTetraSolveProgress(state: TetraState): SolveProgres
       // current ~76-100s -- worse, not better, for a hint button run on
       // the main thread. computeMasterTetraSolveMovesAsync's axial worker
       // retry (axialWorkerClient.ts) is what actually applies that bigger
-      // budget, off the main thread. Here in the synchronous path (no
-      // worker available), fall back to ONE greedy move that improves
-      // axial+center as much as a single move can, so a hint press still
-      // offers SOMETHING instead of nothing -- see greedyBestSingleMove's
-      // own comment for why this is a UX safety net, not a solving
-      // guarantee.
+      // budget, off the main thread -- and does so unconditionally
+      // (trySyncAxialOnlyFallback=false) rather than paying for this step
+      // first, since it's both bigger-budget AND a faster implementation
+      // (wasm/typed-hash-table vs this function's plain meetInMiddleSolve)
+      // regardless of whether this step ran. Fall back to ONE greedy move
+      // that improves axial+center as much as a single move can, so a hint
+      // press still offers SOMETHING instead of nothing even before that
+      // worker retry resolves -- see greedyBestSingleMove's own comment for
+      // why this is a UX safety net, not a solving guarantee.
       const greedyMove = greedyBestSingleMove(pre, patternFromState(working, pre), new Set<PieceType>(["axial", "center"]));
       if (greedyMove) applyPhase([greedyMove]);
       return { moves, working, edgePhaseFailed: false, axialOnlyFailed: true };
