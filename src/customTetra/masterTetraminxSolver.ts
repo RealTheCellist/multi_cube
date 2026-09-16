@@ -251,7 +251,7 @@ export function meetInMiddleSolve(pre: PrecomputedMoves, startPieces: number[], 
     localPermByMove.set(moveKey(move), localPerm);
   }
 
-  const keyFor = (local: readonly number[]) => String.fromCharCode(...local.map((v) => v + 32));
+  const keyFor = (local: Uint8Array) => String.fromCharCode(...local.map((v) => v + 32));
   const buildPath = (fwdEntry: SearchEntry, bwdEntry: SearchEntry): TetraMove[] => [...pathFromEntry(fwdEntry), ...pathFromEntry(bwdEntry).reverse().map(invertMove)];
 
   const startLocal = Uint8Array.from(targetSlots.map((slot) => targetSlotPosition.get(startPieces[slot])!));
@@ -963,7 +963,7 @@ function meetInMiddleSolveEdges(
     return slots;
   })(),
 ): TetraMove[] | null {
-  const keyFor = (pieces: readonly number[]) => targetSlots.map((i) => pieces[i]).join(",");
+  const keyFor = (pieces: Uint8Array) => targetSlots.map((i) => pieces[i]).join(",");
   const buildPath = (fwdEntry: CompoundSearchEntry, bwdEntry: CompoundSearchEntry): TetraMove[] => [
     ...edgeGeneratorPathFromEntry(fwdEntry).flatMap((gm) => gm.primitives),
     ...edgeGeneratorPathFromEntry(bwdEntry).reverse().flatMap((gm) => gm.invPrimitives),
