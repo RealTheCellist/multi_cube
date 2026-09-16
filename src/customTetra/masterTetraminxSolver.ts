@@ -1,7 +1,8 @@
 import * as THREE from "three";
-import { nearestFaceIndex, VERTEX_INDICES, type VertexIndex } from "./tetraMath";
+import { nearestFaceIndex, thirdTurnQuaternion, VERTEX_INDICES, type VertexIndex } from "./tetraMath";
 import { applyRawThirdTurn, buildSolvedTetra, isSolved, type PieceType, type TetraState } from "./tetraState";
 import type { CustomTetraScene } from "./CustomTetraScene";
+import { preloadEdgePdbWorker, solveEdgesViaPdbWorker } from "./edgePdbClient";
 
 export interface TetraMove {
   vertexIndex: VertexIndex;
@@ -31,7 +32,7 @@ function cloneState(state: TetraState): TetraState {
   };
 }
 
-interface PrecomputedMoves {
+export interface PrecomputedMoves {
   ns: number;
   layerCount: number;
   pieceTypes: PieceType[];
@@ -51,7 +52,7 @@ const precomputedCache = new Map<number, PrecomputedMoves>();
  * solved-state reference position. Every solver phase below reuses this
  * instead of re-deriving permutations from live 3D geometry per candidate.
  */
-function precompute(layerCount: number): PrecomputedMoves {
+export function precompute(layerCount: number): PrecomputedMoves {
   const cached = precomputedCache.get(layerCount);
   if (cached) return cached;
 
@@ -466,9 +467,15 @@ function solveCentersByCommutator(pre: PrecomputedMoves, currentFullPattern: rea
     // Argument order here is tied to the SPECIFIC (A,B) commutator above --
     // its cycle direction was verified empirically (a wrong order leaves
     // misplaced count unchanged round after round instead of converging: it
-    // applies every insertion "backwards"). Re-verify this order if the
-    // commutator's move sequence ever changes.
-    const cycMoves = tools.cycleThreeMoves(p1, p2, p3);
+    // applies every insertion "backwards"). Confirmed (p1, p3, p2) -- NOT
+    // the naive (p1, p2, p3) -- is the direction this specific commutator
+    // needs: the naive order was shipped for a while without anyone
+    // noticing, since it still solves plenty of scrambles by luck (whenever
+    // the chase never lands on the shape this direction mishandles), but it
+    // reliably got center cleanup stuck at a fixed misplaced-count forever
+    // on several real scrambles. Re-verify this order if the commutator's
+    // move sequence ever changes.
+    const cycMoves = tools.cycleThreeMoves(p1, p3, p2);
     if (!cycMoves) return null;
     for (const m of cycMoves) {
       const perm = pre.permByMove.get(moveKey(m))!;
@@ -697,7 +704,7 @@ export const EDGE_SAFE_GENERATORS_N5: readonly (readonly TetraMove[])[] = [
   [{ vertexIndex: 3, depth: 4, sign: 1 }, { vertexIndex: 2, depth: 2, sign: 1 }, { vertexIndex: 3, depth: 4, sign: -1 }, { vertexIndex: 2, depth: 2, sign: -1 }],
 ];
 
-interface EdgeGeneratorMove {
+export interface EdgeGeneratorMove {
   perm: number[];
   primitives: readonly TetraMove[];
   invPrimitives: readonly TetraMove[];
@@ -705,7 +712,7 @@ interface EdgeGeneratorMove {
 
 const edgeGeneratorCache = new Map<number, EdgeGeneratorMove[]>();
 
-function edgeGeneratorMoves(pre: PrecomputedMoves): EdgeGeneratorMove[] {
+export function edgeGeneratorMoves(pre: PrecomputedMoves): EdgeGeneratorMove[] {
   const cached = edgeGeneratorCache.get(pre.ns);
   if (cached) return cached;
   const source = pre.layerCount === 5 ? EDGE_SAFE_GENERATORS_N5 : EDGE_SAFE_GENERATORS;
@@ -810,6 +817,238 @@ function meetInMiddleSolveEdges(pre: PrecomputedMoves, startPieces: number[], ma
   return null;
 }
 
+// ============================================================================
+// Edge pattern-database (PDB) guided cleanup, radius<=4.
+//
+// meetInMiddleSolveEdges above can still fail outright on the hardest
+// post-fallback edge disturbances (see computeMasterTetraSolveMoves's own
+// comment). A multi-session offline research effort confirmed those cases
+// ARE all solvable with the SAME 144 EDGE_SAFE_GENERATORS_N5 generators,
+// given a deep enough admissible heuristic: a canonical (12-fold
+// tetrahedral-symmetry-deduplicated) backward BFS from solved, used as a
+// forward IDA* heuristic table instead of meetInMiddleSolveEdges's
+// from-scratch bidirectional search. A FULL perimeter deep enough to solve
+// every case needs ~50,000,000 canonical states (~22GB, ~1hr build) and,
+// for the 3 hardest cases, HOURS of forward search even with that heuristic
+// -- nowhere near browser-safe, so that exact configuration is NOT shipped.
+//
+// What IS shipped: a radius<=4 perimeter (1,676,349 canonical states, built
+// once offline -- see generate_edge_pdb_r4.mjs in the research scratchpad --
+// and committed as the public/edgePerimeterN5_r4.bin asset, 36 raw local
+// slot values + 1 depth byte per entry).
+//
+// Even at radius<=4, a single IDA* iteration once the search actually has to
+// branch (rather than hit the heuristic immediately) costs millions of
+// node expansions -- measured at ~33-40s for 3,000,000 nodes on a desktop
+// Node process. That's nowhere near acceptable to run synchronously on the
+// page's main thread (would freeze the tab, trigger "page unresponsive").
+// So this is NOT called directly from computeMasterTetraSolveMoves at all
+// -- see edgePdbWorker.ts (runs the actual search off the main thread) and
+// edgePdbClient.ts (owns that worker, exposes the one function
+// computeMasterTetraSolveMovesAsync actually awaits). What lives here is
+// just the shared, worker-and-main-thread-safe pieces (types, the 12-fold
+// symmetry/canonicalization math, the PDB binary parser, and the IDA*
+// search itself) so neither side duplicates them.
+export interface EdgeSymmetryTools {
+  edgeSlots: number[];
+  edgeIndex: Map<number, number>;
+  localSymPerms: number[][];
+  generatorLocalPerms: number[][];
+}
+
+const edgeSymmetryCache = new Map<number, EdgeSymmetryTools>();
+
+/** Builds (once per layerCount) the edge-local 12-fold tetrahedral rotation
+ * group and each of the 144 edge-safe generators' edge-local permutation --
+ * both empirically confirmed (separate offline research) closed under this
+ * symmetry AND under inversion, which is what makes canonicalizing edge
+ * states by this group sound for both heuristic lookup and (were it ever
+ * needed here) path reconstruction. */
+export function buildEdgeSymmetryTools(pre: PrecomputedMoves): EdgeSymmetryTools {
+  const cached = edgeSymmetryCache.get(pre.ns);
+  if (cached) return cached;
+
+  const edgeSlots: number[] = [];
+  for (let i = 0; i < pre.pieceTypes.length; i++) if (pre.pieceTypes[i] === "edge") edgeSlots.push(i);
+  const edgeIndex = new Map(edgeSlots.map((slot, i) => [slot, i]));
+
+  const identityQ = new THREE.Quaternion();
+  const qKey = (q: THREE.Quaternion) => [q.x, q.y, q.z, q.w].map((v) => Math.round(v * 1e6)).join(",");
+  const seenQ = new Map<string, THREE.Quaternion>([[qKey(identityQ), identityQ]]);
+  let frontierQ: THREE.Quaternion[] = [identityQ];
+  const generatorsQ: THREE.Quaternion[] = [];
+  for (const v of VERTEX_INDICES) for (const sign of [1, -1] as const) generatorsQ.push(thirdTurnQuaternion(v, sign));
+  while (frontierQ.length > 0) {
+    const next: THREE.Quaternion[] = [];
+    for (const q of frontierQ) {
+      for (const g of generatorsQ) {
+        const c = g.clone().multiply(q);
+        const k = qKey(c);
+        if (!seenQ.has(k)) {
+          seenQ.set(k, c);
+          next.push(c);
+        }
+      }
+    }
+    frontierQ = next;
+  }
+  const fullSymPerms = [...seenQ.values()].map((q) => {
+    const perm = new Array<number>(pre.ns);
+    for (let id = 0; id < pre.ns; id++) {
+      const c = pre.referenceCentroids[id].clone().applyQuaternion(q);
+      let bestSlot = -1;
+      let bestDist = Infinity;
+      for (let slot = 0; slot < pre.ns; slot++) {
+        const d = c.distanceToSquared(pre.referenceCentroids[slot]);
+        if (d < bestDist) {
+          bestDist = d;
+          bestSlot = slot;
+        }
+      }
+      perm[id] = bestSlot;
+    }
+    return perm;
+  });
+  const distinctFullSymPerms: number[][] = [];
+  const seenPK = new Set<string>();
+  for (const p of fullSymPerms) {
+    const k = p.join(",");
+    if (!seenPK.has(k)) {
+      seenPK.add(k);
+      distinctFullSymPerms.push(p);
+    }
+  }
+  const localSymPerms = distinctFullSymPerms.map((fullPerm) => edgeSlots.map((slot) => edgeIndex.get(fullPerm[slot])!));
+
+  const generators = edgeGeneratorMoves(pre);
+  const generatorLocalPerms = generators.map((gm) => edgeSlots.map((slot) => edgeIndex.get(gm.perm[slot])!));
+
+  const tools: EdgeSymmetryTools = { edgeSlots, edgeIndex, localSymPerms, generatorLocalPerms };
+  edgeSymmetryCache.set(pre.ns, tools);
+  return tools;
+}
+
+export function edgeCanonicalKey(pieces: Uint8Array, localSymPerms: readonly number[][]): string {
+  const n = pieces.length;
+  const scratch = new Uint8Array(n);
+  let bestKey: string | null = null;
+  for (const sp of localSymPerms) {
+    for (let i = 0; i < n; i++) scratch[sp[i]] = sp[pieces[i]] + 32;
+    const k = String.fromCharCode(...scratch);
+    if (bestKey === null || k < bestKey) bestKey = k;
+  }
+  return bestKey!;
+}
+
+export const EDGE_PDB_RADIUS = 4;
+export const EDGE_PDB_URL_PATH = "edgePerimeterN5_r4.bin";
+
+/** Works out the right URL for the shipped PDB asset in both dev and a
+ * GitHub-Pages-style subpath deploy (vite.config.ts sets `base` to
+ * `/multi_cube/` there) -- `import.meta.env.BASE_URL` reflects that same
+ * `base` at runtime. Guarded for contexts where `import.meta.env` isn't
+ * Vite-provided (e.g. this file imported directly under plain Node for
+ * scripts/tests): falls back to a bare root-relative path rather than
+ * throwing. */
+export function resolveEdgePdbUrl(): string {
+  const env = (import.meta as unknown as { env?: { BASE_URL?: string } }).env;
+  const base = env?.BASE_URL ?? "/";
+  return `${base}${EDGE_PDB_URL_PATH}`;
+}
+
+/** Parses the binary layout generate_edge_pdb_r4.mjs writes: a 10-byte
+ * header ("EPD4" + version + radius + uint32 entryCount), then per entry 36
+ * raw local-edge-slot values (0-35) + 1 depth byte. Pure/sync so it runs
+ * identically wherever the fetched bytes end up (main thread or worker). */
+export function parseEdgePdbBuffer(buf: ArrayBuffer): Map<string, number> {
+  const bytes = new Uint8Array(buf);
+  const magic = String.fromCharCode(bytes[0], bytes[1], bytes[2], bytes[3]);
+  if (magic !== "EPD4") throw new Error(`edge PDB bad magic: ${magic}`);
+  const view = new DataView(buf);
+  const entryCount = view.getUint32(6, true);
+  const map = new Map<string, number>();
+  const scratch = new Uint8Array(36);
+  let offset = 10;
+  for (let e = 0; e < entryCount; e++) {
+    for (let i = 0; i < 36; i++) scratch[i] = bytes[offset + i] + 32;
+    map.set(String.fromCharCode(...scratch), bytes[offset + 36]);
+    offset += 37;
+  }
+  return map;
+}
+
+/**
+ * Forward-only IDA* over the 144 edge-safe generators, guided by the
+ * radius<=4 PDB (passed in explicitly -- this function has no opinion on
+ * where/how it was loaded, so the exact same code runs inside
+ * edgePdbWorker.ts) as an admissible heuristic (exact distance when the
+ * canonical state was reached within radius 4; EDGE_PDB_RADIUS+1 as a safe
+ * lower bound otherwise -- sound because the PDB's own build is a COMPLETE
+ * BFS to that radius, so anything missing is provably farther). Unlike
+ * meetInMiddleSolveEdges, there's no backward meeting/reconstruction here:
+ * the search just runs forward until the edge state is actually solved.
+ * Returns null (never throws) if the budget is exhausted or no solution
+ * turns up within maxThreshold. NOT browser-main-thread-safe at any
+ * meaningful maxNodes budget -- see this section's top comment.
+ */
+export function runPdbGuidedEdgeSearch(pre: PrecomputedMoves, startPieces: readonly number[], pdb: ReadonlyMap<string, number>, maxThreshold: number, maxNodes: number): TetraMove[] | null {
+  const tools = buildEdgeSymmetryTools(pre);
+  const generators = edgeGeneratorMoves(pre);
+  const n = tools.edgeSlots.length;
+
+  const startLocal = Uint8Array.from(tools.edgeSlots.map((slot) => tools.edgeIndex.get(startPieces[slot])!));
+  const isSolvedLocal = (pieces: Uint8Array): boolean => {
+    for (let i = 0; i < n; i++) if (pieces[i] !== i) return false;
+    return true;
+  };
+  const applyGen = (pieces: Uint8Array, genIdx: number): Uint8Array => {
+    const perm = tools.generatorLocalPerms[genIdx];
+    const out = new Uint8Array(n);
+    for (let i = 0; i < n; i++) out[i] = pieces[perm[i]];
+    return out;
+  };
+  const heuristic = (pieces: Uint8Array): number => pdb.get(edgeCanonicalKey(pieces, tools.localSymPerms)) ?? EDGE_PDB_RADIUS + 1;
+
+  let nodesExplored = 0;
+  let aborted = false;
+
+  // Returns -1 as a "solved" sentinel (f is always >=0, so it's unambiguous
+  // with the plain threshold-exceeded return value).
+  function search(pieces: Uint8Array, g: number, threshold: number, path: number[]): number {
+    nodesExplored++;
+    if (nodesExplored > maxNodes) {
+      aborted = true;
+      return Infinity;
+    }
+    const f = g + heuristic(pieces);
+    if (f > threshold) return f;
+    if (isSolvedLocal(pieces)) return -1;
+    let min = Infinity;
+    for (let a = 0; a < generators.length; a++) {
+      const next = applyGen(pieces, a);
+      path.push(a);
+      const result = search(next, g + 1, threshold, path);
+      if (result === -1) return -1;
+      if (aborted) return Infinity;
+      if (result < min) min = result;
+      path.pop();
+    }
+    return min;
+  }
+
+  let threshold = heuristic(startLocal);
+  const path: number[] = [];
+  while (threshold <= maxThreshold) {
+    nodesExplored = 0;
+    aborted = false;
+    const result = search(startLocal, 0, threshold, path);
+    if (result === -1) return path.flatMap((genIdx) => generators[genIdx].primitives);
+    if (aborted || result === Infinity) return null;
+    threshold = result;
+  }
+  return null;
+}
+
 /**
  * Tips are trivial by comparison: each vertex's 3 tip stickers only ever
  * spin among themselves via that SAME vertex's depth=1 turn (see
@@ -852,14 +1091,23 @@ export interface MasterTetraSolveResult {
   solved: boolean;
 }
 
-/**
- * Computes a full solve for a Master-Pyraminx-family tetrahedron (N>=4) in
- * 3 independent phases -- axial+center, then edges, then tips -- each
- * solved against whatever the PREVIOUS phase already fixed (so later
- * phases never undo earlier ones). See meetInMiddleSolve's own comment for
- * why a single whole-puzzle search isn't used instead.
- */
-export function computeMasterTetraSolveMoves(state: TetraState): MasterTetraSolveResult {
+interface SolveProgress {
+  moves: TetraMove[];
+  working: TetraState;
+  /** True only when axial+center and edges both succeeded via the
+   * synchronous phases below (tips are cheap/guaranteed, not tracked
+   * separately) -- i.e. everything except possibly a worker-based edge PDB
+   * retry has already been tried. */
+  edgePhaseFailed: boolean;
+}
+
+/** The synchronous portion shared by computeMasterTetraSolveMoves (which
+ * stops here) and computeMasterTetraSolveMovesAsync (which, only on
+ * edgePhaseFailed, goes on to try the PDB-guided worker before falling
+ * back to solved:false). Kept as one function so the two never drift --
+ * the async path's "fast case" (edges already solved synchronously) does
+ * exactly what the sync function does, no reimplementation. */
+function computeMasterTetraSolveProgress(state: TetraState): SolveProgress {
   const pre = precompute(state.layerCount);
   const working = cloneState(state);
   const moves: TetraMove[] = [];
@@ -884,24 +1132,18 @@ export function computeMasterTetraSolveMoves(state: TetraState): MasterTetraSolv
     // center disturbance is left with the fully transitive, edge-clean
     // center commutator. NOT a full guarantee end-to-end: the axial-only
     // phase itself can leave edges disturbed deeply enough (~30 wrong, on
-    // the hardest scrambles tested) that the edge phase below still fails
-    // within any browser-safe search budget -- confirmed this is a genuine
-    // resource wall, not a tuning problem (edge-only bidirectional search
-    // needs tens of millions of states by depth 6, whether using compound
-    // edge-safe generators or raw primitives, for that level of
-    // disturbance -- far beyond what a browser tab's heap can hold). A
-    // proper fix needs a dedicated efficient edge solver (e.g. an
-    // admissible-heuristic IDA* with its own backward perimeter, mirroring
-    // the axial+center approach) -- tracked as separate follow-up research,
-    // not yet implemented. Until then, this fallback still HELPS (turns
-    // some axial+center failures into full solves when the resulting edge
-    // disturbance is modest) without making anything worse (worst case is
-    // the same solved:false the common path would have returned anyway).
+    // the hardest scrambles tested) that the edge phase below can still
+    // fail within any browser-safe search budget -- confirmed this is a
+    // genuine resource wall, not a tuning problem. computeMasterTetraSolveMovesAsync's
+    // worker-based edge PDB retry (see runPdbGuidedEdgeSearch's own
+    // comment) now rescues a meaningful share of these, but not all -- a
+    // handful of scrambles, confirmed solvable offline only with an
+    // hours-long, ~22GB search, still legitimately return solved:false.
     usedFallback = true;
     const axialOnlyOk = applyPhase(meetInMiddleSolve(pre, patternFromState(working, pre), new Set<PieceType>(["axial"]), 10, 6_000_000));
-    if (!axialOnlyOk) return { moves, solved: false };
+    if (!axialOnlyOk) return { moves, working, edgePhaseFailed: false };
     const centerCleanupMoves = solveCentersByCommutator(pre, patternFromState(working, pre));
-    if (!centerCleanupMoves || !applyPhase(centerCleanupMoves)) return { moves, solved: false };
+    if (!centerCleanupMoves || !applyPhase(centerCleanupMoves)) return { moves, working, edgePhaseFailed: false };
   }
 
   // Edges use EDGE_SAFE_GENERATORS instead of meetInMiddleSolve's raw
@@ -917,11 +1159,74 @@ export function computeMasterTetraSolveMoves(state: TetraState): MasterTetraSolv
   const edgeOk = usedFallback
     ? applyPhase(meetInMiddleSolveEdges(pre, patternFromState(working, pre), 8, 6_000_000))
     : applyPhase(meetInMiddleSolveEdges(pre, patternFromState(working, pre), 6));
-  if (!edgeOk) return { moves, solved: false };
+  if (!edgeOk) return { moves, working, edgePhaseFailed: true };
 
   applyPhase(tipSolveMoves(working));
+  return { moves, working, edgePhaseFailed: false };
+}
 
-  return { moves, solved: isSolved(working) };
+/**
+ * Computes a full solve for a Master-Pyraminx-family tetrahedron (N>=4) in
+ * 3 independent phases -- axial+center, then edges, then tips -- each
+ * solved against whatever the PREVIOUS phase already fixed (so later
+ * phases never undo earlier ones). See meetInMiddleSolve's own comment for
+ * why a single whole-puzzle search isn't used instead.
+ *
+ * Synchronous, unchanged in behavior from before the edge PDB existed --
+ * safe for any caller (including outside a browser) that doesn't want to
+ * deal with a Promise. If edges fail here, prefer
+ * computeMasterTetraSolveMovesAsync when a worker is available: it retries
+ * with the PDB before giving up.
+ */
+export function computeMasterTetraSolveMoves(state: TetraState): MasterTetraSolveResult {
+  const progress = computeMasterTetraSolveProgress(state);
+  return { moves: progress.moves, solved: !progress.edgePhaseFailed && isSolved(progress.working) };
+}
+
+/**
+ * Same as computeMasterTetraSolveMoves, but when (and only when) edges are
+ * the one thing still wrong after the synchronous phases, hands off to
+ * edgePdbClient's worker for one more attempt before giving up -- see this
+ * file's edge-PDB section comment for why that step can't run inline here.
+ * Safe to call from anywhere computeMasterTetraSolveMoves is (falls back to
+ * its exact result if the worker is unavailable or unhelpful), but only
+ * actually worth the `await` in a browser context with edgePdbClient's
+ * Worker support.
+ */
+export async function computeMasterTetraSolveMovesAsync(state: TetraState): Promise<MasterTetraSolveResult> {
+  // Fire this before the synchronous phases below (which take "up to a
+  // second or two" per MasterTetraSolverEngine's own comment) so the
+  // worker's PDB fetch overlaps with that work instead of starting only
+  // after edges have already failed.
+  preloadEdgePdbWorker();
+
+  const progress = computeMasterTetraSolveProgress(state);
+  if (!progress.edgePhaseFailed) {
+    return { moves: progress.moves, solved: isSolved(progress.working) };
+  }
+
+  const pre = precompute(progress.working.layerCount);
+  // Off the main thread, so a much bigger budget than any sync search in
+  // this file is safe -- see edgePdbClient.ts's own defaults/comment for
+  // the reasoning (8,000,000 nodes comfortably clears the ~3,000,000-node
+  // "wall" a search typically has to cross before making real progress,
+  // measured during this feature's offline research, while keeping a
+  // single worst-case attempt bounded to roughly a minute rather than
+  // several).
+  const edgeMoves = await solveEdgesViaPdbWorker(progress.working.layerCount, patternFromState(progress.working, pre), 9, 8_000_000);
+  if (!edgeMoves) return { moves: progress.moves, solved: false };
+
+  const moves = [...progress.moves];
+  for (const m of edgeMoves) {
+    applyRawThirdTurn(progress.working, m.vertexIndex, m.depth, m.sign);
+    moves.push(m);
+  }
+  const tipMoves = tipSolveMoves(progress.working);
+  for (const m of tipMoves) {
+    applyRawThirdTurn(progress.working, m.vertexIndex, m.depth, m.sign);
+    moves.push(m);
+  }
+  return { moves, solved: isSolved(progress.working) };
 }
 
 const MOVE_ANIMATION_MS = 350;
@@ -970,9 +1275,9 @@ class MasterTetraSolverEngine {
     return this.plan !== null && this.expectedUndoCount() === scene.getUndoCount();
   }
 
-  solve(scene: CustomTetraScene): void {
+  async solve(scene: CustomTetraScene): Promise<void> {
     const state: TetraState = { layerCount: scene.layerCount, stickers: scene.getStickers() };
-    const result = computeMasterTetraSolveMoves(state);
+    const result = await computeMasterTetraSolveMovesAsync(state);
     this.plan = result.moves;
     this.cursor = 0;
     this.planStartUndoCount = scene.getUndoCount();
@@ -1010,7 +1315,7 @@ const engine = new MasterTetraSolverEngine();
  * Pyraminx instead).
  */
 export async function applyNextMasterTetraSolveMove(scene: CustomTetraScene): Promise<MasterTetraSolveHint> {
-  if (!engine.hasValidPlan(scene)) engine.solve(scene);
+  if (!engine.hasValidPlan(scene)) await engine.solve(scene);
 
   const move = engine.peekNextMove();
   if (!move) return { move: null, movesRemaining: 0 };
