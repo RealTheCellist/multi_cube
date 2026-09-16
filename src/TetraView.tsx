@@ -3,7 +3,7 @@ import type { Rng } from "./customCube/cubeState";
 import { CustomTetraScene } from "./customTetra/CustomTetraScene";
 import { attachTetraSwipeTurning, type TetraSwipeController } from "./customTetra/tetraSwipeControls";
 import { applyNextTetraSolveMove, type TetraSolveHint } from "./customTetra/tetraSolvePlayback";
-import { applyNextMasterTetraSolveMove } from "./customTetra/masterTetraminxSolver";
+import { applyNextMasterTetraSolveMove } from "./customTetra/masterTetraSolveAsync";
 
 export interface TetraViewHandle {
   scramble: (rng?: Rng) => void;

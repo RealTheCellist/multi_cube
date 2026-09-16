@@ -1,9 +1,22 @@
 import * as THREE from "three";
 import { depthFromVertex, nearestFaceIndex, thirdTurnQuaternion, VERTEX_INDICES, type VertexIndex } from "./tetraMath";
-import { applyRawThirdTurn, buildSolvedTetra, isSolved, type PieceType, type TetraState } from "./tetraState";
-import type { CustomTetraScene } from "./CustomTetraScene";
-import { preloadEdgePdbWorker, solveEdgesViaPdbWorker } from "./edgePdbClient";
-import { preloadAxialWorker, solveAxialViaWorker } from "./axialWorkerClient";
+import { applyRawThirdTurn, buildSolvedTetra, type PieceType, type TetraState } from "./tetraState";
+// edgePdbClient/axialWorkerClient are deliberately NOT imported here (not
+// even dynamically -- that was tried and didn't help, see below): each owns
+// a `new Worker(new URL("./edgePdbWorker"/"./axialWorker", ...))` call, and
+// both of those worker files import FROM this one (precompute,
+// meetInMiddleSolveAxialFast, etc.) -- ANY import here, static or dynamic,
+// would close a cycle (this file -> client -> worker -> this file) that
+// Vite's worker bundler flatly refuses to build ("Circular worker imports
+// detected"), confirmed the hard way: `vite build` failed with exactly that
+// error the first time it was actually run after axialWorkerClient was
+// added (only `vite`'s dev server and `tsc -b` had been exercised before
+// that, and neither one catches this). A dynamic `import()` was tried first
+// and did NOT break the cycle -- Vite's worker-cycle check treats it the
+// same as a static import for this purpose. The actual fix: code that needs
+// those clients (computeMasterTetraSolveMovesAsync et al.) lives in
+// masterTetraSolveAsync.ts instead, a separate file that neither worker
+// entry point ever imports.
 
 export interface TetraMove {
   vertexIndex: VertexIndex;
@@ -23,7 +36,7 @@ function invertMove(m: TetraMove): TetraMove {
   return { vertexIndex: m.vertexIndex, depth: m.depth, sign: (-m.sign) as 1 | -1 };
 }
 
-function cloneState(state: TetraState): TetraState {
+export function cloneState(state: TetraState): TetraState {
   return {
     layerCount: state.layerCount,
     stickers: state.stickers.map((s) => ({
@@ -133,7 +146,7 @@ function applyPermU8(pieces: Uint8Array, perm: readonly number[]): Uint8Array {
  * key match yet, on the real puzzle, left axial/center/edge pieces wrong
  * (production N=4 solver investigation).
  */
-function patternFromState(state: TetraState, pre: PrecomputedMoves): number[] {
+export function patternFromState(state: TetraState, pre: PrecomputedMoves): number[] {
   const currentCentroids = state.stickers.map((s) => centroidOf(s.corners));
   const pieces = new Array<number>(pre.ns);
   for (let slot = 0; slot < pre.ns; slot++) {
@@ -297,6 +310,190 @@ export function meetInMiddleSolve(pre: PrecomputedMoves, startPieces: number[], 
     bwdFrontier = [...newBwd.values()];
   }
 
+  return null;
+}
+
+/**
+ * Same bidirectional search as meetInMiddleSolve, specialized for the
+ * axial-only target and backed by a typed open-addressing hash table
+ * instead of Map<string, SearchEntry> -- exists purely for speed, not new
+ * capability. Only worth the extra code because this exact search
+ * (axialWorkerClient's bigger-budget retry) was measured taking ~130-150s
+ * with the generic Map-based version; validated offline (this feature's
+ * own investigation) at ~3.26x raw state-generation throughput and ~8x
+ * end-to-end on the 3 scrambles that actually need this path (150s -> ~19s
+ * each, moves verified correct by replay). Not applied to
+ * meetInMiddleSolve generically: the memory cost scales with target-slot
+ * count (40 here), and the axial+center/edge targets (52/100 slots) would
+ * need much more careful capacity tuning than validated here -- a
+ * generalization for another day, not assumed safe by default.
+ *
+ * Capacity is sized per table (forward and backward each get their own)
+ * for the FULL maxStates budget at a 0.6 load factor, safe even under a
+ * very uneven forward/backward split -- e.g. ~1.5GB per table (~3GB
+ * total) for maxStates=16,000,000. Deliberately NOT applied to the
+ * synchronous main-thread path; this is only ever called from
+ * axialWorker.ts, off the main thread, same as the plain axial-only
+ * fallback it replaces there.
+ */
+export function meetInMiddleSolveAxialFast(pre: PrecomputedMoves, startPieces: readonly number[], maxDepthEachSide: number, maxStates: number): TetraMove[] | null {
+  const targetSlots: number[] = [];
+  for (let i = 0; i < pre.ns; i++) if (pre.pieceTypes[i] === "axial") targetSlots.push(i);
+  const n = targetSlots.length;
+  const targetSlotPosition = new Map<number, number>(targetSlots.map((slot, i) => [slot, i]));
+  const localPermByMove: number[][] = pre.allMoves.map((move) => {
+    const fullPerm = pre.permByMove.get(moveKey(move))!;
+    return targetSlots.map((slot) => targetSlotPosition.get(fullPerm[slot])!);
+  });
+
+  let capacity = 1 << 20;
+  while (capacity * 0.6 < maxStates) capacity *= 2;
+  const mask = capacity - 1;
+
+  interface Table {
+    slotState: Uint8Array; // capacity * n, flat
+    slotUsed: Uint8Array; // capacity, 0/1
+    slotMove: Int16Array; // capacity, move index or -1
+    slotParent: Int32Array; // capacity, parent slot index or -1
+    count: number;
+  }
+  const makeTable = (): Table => ({
+    slotState: new Uint8Array(capacity * n),
+    slotUsed: new Uint8Array(capacity),
+    slotMove: new Int16Array(capacity).fill(-1),
+    slotParent: new Int32Array(capacity).fill(-1),
+    count: 0,
+  });
+  const hashOf = (state: Uint8Array, offset: number): number => {
+    let h = 0x811c9dc5;
+    for (let i = 0; i < n; i++) {
+      h ^= state[offset + i];
+      h = Math.imul(h, 0x01000193);
+    }
+    return h >>> 0;
+  };
+  const findOrInsert = (table: Table, state: Uint8Array, offset: number, moveIdx: number, parentSlot: number): { idx: number; isNew: boolean } => {
+    let idx = hashOf(state, offset) & mask;
+    while (table.slotUsed[idx] === 1) {
+      let same = true;
+      const base = idx * n;
+      for (let i = 0; i < n; i++) {
+        if (table.slotState[base + i] !== state[offset + i]) {
+          same = false;
+          break;
+        }
+      }
+      if (same) return { idx, isNew: false };
+      idx = (idx + 1) & mask;
+    }
+    table.slotUsed[idx] = 1;
+    const base = idx * n;
+    for (let i = 0; i < n; i++) table.slotState[base + i] = state[offset + i];
+    table.slotMove[idx] = moveIdx;
+    table.slotParent[idx] = parentSlot;
+    table.count++;
+    return { idx, isNew: true };
+  };
+  const pathFromSlot = (table: Table, slot: number): TetraMove[] => {
+    const path: TetraMove[] = [];
+    let cur = slot;
+    while (table.slotMove[cur] !== -1) {
+      path.push(pre.allMoves[table.slotMove[cur]]);
+      cur = table.slotParent[cur];
+    }
+    path.reverse();
+    return path;
+  };
+
+  const scratch = new Uint8Array(n);
+  const fwd = makeTable();
+  const bwd = makeTable();
+
+  // Pre-allocated frontier buffers (double-buffered, no per-depth array
+  // growth/reallocation) -- sized to maxStates, the true worst-case upper
+  // bound for how many entries any single depth level could ever produce.
+  // Validated (this feature's own investigation) at ~37-40% faster than
+  // plain `number[]` frontiers grown via push(), on top of the ~3.26x this
+  // whole typed-hash-table approach already gets over the generic
+  // Map<string,...>-based meetInMiddleSolve -- see this function's own
+  // comment for the full picture.
+  let fwdFrontier = new Int32Array(maxStates);
+  let fwdFrontierNext = new Int32Array(maxStates);
+  let bwdFrontier = new Int32Array(maxStates);
+  let bwdFrontierNext = new Int32Array(maxStates);
+
+  const startLocal = new Uint8Array(n);
+  for (let i = 0; i < n; i++) startLocal[i] = targetSlotPosition.get(startPieces[targetSlots[i]])!;
+  const solvedLocal = Uint8Array.from({ length: n }, (_, i) => i);
+
+  const startEntry = findOrInsert(fwd, startLocal, 0, -1, -1);
+  const solvedEntry = findOrInsert(bwd, solvedLocal, 0, -1, -1);
+  if (startLocal.every((v, i) => v === solvedLocal[i])) return [];
+
+  fwdFrontier[0] = startEntry.idx;
+  let fwdFrontierLen = 1;
+  bwdFrontier[0] = solvedEntry.idx;
+  let bwdFrontierLen = 1;
+
+  for (let depth = 1; depth <= maxDepthEachSide; depth++) {
+    let newFwdLen = 0;
+    for (let fi = 0; fi < fwdFrontierLen; fi++) {
+      const parentIdx = fwdFrontier[fi];
+      const base = parentIdx * n;
+      for (let mi = 0; mi < localPermByMove.length; mi++) {
+        const perm = localPermByMove[mi];
+        for (let i = 0; i < n; i++) scratch[i] = fwd.slotState[base + perm[i]];
+        const res = findOrInsert(fwd, scratch, 0, mi, parentIdx);
+        if (!res.isNew) continue;
+        fwdFrontierNext[newFwdLen++] = res.idx;
+        if (fwd.count + bwd.count > maxStates) return null;
+        let bidx = hashOf(scratch, 0) & mask;
+        while (bwd.slotUsed[bidx] === 1) {
+          let same = true;
+          const bbase = bidx * n;
+          for (let i = 0; i < n; i++) {
+            if (bwd.slotState[bbase + i] !== scratch[i]) {
+              same = false;
+              break;
+            }
+          }
+          if (same) return [...pathFromSlot(fwd, res.idx), ...pathFromSlot(bwd, bidx).reverse().map(invertMove)];
+          bidx = (bidx + 1) & mask;
+        }
+      }
+    }
+    [fwdFrontier, fwdFrontierNext] = [fwdFrontierNext, fwdFrontier];
+    fwdFrontierLen = newFwdLen;
+
+    let newBwdLen = 0;
+    for (let bi = 0; bi < bwdFrontierLen; bi++) {
+      const parentIdx = bwdFrontier[bi];
+      const base = parentIdx * n;
+      for (let mi = 0; mi < localPermByMove.length; mi++) {
+        const perm = localPermByMove[mi];
+        for (let i = 0; i < n; i++) scratch[i] = bwd.slotState[base + perm[i]];
+        const res = findOrInsert(bwd, scratch, 0, mi, parentIdx);
+        if (!res.isNew) continue;
+        bwdFrontierNext[newBwdLen++] = res.idx;
+        if (fwd.count + bwd.count > maxStates) return null;
+        let fidx = hashOf(scratch, 0) & mask;
+        while (fwd.slotUsed[fidx] === 1) {
+          let same = true;
+          const fbase = fidx * n;
+          for (let i = 0; i < n; i++) {
+            if (fwd.slotState[fbase + i] !== scratch[i]) {
+              same = false;
+              break;
+            }
+          }
+          if (same) return [...pathFromSlot(fwd, fidx), ...pathFromSlot(bwd, res.idx).reverse().map(invertMove)];
+          fidx = (fidx + 1) & mask;
+        }
+      }
+    }
+    [bwdFrontier, bwdFrontierNext] = [bwdFrontierNext, bwdFrontier];
+    bwdFrontierLen = newBwdLen;
+  }
   return null;
 }
 
@@ -1119,6 +1316,7 @@ export const EDGE_PDB_RADIUS = 4;
 export const EDGE_PDB_URL_PATH = "edgePerimeterN5_r4.bin";
 export const OUTER_PDB_RADIUS = 4;
 export const OUTER_PDB_URL_PATH = "outerPerimeterN5.bin";
+export const AXIAL_WASM_URL_PATH = "axialSolver.wasm";
 
 /** Works out the right URL for a shipped PDB asset in both dev and a
  * GitHub-Pages-style subpath deploy (vite.config.ts sets `base` to
@@ -1139,6 +1337,10 @@ export function resolveEdgePdbUrl(): string {
 
 export function resolveOuterPdbUrl(): string {
   return resolvePdbUrl(OUTER_PDB_URL_PATH);
+}
+
+export function resolveAxialWasmUrl(): string {
+  return resolvePdbUrl(AXIAL_WASM_URL_PATH);
 }
 
 /** Parses a PDB's common binary layout (generate_edge_pdb_r4.mjs /
@@ -1318,7 +1520,7 @@ export function preloadOuterPdb(): Promise<void> {
  * fixing them is just "try 0, 1, or 2 applications and keep whichever
  * leaves the puzzle most correct," no search needed.
  */
-function tipSolveMoves(state: TetraState): TetraMove[] {
+export function tipSolveMoves(state: TetraState): TetraMove[] {
   const working = cloneState(state);
   const moves: TetraMove[] = [];
 
@@ -1391,7 +1593,7 @@ export interface MasterTetraSolveResult {
   solved: boolean;
 }
 
-interface SolveProgress {
+export interface SolveProgress {
   moves: TetraMove[];
   working: TetraState;
   /** True only when axial+center and edges both succeeded via the
@@ -1411,7 +1613,7 @@ interface SolveProgress {
   axialOnlyFailed: boolean;
 }
 
-function applyPhaseTo(working: TetraState, moves: TetraMove[], phaseMoves: TetraMove[] | null): boolean {
+export function applyPhaseTo(working: TetraState, moves: TetraMove[], phaseMoves: TetraMove[] | null): boolean {
   if (!phaseMoves) return false;
   for (const m of phaseMoves) {
     applyRawThirdTurn(working, m.vertexIndex, m.depth, m.sign);
@@ -1430,7 +1632,7 @@ function applyPhaseTo(working: TetraState, moves: TetraMove[], phaseMoves: Tetra
  * drift -- whichever one gets axial solved, the rest of the pipeline
  * behaves identically from that point on.
  */
-function continueAfterAxialSolved(pre: PrecomputedMoves, working: TetraState, moves: TetraMove[], usedFallback: boolean): { edgePhaseFailed: boolean } {
+export function continueAfterAxialSolved(pre: PrecomputedMoves, working: TetraState, moves: TetraMove[], usedFallback: boolean): { edgePhaseFailed: boolean } {
   const centerCleanupMoves = solveCentersByCommutator(pre, patternFromState(working, pre));
   if (!centerCleanupMoves || !applyPhaseTo(working, moves, centerCleanupMoves)) return { edgePhaseFailed: false };
 
@@ -1468,7 +1670,7 @@ function continueAfterAxialSolved(pre: PrecomputedMoves, working: TetraState, mo
  * one function so the two never drift -- the async path's "fast case"
  * (everything already solved synchronously) does exactly what the sync
  * function does, no reimplementation. */
-function computeMasterTetraSolveProgress(state: TetraState): SolveProgress {
+export function computeMasterTetraSolveProgress(state: TetraState): SolveProgress {
   const pre = precompute(state.layerCount);
   const working = cloneState(state);
   const moves: TetraMove[] = [];
@@ -1520,202 +1722,4 @@ function computeMasterTetraSolveProgress(state: TetraState): SolveProgress {
 
   const { edgePhaseFailed } = continueAfterAxialSolved(pre, working, moves, usedFallback);
   return { moves, working, edgePhaseFailed, axialOnlyFailed: false };
-}
-
-/**
- * Computes a full solve for a Master-Pyraminx-family tetrahedron (N>=4) in
- * 3 independent phases -- axial+center, then edges, then tips -- each
- * solved against whatever the PREVIOUS phase already fixed (so later
- * phases never undo earlier ones). See meetInMiddleSolve's own comment for
- * why a single whole-puzzle search isn't used instead.
- *
- * Synchronous, unchanged in behavior from before the edge PDB existed --
- * safe for any caller (including outside a browser) that doesn't want to
- * deal with a Promise. If edges fail here, prefer
- * computeMasterTetraSolveMovesAsync when a worker is available: it retries
- * with the PDB before giving up.
- */
-export function computeMasterTetraSolveMoves(state: TetraState): MasterTetraSolveResult {
-  const progress = computeMasterTetraSolveProgress(state);
-  return { moves: progress.moves, solved: !progress.edgePhaseFailed && isSolved(progress.working) };
-}
-
-/**
- * Same as computeMasterTetraSolveMoves, but when (and only when) edges are
- * the one thing still wrong after the synchronous phases, hands off to
- * edgePdbClient's worker for one more attempt before giving up -- see this
- * file's edge-PDB section comment for why that step can't run inline here.
- * Safe to call from anywhere computeMasterTetraSolveMoves is (falls back to
- * its exact result if the worker is unavailable or unhelpful), but only
- * actually worth the `await` in a browser context with edgePdbClient's
- * Worker support.
- */
-export async function computeMasterTetraSolveMovesAsync(state: TetraState): Promise<MasterTetraSolveResult> {
-  // Fire this before the synchronous phases below (which take "up to a
-  // second or two" per MasterTetraSolverEngine's own comment) so the
-  // worker's PDB fetch overlaps with that work instead of starting only
-  // after edges have already failed.
-  preloadEdgePdbWorker();
-  preloadAxialWorker();
-
-  // Unlike the worker-based edge PDB above, this one genuinely needs an
-  // `await` here, not just a fire-and-forget call -- see preloadOuterPdb's
-  // own comment for why a bare call was confirmed NOT enough (the long
-  // synchronous phases below starve its fetch callback of any chance to
-  // run). Raced against a short timeout so a slow/unavailable network never
-  // holds up a solve by more than that -- solveN5EdgesInTwoPhases degrades
-  // gracefully to its existing meet-in-the-middle attempt either way.
-  await Promise.race([preloadOuterPdb(), new Promise<void>((resolve) => setTimeout(resolve, 3000))]);
-
-  let progress = computeMasterTetraSolveProgress(state);
-
-  if (progress.axialOnlyFailed) {
-    // Off the main thread, so the bigger budget that actually solves these
-    // scrambles (confirmed offline: depth<=6 each side, ~11,590,974 states)
-    // is safe -- see computeMasterTetraSolveProgress's fallback comment for
-    // why raising this budget IN PLACE on the main thread was rejected
-    // instead (measured ~130-150s synchronous block). Retries from the
-    // ORIGINAL scramble (not progress.working, which already has the
-    // synchronous fallback's greedy move baked in) so a real solve here
-    // isn't saddled with an extra, likely-unhelpful move first.
-    const pre = precompute(state.layerCount);
-    const axialMoves = await solveAxialViaWorker(state.layerCount, patternFromState(state, pre), 10, 16_000_000);
-    if (axialMoves) {
-      const working = cloneState(state);
-      const moves: TetraMove[] = [];
-      applyPhaseTo(working, moves, axialMoves);
-      const { edgePhaseFailed } = continueAfterAxialSolved(pre, working, moves, true);
-      progress = { moves, working, edgePhaseFailed, axialOnlyFailed: false };
-    }
-    // If the worker found nothing either, `progress` stays exactly what
-    // computeMasterTetraSolveProgress already returned (the synchronous
-    // greedy-move fallback) -- same degrade-gracefully contract as every
-    // other worker retry in this file.
-  }
-
-  if (!progress.edgePhaseFailed) {
-    return { moves: progress.moves, solved: isSolved(progress.working) };
-  }
-
-  const pre = precompute(progress.working.layerCount);
-  // Off the main thread, so a much bigger budget than any sync search in
-  // this file is safe -- see edgePdbClient.ts's own defaults/comment for
-  // the reasoning (8,000,000 nodes comfortably clears the ~3,000,000-node
-  // "wall" a search typically has to cross before making real progress,
-  // measured during this feature's offline research, while keeping a
-  // single worst-case attempt bounded to roughly a minute rather than
-  // several).
-  const edgeMoves = await solveEdgesViaPdbWorker(progress.working.layerCount, patternFromState(progress.working, pre), 9, 8_000_000);
-  if (!edgeMoves) return { moves: progress.moves, solved: false };
-
-  const moves = [...progress.moves];
-  for (const m of edgeMoves) {
-    applyRawThirdTurn(progress.working, m.vertexIndex, m.depth, m.sign);
-    moves.push(m);
-  }
-  const tipMoves = tipSolveMoves(progress.working);
-  for (const m of tipMoves) {
-    applyRawThirdTurn(progress.working, m.vertexIndex, m.depth, m.sign);
-    moves.push(m);
-  }
-  return { moves, solved: isSolved(progress.working) };
-}
-
-const MOVE_ANIMATION_MS = 350;
-
-function easeOutCubic(t: number): number {
-  return 1 - (1 - t) ** 3;
-}
-
-function animateProgress(scene: CustomTetraScene, from: number, to: number, durationMs: number): Promise<void> {
-  return new Promise((resolve) => {
-    const start = performance.now();
-    function step(now: number) {
-      const t = Math.min((now - start) / durationMs, 1);
-      scene.setTurnProgress(from + easeOutCubic(t) * (to - from));
-      if (t < 1) requestAnimationFrame(step);
-      else resolve();
-    }
-    requestAnimationFrame(step);
-  });
-}
-
-export interface MasterTetraSolveHint {
-  move: TetraMove | null;
-  movesRemaining: number;
-}
-
-/**
- * Plan-once/consume-many cache, mirroring customSolvePlayback.ts's
- * FourByFourSolverEngine: computeMasterTetraSolveMoves takes up to a second
- * or two (3 live BFS/trial phases), so it's wasteful to recompute on every
- * single hint press. The cached plan is replayed one move at a time and
- * only rebuilt when the live scene no longer matches where it should be by
- * now (scramble, reset, undo, or an off-plan move) -- tracked via the
- * scene's own undo count, same trick TetraView's reportSolveCommit uses.
- */
-class MasterTetraSolverEngine {
-  private plan: TetraMove[] | null = null;
-  private cursor = 0;
-  private planStartUndoCount = -1;
-
-  private expectedUndoCount(): number {
-    return this.planStartUndoCount + this.cursor;
-  }
-
-  hasValidPlan(scene: CustomTetraScene): boolean {
-    return this.plan !== null && this.expectedUndoCount() === scene.getUndoCount();
-  }
-
-  async solve(scene: CustomTetraScene): Promise<void> {
-    const state: TetraState = { layerCount: scene.layerCount, stickers: scene.getStickers() };
-    const result = await computeMasterTetraSolveMovesAsync(state);
-    this.plan = result.moves;
-    this.cursor = 0;
-    this.planStartUndoCount = scene.getUndoCount();
-  }
-
-  invalidate(): void {
-    this.plan = null;
-    this.cursor = 0;
-    this.planStartUndoCount = -1;
-  }
-
-  peekNextMove(): TetraMove | null {
-    if (!this.plan || this.cursor >= this.plan.length) return null;
-    return this.plan[this.cursor];
-  }
-
-  advance(): void {
-    this.cursor++;
-  }
-
-  remainingMoves(): number {
-    return this.plan ? this.plan.length - this.cursor : 0;
-  }
-}
-
-// Module-level, like fourByFourEngine in customSolvePlayback.ts -- only one
-// Master-Pyraminx-family TetraView is ever mounted at a time.
-const engine = new MasterTetraSolverEngine();
-
-/**
- * Solves for the scene's current actual state and plays the next move of a
- * cached plan for real: turns the layer and commits it, exactly as if the
- * player had swiped it themselves. Same contract as
- * tetraSolvePlayback.ts's applyNextTetraSolveMove (used for the 3-layer
- * Pyraminx instead).
- */
-export async function applyNextMasterTetraSolveMove(scene: CustomTetraScene): Promise<MasterTetraSolveHint> {
-  if (!engine.hasValidPlan(scene)) await engine.solve(scene);
-
-  const move = engine.peekNextMove();
-  if (!move) return { move: null, movesRemaining: 0 };
-
-  if (scene.beginTurn(move.vertexIndex, move.depth)) {
-    await animateProgress(scene, 0, move.sign, MOVE_ANIMATION_MS);
-    scene.endTurn(move.sign);
-    engine.advance();
-  }
-  return { move, movesRemaining: engine.remainingMoves() };
 }
