@@ -4,11 +4,11 @@
 // can't do this -- a tetra layerCount of 3 would otherwise collide with the
 // cube's 3x3x3 in every Record<number,...> lookup and every localStorage
 // key.
-export type PuzzleKind = "cube" | "tetra";
+export type PuzzleKind = "cube" | "tetra" | "dodeca";
 
 export interface PuzzleId {
   kind: PuzzleKind;
-  size: number; // gridSize for cube (2-5), layerCount for tetra (only 3 exposed today)
+  size: number; // gridSize for cube (2-5), layerCount for tetra (only 3 exposed today) or dodeca (2-5)
 }
 
 export function puzzleKey(id: PuzzleId): string {
@@ -21,4 +21,8 @@ export function cubePuzzleId(size: number): PuzzleId {
 
 export function tetraPuzzleId(size: number): PuzzleId {
   return { kind: "tetra", size };
+}
+
+export function dodecaPuzzleId(size: number): PuzzleId {
+  return { kind: "dodeca", size };
 }

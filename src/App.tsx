@@ -6,6 +6,7 @@ import { warmupFourByFour } from "./customCube/customSolvePlayback";
 import { getDailyScrambleRng, getMissionStatus, MISSION_HINT_LIMITS, recordMissionComplete, type MissionStatus } from "./dailyMission";
 import { getLeaderboard, submitScore, type LeaderboardEntry } from "./leaderboard";
 import { isRewardedAdAvailable, requestRewardedAd } from "./nativeAds";
+import DodecaView, { type DodecaViewHandle } from "./DodecaView";
 import { cubePuzzleId, puzzleKey, type PuzzleKind } from "./puzzleKind";
 import TetraView, { type TetraViewHandle } from "./TetraView";
 import "./App.css";
@@ -49,19 +50,39 @@ const TETRA_LAYER_NAMES: Record<number, string> = {
   6: "Royal Pyraminx",
 };
 
+// Same 4-color set as SIZE_COLORS -- shape-agnostic button styling, reused as-is.
+const DODECA_SIZE_COLORS: Record<number, string> = {
+  2: "btn-blue",
+  3: "btn-green",
+  4: "btn-orange",
+  5: "btn-rose",
+};
+
+// Real names of the megaminx-family puzzle at each layer count.
+const DODECA_LAYER_NAMES: Record<number, string> = {
+  2: "Kilominx",
+  3: "Megaminx",
+  4: "Master Megaminx",
+  5: "Gigaminx",
+};
+
 function App() {
   const cubeRef = useRef<CubeViewHandle>(null);
   const tetraRef = useRef<TetraViewHandle>(null);
+  const dodecaRef = useRef<DodecaViewHandle>(null);
 
   const [screen, setScreen] = useState<"home" | "game" | "leaderboard" | "missions">("home");
   // Which puzzle shape is active -- missions/leaderboard/solver are all
-  // cube-only today (no tetra solver yet), so this only ever changes via
-  // the home screen's dropdown and handlePickTetra/handlePickSize.
+  // cube-only today (no tetra/dodeca solver yet), so this only ever changes
+  // via the home screen's dropdown and handlePickTetra/handlePickDodeca/handlePickSize.
   const [puzzleKind, setPuzzleKind] = useState<PuzzleKind>("cube");
   // 3 (Pyraminx) through 6 (Royal Pyraminx) -- independent of gridSize
   // (the cube's own size state) so picking a tetra layer count never
   // touches cube state or vice versa.
   const [tetraLayerCount, setTetraLayerCount] = useState(3);
+  // 2 (Kilominx) through 5 (Gigaminx) -- independent of gridSize/tetraLayerCount
+  // for the same reason.
+  const [dodecaLayerCount, setDodecaLayerCount] = useState(3);
   const [mode, setMode] = useState<"look" | "play">("play");
   const [gridSize, setGridSize] = useState(3);
   const [moveCount, setMoveCount] = useState(0);
@@ -149,12 +170,32 @@ function App() {
     });
   }, []);
 
+  // Dodeca's own solved handler -- same shape as handleTetraSolvedChange
+  // (no solver, no leaderboard/mission for this puzzle family).
+  const handleDodecaSolvedChange = useCallback((solved: boolean) => {
+    setHasScrambled((currentlyScrambled) => {
+      if (solved && currentlyScrambled) {
+        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+        return false;
+      }
+      return currentlyScrambled;
+    });
+  }, []);
+
   const handleScramble = useCallback(async () => {
     if (puzzleKind === "tetra") {
       setMoveCount(0);
       setSolveError(false);
       setLastRank(null);
       tetraRef.current?.scramble();
+      setHasScrambled(true);
+      return;
+    }
+    if (puzzleKind === "dodeca") {
+      setMoveCount(0);
+      setSolveError(false);
+      setLastRank(null);
+      dodecaRef.current?.scramble();
       setHasScrambled(true);
       return;
     }
@@ -193,6 +234,14 @@ function App() {
       setHasScrambled(false);
       return;
     }
+    if (puzzleKind === "dodeca") {
+      dodecaRef.current?.resetToSolved();
+      setMoveCount(0);
+      setSolveError(false);
+      setLastRank(null);
+      setHasScrambled(false);
+      return;
+    }
     cubeRef.current?.resetToSolved();
     setMode("play");
     setMoveCount(0);
@@ -209,6 +258,10 @@ function App() {
   const handleUndo = useCallback(() => {
     if (puzzleKind === "tetra") {
       if (tetraRef.current?.undoLastMove()) setSolveError(false);
+      return;
+    }
+    if (puzzleKind === "dodeca") {
+      if (dodecaRef.current?.undoLastMove()) setSolveError(false);
       return;
     }
     const didUndo = cubeRef.current?.undoLastMove();
@@ -253,6 +306,16 @@ function App() {
     (layerCount: number) => {
       setPuzzleKind("tetra");
       setTetraLayerCount(layerCount);
+      resetGameState();
+      setScreen("game");
+    },
+    [resetGameState],
+  );
+
+  const handlePickDodeca = useCallback(
+    (layerCount: number) => {
+      setPuzzleKind("dodeca");
+      setDodecaLayerCount(layerCount);
       resetGameState();
       setScreen("game");
     },
@@ -437,6 +500,14 @@ function App() {
               onFirstMove={() => {}}
               onSolvedChange={() => {}}
             />
+          ) : puzzleKind === "dodeca" ? (
+            <DodecaView
+              interactive={false}
+              layerCount={dodecaLayerCount}
+              onMoveCountChange={() => {}}
+              onFirstMove={() => {}}
+              onSolvedChange={() => {}}
+            />
           ) : (
             <CubeView
               orbitMode={false}
@@ -462,6 +533,7 @@ function App() {
             >
               <option value="cube">3D 큐브</option>
               <option value="tetra">사면체 (Pyraminx)</option>
+              <option value="dodeca">십이면체 (Megaminx)</option>
             </select>
           </div>
 
@@ -475,6 +547,19 @@ function App() {
                   onClick={() => handlePickSize(size)}
                 >
                   {size}×{size}
+                </button>
+              ))}
+            </div>
+          ) : puzzleKind === "dodeca" ? (
+            <div className="size-select">
+              {[2, 3, 4, 5].map((layerCount) => (
+                <button
+                  key={layerCount}
+                  type="button"
+                  className={`btn3d ${DODECA_SIZE_COLORS[layerCount]}${dodecaLayerCount === layerCount ? " selected" : ""}`}
+                  onClick={() => handlePickDodeca(layerCount)}
+                >
+                  {layerCount}레이어
                 </button>
               ))}
             </div>
@@ -599,7 +684,7 @@ function App() {
       <div className="above-cube">
         <header className="app-header with-back">
           <button type="button" className="home-link" onClick={handleBackFromGame}>
-            {missionMode ? "← 미션 목록" : puzzleKind === "tetra" ? "← 모양 변경" : "← 크기 변경"}
+            {missionMode ? "← 미션 목록" : puzzleKind === "tetra" || puzzleKind === "dodeca" ? "← 모양 변경" : "← 크기 변경"}
           </button>
           {!missionMode && puzzleKind === "cube" && (
             <button type="button" className="home-link leaderboard-link" onClick={handleOpenLeaderboard}>
@@ -624,6 +709,12 @@ function App() {
         {puzzleKind === "tetra" && (
           <p className="mission-badge">
             {TETRA_LAYER_NAMES[tetraLayerCount]} · {tetraLayerCount}레이어
+          </p>
+        )}
+
+        {puzzleKind === "dodeca" && (
+          <p className="mission-badge">
+            {DODECA_LAYER_NAMES[dodecaLayerCount]} · {dodecaLayerCount}레이어
           </p>
         )}
 
@@ -678,6 +769,14 @@ function App() {
             onFirstMove={() => {}}
             onSolvedChange={handleTetraSolvedChange}
           />
+        ) : puzzleKind === "dodeca" ? (
+          <DodecaView
+            ref={dodecaRef}
+            layerCount={dodecaLayerCount}
+            onMoveCountChange={handleMoveCountChange}
+            onFirstMove={() => {}}
+            onSolvedChange={handleDodecaSolvedChange}
+          />
         ) : (
           <CubeView
             ref={cubeRef}
@@ -709,6 +808,18 @@ function App() {
             스크램블
           </button>
           <button type="button" className="btn3d btn-slate" onClick={handleUndo} disabled={isSolving || moveCount === 0}>
+            실행취소
+          </button>
+        </div>
+      ) : puzzleKind === "dodeca" ? (
+        <div className="bottom-controls">
+          <button type="button" className="btn3d btn-orange" onClick={handleReset}>
+            리셋
+          </button>
+          <button type="button" className="btn3d btn-rose" onClick={handleScramble}>
+            스크램블
+          </button>
+          <button type="button" className="btn3d btn-slate" onClick={handleUndo} disabled={moveCount === 0}>
             실행취소
           </button>
         </div>
