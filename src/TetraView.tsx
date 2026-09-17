@@ -4,6 +4,7 @@ import { CustomTetraScene } from "./customTetra/CustomTetraScene";
 import { attachTetraSwipeTurning, type TetraSwipeController } from "./customTetra/tetraSwipeControls";
 import { applyNextTetraSolveMove, type TetraSolveHint } from "./customTetra/tetraSolvePlayback";
 import { applyNextMasterTetraSolveMove } from "./customTetra/masterTetraSolveAsync";
+import { applyNextRoyalPyraminxSolveMove } from "./solver/n6/royalPyraminxSolveAsync";
 
 export interface TetraViewHandle {
   scramble: (rng?: Rng) => void;
@@ -127,11 +128,19 @@ const TetraView = forwardRef<TetraViewHandle, TetraViewProps>(function TetraView
       const before = scene.getUndoCount();
       try {
         // 3-layer Pyraminx has a dedicated fast solver (cubing.js's own);
-        // N>=4 (Master/Professor/Royal Pyraminx) has no such library, so it
-        // goes through the from-scratch bidirectional-BFS solver instead
-        // (see masterTetraminxSolver.ts for why -- neither a generic
-        // solver nor a hand-built commutator library worked for those).
-        return await (layerCount === 3 ? applyNextTetraSolveMove(scene) : applyNextMasterTetraSolveMove(scene));
+        // N=4/5 (Master/Professor Pyraminx) go through the from-scratch
+        // bidirectional-BFS solver (see masterTetraminxSolver.ts for why --
+        // neither a generic solver nor a hand-built commutator library
+        // worked for those); N=6 (Royal Pyraminx) has its own dedicated
+        // 100%-guaranteed piece-level pipeline instead (see
+        // src/solver/n6/royalPyraminxSolver.ts -- N=6's axial+center orbit
+        // structure made the N=4/5 bidirectional search too slow/unreliable
+        // to reuse directly).
+        return await (layerCount === 3
+          ? applyNextTetraSolveMove(scene)
+          : layerCount === 6
+            ? applyNextRoyalPyraminxSolveMove(scene)
+            : applyNextMasterTetraSolveMove(scene));
       } finally {
         reportSolveCommit(scene, before);
         controllerRef.current?.setEnabled(interactiveRef.current);

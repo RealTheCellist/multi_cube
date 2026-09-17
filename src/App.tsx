@@ -634,7 +634,9 @@ function App() {
                 ? "다음 수 계산 중... (몇 초 걸릴 수 있어요)"
                 : tetraLayerCount === 5
                   ? "다음 수 계산 중... (어려운 상태는 1~2분 걸릴 수 있어요)"
-                  : "다음 수 진행 중..."
+                  : tetraLayerCount === 6
+                    ? "다음 수 계산 중... (어려운 상태는 1분 가까이 걸릴 수 있어요)"
+                    : "다음 수 진행 중..."
               : solveError
                 ? "솔버 실행 중 오류가 발생했습니다. 다시 시도해보세요"
                 : ""}
@@ -698,8 +700,8 @@ function App() {
             type="button"
             className="btn3d btn-accent"
             onClick={handleTetraSolve}
-            disabled={isSolving || tetraLayerCount > 5}
-            title={tetraLayerCount > 5 ? "지금은 3~5레이어만 솔버가 있어요" : "다음 수를 바로 진행해요"}
+            disabled={isSolving}
+            title="다음 수를 바로 진행해요"
           >
             솔브
           </button>
