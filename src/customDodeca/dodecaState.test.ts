@@ -26,10 +26,17 @@ describe("buildSolvedDodeca sticker counts", () => {
     expect(perFace.filter((x) => x.pieceType === "center").length).toBe(0);
   });
 
-  it("N=5 (Gigaminx): 2 rings (20) + 1 center = 21/face", () => {
+  it("N=5 (Gigaminx): real 6-orbit structure = 31/face (matches cubing.js's own Gigaminx geometry), 372 total", () => {
     const s = buildSolvedDodeca(5);
+    expect(s.stickers.length).toBe(372);
     const perFace = s.stickers.filter((x) => x.homeFaceIndex === 0);
-    expect(perFace.length).toBe(21);
+    expect(perFace.length).toBe(31);
+    // 5 CORNERS + 5 CENTERS (both rendered as pieceType "corner", since
+    // both are 4-point kites, just at different ring depths) + 10 EDGES +
+    // 5 EDGES2 + 5 CENTERS2 (all rendered as pieceType "edge", since all 3
+    // are plain quads) + 1 CENTERS3 (pieceType "center").
+    expect(perFace.filter((x) => x.pieceType === "corner").length).toBe(10);
+    expect(perFace.filter((x) => x.pieceType === "edge").length).toBe(20);
     expect(perFace.filter((x) => x.pieceType === "center").length).toBe(1);
   });
 

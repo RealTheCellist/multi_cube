@@ -72,7 +72,6 @@ const SHOULDER_FRACTION = 0.39270509831248435;
 // these two verified endpoints rather than reusing the old, disproven
 // 1/N-per-layer split.
 const RING1_INNER_SCALE = 0.45729490168751596; // N=3 (Megaminx), single ring
-const RING2_INNER_SCALE = 0.34875906183919807; // N=5 (Gigaminx), innermost of 2 rings
 
 /**
  * Builds one face's stickers for a given layerCount, as a self-similar
@@ -80,15 +79,20 @@ const RING2_INNER_SCALE = 0.34875906183919807; // N=5 (Gigaminx), innermost of 2
  * (Megaminx) this exactly reproduces real hardware's own piece boundaries
  * (N=2 verified against a real Kilominx reference photo; N=3 verified by
  * extracting cubing.js's own Megaminx sticker polygon coordinates
- * directly, see SHOULDER_FRACTION/RING1_INNER_SCALE above). N=5 uses that
- * same extracted radial scale for its innermost ring but does NOT
- * reproduce cubing.js's real Gigaminx exactly -- the real puzzle splits
- * its outer-ring edge pieces into 2 "wing" sub-pieces each and has extra
- * corner-like pieces bridging the two rings (6 distinct piece orbits
- * total, confirmed by dumping cubing.js's real Gigaminx geometry), which
- * this uniform formula doesn't attempt to replicate. N=4 has no known
- * direct equivalent (see RING2_INNER_SCALE's own comment) and is the
- * least certain of the four sizes.
+ * directly, see SHOULDER_FRACTION/RING1_INNER_SCALE above). N=4 has no
+ * known direct equivalent (no cubing.js descriptor sweep reproduced it,
+ * and the "Kilominx" family isn't in cubing.js's puzzle-name list at
+ * all) so it reuses the Megaminx-derived RING1_INNER_SCALE as its own
+ * single ring's boundary -- an approximation, not a verified value, and
+ * the least certain of the sizes this app exposes.
+ *
+ * N=5 (Gigaminx) does NOT use this function -- an earlier version of this
+ * code tried to extend the same single-ring formula to a second ring by
+ * simple radial scaling, but the real Gigaminx's second ring is a
+ * genuinely different topology (wing-split edge pieces, extra orbits
+ * bridging the two rings, 6 distinct piece orbits instead of 3) -- see
+ * buildGigaminxFaceStickers below, which reproduces that exact real
+ * structure instead of approximating it.
  *
  * Construction per ring: a "corner" piece is a 4-point kite (apex at the
  * true outer vertex, 2 "shoulder" points at SHOULDER_FRACTION/
@@ -110,39 +114,10 @@ function buildFaceStickers(faceIndex: FaceIndex, layerCount: number, nextId: () 
 
   const color = DODECA_FACE_COLORS[faceIndex];
   const N = layerCount;
-  const ringCount = Math.floor((N - 1) / 2);
   const hasCenter = N % 2 === 1;
   const stickers: Sticker[] = [];
 
-  // Ring-boundary radial scale (1 = outer pentagon, shrinking inward).
-  // ring 1's inner boundary uses the exact Megaminx-derived value; ring 2's
-  // (only reachable for N=5, the only size with 2 rings today) uses the
-  // exact Gigaminx-derived value; anything deeper interpolates the same
-  // per-ring shrink ratio geometrically (untested beyond N=5, since no
-  // size here goes past 2 rings).
-  const perRingShrink = RING2_INNER_SCALE / RING1_INNER_SCALE;
-  const ringBoundaryScale = (k: number): number => (k === 0 ? 1 : RING1_INNER_SCALE * perRingShrink ** (k - 1));
-
-  // Vertices of the ring boundary at scale index k (0 = outer pentagon
-  // itself, 1.. = successively smaller radially-scaled copies -- same
-  // orientation as the outer pentagon, verified against the real Megaminx
-  // dump: its inner pentagon's vertices sit in the EXACT same angular
-  // directions as the outer ones, just scaled, not rotated).
-  function ringVertices(k: number): THREE.Vector3[] {
-    const scale = ringBoundaryScale(k);
-    return outerV.map((v) => lerp(C, v, scale));
-  }
-  function shoulderPoints(outerRingV: THREE.Vector3[]): THREE.Vector3[] {
-    // shoulder[2j] = near vertex j, on edge (j-1,j); shoulder[2j+1] = near vertex j, on edge (j,j+1).
-    const s: THREE.Vector3[] = [];
-    for (let j = 0; j < 5; j++) {
-      s[2 * j] = lerp(outerRingV[(j + 4) % 5], outerRingV[j], 1 - SHOULDER_FRACTION);
-      s[2 * j + 1] = lerp(outerRingV[j], outerRingV[(j + 1) % 5], SHOULDER_FRACTION);
-    }
-    return s;
-  }
-
-  if (ringCount === 0) {
+  if (N <= 2) {
     // No room for a separate edge piece: 5 plain vertex-to-midpoint wedges
     // (real Kilominx's shape, verified against a real reference photo),
     // closing at the center (even N=2) or leaving a small pentagon (odd
@@ -160,79 +135,54 @@ function buildFaceStickers(faceIndex: FaceIndex, layerCount: number, nextId: () 
     return stickers;
   }
 
-  for (let k = 0; k < ringCount; k++) {
-    const outerRingV = ringVertices(k);
-    const innerRingV = ringVertices(k + 1);
-    const outerShoulders = shoulderPoints(outerRingV);
-    const innerShoulders = k + 1 < ringCount ? shoulderPoints(innerRingV) : null;
-
+  // N=3 or N=4: exactly one ring, boundary at RING1_INNER_SCALE.
+  const outerRingV = outerV;
+  const innerRingV = outerV.map((v) => lerp(C, v, RING1_INNER_SCALE));
+  function shoulderPoints(ringV: THREE.Vector3[]): THREE.Vector3[] {
+    // shoulder[2j] = near vertex j, on edge (j-1,j); shoulder[2j+1] = near vertex j, on edge (j,j+1).
+    const s: THREE.Vector3[] = [];
     for (let j = 0; j < 5; j++) {
-      if (innerShoulders) {
-        // Not the innermost ring: the corner is a hex piece bounded by
-        // shoulder points on BOTH the outer and inner ring boundary
-        // (mirroring the outer ring's own shape one layer in) -- reasonable
-        // extrapolation, not derived from a real >2-ring reference (none of
-        // this app's exposed sizes need it). Its adjacent edge piece's
-        // INNER corners must ALSO be trimmed to the inner ring's shoulder
-        // points (not the raw inner ring vertices) -- using the untrimmed
-        // vertex there made the edge piece's inner boundary span the full
-        // vertex-to-vertex arc while the corner hex's inner boundary only
-        // spans the shoulder-trimmed near-vertex arc, so the two pieces
-        // overlapped in the gap between them (confirmed: summed sticker
-        // area for N=5 came out ~19.5% larger than the pentagon's true
-        // area before this fix).
-        stickers.push({
-          id: nextId(),
-          homeFaceIndex: faceIndex,
-          pieceType: "corner",
-          color,
-          corners: [outerShoulders[2 * j], outerRingV[j], outerShoulders[2 * j + 1], innerShoulders[2 * j + 1], innerRingV[j], innerShoulders[2 * j]],
-        });
-        stickers.push({
-          id: nextId(),
-          homeFaceIndex: faceIndex,
-          pieceType: "edge",
-          color,
-          corners: [outerShoulders[2 * j + 1], outerShoulders[(2 * j + 2) % 10], innerShoulders[(2 * j + 2) % 10], innerShoulders[2 * j + 1]],
-        });
-      } else {
-        // Innermost ring: corner is the real 4-point kite (apex at this
-        // ring's own outer vertex, 2 shoulders, 1 point at the next ring
-        // boundary's corresponding vertex) -- verified shape. Its edge
-        // piece is a trapezoid whose inner corners are the next ring
-        // boundary's own 2 adjacent vertices directly (untrimmed), since
-        // the innermost ring's corner-kite also meets that boundary at the
-        // exact vertex, not a shoulder point -- verified shape.
-        stickers.push({
-          id: nextId(),
-          homeFaceIndex: faceIndex,
-          pieceType: "corner",
-          color,
-          corners: [outerShoulders[2 * j], outerRingV[j], outerShoulders[2 * j + 1], innerRingV[j]],
-        });
-        stickers.push({
-          id: nextId(),
-          homeFaceIndex: faceIndex,
-          pieceType: "edge",
-          color,
-          corners: [outerShoulders[2 * j + 1], outerShoulders[(2 * j + 2) % 10], innerRingV[(j + 1) % 5], innerRingV[j]],
-        });
-      }
+      s[2 * j] = lerp(ringV[(j + 4) % 5], ringV[j], 1 - SHOULDER_FRACTION);
+      s[2 * j + 1] = lerp(ringV[j], ringV[(j + 1) % 5], SHOULDER_FRACTION);
     }
+    return s;
+  }
+  const outerShoulders = shoulderPoints(outerRingV);
+
+  for (let j = 0; j < 5; j++) {
+    // Corner is the real 4-point kite (apex at the outer vertex, 2
+    // shoulders, 1 point at the ring boundary's corresponding vertex).
+    stickers.push({
+      id: nextId(),
+      homeFaceIndex: faceIndex,
+      pieceType: "corner",
+      color,
+      corners: [outerShoulders[2 * j], outerRingV[j], outerShoulders[2 * j + 1], innerRingV[j]],
+    });
+    // Edge is a trapezoid whose inner corners are the ring boundary's own
+    // 2 adjacent vertices directly (untrimmed), since the ring's own
+    // corner-kite also meets that boundary at the exact vertex, not a
+    // shoulder point.
+    stickers.push({
+      id: nextId(),
+      homeFaceIndex: faceIndex,
+      pieceType: "edge",
+      color,
+      corners: [outerShoulders[2 * j + 1], outerShoulders[(2 * j + 2) % 10], innerRingV[(j + 1) % 5], innerRingV[j]],
+    });
   }
 
   if (hasCenter) {
-    stickers.push({ id: nextId(), homeFaceIndex: faceIndex, pieceType: "center", color, corners: ringVertices(ringCount) });
+    stickers.push({ id: nextId(), homeFaceIndex: faceIndex, pieceType: "center", color, corners: innerRingV });
   } else {
-    const closeRingV = ringVertices(ringCount);
-    const closeShoulders = shoulderPoints(closeRingV);
+    const closeShoulders = shoulderPoints(innerRingV);
     for (let j = 0; j < 5; j++) {
       stickers.push({
         id: nextId(),
         homeFaceIndex: faceIndex,
         pieceType: "corner",
         color,
-        corners: [closeShoulders[2 * j], closeRingV[j], closeShoulders[2 * j + 1], C.clone()],
+        corners: [closeShoulders[2 * j], innerRingV[j], closeShoulders[2 * j + 1], C.clone()],
       });
       stickers.push({
         id: nextId(),
@@ -246,11 +196,88 @@ function buildFaceStickers(faceIndex: FaceIndex, layerCount: number, nextId: () 
   return stickers;
 }
 
+// --- Gigaminx (N=5) exact real-structure constants ---
+// The single-ring formula above only matches reality for ONE ring; real
+// Gigaminx's outer boundary (where its second ring begins) and its true
+// center pentagon are both genuinely different radii from Megaminx's own
+// single ring, and its edge pieces split into 2 "wing" sub-pieces each.
+// All 5 values below were extracted directly from cubing.js's real
+// Gigaminx sticker polygon data (getPuzzleGeometryByName("gigaminx").
+// get3d()) by finding this puzzle's exact 5-fold-rotation + mirror
+// symmetric point catalog (only 6 distinct point roles exist per face)
+// and solving each one as an exact lerp fraction along a known edge --
+// reproducible from that dump, none guessed or interpolated.
+const GIGA_RING1_SCALE = 0.6743769410125094; // C -> ring-0/ring-1 boundary vertex, as a fraction of C -> outer vertex
+const GIGA_RING2_SCALE = 0.34875388202501884; // C -> true center pentagon vertex, same fraction basis
+const GIGA_CORNER_SHOULDER = 0.2356230589874901; // outer-edge lerp fraction for a CORNERS kite's shoulder
+const GIGA_WING_SHOULDER = 0.4712461179749812; // outer-edge lerp fraction for a wing EDGES piece's far outer point
+const GIGA_RING1_SHOULDER = 0.3493937064836854; // ring-1-pentagon-edge lerp fraction for a CENTERS kite's shoulder
+
+/**
+ * Builds one face's 31 real Gigaminx stickers, matching cubing.js's own
+ * Gigaminx geometry (unlike the single-ring formula above, radially
+ * rescaled for a second ring, which this project used before -- that
+ * approximation both under-counted the real sticker orbits (21 vs the
+ * real 31) and, before a since-fixed bug, overlapped pieces at the
+ * boundary between its 2 uniform rings).
+ *
+ * Real orbit structure per face (5-fold rotational + mirror symmetric,
+ * indices below are mod 5):
+ * - CORNERS (5): a 4-point kite at each outer vertex V[j] -- same shape
+ *   family as N=3's own kite corner but shallower (apex V[j], inner point
+ *   P3[j], shoulders P1L[j]/P1R[j] on the outer pentagon edge).
+ * - EDGES (10): each of the 5 real "edge" positions is split into 2
+ *   mirror "wing" quads -- the one place a real Megaminx-family puzzle's
+ *   edge sticker isn't a single piece. Each wing is bounded by P1/P2
+ *   (both on the outer pentagon edge) and P3/P4 (the ring-1 pentagon's
+ *   own vertex and edge-lerp point).
+ * - CENTERS (5): a second, smaller kite one ring in (apex P3[j], inner
+ *   point P5[j], shoulders P4L[j]/P4R[j] on the ring-1 pentagon's own
+ *   edge) -- same shape family as CORNERS, just scaled down.
+ * - EDGES2 (5): a quad bridging 2 adjacent CENTERS kites' shoulders (P4)
+ *   out to the same narrow gap on the outer pentagon edge that the 2
+ *   EDGES wings leave between them (P2) -- the one piece that reaches
+ *   from the second ring all the way out to the outer boundary.
+ * - CENTERS2 (5): a quad bridging 2 adjacent CENTERS kites' shoulders
+ *   (P4) to 2 adjacent true-center-pentagon vertices (P5).
+ * - CENTERS3 (1): the true fixed center pentagon (P5 x5).
+ */
+function buildGigaminxFaceStickers(faceIndex: FaceIndex, nextId: () => number): Sticker[] {
+  const C = faceCenter(faceIndex);
+  const memberIdx = FACE_VERTEX_INDICES[faceIndex];
+  const V = memberIdx.map((i) => VERTICES[i]);
+  const color = DODECA_FACE_COLORS[faceIndex];
+
+  const P3 = V.map((v) => lerp(C, v, GIGA_RING1_SCALE));
+  const P5 = V.map((v) => lerp(C, v, GIGA_RING2_SCALE));
+  const P1L = V.map((v, j) => lerp(v, V[(j + 4) % 5], GIGA_CORNER_SHOULDER));
+  const P1R = V.map((v, j) => lerp(v, V[(j + 1) % 5], GIGA_CORNER_SHOULDER));
+  const P2L = V.map((v, j) => lerp(v, V[(j + 4) % 5], GIGA_WING_SHOULDER));
+  const P2R = V.map((v, j) => lerp(v, V[(j + 1) % 5], GIGA_WING_SHOULDER));
+  const P4L = P3.map((p, j) => lerp(p, P3[(j + 4) % 5], GIGA_RING1_SHOULDER));
+  const P4R = P3.map((p, j) => lerp(p, P3[(j + 1) % 5], GIGA_RING1_SHOULDER));
+
+  const stickers: Sticker[] = [];
+  for (let j = 0; j < 5; j++) {
+    const jn = (j + 1) % 5;
+    stickers.push({ id: nextId(), homeFaceIndex: faceIndex, pieceType: "corner", color, corners: [P1L[j], V[j], P1R[j], P3[j]] });
+    stickers.push({ id: nextId(), homeFaceIndex: faceIndex, pieceType: "edge", color, corners: [P1R[j], P2R[j], P4R[j], P3[j]] });
+    stickers.push({ id: nextId(), homeFaceIndex: faceIndex, pieceType: "edge", color, corners: [P3[j], P4L[j], P2L[j], P1L[j]] });
+    stickers.push({ id: nextId(), homeFaceIndex: faceIndex, pieceType: "corner", color, corners: [P4L[j], P3[j], P4R[j], P5[j]] });
+    stickers.push({ id: nextId(), homeFaceIndex: faceIndex, pieceType: "edge", color, corners: [P2R[j], P2L[jn], P4L[jn], P4R[j]] });
+    stickers.push({ id: nextId(), homeFaceIndex: faceIndex, pieceType: "edge", color, corners: [P4R[j], P4L[jn], P5[jn], P5[j]] });
+  }
+  stickers.push({ id: nextId(), homeFaceIndex: faceIndex, pieceType: "center", color, corners: P5 });
+  return stickers;
+}
+
 export function buildSolvedDodeca(layerCount: number): DodecaState {
   let id = 0;
   const nextId = () => id++;
   const stickers: Sticker[] = [];
-  for (const f of FACE_INDICES) stickers.push(...buildFaceStickers(f, layerCount, nextId));
+  for (const f of FACE_INDICES) {
+    stickers.push(...(layerCount === 5 ? buildGigaminxFaceStickers(f, nextId) : buildFaceStickers(f, layerCount, nextId)));
+  }
   return { layerCount, stickers };
 }
 
