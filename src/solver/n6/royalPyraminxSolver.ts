@@ -23,6 +23,7 @@
 // separately.
 import { applyRoyalMove, ALL_ROYAL_MOVE_NAMES } from "./royalPyraminxMoves";
 import { AXIAL_COUNT, createSolvedRoyalState, isSolvedRoyal, type RoyalPyraminxState } from "./royalPyraminxState";
+import { solveAxialByCommutator, solveCentersByCommutator, solveEdgesByCommutator, solveTips } from "./royalPyraminxCommutators";
 
 function invertMoveName(move: string): string {
   return move.endsWith("'") ? move.slice(0, -1) : `${move}'`;
@@ -516,5 +517,61 @@ export async function solveRoyalAxialOnlyWasm(startAxial: Uint8Array, maxDepthEa
     if (raw < AXIAL_NUM_MOVES_WASM) moves.push(ALL_ROYAL_MOVE_NAMES[raw]);
     else moves.push(invertMoveName(ALL_ROYAL_MOVE_NAMES[raw - AXIAL_NUM_MOVES_WASM]));
   }
+  return moves;
+}
+
+// ---- Full pipeline (Phase 2, "option B" complete) ----
+//
+// Order is axial -> tips -> edges -> centers, NOT tips-first: axial is the
+// only stage (search or commutator fallback) that ever disturbs tips, and
+// every edges/centers commutator in royalPyraminxCommutators.ts was
+// verified to leave tips completely untouched. Solving tips right after
+// axial (rather than first) means it only ever needs to be solved once,
+// regardless of whether axial succeeded via search or fell back to
+// commutators.
+function applyMoveSeq(state: RoyalPyraminxState, seq: readonly string[]): RoyalPyraminxState {
+  let cur = state;
+  for (const m of seq) cur = applyRoyalMove(cur, m);
+  return cur;
+}
+
+/**
+ * Solves a full Royal Pyraminx scramble to identity, always. Tries the
+ * axial meet-in-the-middle search first (fast when it works, but bounded
+ * by maxDepthEachSide/maxStates -- see solveRoyalAxialOnlyWasm's own
+ * comment for its real ceiling); if that fails, falls back to
+ * solveAxialByCommutator (royalPyraminxCommutators.ts), which always
+ * succeeds but produces a longer, non-optimal solution. Edges/centers/
+ * tips are always solved via their own commutator-based stages, which
+ * are cheap and always succeed. The returned move list, applied to
+ * `start`, reaches the solved state -- callers that want the resulting
+ * state too can just apply it themselves.
+ */
+export async function solveRoyalPyraminx(start: RoyalPyraminxState, axialMaxDepthEachSide: number, axialMaxStates: number): Promise<string[]> {
+  const moves: string[] = [];
+  let cur = start;
+
+  const axialSolution = await solveRoyalAxialOnlyWasm(cur.axial, axialMaxDepthEachSide, axialMaxStates);
+  if (axialSolution) {
+    moves.push(...axialSolution);
+    cur = applyMoveSeq(cur, axialSolution);
+  } else {
+    const fallback = solveAxialByCommutator(cur);
+    moves.push(...fallback.moves);
+    cur = fallback.state;
+  }
+
+  const tipsResult = solveTips(cur);
+  moves.push(...tipsResult.moves);
+  cur = tipsResult.state;
+
+  const edgesResult = solveEdgesByCommutator(cur);
+  moves.push(...edgesResult.moves);
+  cur = edgesResult.state;
+
+  const centersResult = solveCentersByCommutator(cur);
+  moves.push(...centersResult.moves);
+  cur = centersResult.state;
+
   return moves;
 }

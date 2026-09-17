@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ALL_ROYAL_MOVE_NAMES, applyRoyalMove } from "./royalPyraminxMoves";
-import { CENTER_COMM_1, EDGE_COMM_1, solveCentersByCommutator, solveEdgesByCommutator, solveTips } from "./royalPyraminxCommutators";
+import { CENTER_COMM_1, EDGE_COMM_1, solveAxialSmallOrbits, solveCentersByCommutator, solveEdgesByCommutator, solveTips } from "./royalPyraminxCommutators";
 import { createSolvedRoyalState, isSolvedRoyal, type RoyalPyraminxState } from "./royalPyraminxState";
 
 function mulberry32(seed: number) {
@@ -60,6 +60,28 @@ describe("base commutators are pure (self-check against the real engine)", () =>
     expect(once.centers.every((v, i) => v === i)).toBe(false);
     const thrice = applyAll(applyAll(once, CENTER_COMM_1.comm), CENTER_COMM_1.comm);
     expect(isSolvedRoyal(thrice)).toBe(true);
+  });
+});
+
+describe("solveAxialSmallOrbits", () => {
+  it("solves axial's four 3-piece orbits, disturbs only tips/edges/centers (never other axial slots), across many scrambles", () => {
+    const SMALL: ReadonlyArray<readonly [number, number, number]> = [
+      [15, 30, 45],
+      [0, 44, 59],
+      [14, 29, 49],
+      [34, 4, 19],
+    ];
+    for (const seed of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
+      const state = scrambledState(seed, 25);
+      const { moves, state: after } = solveAxialSmallOrbits(state);
+      for (const [a, b, c] of SMALL) {
+        expect(after.axial[a]).toBe(a);
+        expect(after.axial[b]).toBe(b);
+        expect(after.axial[c]).toBe(c);
+      }
+      const replay = applyAll(state, moves);
+      expect(replay.axial).toEqual(after.axial);
+    }
   });
 });
 

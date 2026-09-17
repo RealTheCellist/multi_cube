@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { ALL_ROYAL_MOVE_NAMES, applyRoyalMove } from "./royalPyraminxMoves";
-import { createSolvedRoyalState, type RoyalPyraminxState } from "./royalPyraminxState";
-import { solveRoyalAxialOnly, solveRoyalAxialOnlyFast, solveRoyalAxialOnlyWasm, solveRoyalBaseline } from "./royalPyraminxSolver";
+import { createSolvedRoyalState, isSolvedRoyal, type RoyalPyraminxState } from "./royalPyraminxState";
+import { solveRoyalAxialOnly, solveRoyalAxialOnlyFast, solveRoyalAxialOnlyWasm, solveRoyalBaseline, solveRoyalPyraminx } from "./royalPyraminxSolver";
 
 function mulberry32(seed: number) {
   let s = seed >>> 0;
@@ -93,4 +93,33 @@ describe("solveRoyalAxialOnlyWasm", () => {
     const check = applyAll(state, solution!);
     expect(check.axial.every((v, i) => v === i)).toBe(true);
   });
+});
+
+describe("solveRoyalPyraminx (full pipeline: axial search-or-fallback -> tips -> edges -> centers)", () => {
+  it("solves ordinary scrambles (axial search succeeds within budget)", async () => {
+    for (const seed of [1, 2, 3, 4, 5]) {
+      const state = scrambledState(seed, 12);
+      const moves = await solveRoyalPyraminx(state, 8, 4_000_000);
+      const after = applyAll(state, moves);
+      expect(isSolvedRoyal(after), `seed ${seed}`).toBe(true);
+    }
+  }, 30_000);
+
+  it(
+    "solves the 3 known-hard cases via the commutator fallback (tiny budget forces the axial search to fail first)",
+    async () => {
+      const cases = [
+        { seed: 651, len: 25 },
+        { seed: 700, len: 30 },
+        { seed: 701, len: 30 },
+      ];
+      for (const c of cases) {
+        const state = scrambledState(c.seed, c.len);
+        const moves = await solveRoyalPyraminx(state, 8, 100_000);
+        const after = applyAll(state, moves);
+        expect(isSolvedRoyal(after), `seed ${c.seed}`).toBe(true);
+      }
+    },
+    120_000,
+  );
 });
