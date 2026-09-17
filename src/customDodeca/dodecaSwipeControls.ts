@@ -116,7 +116,7 @@ function raycastDodecaNear(scene: CustomDodecaScene, raycaster: THREE.Raycaster,
  * at all, just tangent-direction scoring for sign (CW vs CCW).
  *
  * Depth is fixed at 1 (this face's own full set of stickers, rotating as
- * one rigid unit -- the one turn every Kilominx/Megaminx/Master Megaminx/
+ * one rigid unit -- the one turn every Kilominx/Megaminx/Master Kilominx/
  * Gigaminx size unambiguously supports; see dodecaState.ts's own comment on
  * why deeper multi-layer turns exist in the model but aren't exposed here).
  */

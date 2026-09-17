@@ -58,11 +58,16 @@ const DODECA_SIZE_COLORS: Record<number, string> = {
   5: "btn-rose",
 };
 
-// Real names of the megaminx-family puzzle at each layer count.
+// Real names of the megaminx-family puzzle at each layer count. Odd N has
+// fixed center pieces ("-minx": Megaminx, Gigaminx); even N has none, since
+// the innermost ring closes directly to a point instead of a center facet
+// ("Kilominx" family: Kilominx, Master Kilominx) -- see dodecaState.ts's
+// hasCenter = N % 2 === 1. N=4 was previously mislabeled "Master Megaminx"
+// here, which would imply fixed centers it doesn't actually have.
 const DODECA_LAYER_NAMES: Record<number, string> = {
   2: "Kilominx",
   3: "Megaminx",
-  4: "Master Megaminx",
+  4: "Master Kilominx",
   5: "Gigaminx",
 };
 
