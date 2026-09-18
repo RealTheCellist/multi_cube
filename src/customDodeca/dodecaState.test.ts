@@ -19,10 +19,12 @@ describe("buildSolvedDodeca sticker counts", () => {
     expect(perFace.filter((x) => x.pieceType === "center").length).toBe(1);
   });
 
-  it("N=4 (Master Kilominx): 1 ring (10) + 10 closure wedges = 20/face, no center", () => {
+  it("N=4 (Master Kilominx): 15-piece outer ring (5 corner + 10 wing-split edge) + 5 symmetric closing wedges = 20/face, no center", () => {
     const s = buildSolvedDodeca(4);
     const perFace = s.stickers.filter((x) => x.homeFaceIndex === 0);
     expect(perFace.length).toBe(20);
+    expect(perFace.filter((x) => x.pieceType === "corner").length).toBe(5 + 5); // outer corners + inner closing wedges
+    expect(perFace.filter((x) => x.pieceType === "edge").length).toBe(10); // wing-split outer edges
     expect(perFace.filter((x) => x.pieceType === "center").length).toBe(0);
   });
 

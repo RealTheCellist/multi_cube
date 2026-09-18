@@ -80,11 +80,14 @@ const RING1_INNER_SCALE = 0.45729490168751596; // N=3 (Megaminx), single ring
  * (N=2 verified against a real Kilominx reference photo; N=3 verified by
  * extracting cubing.js's own Megaminx sticker polygon coordinates
  * directly, see SHOULDER_FRACTION/RING1_INNER_SCALE above). N=4 has no
- * known direct equivalent (no cubing.js descriptor sweep reproduced it,
- * and the "Kilominx" family isn't in cubing.js's puzzle-name list at
- * all) so it reuses the Megaminx-derived RING1_INNER_SCALE as its own
- * single ring's boundary -- an approximation, not a verified value, and
- * the least certain of the sizes this app exposes.
+ * cubing.js/library equivalent (the "Kilominx" family isn't in cubing.js's
+ * puzzle-name list at all) -- its own outer-ring topology (15 pieces: 5
+ * corner + 10 wing-split edge, not N=3's 10) and its 5 plain symmetric
+ * closing wedges (not a further ring, not a "pinwheel") were confirmed
+ * against a real Master Kilominx reference photo, but its own exact
+ * shoulder fraction and ring-boundary radius are NOT photo-extracted --
+ * they're chosen (0.25 and 0.5) to make all 20 of its pieces come out to
+ * equal area, after a request for more visually even piece sizes.
  *
  * N=5 (Gigaminx) does NOT use this function -- an earlier version of this
  * code tried to extend the same single-ring formula to a second ring by
@@ -135,19 +138,40 @@ function buildFaceStickers(faceIndex: FaceIndex, layerCount: number, nextId: () 
     return stickers;
   }
 
-  // N=3 or N=4: exactly one ring, boundary at RING1_INNER_SCALE.
+  // N=3 or N=4: exactly one ring. N=3 uses the exact Megaminx-derived
+  // SHOULDER_FRACTION/RING1_INNER_SCALE (see their own comments above).
+  // N=4 uses its own dedicated fractions instead: 0.25 (shoulder) and 0.5
+  // (ring boundary) -- not photo-derived, but chosen so all 20 of its
+  // pieces come out to the EXACT same area (confirmed by computing each
+  // piece type's area symbolically and solving for equal thirds), after
+  // the user asked for more visually even piece sizes (the Megaminx-
+  // derived fractions, reused as an approximation before this, made N=4's
+  // outer corner kite over 2x the area of a single wing piece).
+  const shoulderFraction = N === 4 ? 0.25 : SHOULDER_FRACTION;
+  const ringScale = N === 4 ? 0.5 : RING1_INNER_SCALE;
   const outerRingV = outerV;
-  const innerRingV = outerV.map((v) => lerp(C, v, RING1_INNER_SCALE));
+  const innerRingV = outerV.map((v) => lerp(C, v, ringScale));
   function shoulderPoints(ringV: THREE.Vector3[]): THREE.Vector3[] {
     // shoulder[2j] = near vertex j, on edge (j-1,j); shoulder[2j+1] = near vertex j, on edge (j,j+1).
     const s: THREE.Vector3[] = [];
     for (let j = 0; j < 5; j++) {
-      s[2 * j] = lerp(ringV[(j + 4) % 5], ringV[j], 1 - SHOULDER_FRACTION);
-      s[2 * j + 1] = lerp(ringV[j], ringV[(j + 1) % 5], SHOULDER_FRACTION);
+      s[2 * j] = lerp(ringV[(j + 4) % 5], ringV[j], 1 - shoulderFraction);
+      s[2 * j + 1] = lerp(ringV[j], ringV[(j + 1) % 5], shoulderFraction);
     }
     return s;
   }
   const outerShoulders = shoulderPoints(outerRingV);
+  // N=4's own outer ring splits each edge piece into 2 "wing" pieces
+  // (5 corner + 10 wing = 15 total) -- confirmed against a real Master
+  // Kilominx reference photo used for the pinwheel center below ("최
+  // 외각 15개 안쪽 5개로 구성되어있는데" -- outer ring is 15, not the
+  // single-edge-piece 10 this function still uses for N=3, which stays
+  // unchanged since it's independently verified against real Megaminx
+  // data). The split point sits at the midpoint of both the outer
+  // pentagon edge and the ring boundary edge -- a reasonable default
+  // (no finer-grained photo evidence for an off-center split).
+  const outerMid = outerRingV.map((v, j) => lerp(v, outerRingV[(j + 1) % 5], 0.5));
+  const innerMid = innerRingV.map((v, j) => lerp(v, innerRingV[(j + 1) % 5], 0.5));
 
   for (let j = 0; j < 5; j++) {
     // Corner is the real 4-point kite (apex at the outer vertex, 2
@@ -159,37 +183,54 @@ function buildFaceStickers(faceIndex: FaceIndex, layerCount: number, nextId: () 
       color,
       corners: [outerShoulders[2 * j], outerRingV[j], outerShoulders[2 * j + 1], innerRingV[j]],
     });
-    // Edge is a trapezoid whose inner corners are the ring boundary's own
-    // 2 adjacent vertices directly (untrimmed), since the ring's own
-    // corner-kite also meets that boundary at the exact vertex, not a
-    // shoulder point.
-    stickers.push({
-      id: nextId(),
-      homeFaceIndex: faceIndex,
-      pieceType: "edge",
-      color,
-      corners: [outerShoulders[2 * j + 1], outerShoulders[(2 * j + 2) % 10], innerRingV[(j + 1) % 5], innerRingV[j]],
-    });
-  }
-
-  if (hasCenter) {
-    stickers.push({ id: nextId(), homeFaceIndex: faceIndex, pieceType: "center", color, corners: innerRingV });
-  } else {
-    const closeShoulders = shoulderPoints(innerRingV);
-    for (let j = 0; j < 5; j++) {
+    if (N === 4) {
+      const jn = (j + 1) % 5;
       stickers.push({
         id: nextId(),
         homeFaceIndex: faceIndex,
-        pieceType: "corner",
+        pieceType: "edge",
         color,
-        corners: [closeShoulders[2 * j], innerRingV[j], closeShoulders[2 * j + 1], C.clone()],
+        corners: [outerShoulders[2 * j + 1], outerMid[j], innerMid[j], innerRingV[j]],
       });
       stickers.push({
         id: nextId(),
         homeFaceIndex: faceIndex,
         pieceType: "edge",
         color,
-        corners: [closeShoulders[2 * j + 1], closeShoulders[(2 * j + 2) % 10], C.clone()],
+        corners: [outerMid[j], outerShoulders[2 * jn], innerRingV[jn], innerMid[j]],
+      });
+    } else {
+      // N=3: edge is a trapezoid whose inner corners are the ring
+      // boundary's own 2 adjacent vertices directly (untrimmed), since
+      // the ring's own corner-kite also meets that boundary at the exact
+      // vertex, not a shoulder point.
+      stickers.push({
+        id: nextId(),
+        homeFaceIndex: faceIndex,
+        pieceType: "edge",
+        color,
+        corners: [outerShoulders[2 * j + 1], outerShoulders[(2 * j + 2) % 10], innerRingV[(j + 1) % 5], innerRingV[j]],
+      });
+    }
+  }
+
+  if (hasCenter) {
+    stickers.push({ id: nextId(), homeFaceIndex: faceIndex, pieceType: "center", color, corners: innerRingV });
+  } else {
+    // Master Kilominx's true center is 5 plain symmetric kite wedges
+    // (apex at a ring-boundary vertex, 2 shoulders at the adjacent ring
+    // edges' own midpoints, tip at C) -- confirmed against a real
+    // close-up reference photo: an initial "pinwheel" hypothesis (each
+    // wedge leaning consistently toward one neighbor) was tried and
+    // rejected (didn't match), a plain symmetric wedge did.
+    const closeMid = innerRingV.map((v, j) => lerp(v, innerRingV[(j + 1) % 5], 0.5));
+    for (let j = 0; j < 5; j++) {
+      stickers.push({
+        id: nextId(),
+        homeFaceIndex: faceIndex,
+        pieceType: "corner",
+        color,
+        corners: [closeMid[(j + 4) % 5], innerRingV[j], closeMid[j], C.clone()],
       });
     }
   }
