@@ -58,7 +58,7 @@ function faceCenter(faceIndex: FaceIndex): THREE.Vector3 {
  * assertGeometry() checks face winding: cross product of two edge-ish
  * vectors against the reference axis.
  */
-const FACES_AT_VERTEX: readonly (readonly [number, number, number])[] = (() => {
+export const FACES_AT_VERTEX: readonly (readonly [number, number, number])[] = (() => {
   const touching: number[][] = Array.from({ length: 20 }, () => []);
   for (const f of FACE_INDICES) {
     for (const v of FACE_VERTEX_INDICES[f]) touching[v].push(f);
@@ -86,7 +86,7 @@ const FACES_AT_VERTEX: readonly (readonly [number, number, number])[] = (() => {
   });
 })();
 
-function nearestVertexIndex(p: THREE.Vector3): number {
+export function nearestVertexIndex(p: THREE.Vector3): number {
   let best = 0;
   let bestD = Infinity;
   for (let i = 0; i < 20; i++) {
@@ -99,7 +99,7 @@ function nearestVertexIndex(p: THREE.Vector3): number {
   return best;
 }
 
-function centroid(pts: readonly THREE.Vector3[]): THREE.Vector3 {
+export function centroid(pts: readonly THREE.Vector3[]): THREE.Vector3 {
   const sum = new THREE.Vector3();
   for (const p of pts) sum.add(p);
   return sum.divideScalar(pts.length);
