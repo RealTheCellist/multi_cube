@@ -1,11 +1,16 @@
-import { applyMegaminxMove, EDGES, type MegaminxState, type MegaminxTurn } from "./megaminxState";
+import { applyMegaminxMove, MOVE_TABLE, EDGES, type MegaminxState, type MegaminxTurn, type MegaminxMoveTable } from "./megaminxState";
 import { FACE_VERTEX_INDICES, FACE_INDICES, FACE_NORMALS, type FaceIndex } from "./dodecaMath";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { Worker } from "node:worker_threads";
+import { availableParallelism } from "node:os";
 
 const SOLVED_STATE: MegaminxState = {
-  cornerPerm: Array.from({ length: 20 }, (_, i) => i),
-  cornerOrient: new Array(20).fill(0),
-  edgePerm: Array.from({ length: 30 }, (_, i) => i),
-  edgeOrient: new Array(30).fill(0),
+  cornerPerm: Int8Array.from({ length: 20 }, (_, i) => i),
+  cornerOrient: new Int8Array(20),
+  edgePerm: Int8Array.from({ length: 30 }, (_, i) => i),
+  edgeOrient: new Int8Array(30),
 };
 
 function applySeq(state: MegaminxState, seq: readonly MegaminxTurn[]): MegaminxState {
@@ -344,8 +349,8 @@ interface PieceKind {
   name: string;
   count: number;
   mod: number;
-  perm(s: MegaminxState): readonly number[];
-  orient(s: MegaminxState): readonly number[];
+  perm(s: MegaminxState): Int8Array;
+  orient(s: MegaminxState): Int8Array;
   support(c: Commutator): number[];
   /** See Commutator's own cornerMovingSupport/edgeMovingSupport comment -- the subset of support that findSafeApplication's anchor routing can actually use. */
   movingSupport(c: Commutator): number[];
@@ -369,7 +374,62 @@ const EDGE_KIND: PieceKind = { name: "edge", count: 30, mod: 2, perm: (s) => s.e
  * is enough, correctness of the full S.C.S' is still verified by the
  * caller afterward.
  */
-function buildCommutatorLibrary(targetKind: PieceKind, fixedCorners: ReadonlySet<number>, fixedEdges: ReadonlySet<number>, maxSupport = 6, perSizeCap = 80, maxPairsExamined = 1_500_000, pool: { As: MegaminxTurn[][]; Bs: MegaminxTurn[][] } = { As: COMMUTATOR_As, Bs: COMMUTATOR_Bs }): Commutator[] {
+/**
+ * On-disk cache for buildCommutatorLibrary's own results: each phase's
+ * library depends only on its own (targetKind, fixed sets, size/budget
+ * params, pool) -- not on the scramble being solved -- so once built it
+ * can be built ONCE EVER (per machine) and reused across every later
+ * process run, not just within one process's own `lazy()` cache. This is
+ * what actually matters for iteration speed: measured directly, rebuilding
+ * every process start cost 20-25 minutes total across the 7 phases, every
+ * single time this module loaded. Filed alongside this project's own
+ * "raw-dataset-*.json" convention (see .gitignore) -- large, regenerable
+ * on demand, and deliberately NOT auto-deleted.
+ *
+ * Node-only (uses node:fs) -- safe today because this module is exercised
+ * only from tests (Node/vitest), never bundled into the browser app; if
+ * that ever changes, this caching layer needs to become conditional on
+ * environment rather than assumed.
+ */
+const CACHE_DIR = join(dirname(fileURLToPath(import.meta.url)), "data");
+
+function libraryFingerprint(fixedCorners: ReadonlySet<number>, fixedEdges: ReadonlySet<number>, maxSupport: number, perSizeCap: number, maxPairsExamined: number, pool: { As: MegaminxTurn[][]; Bs: MegaminxTurn[][] }): string {
+  const fc = [...fixedCorners].sort((a, b) => a - b).join(",");
+  const fe = [...fixedEdges].sort((a, b) => a - b).join(",");
+  return `${fc}|${fe}|${maxSupport}|${perSizeCap}|${maxPairsExamined}|${pool.As.length}x${pool.Bs.length}`;
+}
+
+function cacheFilePath(cacheKey: string): string {
+  return join(CACHE_DIR, `raw-dataset-megaminx-${cacheKey}.json`);
+}
+
+function loadCachedLibrary(cacheKey: string, fingerprint: string): Commutator[] | null {
+  try {
+    const raw = readFileSync(cacheFilePath(cacheKey), "utf8");
+    const data = JSON.parse(raw) as { fingerprint: string; commutators: Commutator[] };
+    return data.fingerprint === fingerprint ? data.commutators : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveCachedLibrary(cacheKey: string, fingerprint: string, commutators: Commutator[]): void {
+  try {
+    if (!existsSync(CACHE_DIR)) mkdirSync(CACHE_DIR, { recursive: true });
+    writeFileSync(cacheFilePath(cacheKey), JSON.stringify({ fingerprint, commutators }));
+  } catch {
+    // Best-effort: an unwritable cache dir just means every run pays the
+    // build cost, same as before this feature existed -- not fatal.
+  }
+}
+
+function buildCommutatorLibrary(targetKind: PieceKind, fixedCorners: ReadonlySet<number>, fixedEdges: ReadonlySet<number>, maxSupport = 6, perSizeCap = 80, maxPairsExamined = 1_500_000, pool: { As: MegaminxTurn[][]; Bs: MegaminxTurn[][] } = { As: COMMUTATOR_As, Bs: COMMUTATOR_Bs }, cacheKey?: string): Commutator[] {
+  if (cacheKey) {
+    const fingerprint = libraryFingerprint(fixedCorners, fixedEdges, maxSupport, perSizeCap, maxPairsExamined, pool);
+    const cached = loadCachedLibrary(cacheKey, fingerprint);
+    if (cached) return cached;
+  }
+
   const buckets = new Map<number, Commutator[]>();
   for (let n = 1; n <= maxSupport; n++) buckets.set(n, []);
   const seen = new Set<string>();
@@ -394,7 +454,126 @@ function buildCommutatorLibrary(targetKind: PieceKind, fixedCorners: ReadonlySet
   }
   const out: Commutator[] = [];
   for (let n = 1; n <= maxSupport; n++) out.push(...buckets.get(n)!);
+  if (cacheKey) saveCachedLibrary(cacheKey, libraryFingerprint(fixedCorners, fixedEdges, maxSupport, perSizeCap, maxPairsExamined, pool), out);
   return out;
+}
+
+/**
+ * Parallel, cache-first library build -- spawns one worker
+ * (megaminxCommutatorWorker.ts) per available core, each independently
+ * searching its own slice of `pool.As` against the full `pool.Bs` (same
+ * total (A,B) pair count as the sequential version, just split by A-range
+ * instead of one thread walking the whole thing) -- measured directly:
+ * building all 7 phases' libraries sequentially took 20-25 minutes; this
+ * is the parallel counterpart, used by warmMegaminxLibraries below to
+ * populate the SAME on-disk cache buildCommutatorLibrary's own sync path
+ * reads from, so ordinary solve calls never need to know this exists.
+ * Node's native TS support runs the worker file directly (confirmed
+ * working on this project's Node 22.22, no bundling step needed) -- see
+ * megaminxCommutatorWorker.ts's own dev notes for why it can't just
+ * import megaminxState.ts and duplicates a small amount of logic instead.
+ */
+function runCommutatorWorker(input: {
+  moveTable: readonly (readonly [MegaminxMoveTable, MegaminxMoveTable])[];
+  asChunk: MegaminxTurn[][];
+  bs: MegaminxTurn[][];
+  targetKind: "corner" | "edge";
+  fixedCorners: number[];
+  fixedEdges: number[];
+  maxSupport: number;
+  perSizeCap: number;
+  maxPairsExamined: number;
+}): Promise<Commutator[]> {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(new URL("./megaminxCommutatorWorker.ts", import.meta.url), { workerData: input });
+    worker.on("message", (result: Commutator[]) => {
+      resolve(result);
+      void worker.terminate();
+    });
+    worker.on("error", reject);
+  });
+}
+
+async function buildCommutatorLibraryParallel(targetKind: PieceKind, fixedCorners: ReadonlySet<number>, fixedEdges: ReadonlySet<number>, maxSupport = 6, perSizeCap = 80, maxPairsExamined = 1_500_000, pool: { As: MegaminxTurn[][]; Bs: MegaminxTurn[][] } = { As: COMMUTATOR_As, Bs: COMMUTATOR_Bs }, cacheKey?: string): Promise<Commutator[]> {
+  const fingerprint = libraryFingerprint(fixedCorners, fixedEdges, maxSupport, perSizeCap, maxPairsExamined, pool);
+  if (cacheKey) {
+    const cached = loadCachedLibrary(cacheKey, fingerprint);
+    if (cached) return cached;
+  }
+
+  const workerCount = Math.max(1, Math.min(availableParallelism(), 8, pool.As.length));
+  const chunkSize = Math.ceil(pool.As.length / workerCount);
+  const examinedPerWorker = Math.ceil(maxPairsExamined / workerCount);
+  const chunks: MegaminxTurn[][][] = [];
+  for (let i = 0; i < pool.As.length; i += chunkSize) chunks.push(pool.As.slice(i, i + chunkSize));
+
+  const results = await Promise.all(
+    chunks.map((asChunk) =>
+      runCommutatorWorker({
+        moveTable: MOVE_TABLE,
+        asChunk,
+        bs: pool.Bs,
+        targetKind: targetKind.name as "corner" | "edge",
+        fixedCorners: [...fixedCorners],
+        fixedEdges: [...fixedEdges],
+        maxSupport,
+        perSizeCap,
+        maxPairsExamined: examinedPerWorker,
+      }),
+    ),
+  );
+
+  const buckets = new Map<number, Commutator[]>();
+  for (let n = 1; n <= maxSupport; n++) buckets.set(n, []);
+  const seen = new Set<string>();
+  for (const workerResult of results) {
+    for (const c of workerResult) {
+      const targetSupport = targetKind.support(c);
+      const key = `${c.cornerSupport.join(",")}|${c.edgeSupport.join(",")}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const bucket = buckets.get(targetSupport.length)!;
+      if (bucket.length >= perSizeCap) continue;
+      bucket.push(c);
+    }
+  }
+  const out: Commutator[] = [];
+  for (let n = 1; n <= maxSupport; n++) out.push(...buckets.get(n)!);
+  if (cacheKey) saveCachedLibrary(cacheKey, fingerprint, out);
+  return out;
+}
+
+/**
+ * Pre-builds and caches every phase's commutator library in parallel,
+ * ahead of any actual solve. Purely an opt-in speed optimization: every
+ * `xxxLibrary()` call below still works correctly without ever calling
+ * this (falling back to buildCommutatorLibrary's own synchronous,
+ * single-threaded build-and-cache path on a cache miss) -- calling this
+ * first just means that fallback finds a warm cache instead. Built
+ * sequentially, one phase at a time (each phase already uses every
+ * available core internally), rather than kicking off all 7 phases'
+ * worker pools at once and oversubscribing the machine's cores.
+ *
+ * NOTE: each entry's params must match its corresponding `lazy()` call
+ * site below exactly (same target kind, fixed sets, size/budget knobs,
+ * pool, cache key) for the cache fingerprint to line up -- a mismatch
+ * isn't unsafe (the sync path just rebuilds instead of reusing a stale
+ * entry, per libraryFingerprint's own check), only silently loses the
+ * speedup for that one phase.
+ */
+export async function warmMegaminxLibraries(): Promise<void> {
+  const specs: [PieceKind, ReadonlySet<number>, ReadonlySet<number>, number | undefined, number | undefined, number | undefined, { As: MegaminxTurn[][]; Bs: MegaminxTurn[][] } | undefined, string][] = [
+    [CORNER_KIND, new Set(), new Set(FIRST_LAYER_EDGE_POSITIONS), undefined, undefined, undefined, undefined, "firstLayerCorner"],
+    [EDGE_KIND, new Set(FIRST_LAYER_CORNER_POSITIONS), new Set(FIRST_LAYER_EDGE_POSITIONS), undefined, undefined, undefined, undefined, "upperEdge"],
+    [CORNER_KIND, new Set(FIRST_LAYER_CORNER_POSITIONS), MIDDLE_CORNER_FIXED_EDGES, undefined, undefined, undefined, undefined, "middleCorner"],
+    [EDGE_KIND, new Set(FIRST_LAYER_CORNER_POSITIONS), EQUATORIAL_FIXED_EDGES, 10, 80, 8_000_000, undefined, "equatorialEdge"],
+    [EDGE_KIND, TOP_AND_MIDDLE_CORNERS, LOWER_LOWER_FIXED_EDGES, 10, 80, 8_000_000, lastLayerPool(), "lowerLowerEdge"],
+    [CORNER_KIND, TOP_AND_MIDDLE_CORNERS, BOTTOM_CORNER_FIXED_EDGES, 10, 150, 60_000_000, lastLayerDeepPool(), "bottomCorner"],
+    [EDGE_KIND, TOP_AND_MIDDLE_CORNERS, BOTTOM_EDGE_FIXED_EDGES, 10, 150, 60_000_000, lastLayerDeepPool(), "bottomEdge"],
+  ];
+  for (const [kind, fc, fe, maxSupport, perSizeCap, budget, pool, cacheKey] of specs) {
+    await buildCommutatorLibraryParallel(kind, fc, fe, maxSupport, perSizeCap, budget, pool, cacheKey);
+  }
 }
 
 function positionOnlyKeyFor(kind: PieceKind, pieces: readonly number[]): (s: MegaminxState) => string {
@@ -720,7 +899,7 @@ function solveTargetPositions(kind: PieceKind, library: readonly Commutator[], s
   return solution;
 }
 
-const firstLayerCornerLibrary = lazy(() => buildCommutatorLibrary(CORNER_KIND, new Set(), new Set(FIRST_LAYER_EDGE_POSITIONS)));
+const firstLayerCornerLibrary = lazy(() => buildCommutatorLibrary(CORNER_KIND, new Set(), new Set(FIRST_LAYER_EDGE_POSITIONS), undefined, undefined, undefined, undefined, "firstLayerCorner"));
 
 export function solveFirstLayerCorners(state: MegaminxState, maxAttempts = 400): MegaminxTurn[] {
   return solveTargetPositions(CORNER_KIND, firstLayerCornerLibrary(), state, FIRST_LAYER_CORNER_POSITIONS, new Set(), new Set(FIRST_LAYER_EDGE_POSITIONS), maxAttempts);
@@ -740,7 +919,7 @@ export function solveFirstLayer(state: MegaminxState): MegaminxTurn[] {
  * edgesInBand comment for the computed band structure) -- inserted while
  * preserving the full first layer (5 corners + 5 edges).
  */
-const upperEdgeLibrary = lazy(() => buildCommutatorLibrary(EDGE_KIND, new Set(FIRST_LAYER_CORNER_POSITIONS), new Set(FIRST_LAYER_EDGE_POSITIONS)));
+const upperEdgeLibrary = lazy(() => buildCommutatorLibrary(EDGE_KIND, new Set(FIRST_LAYER_CORNER_POSITIONS), new Set(FIRST_LAYER_EDGE_POSITIONS), undefined, undefined, undefined, undefined, "upperEdge"));
 
 export function isUpperEdgesSolved(state: MegaminxState): boolean {
   return UPPER_UPPER_EDGE_POSITIONS.every((p) => state.edgePerm[p] === p && state.edgeOrient[p] === 0);
@@ -756,7 +935,7 @@ export function solveUpperEdges(state: MegaminxState, maxAttempts = 400): Megami
  * Phase 2a.
  */
 const MIDDLE_CORNER_FIXED_EDGES = new Set([...FIRST_LAYER_EDGE_POSITIONS, ...UPPER_UPPER_EDGE_POSITIONS]);
-const middleCornerLibrary = lazy(() => buildCommutatorLibrary(CORNER_KIND, new Set(FIRST_LAYER_CORNER_POSITIONS), MIDDLE_CORNER_FIXED_EDGES));
+const middleCornerLibrary = lazy(() => buildCommutatorLibrary(CORNER_KIND, new Set(FIRST_LAYER_CORNER_POSITIONS), MIDDLE_CORNER_FIXED_EDGES, undefined, undefined, undefined, undefined, "middleCorner"));
 
 export function isMiddleCornersSolved(state: MegaminxState): boolean {
   return MIDDLE_CORNER_POSITIONS.every((p) => state.cornerPerm[p] === p && state.cornerOrient[p] === 0);
@@ -795,7 +974,7 @@ const lastLayerPool = lazy(() => buildCommutatorPool(LAST_LAYER_FACES, 3, 3));
  * bigger search budget on the fully-fixed version.
  */
 const EQUATORIAL_FIXED_EDGES = new Set([...FIRST_LAYER_EDGE_POSITIONS, ...UPPER_UPPER_EDGE_POSITIONS]);
-const equatorialEdgeLibrary = lazy(() => buildCommutatorLibrary(EDGE_KIND, new Set(FIRST_LAYER_CORNER_POSITIONS), EQUATORIAL_FIXED_EDGES, 10, 80, 8_000_000));
+const equatorialEdgeLibrary = lazy(() => buildCommutatorLibrary(EDGE_KIND, new Set(FIRST_LAYER_CORNER_POSITIONS), EQUATORIAL_FIXED_EDGES, 10, 80, 8_000_000, undefined, "equatorialEdge"));
 
 export function isEquatorialEdgesSolved(state: MegaminxState): boolean {
   return LOWER_UPPER_EDGE_POSITIONS.every((p) => state.edgePerm[p] === p && state.edgeOrient[p] === 0);
@@ -836,7 +1015,7 @@ export function solveMiddleLayer(state: MegaminxState, maxRounds = 12): Megaminx
  * Phase 2a's upper-upper edges).
  */
 const LOWER_LOWER_FIXED_EDGES = new Set([...FIRST_LAYER_EDGE_POSITIONS, ...UPPER_UPPER_EDGE_POSITIONS, ...LOWER_UPPER_EDGE_POSITIONS]);
-const lowerLowerEdgeLibrary = lazy(() => buildCommutatorLibrary(EDGE_KIND, TOP_AND_MIDDLE_CORNERS, LOWER_LOWER_FIXED_EDGES, 10, 80, 8_000_000, lastLayerPool()));
+const lowerLowerEdgeLibrary = lazy(() => buildCommutatorLibrary(EDGE_KIND, TOP_AND_MIDDLE_CORNERS, LOWER_LOWER_FIXED_EDGES, 10, 80, 8_000_000, lastLayerPool(), "lowerLowerEdge"));
 
 export function isLowerLowerEdgesSolved(state: MegaminxState): boolean {
   return LOWER_LOWER_EDGE_POSITIONS.every((p) => state.edgePerm[p] === p && state.edgeOrient[p] === 0);
@@ -875,7 +1054,7 @@ const BOTTOM_CORNER_FIXED_EDGES = new Set([...FIRST_LAYER_EDGE_POSITIONS, ...UPP
  * keep undoing each other.
  */
 const lastLayerDeepPool = lazy(() => buildCommutatorPool(LAST_LAYER_FACES, 3, 5));
-const bottomCornerLibrary = lazy(() => buildCommutatorLibrary(CORNER_KIND, TOP_AND_MIDDLE_CORNERS, BOTTOM_CORNER_FIXED_EDGES, 10, 150, 60_000_000, lastLayerDeepPool()));
+const bottomCornerLibrary = lazy(() => buildCommutatorLibrary(CORNER_KIND, TOP_AND_MIDDLE_CORNERS, BOTTOM_CORNER_FIXED_EDGES, 10, 150, 60_000_000, lastLayerDeepPool(), "bottomCorner"));
 
 export function isBottomCornersSolved(state: MegaminxState): boolean {
   return LAST_LAYER_CORNER_POSITIONS.every((p) => state.cornerPerm[p] === p && state.cornerOrient[p] === 0);
@@ -892,7 +1071,7 @@ export function solveBottomCorners(state: MegaminxState, maxAttempts = 400): Meg
  */
 const ALL_BUT_BOTTOM_CORNERS = new Set([...TOP_AND_MIDDLE_CORNERS, ...LAST_LAYER_CORNER_POSITIONS]);
 const BOTTOM_EDGE_FIXED_EDGES = new Set([...FIRST_LAYER_EDGE_POSITIONS, ...UPPER_UPPER_EDGE_POSITIONS, ...LOWER_UPPER_EDGE_POSITIONS, ...LOWER_LOWER_EDGE_POSITIONS]);
-const bottomEdgeLibrary = lazy(() => buildCommutatorLibrary(EDGE_KIND, TOP_AND_MIDDLE_CORNERS, BOTTOM_EDGE_FIXED_EDGES, 10, 150, 60_000_000, lastLayerDeepPool()));
+const bottomEdgeLibrary = lazy(() => buildCommutatorLibrary(EDGE_KIND, TOP_AND_MIDDLE_CORNERS, BOTTOM_EDGE_FIXED_EDGES, 10, 150, 60_000_000, lastLayerDeepPool(), "bottomEdge"));
 
 export function isBottomEdgesSolved(state: MegaminxState): boolean {
   return BOTTOM_LOWER_EDGE_POSITIONS.every((p) => state.edgePerm[p] === p && state.edgeOrient[p] === 0);
@@ -903,7 +1082,7 @@ export function solveBottomEdges(state: MegaminxState, maxAttempts = 400): Megam
   return solveTargetPositions(EDGE_KIND, bottomEdgeLibrary(), state, BOTTOM_LOWER_EDGE_POSITIONS, TOP_AND_MIDDLE_CORNERS, BOTTOM_EDGE_FIXED_EDGES, maxAttempts);
 }
 
-function correctPositions(positions: readonly number[], perm: readonly number[], orient: readonly number[]): number[] {
+function correctPositions(positions: readonly number[], perm: Int8Array, orient: Int8Array): number[] {
   return positions.filter((p) => perm[p] === p && orient[p] === 0);
 }
 

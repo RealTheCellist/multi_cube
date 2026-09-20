@@ -28,14 +28,23 @@ import type { Rng } from "./dodecaState";
  * is "0" is its own inverse either way, so plain ascending sort is safe).
  */
 export interface MegaminxState {
+  /**
+   * Int8Array, not number[]: applyMegaminxMove allocates a fresh state on
+   * EVERY move application and is the dominant cost of both library
+   * builds and BFS/setup search (hundreds of millions of calls over a
+   * full solve+build run) -- Int8Array cuts each of these 4 arrays from
+   * an 8-byte-boxed-number backing store to 1 byte/element, unboxed, cutting
+   * both allocation and GC cost at that volume. All stored values (piece
+   * ids 0..29, orientations 0..2) fit Int8Array's signed 8-bit range.
+   */
   /** cornerPerm[pos] = the corner piece id currently sitting at vertex `pos`. */
-  cornerPerm: number[];
+  cornerPerm: Int8Array;
   /** cornerOrient[pos] = 0..2, mod 3. */
-  cornerOrient: number[];
+  cornerOrient: Int8Array;
   /** edgePerm[pos] = the edge piece id currently sitting at EDGES[pos]. */
-  edgePerm: number[];
+  edgePerm: Int8Array;
   /** edgeOrient[pos] = 0..1, mod 2. */
-  edgeOrient: number[];
+  edgeOrient: Int8Array;
 }
 
 export interface MegaminxMoveTable {
@@ -185,10 +194,10 @@ export const MOVE_TABLE: readonly (readonly [MegaminxMoveTable, MegaminxMoveTabl
 
 export function solvedMegaminxState(): MegaminxState {
   return {
-    cornerPerm: Array.from({ length: 20 }, (_, i) => i),
-    cornerOrient: new Array(20).fill(0),
-    edgePerm: Array.from({ length: 30 }, (_, i) => i),
-    edgeOrient: new Array(30).fill(0),
+    cornerPerm: Int8Array.from({ length: 20 }, (_, i) => i),
+    cornerOrient: new Int8Array(20),
+    edgePerm: Int8Array.from({ length: 30 }, (_, i) => i),
+    edgeOrient: new Int8Array(30),
   };
 }
 
@@ -199,15 +208,15 @@ export function isMegaminxSolved(state: MegaminxState): boolean {
 /** Applies one move to `state`, returning a NEW state (state is never mutated). */
 export function applyMegaminxMove(state: MegaminxState, face: FaceIndex, sign: 1 | -1): MegaminxState {
   const move = MOVE_TABLE[face][sign === 1 ? 0 : 1];
-  const cornerPerm = new Array(20);
-  const cornerOrient = new Array(20);
+  const cornerPerm = new Int8Array(20);
+  const cornerOrient = new Int8Array(20);
   for (let pos = 0; pos < 20; pos++) {
     const from = move.cornerPerm[pos];
     cornerPerm[pos] = state.cornerPerm[from];
     cornerOrient[pos] = (state.cornerOrient[from] + move.cornerOrientDelta[pos]) % 3;
   }
-  const edgePerm = new Array(30);
-  const edgeOrient = new Array(30);
+  const edgePerm = new Int8Array(30);
+  const edgeOrient = new Int8Array(30);
   for (let pos = 0; pos < 30; pos++) {
     const from = move.edgePerm[pos];
     edgePerm[pos] = state.edgePerm[from];
