@@ -45,6 +45,43 @@ function pieceKeyFor(cornerPieces: readonly number[], edgePieces: readonly numbe
   };
 }
 
+/**
+ * Numeric counterpart to pieceKeyFor, scoped to EDGES only (the only case
+ * this module ever threads through a hot search loop -- see crossKey
+ * below): packs each tracked edge's (position, orientation) into one
+ * base-60 digit of a single safe-integer key instead of building a
+ * string. Safe for any piece count this module actually uses (60^n stays
+ * far under Number.MAX_SAFE_INTEGER through n=5, crossKey's own size);
+ * NOT safe to reuse for a joint corner+edge key at pieceKeyFor's own
+ * scale (10 pieces) without overflowing, which is why pieceKeyFor itself
+ * is left as a string -- its own callers are one-off equality checks, not
+ * bidirectionalSearch's own per-state hot path. Zero-allocation per call:
+ * `positions` is a closure-captured scratch buffer, safe to reuse because
+ * a single keyFn instance is only ever called synchronously, never
+ * reentrantly.
+ */
+function edgeStateKeyFor(edgePieces: readonly number[]): (s: MegaminxState) => number {
+  const sorted = [...edgePieces].sort((a, b) => a - b);
+  const n = sorted.length;
+  const positions = new Array<number>(n);
+  return (s: MegaminxState) => {
+    let remaining = n;
+    for (let pos = 0; pos < 30 && remaining > 0; pos++) {
+      const piece = s.edgePerm[pos];
+      for (let i = 0; i < n; i++) {
+        if (sorted[i] === piece) {
+          positions[i] = pos;
+          remaining--;
+          break;
+        }
+      }
+    }
+    let key = 0;
+    for (let i = 0; i < n; i++) key = key * 60 + positions[i] * 2 + s.edgeOrient[positions[i]];
+    return key;
+  };
+}
+
 /** Like pieceKeyFor, but drops orientation -- only WHERE each corner piece sits (see kilominxSolver.ts's own positionOnlyKeyFor for why this is still sound and why it's useful for a setup search that doesn't care what orientation it arrives with). */
 function cornerPositionOnlyKeyFor(cornerPieces: readonly number[]): (s: MegaminxState) => string {
   const sorted = [...cornerPieces].sort((a, b) => a - b);
@@ -69,10 +106,10 @@ interface Reached {
   path: MegaminxTurn[];
 }
 
-function bidirectionalSearch(state: MegaminxState, target: MegaminxState, keyFn: (s: MegaminxState) => string, maxHalfDepth: number, maxFrontierSize = 1_500_000): MegaminxTurn[] | null {
+function bidirectionalSearch(state: MegaminxState, target: MegaminxState, keyFn: (s: MegaminxState) => number, maxHalfDepth: number, maxFrontierSize = 1_500_000): MegaminxTurn[] | null {
   const targetKey = keyFn(target);
-  let forward = new Map<string, Reached>([[keyFn(state), { state, path: [] }]]);
-  let backward = new Map<string, Reached>([[targetKey, { state: target, path: [] }]]);
+  let forward = new Map<number, Reached>([[keyFn(state), { state, path: [] }]]);
+  let backward = new Map<number, Reached>([[targetKey, { state: target, path: [] }]]);
 
   const tryMeet = (): MegaminxTurn[] | null => {
     for (const [key, f] of forward) {
@@ -91,7 +128,7 @@ function bidirectionalSearch(state: MegaminxState, target: MegaminxState, keyFn:
   for (let depth = 0; depth < maxHalfDepth; depth++) {
     const expandForward = forward.size <= backward.size;
     const frontier = expandForward ? forward : backward;
-    const next = new Map<string, Reached>();
+    const next = new Map<number, Reached>();
     for (const { state: base, path } of frontier.values()) {
       for (const face of FACE_INDICES) {
         for (const sign of [1, -1] as const) {
@@ -210,7 +247,7 @@ const LAST_LAYER_CORNER_POSITIONS: readonly number[] = FACE_VERTEX_INDICES[BOTTO
  * keeps each stage the same SIZE of problem N=2's own Phase 1 already
  * proved tractable.
  */
-const crossKey = pieceKeyFor([], FIRST_LAYER_EDGE_POSITIONS);
+const crossKey = edgeStateKeyFor(FIRST_LAYER_EDGE_POSITIONS);
 
 export function isCrossSolved(state: MegaminxState): boolean {
   return crossKey(state) === crossKey(SOLVED_STATE);
@@ -576,13 +613,38 @@ export async function warmMegaminxLibraries(): Promise<void> {
   }
 }
 
-function positionOnlyKeyFor(kind: PieceKind, pieces: readonly number[]): (s: MegaminxState) => string {
+/**
+ * Numeric, zero-allocation counterpart of the string version this
+ * replaced: instead of building a full `kind.count`-size inverse-
+ * permutation array and a joined string every call, directly scans
+ * `perm` for just the (at most a handful of) tracked pieces' positions
+ * and packs them into one base-30 safe-integer key (positions never
+ * exceed 29 for either kind, corner or edge) -- 30^n stays far under
+ * Number.MAX_SAFE_INTEGER for every `pieces.length` this module actually
+ * uses (<=8, from findFinishingApplication's own wrongPositions guard).
+ * `positions` is a closure-captured scratch buffer, safe to reuse because
+ * a single keyFn instance is only ever called synchronously.
+ */
+function positionOnlyKeyFor(kind: PieceKind, pieces: readonly number[]): (s: MegaminxState) => number {
   const sorted = [...pieces].sort((a, b) => a - b);
+  const n = sorted.length;
+  const positions = new Array<number>(n);
   return (s: MegaminxState) => {
     const perm = kind.perm(s);
-    const loc = new Array<number>(kind.count);
-    for (let pos = 0; pos < kind.count; pos++) loc[perm[pos]] = pos;
-    return sorted.map((piece) => loc[piece]).join(",");
+    let remaining = n;
+    for (let pos = 0; pos < kind.count && remaining > 0; pos++) {
+      const piece = perm[pos];
+      for (let i = 0; i < n; i++) {
+        if (sorted[i] === piece) {
+          positions[i] = pos;
+          remaining--;
+          break;
+        }
+      }
+    }
+    let key = 0;
+    for (let i = 0; i < n; i++) key = key * 30 + positions[i];
+    return key;
   };
 }
 
@@ -679,8 +741,8 @@ function fixedPreservedCheck(fixedCorners: ReadonlySet<number>, fixedEdges: Read
  * setup key only depends on (target, displaced), not on which commutator
  * or anchor is being tried, so one shared table serves the whole library.
  */
-function buildReachableMap(state: MegaminxState, keyFn: (s: MegaminxState) => string, maxDepth: number, maxReachable = 300_000): Map<string, MegaminxTurn[]> {
-  const reachable = new Map<string, MegaminxTurn[]>([[keyFn(state), []]]);
+function buildReachableMap(state: MegaminxState, keyFn: (s: MegaminxState) => number, maxDepth: number, maxReachable = 300_000): Map<number, MegaminxTurn[]> {
+  const reachable = new Map<number, MegaminxTurn[]>([[keyFn(state), []]]);
   let frontier: { state: MegaminxState; path: MegaminxTurn[] }[] = [{ state, path: [] }];
   for (let depth = 0; depth < maxDepth && frontier.length > 0 && reachable.size < maxReachable; depth++) {
     const next: { state: MegaminxState; path: MegaminxTurn[] }[] = [];
@@ -702,9 +764,9 @@ function buildReachableMap(state: MegaminxState, keyFn: (s: MegaminxState) => st
   return reachable;
 }
 
-/** Builds the SAME key format positionOnlyKeyFor(kind, [a, b]) would report for a state where piece a sits at position posA and piece b sits at position posB (sorted by piece id, matching positionOnlyKeyFor's own sort). */
-function jointPositionKey(a: number, posA: number, b: number, posB: number): string {
-  return a <= b ? `${posA},${posB}` : `${posB},${posA}`;
+/** Builds the SAME key positionOnlyKeyFor(kind, [a, b]) would report for a state where piece a sits at position posA and piece b sits at position posB (sorted by piece id, matching positionOnlyKeyFor's own sort and base-30 packing). */
+function jointPositionKey(a: number, posA: number, b: number, posB: number): number {
+  return a <= b ? posA * 30 + posB : posB * 30 + posA;
 }
 
 function findSafeApplication(kind: PieceKind, library: readonly Commutator[], current: MegaminxState, fixedOk: (s: MegaminxState) => boolean, targetPositions: readonly number[], target: number, wrongBefore: number, requireImprovement: boolean): { state: MegaminxState; seq: MegaminxTurn[] } | null {
@@ -717,7 +779,7 @@ function findSafeApplication(kind: PieceKind, library: readonly Commutator[], cu
     const reachable = buildReachableMap(current, setupKeyFn, 9);
     for (const C of library) {
       for (const anchor of kind.movingSupport(C)) {
-        const S = reachable.get(String(anchor));
+        const S = reachable.get(anchor);
         if (!S) continue;
         const Sinv = invertSeq(S);
         const fullSeq = [...S, ...C.seq, ...Sinv];
@@ -788,7 +850,8 @@ function findFinishingApplication(kind: PieceKind, library: readonly Commutator[
     for (const assignment of permutations(wrongPieces)) {
       const pieceToPos = new Map<number, number>();
       assignment.forEach((piece, i) => pieceToPos.set(piece, support[i]));
-      const key = sortedPieces.map((piece) => pieceToPos.get(piece)).join(",");
+      let key = 0;
+      for (const piece of sortedPieces) key = key * 30 + (pieceToPos.get(piece) as number);
       const S = reachable.get(key);
       if (!S) continue;
       const Sinv = invertSeq(S);
