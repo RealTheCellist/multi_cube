@@ -1,4 +1,5 @@
 import { applyMegaminxMove, MOVE_TABLE, EDGES, type MegaminxState, type MegaminxTurn, type MegaminxMoveTable } from "./megaminxState";
+import { buildReachableMapWasm } from "./megaminxSearchWasm";
 import { FACE_VERTEX_INDICES, FACE_INDICES, FACE_NORMALS, type FaceIndex } from "./dodecaMath";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -613,41 +614,6 @@ export async function warmMegaminxLibraries(): Promise<void> {
   }
 }
 
-/**
- * Numeric, zero-allocation counterpart of the string version this
- * replaced: instead of building a full `kind.count`-size inverse-
- * permutation array and a joined string every call, directly scans
- * `perm` for just the (at most a handful of) tracked pieces' positions
- * and packs them into one base-30 safe-integer key (positions never
- * exceed 29 for either kind, corner or edge) -- 30^n stays far under
- * Number.MAX_SAFE_INTEGER for every `pieces.length` this module actually
- * uses (<=8, from findFinishingApplication's own wrongPositions guard).
- * `positions` is a closure-captured scratch buffer, safe to reuse because
- * a single keyFn instance is only ever called synchronously.
- */
-function positionOnlyKeyFor(kind: PieceKind, pieces: readonly number[]): (s: MegaminxState) => number {
-  const sorted = [...pieces].sort((a, b) => a - b);
-  const n = sorted.length;
-  const positions = new Array<number>(n);
-  return (s: MegaminxState) => {
-    const perm = kind.perm(s);
-    let remaining = n;
-    for (let pos = 0; pos < kind.count && remaining > 0; pos++) {
-      const piece = perm[pos];
-      for (let i = 0; i < n; i++) {
-        if (sorted[i] === piece) {
-          positions[i] = pos;
-          remaining--;
-          break;
-        }
-      }
-    }
-    let key = 0;
-    for (let i = 0; i < n; i++) key = key * 30 + positions[i];
-    return key;
-  };
-}
-
 function countWrongKind(kind: PieceKind, state: MegaminxState, positions: readonly number[]): number {
   const perm = kind.perm(state);
   const orient = kind.orient(state);
@@ -741,30 +707,7 @@ function fixedPreservedCheck(fixedCorners: ReadonlySet<number>, fixedEdges: Read
  * setup key only depends on (target, displaced), not on which commutator
  * or anchor is being tried, so one shared table serves the whole library.
  */
-function buildReachableMap(state: MegaminxState, keyFn: (s: MegaminxState) => number, maxDepth: number, maxReachable = 300_000): Map<number, MegaminxTurn[]> {
-  const reachable = new Map<number, MegaminxTurn[]>([[keyFn(state), []]]);
-  let frontier: { state: MegaminxState; path: MegaminxTurn[] }[] = [{ state, path: [] }];
-  for (let depth = 0; depth < maxDepth && frontier.length > 0 && reachable.size < maxReachable; depth++) {
-    const next: { state: MegaminxState; path: MegaminxTurn[] }[] = [];
-    for (const { state: base, path } of frontier) {
-      for (const face of FACE_INDICES) {
-        for (const sign of [1, -1] as const) {
-          const child = applyMegaminxMove(base, face, sign);
-          const key = keyFn(child);
-          if (reachable.has(key)) continue;
-          if (reachable.size >= maxReachable) break;
-          const childPath = [...path, { face, sign }];
-          reachable.set(key, childPath);
-          next.push({ state: child, path: childPath });
-        }
-      }
-    }
-    frontier = next;
-  }
-  return reachable;
-}
-
-/** Builds the SAME key positionOnlyKeyFor(kind, [a, b]) would report for a state where piece a sits at position posA and piece b sits at position posB (sorted by piece id, matching positionOnlyKeyFor's own sort and base-30 packing). */
+/** Builds the SAME key buildReachableMapWasm(kind, [a, b], ...) would report for a state where piece a sits at position posA and piece b sits at position posB (sorted by piece id, matching wasm-search/src/lib.rs's own compute_key base-30 packing). */
 function jointPositionKey(a: number, posA: number, b: number, posB: number): number {
   return a <= b ? posA * 30 + posB : posB * 30 + posA;
 }
@@ -775,8 +718,7 @@ function findSafeApplication(kind: PieceKind, library: readonly Commutator[], cu
   if (displaced === target) {
     // Already at home, just mis-oriented: no relocation needed, so the
     // old single-condition routing is fine here (nothing to "swap out").
-    const setupKeyFn = positionOnlyKeyFor(kind, [target]);
-    const reachable = buildReachableMap(current, setupKeyFn, 9);
+    const reachable = buildReachableMapWasm(current, kind.name === "corner" ? 0 : 1, [target], 9);
     for (const C of library) {
       for (const anchor of kind.movingSupport(C)) {
         const S = reachable.get(anchor);
@@ -795,8 +737,7 @@ function findSafeApplication(kind: PieceKind, library: readonly Commutator[], cu
     return null;
   }
 
-  const setupKeyFn = positionOnlyKeyFor(kind, [target, displaced]);
-  const reachable = buildReachableMap(current, setupKeyFn, 11);
+  const reachable = buildReachableMapWasm(current, kind.name === "corner" ? 0 : 1, [target, displaced], 11);
   for (const C of library) {
     const destination = kind.destination(C);
     for (const anchor of kind.movingSupport(C)) {
@@ -841,8 +782,7 @@ function findFinishingApplication(kind: PieceKind, library: readonly Commutator[
   const perm = kind.perm(current);
   const wrongPieces = wrongPositions.map((p) => perm[p]);
   const sortedPieces = [...wrongPieces].sort((a, b) => a - b);
-  const posKeyFn = positionOnlyKeyFor(kind, wrongPieces);
-  const reachable = buildReachableMap(current, posKeyFn, 10);
+  const reachable = buildReachableMapWasm(current, kind.name === "corner" ? 0 : 1, wrongPieces, 10);
 
   for (const C of library) {
     const support = kind.support(C);
