@@ -777,12 +777,31 @@ function permutations<T>(items: readonly T[]): T[][] {
  * small (solveTargetPositions caps it at 6); this guard is a defense-in-
  * depth backstop, not the primary control.
  */
+/**
+ * Profiled directly (see this module's own dev notes on the Wasm search
+ * port): findFinishingApplication's own buildReachableMapWasm call, not
+ * its matching loop, was the dominant cost of a full solve -- ~75% of
+ * total time across a 3-seed sample, vs ~2% for findSafeApplication's own
+ * build. Root cause: this function tracks up to 8 pieces jointly, whose
+ * base-30 key space (up to 30^8) is effectively unbounded next to
+ * maxReachable, so for wrongPositions.length >= 4 the search reliably
+ * hits the reachable-count cap rather than exhausting its own key space
+ * early the way the <=3-piece case does (900 or 27,000 possible keys,
+ * both well under even a much smaller cap) -- and it MISSES (no exact-
+ * finish match found, falling back to findSafeApplication) 91% of the
+ * time in that same sample, meaning most of that cost was paying for a
+ * full-depth search that was going to fail anyway. Lowering the cap here
+ * is safe regardless of outcome: a smaller cap can only make this
+ * function return null MORE often, and null just means
+ * solveTargetPositions's own fallback (findSafeApplication) handles that
+ * attempt instead -- never a correctness risk, only a solution-length one.
+ */
 function findFinishingApplication(kind: PieceKind, library: readonly Commutator[], current: MegaminxState, fixedOk: (s: MegaminxState) => boolean, wrongPositions: readonly number[]): { state: MegaminxState; seq: MegaminxTurn[] } | null {
   if (wrongPositions.length > 8) return null;
   const perm = kind.perm(current);
   const wrongPieces = wrongPositions.map((p) => perm[p]);
   const sortedPieces = [...wrongPieces].sort((a, b) => a - b);
-  const reachable = buildReachableMapWasm(current, kind.name === "corner" ? 0 : 1, wrongPieces, 10);
+  const reachable = buildReachableMapWasm(current, kind.name === "corner" ? 0 : 1, wrongPieces, 8, 30_000);
 
   for (const C of library) {
     const support = kind.support(C);
