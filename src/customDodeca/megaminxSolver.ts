@@ -1,5 +1,5 @@
 import { applyMegaminxMove, MOVE_TABLE, EDGES, type MegaminxState, type MegaminxTurn, type MegaminxMoveTable } from "./megaminxState";
-import { buildReachableMapWasm, uploadLibraryWasm, findSafeApplicationWasm } from "./megaminxSearchWasm";
+import { uploadLibraryWasm, findSafeApplicationWasm, findFinishingApplicationWasm, solveCrossWasm } from "./megaminxSearchWasm";
 import { FACE_VERTEX_INDICES, FACE_INDICES, FACE_NORMALS, type FaceIndex } from "./dodecaMath";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -91,63 +91,6 @@ function cornerPositionOnlyKeyFor(cornerPieces: readonly number[]): (s: Megaminx
     for (let pos = 0; pos < 20; pos++) loc[s.cornerPerm[pos]] = pos;
     return sorted.map((piece) => loc[piece]).join(",");
   };
-}
-
-/**
- * Bidirectional (meet-in-the-middle) BFS from `state` to `target`, sound
- * only when `keyFn` is a projection the move action factors through (see
- * kilominxSolver.ts's own bidirectionalSearch for the full history of why
- * this matters -- an earlier, unsound version there returned false-
- * positive "solutions" that didn't actually solve anything). `pieceKeyFor`
- * above is exactly such a projection, so this can safely keep a single
- * representative state per key, no bucketing needed.
- */
-interface Reached {
-  state: MegaminxState;
-  path: MegaminxTurn[];
-}
-
-function bidirectionalSearch(state: MegaminxState, target: MegaminxState, keyFn: (s: MegaminxState) => number, maxHalfDepth: number, maxFrontierSize = 1_500_000): MegaminxTurn[] | null {
-  const targetKey = keyFn(target);
-  let forward = new Map<number, Reached>([[keyFn(state), { state, path: [] }]]);
-  let backward = new Map<number, Reached>([[targetKey, { state: target, path: [] }]]);
-
-  const tryMeet = (): MegaminxTurn[] | null => {
-    for (const [key, f] of forward) {
-      const b = backward.get(key);
-      if (!b) continue;
-      const joined = [...f.path, ...b.path];
-      if (keyFn(applySeq(state, joined)) !== targetKey) throw new Error("megaminxSolver: bidirectionalSearch keyFn is not a sound projection");
-      return joined;
-    }
-    return null;
-  };
-
-  let meet = tryMeet();
-  if (meet) return meet;
-
-  for (let depth = 0; depth < maxHalfDepth; depth++) {
-    const expandForward = forward.size <= backward.size;
-    const frontier = expandForward ? forward : backward;
-    const next = new Map<number, Reached>();
-    for (const { state: base, path } of frontier.values()) {
-      for (const face of FACE_INDICES) {
-        for (const sign of [1, -1] as const) {
-          const child = applyMegaminxMove(base, face, sign);
-          const childKey = keyFn(child);
-          if (next.has(childKey)) continue;
-          if (next.size >= maxFrontierSize) return null;
-          const childPath = expandForward ? [...path, { face, sign }] : [{ face, sign: (sign * -1) as 1 | -1 }, ...path];
-          next.set(childKey, { state: child, path: childPath });
-        }
-      }
-    }
-    if (expandForward) forward = next;
-    else backward = next;
-    meet = tryMeet();
-    if (meet) return meet;
-  }
-  return null;
 }
 
 function edgeIndexOf(a: number, b: number): number {
@@ -254,9 +197,11 @@ export function isCrossSolved(state: MegaminxState): boolean {
   return crossKey(state) === crossKey(SOLVED_STATE);
 }
 
+const sortedFirstLayerEdgePositions = [...FIRST_LAYER_EDGE_POSITIONS].sort((a, b) => a - b);
+
 export function solveCross(state: MegaminxState, maxHalfDepth = 11, maxFrontierSize = 1_500_000): MegaminxTurn[] {
   if (isCrossSolved(state)) return [];
-  const solution = bidirectionalSearch(state, SOLVED_STATE, crossKey, maxHalfDepth, maxFrontierSize);
+  const solution = solveCrossWasm(state, sortedFirstLayerEdgePositions, maxHalfDepth, maxFrontierSize);
   if (!solution) throw new Error(`megaminxSolver: cross not solved within half-depth ${maxHalfDepth}`);
   return solution;
 }
@@ -622,10 +567,6 @@ function countWrongKind(kind: PieceKind, state: MegaminxState, positions: readon
   return n;
 }
 
-function fixedPreservedCheck(fixedCorners: ReadonlySet<number>, fixedEdges: ReadonlySet<number>): (s: MegaminxState) => boolean {
-  return (s: MegaminxState) => [...fixedCorners].every((p) => s.cornerPerm[p] === p && s.cornerOrient[p] === 0) && [...fixedEdges].every((p) => s.edgePerm[p] === p && s.edgeOrient[p] === 0);
-}
-
 /**
  * Same single-anchor setup search as kilominxSolver.ts's own
  * findSafeApplication, generalized over piece kind -- with ONE addition
@@ -705,7 +646,7 @@ function getLibraryHandle(kind: PieceKind, library: readonly Commutator[]): numb
   const cached = libraryHandleCache.get(library);
   if (cached !== undefined) return cached;
   const kindByte = kind.name === "corner" ? 0 : 1;
-  const entries = library.map((c) => ({ seq: c.seq, movingSupport: kind.movingSupport(c), destination: kind.destination(c) }));
+  const entries = library.map((c) => ({ seq: c.seq, support: kind.support(c), movingSupport: kind.movingSupport(c), destination: kind.destination(c) }));
   const handle = uploadLibraryWasm(kindByte, entries);
   libraryHandleCache.set(library, handle);
   return handle;
@@ -725,99 +666,78 @@ function getLibraryHandle(kind: PieceKind, library: readonly Commutator[]): numb
  * anchor vs joint target+displaced routing) exactly, byte-for-byte
  * against the JS version this replaced.
  */
-function findSafeApplication(kind: PieceKind, library: readonly Commutator[], current: MegaminxState, fixedCorners: ReadonlySet<number>, fixedEdges: ReadonlySet<number>, targetPositions: readonly number[], target: number, wrongBefore: number, requireImprovement: boolean): { state: MegaminxState; seq: MegaminxTurn[] } | null {
+function findSafeApplication(kind: PieceKind, library: readonly Commutator[], current: MegaminxState, fixedCorners: readonly number[], fixedEdges: readonly number[], targetPositions: readonly number[], target: number, wrongBefore: number, requireImprovement: boolean): { state: MegaminxState; seq: MegaminxTurn[] } | null {
   const displaced = kind.perm(current)[target];
   const handle = getLibraryHandle(kind, library);
-  return findSafeApplicationWasm(handle, current, kind.name === "corner" ? 0 : 1, target, displaced, [...fixedCorners], [...fixedEdges], targetPositions, wrongBefore, requireImprovement);
-}
-
-function permutations<T>(items: readonly T[]): T[][] {
-  if (items.length <= 1) return [items.slice()];
-  const out: T[][] = [];
-  for (let i = 0; i < items.length; i++) {
-    const rest = [...items.slice(0, i), ...items.slice(i + 1)];
-    for (const p of permutations(rest)) out.push([items[i], ...p]);
-  }
-  return out;
+  return findSafeApplicationWasm(handle, current, kind.name === "corner" ? 0 : 1, target, displaced, fixedCorners, fixedEdges, targetPositions, wrongBefore, requireImprovement);
 }
 
 /**
  * The joint (all-at-once) finisher, same technique as kilominxSolver.ts's
  * own tryExactFinish, generalized over piece kind. Cost is O(wrongPieces!)
- * -- permutations(wrongPieces) -- times however many library entries
- * share that exact support size, so callers should keep wrongPositions
- * small (solveTargetPositions caps it at 6); this guard is a defense-in-
- * depth backstop, not the primary control.
+ * times however many library entries share that exact support size, so
+ * callers should keep wrongPositions small (solveTargetPositions caps it
+ * at 6); this guard is a defense-in-depth backstop, not the primary
+ * control.
  */
 /**
  * Profiled directly (see this module's own dev notes on the Wasm search
- * port): findFinishingApplication's own buildReachableMapWasm call, not
- * its matching loop, was the dominant cost of a full solve -- ~75% of
- * total time across a 3-seed sample, vs ~2% for findSafeApplication's own
- * build. Root cause: this function tracks up to 8 pieces jointly, whose
- * base-30 key space (up to 30^8) is effectively unbounded next to
+ * port): findFinishingApplication's own buildReachableMapWasm call was
+ * ~75% of a full solve's own time (3-seed sample), and its own JS-side
+ * matching loop (library iteration, permutations(wrongPieces), applySeq,
+ * fixedOk, per-piece solved check) a further ~21% (5-seed sample, after
+ * findSafeApplication's own Wasm port shrank everything else) -- both now
+ * moved into Wasm (see wasm-search/src/lib.rs's own
+ * find_finishing_application), same technique and same reasoning as
+ * findSafeApplication's own full-function port. This function's own root
+ * cause for its low hit rate remains: it tracks up to 8 pieces jointly,
+ * whose base-30 key space (up to 30^8) is effectively unbounded next to
  * maxReachable, so for wrongPositions.length >= 4 the search reliably
  * hits the reachable-count cap rather than exhausting its own key space
  * early the way the <=3-piece case does (900 or 27,000 possible keys,
  * both well under even a much smaller cap) -- and it MISSES (no exact-
- * finish match found, falling back to findSafeApplication) 91% of the
- * time in that same sample, meaning most of that cost was paying for a
- * full-depth search that was going to fail anyway. Lowering the cap here
- * is safe regardless of outcome: a smaller cap can only make this
- * function return null MORE often, and null just means
- * solveTargetPositions's own fallback (findSafeApplication) handles that
- * attempt instead -- never a correctness risk, only a solution-length one.
+ * finish match found, falling back to findSafeApplication) ~91% of the
+ * time, meaning most of its cost pays for a full-depth search that was
+ * going to fail anyway; that miss rate is unchanged by this Wasm port
+ * (confirmed empirically, same algorithm) -- only its own per-call cost
+ * (paid on both hits and misses) is now much cheaper.
  */
 /**
  * Tiers the cap DOWN as `n` (wrongPositions.length) grows, instead of one
- * fixed cap for every size 2..8: n<=3's own key space (900 or 27,000) is
- * already well under 30,000, so that tier is really "no cap yet" and
- * exists only to keep those sizes' behavior exactly as before this
- * tiering was added. From n=4 on, the cap is what's actually binding
- * (see this function's own dev notes above) -- and larger n is BOTH more
- * expensive per reachable node (more permutations to check against it in
- * the matching loop below) and combinatorially less likely to land an
- * exact-finish match at all, so it gets the smallest budget.
+ * fixed cap for every size 2..8 -- larger n is BOTH more expensive per
+ * reachable node (more permutations to check against it in the matching
+ * loop below) and combinatorially less likely to land an exact-finish
+ * match at all, so it gets the smallest budget.
+ *
+ * Cut to ~1/4 of their post-Wasm-port values (Task #38/#39) after this
+ * function's own ~91% miss rate (see dev notes above) made clear that
+ * most of even the CHEAP Wasm search was still being paid on attempts
+ * that were going to fail anyway -- findFinishingApplication always has
+ * a safe fallback (findSafeApplication, called next by solveTargetPositions
+ * on a miss), unlike findSafeApplication itself, which has none and was
+ * NOT touched here (an earlier session round found reducing ITS OWN depth
+ * caused real regressions -- see this module's own git history). Swept
+ * empirically (20 seeds, well past the 10 used elsewhere in this file) to
+ * find the safety cliff before picking a value: full pipeline solves stay
+ * 20/20 correct all the way down to roughly half these numbers again, but
+ * disabling the search entirely (maxDepth=0) collapses to 9/20 --
+ * confirming this function is genuinely load-bearing, not just slow. This
+ * tier keeps real margin before that cliff rather than sitting right on
+ * top of it.
  */
 function finishingSearchCap(n: number): { maxDepth: number; maxReachable: number } {
-  if (n <= 3) return { maxDepth: 8, maxReachable: 30_000 };
-  if (n === 4) return { maxDepth: 7, maxReachable: 15_000 };
-  if (n === 5) return { maxDepth: 6, maxReachable: 6_000 };
-  if (n === 6) return { maxDepth: 6, maxReachable: 3_000 };
-  return { maxDepth: 5, maxReachable: 1_500 }; // n=7,8
+  if (n <= 3) return { maxDepth: 4, maxReachable: 2_000 };
+  if (n === 4) return { maxDepth: 3, maxReachable: 1_000 };
+  if (n === 5) return { maxDepth: 2, maxReachable: 400 };
+  if (n === 6) return { maxDepth: 2, maxReachable: 200 };
+  return { maxDepth: 1, maxReachable: 100 }; // n=7,8
 }
 
-function findFinishingApplication(kind: PieceKind, library: readonly Commutator[], current: MegaminxState, fixedOk: (s: MegaminxState) => boolean, wrongPositions: readonly number[]): { state: MegaminxState; seq: MegaminxTurn[] } | null {
+function findFinishingApplication(kind: PieceKind, library: readonly Commutator[], current: MegaminxState, fixedCorners: readonly number[], fixedEdges: readonly number[], wrongPositions: readonly number[]): { state: MegaminxState; seq: MegaminxTurn[] } | null {
   if (wrongPositions.length > 8) return null;
-  const perm = kind.perm(current);
-  const wrongPieces = wrongPositions.map((p) => perm[p]);
-  const sortedPieces = [...wrongPieces].sort((a, b) => a - b);
-  const { maxDepth, maxReachable } = finishingSearchCap(wrongPieces.length);
-  const reachable = buildReachableMapWasm(current, kind.name === "corner" ? 0 : 1, wrongPieces, maxDepth, maxReachable);
-
-  for (const C of library) {
-    const support = kind.support(C);
-    if (support.length !== wrongPieces.length) continue;
-    for (const assignment of permutations(wrongPieces)) {
-      const pieceToPos = new Map<number, number>();
-      assignment.forEach((piece, i) => pieceToPos.set(piece, support[i]));
-      let key = 0;
-      for (const piece of sortedPieces) key = key * 30 + (pieceToPos.get(piece) as number);
-      const S = reachable.get(key);
-      if (!S) continue;
-      const Sinv = invertSeq(S);
-      const fullSeq = [...S, ...C.seq, ...Sinv];
-      const resultState = applySeq(current, fullSeq);
-
-      if (!fixedOk(resultState)) continue;
-      const resultPerm = kind.perm(resultState);
-      const resultOrient = kind.orient(resultState);
-      if (wrongPieces.some((piece) => resultPerm[piece] !== piece || resultOrient[piece] !== 0)) continue;
-
-      return { state: resultState, seq: fullSeq };
-    }
-  }
-  return null;
+  const { maxDepth, maxReachable } = finishingSearchCap(wrongPositions.length);
+  const handle = getLibraryHandle(kind, library);
+  return findFinishingApplicationWasm(handle, current, kind.name === "corner" ? 0 : 1, wrongPositions, fixedCorners, fixedEdges, maxDepth, maxReachable);
 }
 
 /** Computes `compute()` once, on first call, and returns the same value on every later call -- each phase's own commutator library is expensive (~1.5M-pair search) but depends only on that PHASE's fixed set, not on the scramble being solved, so it must be built once per phase and reused across every solve call, not rebuilt per scramble (confirmed the hard way: rebuilding it inside solveTargetPositions made a 10-scramble test time out that used to finish in well under a minute). */
@@ -843,8 +763,17 @@ function lazy<T>(compute: () => T): () => T {
  * for why it's never built inside this function).
  */
 function solveTargetPositions(kind: PieceKind, library: readonly Commutator[], state: MegaminxState, targetPositions: readonly number[], fixedCorners: ReadonlySet<number>, fixedEdges: ReadonlySet<number>, maxAttempts = 400): MegaminxTurn[] {
-  const fixedOk = fixedPreservedCheck(fixedCorners, fixedEdges);
   const maxSupport = Math.max(...library.map((c) => kind.support(c).length), 0);
+  // fixedCorners/fixedEdges never change across this whole call, but
+  // findSafeApplication needs them as arrays (for the Wasm scratch-buffer
+  // write) -- spreading the Sets once here instead of on every one of the
+  // (potentially dozens of) findSafeApplication calls below avoids
+  // redundant Set-iteration + array allocation per call (found via direct
+  // profiling of this loop: ~90% of its own time was already inside Wasm
+  // calls, so the remaining JS-side win available here is this repeated
+  // allocation, not the loop's own control flow).
+  const fixedCornersArr = [...fixedCorners];
+  const fixedEdgesArr = [...fixedEdges];
 
   let current = state;
   const solution: MegaminxTurn[] = [];
@@ -872,7 +801,7 @@ function solveTargetPositions(kind: PieceKind, library: readonly Commutator[], s
     // Below this size, single-piece routing (findSafeApplication, now O(1)
     // per candidate via buildReachableMap) still finds progress just fine.
     const MAX_FINISH_SIZE = 6;
-    let found = wrongBefore >= 2 && wrongBefore <= Math.min(maxSupport, MAX_FINISH_SIZE) ? findFinishingApplication(kind, library, current, fixedOk, wrongPositions) : null;
+    let found = wrongBefore >= 2 && wrongBefore <= Math.min(maxSupport, MAX_FINISH_SIZE) ? findFinishingApplication(kind, library, current, fixedCornersArr, fixedEdgesArr, wrongPositions) : null;
     if (found) {
       consecutiveLateral = 0;
     } else {
@@ -887,7 +816,7 @@ function solveTargetPositions(kind: PieceKind, library: readonly Commutator[], s
       // attempt -- meaning target=wrongPositions[0] specifically had none
       // -- while other wrong pieces very plausibly did).
       for (const target of wrongPositions) {
-        found = findSafeApplication(kind, library, current, fixedCorners, fixedEdges, targetPositions, target, wrongBefore, true);
+        found = findSafeApplication(kind, library, current, fixedCornersArr, fixedEdgesArr, targetPositions, target, wrongBefore, true);
         if (found) break;
       }
       if (found) {
@@ -897,7 +826,7 @@ function solveTargetPositions(kind: PieceKind, library: readonly Commutator[], s
           throw new Error(`megaminxSolver: solveTargetPositions stuck (${countWrongKind(kind, current, targetPositions)} pieces still wrong, ${maxConsecutiveLateral} lateral moves in a row without progress)`);
         }
         for (const target of wrongPositions) {
-          found = findSafeApplication(kind, library, current, fixedCorners, fixedEdges, targetPositions, target, wrongBefore, false);
+          found = findSafeApplication(kind, library, current, fixedCornersArr, fixedEdgesArr, targetPositions, target, wrongBefore, false);
           if (found) break;
         }
         if (!found) {
