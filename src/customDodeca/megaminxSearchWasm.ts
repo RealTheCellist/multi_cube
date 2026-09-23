@@ -46,6 +46,9 @@ interface WasmExports {
   target_positions_scratch_ptr(): number;
   solve_cross(piecesLen: number, maxHalfDepth: number, maxFrontierSize: number): number;
   solve_result_ptr(): number;
+  reach_log_count(): number;
+  reach_log_ptr(): number;
+  reach_log_reset(): void;
 }
 
 /**
@@ -360,4 +363,155 @@ export function solveCrossWasm(state: MegaminxState, pieces: readonly number[], 
     seq[i] = { face: bytes[i * 2] as FaceIndex, sign: bytes[i * 2 + 1] === 0 ? 1 : -1 };
   }
   return seq;
+}
+
+/**
+ * MEGAMINX_3SEC_REACHABILITY_REUSE_ANALYSIS_V1 -- diagnostic-only binding
+ * for wasm-search/src/lib.rs's own REACH_LOG (see its own dev notes): one
+ * record per build_reachable_impl call made from find_safe_application/
+ * find_finishing_application. Never read by any production solve path --
+ * exists purely so a benchmark can determine, after a real solve, how
+ * many of those calls shared an identical (root state, kind, pieces,
+ * maxDepth, maxReachable) and would therefore have done identical work.
+ */
+/** termination: 0=MAX_DEPTH, 1=MAX_REACHABLE, 2=SEARCH_EXHAUSTED, 3=OTHER -- see build_reachable_impl's own dev notes (MEGAMINX_3SEC_REACHABILITY_COST_PROFILE_V1). */
+export type BfsTerminationReason = 0 | 1 | 2 | 3;
+
+export interface ReachLogEntry {
+  stateHash: bigint;
+  kind: 0 | 1;
+  /** 0 = find_safe_application single-anchor, 1 = find_safe_application pair-anchor, 2 = find_finishing_application. */
+  callerTag: 0 | 1 | 2;
+  pieces: readonly number[];
+  maxDepth: number;
+  maxReachable: number;
+  resultSize: number;
+  expandedNodes: number;
+  generatedStates: number;
+  maxDepthReached: number;
+  terminationReason: BfsTerminationReason;
+  /** find_safe_application's own matching-loop scan (MEGAMINX_3SEC_PAIR_ANCHOR_EXHAUSTION_ANALYSIS_V1) -- 0/null for find_finishing_application (callerTag 2), which has no equivalent linear scan. */
+  pairsVisited: number;
+  candidatesHit: number;
+  /** 1-based position in the scan where the winning candidate was found, or null if none succeeded. */
+  successVisitIndex: number | null;
+  /** The BFS's own discovery-order id for the winning key, or null if none succeeded -- how early/late build_reachable_impl found the key that ultimately mattered. */
+  successKeyDiscoveryId: number | null;
+  /** try_candidate's own two (and only two) rejection points (MEGAMINX_3SEC_FAILED_CANDIDATE_REASON_ANALYSIS_V1) -- both 0 for find_finishing_application. */
+  rejectFixedOkFail: number;
+  rejectBlocked: number;
+  /**
+   * MEGAMINX_3SEC_SETUP_PATH_FIXED_FILTER_VALIDATION_V1 -- cross-tab of
+   * "does the setup path alone already touch a fixed position" (the
+   * `actual`-state definition, see wasm-search/src/lib.rs's own dev
+   * notes) against the eventual fixed_ok result. crossTouchesPass is the
+   * safety-critical bucket: it should be 0 if "setup touches a fixed
+   * position" is a safe necessary condition for fixed_ok failure. All 0
+   * for find_finishing_application.
+   */
+  crossTouchesReject: number;
+  crossTouchesPass: number;
+  crossNotTouchesReject: number;
+  crossNotTouchesPass: number;
+  /** How often the identity-based ("support") and actual-state-based definitions of "touches a fixed position" disagreed, tallied once per unique setup path. */
+  definitionMismatch: number;
+  /** Distinct BFS-discovery ids (== distinct setup paths) encountered in this call's own matching-loop scan. */
+  uniqueSetupPaths: number;
+  /**
+   * MEGAMINX_3SEC_CALL_LEVEL_FIXED_FILTER_VALIDATION_V2 -- unlike the
+   * cross* fields above (scoped to setup paths the library actually
+   * referenced), these describe the BFS's ENTIRE reachable-map output --
+   * computable before the library scan starts, since it depends only on
+   * build_reachable_impl's own result. allTouchFull is the call-level
+   * candidate necessary condition under test.
+   */
+  allTouchFull: boolean;
+  fullTouchesCount: number;
+  fullReachableSize: number;
+  /**
+   * MEGAMINX_3SEC_PHASE2BC_LIBRARY_SUPPORT_NECESSITY_V1 -- the WINNING
+   * commutator's own support.len() on success (null otherwise). Since
+   * `library` is built as buckets 1..maxSupport concatenated in ascending
+   * order and the matching loop scans it start-to-finish breaking on the
+   * first hit, this is exactly "the smallest support size that had a
+   * working candidate for this call" -- removing all support>N library
+   * entries can only turn a call whose winningSupportSize>N into a
+   * failure; it cannot affect a call whose winningSupportSize<=N.
+   */
+  winningSupportSize: number | null;
+  /** Same pairsVisited/rejectFixedOkFail/rejectBlocked tallies, split by whether the current commutator's own support.len() is <=6 or >6. */
+  attemptedLe6: number;
+  attemptedGt6: number;
+  fixedFailLe6: number;
+  fixedFailGt6: number;
+  blockedLe6: number;
+  blockedGt6: number;
+}
+
+const NONE_MARKER = 0xffffffff;
+const REACH_LOG_WORDS = 32;
+
+export function readReachLog(): ReachLogEntry[] {
+  const exports = ensureWasm();
+  const count = exports.reach_log_count();
+  if (count === 0) return [];
+  const ptr = exports.reach_log_ptr();
+  const words = new BigUint64Array(exports.memory.buffer, ptr, count * REACH_LOG_WORDS);
+  const out: ReachLogEntry[] = new Array(count);
+  for (let i = 0; i < count; i++) {
+    const base = i * REACH_LOG_WORDS;
+    const stateHash = words[base];
+    const packedPieces = words[base + 1];
+    const meta = words[base + 2];
+    const kind = Number(meta & 0xffn) as 0 | 1;
+    const callerTag = Number((meta >> 8n) & 0xffn) as 0 | 1 | 2;
+    const piecesLen = Number((meta >> 16n) & 0xffn);
+    const pieces: number[] = new Array(piecesLen);
+    for (let p = 0; p < piecesLen; p++) pieces[p] = Number((packedPieces >> BigInt(p * 8)) & 0xffn);
+    const successVisitIndexRaw = Number(words[base + 12]);
+    const successKeyDiscoveryIdRaw = Number(words[base + 13]);
+    out[i] = {
+      stateHash,
+      kind,
+      callerTag,
+      pieces,
+      maxDepth: Number(words[base + 3]),
+      maxReachable: Number(words[base + 4]),
+      resultSize: Number(words[base + 5]),
+      expandedNodes: Number(words[base + 6]),
+      generatedStates: Number(words[base + 7]),
+      maxDepthReached: Number(words[base + 8]),
+      terminationReason: Number(words[base + 9]) as BfsTerminationReason,
+      pairsVisited: Number(words[base + 10]),
+      candidatesHit: Number(words[base + 11]),
+      successVisitIndex: successVisitIndexRaw === NONE_MARKER ? null : successVisitIndexRaw,
+      successKeyDiscoveryId: successKeyDiscoveryIdRaw === NONE_MARKER ? null : successKeyDiscoveryIdRaw,
+      rejectFixedOkFail: Number(words[base + 14]),
+      rejectBlocked: Number(words[base + 15]),
+      crossTouchesReject: Number(words[base + 16]),
+      crossTouchesPass: Number(words[base + 17]),
+      crossNotTouchesReject: Number(words[base + 18]),
+      crossNotTouchesPass: Number(words[base + 19]),
+      definitionMismatch: Number(words[base + 20]),
+      uniqueSetupPaths: Number(words[base + 21]),
+      allTouchFull: words[base + 22] !== 0n,
+      fullTouchesCount: Number(words[base + 23]),
+      fullReachableSize: Number(words[base + 24]),
+      winningSupportSize: (() => {
+        const raw = Number(words[base + 25]);
+        return raw === NONE_MARKER ? null : raw;
+      })(),
+      attemptedLe6: Number(words[base + 26]),
+      attemptedGt6: Number(words[base + 27]),
+      fixedFailLe6: Number(words[base + 28]),
+      fixedFailGt6: Number(words[base + 29]),
+      blockedLe6: Number(words[base + 30]),
+      blockedGt6: Number(words[base + 31]),
+    };
+  }
+  return out;
+}
+
+export function resetReachLog(): void {
+  ensureWasm().reach_log_reset();
 }

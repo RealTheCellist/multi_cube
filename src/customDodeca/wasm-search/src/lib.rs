@@ -172,6 +172,149 @@ struct ReachableIndex {
     move_sign_negative: Vec<bool>,
 }
 
+// ---------------------------------------------------------------------
+// MEGAMINX_3SEC_REACHABILITY_REUSE_ANALYSIS_V1 -- pure diagnostic
+// instrumentation (no algorithm change): logs one record per
+// build_reachable_impl call made FROM find_safe_application /
+// find_finishing_application (build_reachable_impl's own body is
+// untouched), so a JS-side benchmark can determine, after a real solve,
+// how many of those calls shared the exact same (root state, kind,
+// pieces, maxDepth, maxReachable) -- i.e. would have done identical work
+// -- without changing what any call returns. Read via reach_log_ptr/
+// reach_log_count, cleared via reach_log_reset; never read internally by
+// any solver logic.
+// ---------------------------------------------------------------------
+fn hash_state(state: &State) -> u64 {
+    let mut h: u64 = 0xcbf2_9ce4_8422_2325; // FNV-1a offset basis
+    for &b in state.corner_perm.iter().chain(state.corner_orient.iter()).chain(state.edge_perm.iter()).chain(state.edge_orient.iter()) {
+        h ^= b as u8 as u64;
+        h = h.wrapping_mul(0x0000_0100_0000_01b3); // FNV-1a prime
+    }
+    h
+}
+
+/// 32 u64 words/record: [state_hash, packed_pieces(8 sorted piece ids as
+/// bytes, 0xFF padding), (kind|caller_tag<<8|pieces_len<<16), max_depth,
+/// max_reachable, result_size, expanded_nodes, generated_states,
+/// max_depth_reached, termination_reason, pairs_visited, candidates_hit,
+/// success_visit_index, success_key_discovery_id, reject_fixed_ok_fail,
+/// reject_blocked, cross_touches_reject, cross_touches_pass,
+/// cross_not_touches_reject, cross_not_touches_pass, definition_mismatch,
+/// unique_setup_paths, all_touch_full, full_touches_count,
+/// full_reachable_size, winning_support_size, attempted_le6, attempted_gt6,
+/// fixedfail_le6, fixedfail_gt6, blocked_le6, blocked_gt6]. Words 7-10 come
+/// from LAST_BFS_STATS, populated
+/// by build_reachable_impl itself immediately before it returns (see
+/// MEGAMINX_3SEC_REACHABILITY_COST_PROFILE_V1's own comment there) --
+/// valid here because log_reach_call is always called immediately after
+/// the build_reachable_impl call it documents, with no other
+/// build_reachable_impl call in between (this module is single-threaded,
+/// no reentrancy). Words 11-14 (MEGAMINX_3SEC_PAIR_ANCHOR_EXHAUSTION_ANALYSIS_V1)
+/// describe the matching-loop scan that follows the BFS in
+/// find_safe_application's own two branches -- -1 (stored as u32::MAX)
+/// for the last two when no candidate ever succeeded, or when the caller
+/// (find_finishing_application, a structurally different permutation
+/// search) has no such loop to report. Words 15-16
+/// (MEGAMINX_3SEC_FAILED_CANDIDATE_REASON_ANALYSIS_V1) tally
+/// try_candidate's own two (and only two) rejection points -- both 0 for
+/// find_finishing_application, which has no try_candidate of this shape.
+/// Words 17-22 (MEGAMINX_3SEC_SETUP_PATH_FIXED_FILTER_VALIDATION_V1)
+/// cross-tab "does the setup path alone already touch a fixed position"
+/// against the eventual fixed_ok result, plus setup-path-level
+/// aggregates -- all 0 for find_finishing_application, which has no
+/// setup-path concept of this shape. Words 23-25
+/// (MEGAMINX_3SEC_CALL_LEVEL_FIXED_FILTER_VALIDATION_V2): whether EVERY
+/// entry in the BFS's own full reachable-map (not just the subset the
+/// library actually references) touches a fixed position -- the one
+/// signal genuinely computable BEFORE the library scan starts, since it
+/// depends only on build_reachable_impl's own output. Words 26-32
+/// (MEGAMINX_3SEC_PHASE2BC_LIBRARY_SUPPORT_NECESSITY_V1): winning_support_size
+/// is the WINNING commutator's own `support.len()` on success (u32::MAX
+/// sentinel otherwise) -- since `library` is built by buildCommutatorLibrary
+/// as buckets 1..maxSupport concatenated in ascending order and the
+/// matching loop below scans it start-to-finish breaking on first hit,
+/// this is exactly "the smallest support size that had a working
+/// candidate for this call", letting a maxSupport-N restriction's effect
+/// be read straight off this one field's distribution (removing support
+/// >N entries can only turn a call whose winning_support_size db>N into a
+/// failure; it can never change a call whose winning_support_size<=N,
+/// since the scan would already have broken before ever reaching the
+/// removed entries). attempted_le6/gt6, fixedfail_le6/gt6, blocked_le6/gt6
+/// split the SAME existing pairs_visited/reject_fixed_ok_fail/reject_blocked
+/// tallies by whether the (commutator,anchor) pair's own commutator has
+/// support.len()<=6 or >6 -- the concrete maxSupport=10->6 boundary this
+/// Sprint is asked to evaluate.
+static mut REACH_LOG: Vec<u64> = Vec::new();
+
+#[allow(clippy::too_many_arguments)]
+fn log_reach_call(
+    state: &State, kind: u8, pieces: &[i8], caller_tag: u8, max_depth: u32, max_reachable: u32, result_size: u32,
+    pairs_visited: u32, candidates_hit: u32, success_visit_index: i32, success_key_discovery_id: i32, reject_fixed_ok_fail: u32, reject_blocked: u32,
+    cross_touches_reject: u32, cross_touches_pass: u32, cross_not_touches_reject: u32, cross_not_touches_pass: u32, definition_mismatch: u32, unique_setup_paths: u32,
+    all_touch_full: bool, full_touches_count: u32, full_reachable_size: u32,
+    winning_support_size: i32, attempted_le6: u32, attempted_gt6: u32, fixedfail_le6: u32, fixedfail_gt6: u32, blocked_le6: u32, blocked_gt6: u32,
+) {
+    let log = unsafe { &mut *&raw mut REACH_LOG };
+    let mut sorted: [u8; 8] = [0xFF; 8];
+    let n = pieces.len().min(8);
+    for i in 0..n {
+        sorted[i] = pieces[i] as u8;
+    }
+    sorted[..n].sort_unstable();
+    let mut packed: u64 = 0;
+    for i in 0..8 {
+        packed |= (sorted[i] as u64) << (i * 8);
+    }
+    let bfs = unsafe { LAST_BFS_STATS };
+    log.push(hash_state(state));
+    log.push(packed);
+    log.push((kind as u64) | ((caller_tag as u64) << 8) | ((n as u64) << 16));
+    log.push(max_depth as u64);
+    log.push(max_reachable as u64);
+    log.push(result_size as u64);
+    log.push(bfs.expanded_nodes as u64);
+    log.push(bfs.generated_states as u64);
+    log.push(bfs.max_depth_reached as u64);
+    log.push(bfs.termination_reason as u64);
+    log.push(pairs_visited as u64);
+    log.push(candidates_hit as u64);
+    log.push(success_visit_index as u32 as u64);
+    log.push(success_key_discovery_id as u32 as u64);
+    log.push(reject_fixed_ok_fail as u64);
+    log.push(reject_blocked as u64);
+    log.push(cross_touches_reject as u64);
+    log.push(cross_touches_pass as u64);
+    log.push(cross_not_touches_reject as u64);
+    log.push(cross_not_touches_pass as u64);
+    log.push(definition_mismatch as u64);
+    log.push(unique_setup_paths as u64);
+    log.push(if all_touch_full { 1 } else { 0 });
+    log.push(full_touches_count as u64);
+    log.push(full_reachable_size as u64);
+    log.push(winning_support_size as u32 as u64);
+    log.push(attempted_le6 as u64);
+    log.push(attempted_gt6 as u64);
+    log.push(fixedfail_le6 as u64);
+    log.push(fixedfail_gt6 as u64);
+    log.push(blocked_le6 as u64);
+    log.push(blocked_gt6 as u64);
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn reach_log_count() -> u32 {
+    ((&*&raw const REACH_LOG).len() / 32) as u32
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn reach_log_ptr() -> *const u64 {
+    (&*&raw const REACH_LOG).as_ptr()
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn reach_log_reset() {
+    (&mut *&raw mut REACH_LOG).clear();
+}
+
 /// Only the CURRENT frontier's own states are ever read (to generate the
 /// next level) -- a state is never touched again once its own children
 /// have been expanded, so keeping every discovered node's state alive in
@@ -203,12 +346,22 @@ fn build_reachable_impl(state: State, kind: u8, pieces: &[i8], max_depth: u32, m
     let mut frontier = &mut buf_a;
     let mut next = &mut buf_b;
 
+    // MEGAMINX_3SEC_REACHABILITY_COST_PROFILE_V1 -- pure diagnostic
+    // counters (see LAST_BFS_STATS below): incremented alongside the
+    // existing loop, never read by it, never affecting which keys/paths
+    // get recorded -- same non-interference guarantee as REACH_LOG itself.
+    let mut expanded_nodes: u32 = 0;
+    let mut generated_states: u32 = 0;
+
     let mut depth: u32 = 0;
+    let mut hit_max_reachable = false;
     'depth_loop: while depth < max_depth && !frontier.is_empty() && (key_to_id.len() as u32) < max_reachable {
         next.clear();
         for &(base_state, id) in frontier.iter() {
+            expanded_nodes += 1;
             for face in 0u8..12 {
                 for &sign_negative in &[false, true] {
+                    generated_states += 1;
                     let child = apply_move(&base_state, face, sign_negative);
                     let key = compute_key(&child, kind, pieces);
                     if key_to_id.contains_key(&key) {
@@ -221,6 +374,7 @@ fn build_reachable_impl(state: State, kind: u8, pieces: &[i8], max_depth: u32, m
                         // either way, so exiting all three loops now instead
                         // of spinning through the rest as no-ops changes
                         // nothing about which keys/paths get recorded.
+                        hit_max_reachable = true;
                         break 'depth_loop;
                     }
                     let child_id = parent.len() as u32;
@@ -236,8 +390,34 @@ fn build_reachable_impl(state: State, kind: u8, pieces: &[i8], max_depth: u32, m
         depth += 1;
     }
 
+    // 0=MAX_DEPTH, 1=MAX_REACHABLE, 2=SEARCH_EXHAUSTED, 3=OTHER -- checked
+    // in this order since MAX_REACHABLE can coincide with the depth cap
+    // (the more specific, certain signal), and an empty next frontier is
+    // only meaningful once neither cap fired.
+    let termination_reason: u8 = if hit_max_reachable || (key_to_id.len() as u32) >= max_reachable {
+        1
+    } else if depth >= max_depth {
+        0
+    } else if frontier.is_empty() {
+        2
+    } else {
+        3
+    };
+    unsafe {
+        LAST_BFS_STATS = BfsStats { expanded_nodes, generated_states, max_depth_reached: depth, termination_reason };
+    }
+
     ReachableIndex { key_to_id, parent, move_face, move_sign_negative }
 }
+
+#[derive(Clone, Copy, Default)]
+struct BfsStats {
+    expanded_nodes: u32,
+    generated_states: u32,
+    max_depth_reached: u32,
+    termination_reason: u8,
+}
+static mut LAST_BFS_STATS: BfsStats = BfsStats { expanded_nodes: 0, generated_states: 0, max_depth_reached: 0, termination_reason: 3 };
 
 fn reconstruct(index: &ReachableIndex, id: u32) -> Vec<(u8, bool)> {
     let mut moves = Vec::new();
@@ -508,7 +688,46 @@ pub unsafe extern "C" fn find_safe_application(
 
     let library = &(&*&raw const LIBRARIES)[lib_handle as usize];
 
-    let try_candidate = |s_path: &[(u8, bool)], c: &Commutator| -> Option<(State, Vec<(u8, bool)>)> {
+    // MEGAMINX_3SEC_FAILED_CANDIDATE_REASON_ANALYSIS_V1 -- pure diagnostic
+    // counters for try_candidate's own two (and only two) rejection
+    // points, tallied exactly as the existing branches already fire, not
+    // a new condition invented for this Sprint.
+    let mut reject_fixed_ok_fail: u32 = 0;
+    let mut reject_blocked: u32 = 0;
+
+    // MEGAMINX_3SEC_SETUP_PATH_FIXED_FILTER_VALIDATION_V1 -- pure
+    // diagnostic: does the SETUP PATH ALONE (before the commutator is
+    // even applied) already break the fixed invariant? Two independent
+    // definitions, both measured (not assumed equal) per the work order:
+    //   - "support" -- compose s_path from the identity/solved state and
+    //     check fixed_ok on that (state-independent structural fact about
+    //     which positions the sequence's own permutation touches).
+    //   - "actual" -- apply s_path to the REAL current `state` (whose
+    //     fixed positions are already solved, by the fixed-set invariant)
+    //     and check fixed_ok on that intermediate, setup-only result.
+    // Memoized per distinct BFS-discovery id (the same setup path is
+    // reconstructed repeatedly whenever multiple commutators share an
+    // anchor/dest key), which doubles as this Sprint's own setup-path-level
+    // aggregation (unique_setup_paths, candidates per path).
+    let mut setup_cache: FastMap<u32, (bool, bool)> = FastMap::default();
+    let mut cross_touches_reject: u32 = 0;
+    let mut cross_touches_pass: u32 = 0; // touches_fixed(actual)=true AND fixed_ok PASSED -- the safety-critical bucket
+    let mut cross_not_touches_reject: u32 = 0;
+    let mut cross_not_touches_pass: u32 = 0;
+    let mut definition_mismatch: u32 = 0; // support-based vs actual-based disagree, tallied once per unique setup path
+
+    // MEGAMINX_3SEC_PHASE2BC_LIBRARY_SUPPORT_NECESSITY_V1 -- pure diagnostic:
+    // splits the SAME reject_fixed_ok_fail/reject_blocked tallies above by
+    // whether the current commutator's own support.len() is <=6 or >6, to
+    // evaluate the concrete maxSupport=10->6 library-size boundary.
+    let mut attempted_le6: u32 = 0;
+    let mut attempted_gt6: u32 = 0;
+    let mut fixedfail_le6: u32 = 0;
+    let mut fixedfail_gt6: u32 = 0;
+    let mut blocked_le6: u32 = 0;
+    let mut blocked_gt6: u32 = 0;
+
+    let mut try_candidate = |s_path: &[(u8, bool)], c: &Commutator, touches_fixed_actual: bool, support_le6: bool| -> Option<(State, Vec<(u8, bool)>)> {
         let s_inv = invert_seq(s_path);
         let mut full_seq = Vec::with_capacity(s_path.len() + c.seq.len() + s_inv.len());
         full_seq.extend_from_slice(s_path);
@@ -516,52 +735,135 @@ pub unsafe extern "C" fn find_safe_application(
         full_seq.extend_from_slice(&s_inv);
         let result_state = apply_seq(state, &full_seq);
         if !fixed_ok(&result_state, fixed_corners, fixed_edges) {
+            reject_fixed_ok_fail += 1;
+            if support_le6 { fixedfail_le6 += 1 } else { fixedfail_gt6 += 1 }
+            if touches_fixed_actual { cross_touches_reject += 1 } else { cross_not_touches_reject += 1 }
             return None;
         }
+        if touches_fixed_actual { cross_touches_pass += 1 } else { cross_not_touches_pass += 1 }
         let wrong_after = count_wrong(kind, &result_state, target_positions);
         let blocked = if require_improvement { wrong_after >= wrong_before } else { wrong_after > wrong_before };
         if blocked {
+            reject_blocked += 1;
+            if support_le6 { blocked_le6 += 1 } else { blocked_gt6 += 1 }
             return None;
         }
         Some((result_state, full_seq))
     };
 
-    let found = if displaced == target {
+    let mut touches_fixed_for = |id: u32, s_path: &[(u8, bool)]| -> bool {
+        if let Some(&(_support, actual)) = setup_cache.get(&id) {
+            return actual;
+        }
+        let support = !fixed_ok(&apply_seq(solved_state(), s_path), fixed_corners, fixed_edges);
+        let actual = !fixed_ok(&apply_seq(state, s_path), fixed_corners, fixed_edges);
+        if support != actual {
+            definition_mismatch += 1;
+        }
+        setup_cache.insert(id, (support, actual));
+        actual
+    };
+
+    // MEGAMINX_3SEC_CALL_LEVEL_FIXED_FILTER_VALIDATION_V2 -- pure
+    // diagnostic: unlike touches_fixed_for above (memoized only over
+    // setup paths the LIBRARY actually references), this walks the BFS's
+    // ENTIRE reachable-map output -- the one thing genuinely computable
+    // BEFORE the library scan even starts, since it depends only on
+    // build_reachable_impl's own result, not on the library. Tells us
+    // whether "every setup path this call could possibly use touches a
+    // fixed position" is knowable ahead of the 4,160-pair scan it might
+    // let a future (not-this-Sprint) design skip.
+    let full_reachable_touch_stats = |reachable: &ReachableIndex| -> (bool, u32, u32) {
+        let mut touches_count = 0u32;
+        let total = reachable.key_to_id.len() as u32;
+        for &id in reachable.key_to_id.values() {
+            let path = reconstruct(reachable, id);
+            if !fixed_ok(&apply_seq(state, &path), fixed_corners, fixed_edges) {
+                touches_count += 1;
+            }
+        }
+        (total > 0 && touches_count == total, touches_count, total)
+    };
+
+    // MEGAMINX_3SEC_PAIR_ANCHOR_EXHAUSTION_ANALYSIS_V1 -- pure diagnostic
+    // counters for the matching loop below (separate from build_reachable_impl's
+    // own BFS-side counters): pairs_visited counts (commutator, anchor)
+    // iterations actually taken (same iteration the loop always did; just
+    // tallied), candidates_hit counts how many of those had a matching
+    // reachable key (i.e. reached try_candidate), and success_visit_index/
+    // success_key_discovery_id capture, on a hit, how far into the scan
+    // (and how early/late in the BFS's OWN discovery order) the winning
+    // candidate was found. None of these are read by the loop itself.
+    let mut pairs_visited: u32 = 0;
+    let mut candidates_hit: u32 = 0;
+    let mut success_visit_index: i32 = -1;
+    let mut success_key_discovery_id: i32 = -1;
+    let mut winning_support_size: i32 = -1;
+
+    let (found, anchor_mode, log_pieces, log_max_depth, log_max_reachable, reachable_len, all_touch_full, full_touches_count, full_reachable_size) = if displaced == target {
         let reachable = build_reachable_impl(state, kind, &[target as i8], 9, 300_000);
+        let (all_touch_full, full_touches_count, full_reachable_size) = full_reachable_touch_stats(&reachable);
         let mut result = None;
         'search: for c in library {
+            let support_le6 = c.support.len() <= 6;
             for &anchor in &c.moving_support {
+                pairs_visited += 1;
+                if support_le6 { attempted_le6 += 1 } else { attempted_gt6 += 1 }
                 let Some(&id) = reachable.key_to_id.get(&(anchor as u64)) else { continue };
+                candidates_hit += 1;
                 let s_path = reconstruct(&reachable, id);
-                if let Some(hit) = try_candidate(&s_path, c) {
+                let touches = touches_fixed_for(id, &s_path);
+                if let Some(hit) = try_candidate(&s_path, c, touches, support_le6) {
                     result = Some(hit);
+                    success_visit_index = pairs_visited as i32;
+                    success_key_discovery_id = id as i32;
+                    winning_support_size = c.support.len() as i32;
                     break 'search;
                 }
             }
         }
-        result
+        let len = reachable.key_to_id.len() as u32;
+        (result, 0u8, vec![target as i8], 9u32, 300_000u32, len, all_touch_full, full_touches_count, full_reachable_size)
     } else {
         let mut pieces = [target as i8, displaced as i8];
         pieces.sort();
         let reachable = build_reachable_impl(state, kind, &pieces, 11, 300_000);
+        let (all_touch_full, full_touches_count, full_reachable_size) = full_reachable_touch_stats(&reachable);
         let mut result = None;
         'search2: for c in library {
+            let support_le6 = c.support.len() <= 6;
             for &anchor in &c.moving_support {
                 let dest = c.destination[anchor as usize];
                 if dest == anchor {
                     continue;
                 }
+                pairs_visited += 1;
+                if support_le6 { attempted_le6 += 1 } else { attempted_gt6 += 1 }
                 let key = if target <= displaced { anchor as u64 * 30 + dest as u64 } else { dest as u64 * 30 + anchor as u64 };
                 let Some(&id) = reachable.key_to_id.get(&key) else { continue };
+                candidates_hit += 1;
                 let s_path = reconstruct(&reachable, id);
-                if let Some(hit) = try_candidate(&s_path, c) {
+                let touches = touches_fixed_for(id, &s_path);
+                if let Some(hit) = try_candidate(&s_path, c, touches, support_le6) {
                     result = Some(hit);
+                    success_visit_index = pairs_visited as i32;
+                    success_key_discovery_id = id as i32;
+                    winning_support_size = c.support.len() as i32;
                     break 'search2;
                 }
             }
         }
-        result
+        let len = reachable.key_to_id.len() as u32;
+        (result, 1u8, pieces.to_vec(), 11u32, 300_000u32, len, all_touch_full, full_touches_count, full_reachable_size)
     };
+    let unique_setup_paths = setup_cache.len() as u32;
+    log_reach_call(
+        &state, kind, &log_pieces, anchor_mode, log_max_depth, log_max_reachable, reachable_len,
+        pairs_visited, candidates_hit, success_visit_index, success_key_discovery_id, reject_fixed_ok_fail, reject_blocked,
+        cross_touches_reject, cross_touches_pass, cross_not_touches_reject, cross_not_touches_pass, definition_mismatch, unique_setup_paths,
+        all_touch_full, full_touches_count, full_reachable_size,
+        winning_support_size, attempted_le6, attempted_gt6, fixedfail_le6, fixedfail_gt6, blocked_le6, blocked_gt6,
+    );
 
     let Some((result_state, full_seq)) = found else { return -1 };
 
@@ -677,6 +979,12 @@ pub unsafe extern "C" fn find_finishing_application(lib_handle: u32, kind: u8, w
     let sorted_pieces = &sorted_pieces_buf[..n];
 
     let reachable = build_reachable_impl(state, kind, wrong_pieces, max_depth, max_reachable);
+    // find_finishing_application's own matching (try_permutations) is a
+    // recursive permutation search, not the simple linear scan
+    // find_safe_application's two branches use -- no equivalent
+    // pairs_visited/candidates_hit concept to report, hence the 0/0/-1/-1
+    // placeholders (see REACH_LOG's own dev notes).
+    log_reach_call(&state, kind, wrong_pieces, 2, max_depth, max_reachable, reachable.key_to_id.len() as u32, 0, 0, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, -1, 0, 0, 0, 0, 0, 0);
     let library = &(&*&raw const LIBRARIES)[lib_handle as usize];
     let ctx = FfaContext { sorted_pieces, state, fixed_corners, fixed_edges, kind, wrong_pieces };
 
