@@ -109,12 +109,21 @@ fn apply_move(state: &State, face: u8, sign_negative: bool) -> State {
     for pos in 0..20 {
         let from = mcp[pos] as usize;
         out.corner_perm[pos] = state.corner_perm[from];
-        out.corner_orient[pos] = (state.corner_orient[from] + mcod[pos]).rem_euclid(3);
+        // Both operands are always non-negative and individually <3 (see
+        // megaminxState.ts's own buildMoveTable: cornerOrientDelta comes
+        // from a bySlot.findIndex over a 3-element array, so 0..3), so the
+        // sum is always in 0..6 and never needs more than one subtraction
+        // to land back in 0..3 -- a plain branch beats rem_euclid's more
+        // general (and, for wasm32, division-based) implementation here.
+        let sum = state.corner_orient[from] + mcod[pos];
+        out.corner_orient[pos] = if sum >= 3 { sum - 3 } else { sum };
     }
     for pos in 0..30 {
         let from = mep[pos] as usize;
         out.edge_perm[pos] = state.edge_perm[from];
-        out.edge_orient[pos] = (state.edge_orient[from] + meod[pos]).rem_euclid(2);
+        // Same reasoning, mod 2: both operands non-negative and <2, so
+        // parity of the sum is exactly what mod 2 needs -- a bitmask.
+        out.edge_orient[pos] = (state.edge_orient[from] + meod[pos]) & 1;
     }
     out
 }
@@ -127,19 +136,26 @@ fn compute_key(state: &State, kind: u8, pieces: &[i8]) -> u64 {
     let n = pieces.len();
     let count = if kind == 0 { 20 } else { 30 };
     let perm: &[i8] = if kind == 0 { &state.corner_perm } else { &state.edge_perm };
+    // O(count) instead of O(count * n): a piece-id -> slot lookup table
+    // (piece ids are always <30, corner or edge) replaces the inner
+    // linear scan through `pieces` that used to run for every position.
+    // Called on every single BFS-explored state (this module's own
+    // hottest function by call count), so this is a real complexity win,
+    // not just a constant-factor one.
+    let mut slot_for_piece = [-1i8; 30];
+    for i in 0..n {
+        slot_for_piece[pieces[i] as usize] = i as i8;
+    }
     let mut positions = [0i8; 8]; // n is always <=8, see findFinishingApplication's own guard
     let mut remaining = n;
     for pos in 0..count {
         if remaining == 0 {
             break;
         }
-        let piece = perm[pos];
-        for i in 0..n {
-            if pieces[i] == piece {
-                positions[i] = pos as i8;
-                remaining -= 1;
-                break;
-            }
+        let slot = slot_for_piece[perm[pos] as usize];
+        if slot >= 0 {
+            positions[slot as usize] = pos as i8;
+            remaining -= 1;
         }
     }
     let mut key: u64 = 0;
@@ -175,11 +191,22 @@ fn build_reachable_impl(state: State, kind: u8, pieces: &[i8], max_depth: u32, m
     move_face.push(0);
     move_sign_negative.push(false);
 
-    let mut frontier: Vec<(State, u32)> = vec![(state, 0)];
+    // Double-buffered frontier/next: two Vecs reused (via .clear(), which
+    // keeps their already-grown capacity) and swapped every depth level,
+    // instead of allocating a fresh `next` Vec each level and dropping the
+    // old `frontier` -- each buffer's own capacity still grows the usual
+    // amortized way on its first few levels, but never gets thrown away
+    // and reallocated from scratch once it's reached this search's own
+    // typical level width.
+    let mut buf_a: Vec<(State, u32)> = vec![(state, 0)];
+    let mut buf_b: Vec<(State, u32)> = Vec::new();
+    let mut frontier = &mut buf_a;
+    let mut next = &mut buf_b;
+
     let mut depth: u32 = 0;
     'depth_loop: while depth < max_depth && !frontier.is_empty() && (key_to_id.len() as u32) < max_reachable {
-        let mut next: Vec<(State, u32)> = Vec::new();
-        for &(base_state, id) in &frontier {
+        next.clear();
+        for &(base_state, id) in frontier.iter() {
             for face in 0u8..12 {
                 for &sign_negative in &[false, true] {
                     let child = apply_move(&base_state, face, sign_negative);
@@ -205,7 +232,7 @@ fn build_reachable_impl(state: State, kind: u8, pieces: &[i8], max_depth: u32, m
                 }
             }
         }
-        frontier = next;
+        std::mem::swap(&mut frontier, &mut next);
         depth += 1;
     }
 
@@ -700,19 +727,22 @@ pub unsafe extern "C" fn find_finishing_application(lib_handle: u32, kind: u8, w
 
 fn compute_edge_state_key(state: &State, pieces: &[i8]) -> u64 {
     let n = pieces.len();
+    // Same O(30) piece-id -> slot lookup table as compute_key above,
+    // instead of a per-position O(n) linear scan through `pieces`.
+    let mut slot_for_piece = [-1i8; 30];
+    for i in 0..n {
+        slot_for_piece[pieces[i] as usize] = i as i8;
+    }
     let mut positions = [0i8; 8];
     let mut remaining = n;
     for pos in 0..30 {
         if remaining == 0 {
             break;
         }
-        let piece = state.edge_perm[pos];
-        for i in 0..n {
-            if pieces[i] == piece {
-                positions[i] = pos as i8;
-                remaining -= 1;
-                break;
-            }
+        let slot = slot_for_piece[state.edge_perm[pos] as usize];
+        if slot >= 0 {
+            positions[slot as usize] = pos as i8;
+            remaining -= 1;
         }
     }
     let mut key: u64 = 0;
@@ -776,10 +806,16 @@ fn bidirectional_search_impl(state: State, target: State, pieces: &[i8], max_hal
         return Some(m);
     }
 
+    // Reused scratch buffer for whichever side gets expanded this round
+    // (only one of forward_frontier/backward_frontier is ever replaced
+    // per round) -- .clear() keeps its already-grown capacity instead of
+    // allocating a fresh Vec every round the way a `let mut next =
+    // Vec::new()` inside the loop would.
+    let mut next: Vec<(State, u32)> = Vec::new();
     for _ in 0..max_half_depth {
         let expand_forward = forward.key_to_id.len() <= backward.key_to_id.len();
         let (tree, frontier): (&mut Tree, &[(State, u32)]) = if expand_forward { (&mut forward, &forward_frontier) } else { (&mut backward, &backward_frontier) };
-        let mut next: Vec<(State, u32)> = Vec::new();
+        next.clear();
         for &(base_state, id) in frontier {
             for face in 0u8..12 {
                 for &sign_negative in &[false, true] {
@@ -814,9 +850,9 @@ fn bidirectional_search_impl(state: State, target: State, pieces: &[i8], max_hal
             }
         }
         if expand_forward {
-            forward_frontier = next;
+            std::mem::swap(&mut forward_frontier, &mut next);
         } else {
-            backward_frontier = next;
+            std::mem::swap(&mut backward_frontier, &mut next);
         }
         if let Some(m) = try_meet(&forward, &backward) {
             return Some(m);

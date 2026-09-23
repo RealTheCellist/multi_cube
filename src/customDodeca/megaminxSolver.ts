@@ -1,11 +1,9 @@
-import { applyMegaminxMove, MOVE_TABLE, EDGES, type MegaminxState, type MegaminxTurn, type MegaminxMoveTable } from "./megaminxState";
+import { applyMegaminxMove, EDGES, type MegaminxState, type MegaminxTurn } from "./megaminxState";
 import { uploadLibraryWasm, findSafeApplicationWasm, findFinishingApplicationWasm, solveCrossWasm } from "./megaminxSearchWasm";
 import { FACE_VERTEX_INDICES, FACE_INDICES, FACE_NORMALS, type FaceIndex } from "./dodecaMath";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { Worker } from "node:worker_threads";
-import { availableParallelism } from "node:os";
 
 const SOLVED_STATE: MegaminxState = {
   cornerPerm: Int8Array.from({ length: 20 }, (_, i) => i),
@@ -80,16 +78,6 @@ function edgeStateKeyFor(edgePieces: readonly number[]): (s: MegaminxState) => n
     let key = 0;
     for (let i = 0; i < n; i++) key = key * 60 + positions[i] * 2 + s.edgeOrient[positions[i]];
     return key;
-  };
-}
-
-/** Like pieceKeyFor, but drops orientation -- only WHERE each corner piece sits (see kilominxSolver.ts's own positionOnlyKeyFor for why this is still sound and why it's useful for a setup search that doesn't care what orientation it arrives with). */
-function cornerPositionOnlyKeyFor(cornerPieces: readonly number[]): (s: MegaminxState) => string {
-  const sorted = [...cornerPieces].sort((a, b) => a - b);
-  return (s: MegaminxState) => {
-    const loc = new Array<number>(20);
-    for (let pos = 0; pos < 20; pos++) loc[s.cornerPerm[pos]] = pos;
-    return sorted.map((piece) => loc[piece]).join(",");
   };
 }
 
@@ -407,8 +395,8 @@ function saveCachedLibrary(cacheKey: string, fingerprint: string, commutators: C
 }
 
 function buildCommutatorLibrary(targetKind: PieceKind, fixedCorners: ReadonlySet<number>, fixedEdges: ReadonlySet<number>, maxSupport = 6, perSizeCap = 80, maxPairsExamined = 1_500_000, pool: { As: MegaminxTurn[][]; Bs: MegaminxTurn[][] } = { As: COMMUTATOR_As, Bs: COMMUTATOR_Bs }, cacheKey?: string): Commutator[] {
-  if (cacheKey) {
-    const fingerprint = libraryFingerprint(fixedCorners, fixedEdges, maxSupport, perSizeCap, maxPairsExamined, pool);
+  const fingerprint = cacheKey ? libraryFingerprint(fixedCorners, fixedEdges, maxSupport, perSizeCap, maxPairsExamined, pool) : undefined;
+  if (cacheKey && fingerprint) {
     const cached = loadCachedLibrary(cacheKey, fingerprint);
     if (cached) return cached;
   }
@@ -437,126 +425,8 @@ function buildCommutatorLibrary(targetKind: PieceKind, fixedCorners: ReadonlySet
   }
   const out: Commutator[] = [];
   for (let n = 1; n <= maxSupport; n++) out.push(...buckets.get(n)!);
-  if (cacheKey) saveCachedLibrary(cacheKey, libraryFingerprint(fixedCorners, fixedEdges, maxSupport, perSizeCap, maxPairsExamined, pool), out);
+  if (cacheKey && fingerprint) saveCachedLibrary(cacheKey, fingerprint, out);
   return out;
-}
-
-/**
- * Parallel, cache-first library build -- spawns one worker
- * (megaminxCommutatorWorker.ts) per available core, each independently
- * searching its own slice of `pool.As` against the full `pool.Bs` (same
- * total (A,B) pair count as the sequential version, just split by A-range
- * instead of one thread walking the whole thing) -- measured directly:
- * building all 7 phases' libraries sequentially took 20-25 minutes; this
- * is the parallel counterpart, used by warmMegaminxLibraries below to
- * populate the SAME on-disk cache buildCommutatorLibrary's own sync path
- * reads from, so ordinary solve calls never need to know this exists.
- * Node's native TS support runs the worker file directly (confirmed
- * working on this project's Node 22.22, no bundling step needed) -- see
- * megaminxCommutatorWorker.ts's own dev notes for why it can't just
- * import megaminxState.ts and duplicates a small amount of logic instead.
- */
-function runCommutatorWorker(input: {
-  moveTable: readonly (readonly [MegaminxMoveTable, MegaminxMoveTable])[];
-  asChunk: MegaminxTurn[][];
-  bs: MegaminxTurn[][];
-  targetKind: "corner" | "edge";
-  fixedCorners: number[];
-  fixedEdges: number[];
-  maxSupport: number;
-  perSizeCap: number;
-  maxPairsExamined: number;
-}): Promise<Commutator[]> {
-  return new Promise((resolve, reject) => {
-    const worker = new Worker(new URL("./megaminxCommutatorWorker.ts", import.meta.url), { workerData: input });
-    worker.on("message", (result: Commutator[]) => {
-      resolve(result);
-      void worker.terminate();
-    });
-    worker.on("error", reject);
-  });
-}
-
-async function buildCommutatorLibraryParallel(targetKind: PieceKind, fixedCorners: ReadonlySet<number>, fixedEdges: ReadonlySet<number>, maxSupport = 6, perSizeCap = 80, maxPairsExamined = 1_500_000, pool: { As: MegaminxTurn[][]; Bs: MegaminxTurn[][] } = { As: COMMUTATOR_As, Bs: COMMUTATOR_Bs }, cacheKey?: string): Promise<Commutator[]> {
-  const fingerprint = libraryFingerprint(fixedCorners, fixedEdges, maxSupport, perSizeCap, maxPairsExamined, pool);
-  if (cacheKey) {
-    const cached = loadCachedLibrary(cacheKey, fingerprint);
-    if (cached) return cached;
-  }
-
-  const workerCount = Math.max(1, Math.min(availableParallelism(), 8, pool.As.length));
-  const chunkSize = Math.ceil(pool.As.length / workerCount);
-  const examinedPerWorker = Math.ceil(maxPairsExamined / workerCount);
-  const chunks: MegaminxTurn[][][] = [];
-  for (let i = 0; i < pool.As.length; i += chunkSize) chunks.push(pool.As.slice(i, i + chunkSize));
-
-  const results = await Promise.all(
-    chunks.map((asChunk) =>
-      runCommutatorWorker({
-        moveTable: MOVE_TABLE,
-        asChunk,
-        bs: pool.Bs,
-        targetKind: targetKind.name as "corner" | "edge",
-        fixedCorners: [...fixedCorners],
-        fixedEdges: [...fixedEdges],
-        maxSupport,
-        perSizeCap,
-        maxPairsExamined: examinedPerWorker,
-      }),
-    ),
-  );
-
-  const buckets = new Map<number, Commutator[]>();
-  for (let n = 1; n <= maxSupport; n++) buckets.set(n, []);
-  const seen = new Set<string>();
-  for (const workerResult of results) {
-    for (const c of workerResult) {
-      const targetSupport = targetKind.support(c);
-      const key = `${c.cornerSupport.join(",")}|${c.edgeSupport.join(",")}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      const bucket = buckets.get(targetSupport.length)!;
-      if (bucket.length >= perSizeCap) continue;
-      bucket.push(c);
-    }
-  }
-  const out: Commutator[] = [];
-  for (let n = 1; n <= maxSupport; n++) out.push(...buckets.get(n)!);
-  if (cacheKey) saveCachedLibrary(cacheKey, fingerprint, out);
-  return out;
-}
-
-/**
- * Pre-builds and caches every phase's commutator library in parallel,
- * ahead of any actual solve. Purely an opt-in speed optimization: every
- * `xxxLibrary()` call below still works correctly without ever calling
- * this (falling back to buildCommutatorLibrary's own synchronous,
- * single-threaded build-and-cache path on a cache miss) -- calling this
- * first just means that fallback finds a warm cache instead. Built
- * sequentially, one phase at a time (each phase already uses every
- * available core internally), rather than kicking off all 7 phases'
- * worker pools at once and oversubscribing the machine's cores.
- *
- * NOTE: each entry's params must match its corresponding `lazy()` call
- * site below exactly (same target kind, fixed sets, size/budget knobs,
- * pool, cache key) for the cache fingerprint to line up -- a mismatch
- * isn't unsafe (the sync path just rebuilds instead of reusing a stale
- * entry, per libraryFingerprint's own check), only silently loses the
- * speedup for that one phase.
- */
-export async function warmMegaminxLibraries(): Promise<void> {
-  const specs: [PieceKind, ReadonlySet<number>, ReadonlySet<number>, number | undefined, number | undefined, number | undefined, { As: MegaminxTurn[][]; Bs: MegaminxTurn[][] } | undefined, string][] = [
-    [CORNER_KIND, new Set(), new Set(FIRST_LAYER_EDGE_POSITIONS), undefined, undefined, undefined, undefined, "firstLayerCorner"],
-    [EDGE_KIND, new Set(FIRST_LAYER_CORNER_POSITIONS), new Set(FIRST_LAYER_EDGE_POSITIONS), undefined, undefined, undefined, undefined, "upperEdge"],
-    [CORNER_KIND, new Set(FIRST_LAYER_CORNER_POSITIONS), MIDDLE_CORNER_FIXED_EDGES, undefined, undefined, undefined, undefined, "middleCorner"],
-    [EDGE_KIND, new Set(FIRST_LAYER_CORNER_POSITIONS), EQUATORIAL_FIXED_EDGES, 10, 80, 8_000_000, undefined, "equatorialEdge"],
-    [EDGE_KIND, TOP_AND_MIDDLE_CORNERS, LOWER_LOWER_FIXED_EDGES, 10, 80, 8_000_000, lastLayerPool(), "lowerLowerEdge"],
-    [CORNER_KIND, TOP_AND_MIDDLE_CORNERS, BOTTOM_CORNER_FIXED_EDGES, 10, 150, 60_000_000, lastLayerDeepPool(), "bottomCorner"],
-    [EDGE_KIND, TOP_AND_MIDDLE_CORNERS, BOTTOM_EDGE_FIXED_EDGES, 10, 150, 60_000_000, lastLayerDeepPool(), "bottomEdge"],
-  ];
-  for (const [kind, fc, fe, maxSupport, perSizeCap, budget, pool, cacheKey] of specs) {
-    await buildCommutatorLibraryParallel(kind, fc, fe, maxSupport, perSizeCap, budget, pool, cacheKey);
-  }
 }
 
 function countWrongKind(kind: PieceKind, state: MegaminxState, positions: readonly number[]): number {
@@ -568,78 +438,72 @@ function countWrongKind(kind: PieceKind, state: MegaminxState, positions: readon
 }
 
 /**
- * Same single-anchor setup search as kilominxSolver.ts's own
- * findSafeApplication, generalized over piece kind -- with ONE addition
- * kilominx never needed: anchors are drawn from `movingSupport`, not the
- * full `support` (see Commutator's own cornerMovingSupport/
- * edgeMovingSupport comment for why a pure-twist anchor can never
- * relocate a misplaced piece here). Kilominx's own main COMMUTATORS
- * library never produced a pure-twist entry below support 3 in the first
- * place (confirmed by its own dev notes), so this distinction never
- * mattered there; it does here because edges readily produce pure
- * support-2 twists.
- */
-/**
- * Same single-anchor setup search as kilominxSolver.ts's own
- * findSafeApplication, generalized over piece kind, PLUS one more
- * restriction kilominx never needed: only commutators with support >= 3
- * are usable here at all. Reasoning (confirmed empirically: a genuinely
- * misplaced edge left EVERY one of 1440 (commutator, anchor) attempts at
- * exactly the same wrong count, never fewer): a 2-element commutator
- * (a transposition -- swap anchor and its one other support position, or
- * a pure twist) has no "spare" element to absorb the setup's own
- * un-doing. Conjugating it (S.C.S') to route OUR piece to `anchor` sends
- * whatever ends up at anchor's PARTNER position back through S' to
- * wherever OUR piece started -- not to `target`'s home -- so it can only
- * ever "fix" a piece that's already home (nothing to relocate) or get
- * lucky in a way no example of this ever showed. A 3+-element cycle has
- * a genuine spare: routing our piece to one slot and letting the OTHER
- * (>= 2) slots cycle between themselves is what actually lets S' deliver
- * our piece home while the others land wherever S itself would have put
- * them anyway (fixedOk/wrongAfter still verify the real outcome either
- * way -- this is a performance/targeting restriction, not a new
- * unverified assumption).
- */
-/**
- * Routes a genuinely misplaced piece home via a conjugated commutator,
- * using a JOINT (2-condition) setup search -- not the single-condition
- * "route piece to anchor" search this replaced. Proven insufficient the
- * hard way: single-anchor routing only guarantees the piece reaches
- * `anchor` BEFORE the commutator acts; it says nothing about where it
- * ends up AFTER C moves it away from anchor and S' maps things back, so
- * success was pure coincidence -- confirmed empirically (a genuinely
- * misplaced edge left EVERY ONE of 1440 tried (commutator, anchor) pairs
- * at exactly the same wrong count, never fewer, regardless of commutator
- * support size).
+ * findSafeApplication's own algorithm -- now implemented in Rust (see
+ * wasm-search/src/lib.rs's own find_safe_application, and this file's own
+ * findSafeApplication below, the thin wrapper that calls it) -- but kept
+ * here since this is where the design was originally worked out and
+ * proven; the Rust port mirrors this reasoning byte-for-byte, not just
+ * the final algorithm.
  *
- * The correct condition: piece `target` ends up at HOME (= `target`
- * itself, since piece ids equal home positions) if and only if the setup
- * S satisfies TWO things at once:
+ * Same single-anchor setup search as kilominxSolver.ts's own
+ * findSafeApplication, generalized over piece kind, with two additions
+ * kilominx never needed:
+ *
+ * 1. Anchors are drawn from `movingSupport`, not the full `support` (see
+ *    Commutator's own cornerMovingSupport/edgeMovingSupport comment): a
+ *    pure-twist anchor can never relocate a misplaced piece. Kilominx's
+ *    own COMMUTATORS library never produced a pure-twist entry below
+ *    support 3, so this never mattered there; it does here because edges
+ *    readily produce pure support-2 twists.
+ *
+ * 2. Only commutators with support >= 3 are usable at all. Reasoning
+ *    (confirmed empirically: a genuinely misplaced edge left EVERY one of
+ *    1440 (commutator, anchor) attempts at exactly the same wrong count,
+ *    never fewer): a 2-element commutator (a transposition, or a pure
+ *    twist) has no "spare" element to absorb the setup's own un-doing.
+ *    Conjugating it (S.C.S') to route our piece to `anchor` sends
+ *    whatever ends up at anchor's PARTNER position back through S' to
+ *    wherever our piece started -- not to `target`'s home. A 3+-element
+ *    cycle has a genuine spare: routing our piece to one slot and letting
+ *    the other (>= 2) slots cycle between themselves is what lets S'
+ *    deliver our piece home while the others land wherever S itself
+ *    would have put them anyway (fixedOk/wrongAfter still verify the real
+ *    outcome either way -- this is a targeting restriction, not an
+ *    unverified assumption).
+ *
+ * When `target` and `displaced` differ, single-anchor routing alone is
+ * insufficient -- proven the hard way: it only guarantees the piece
+ * reaches `anchor` BEFORE the commutator acts, saying nothing about where
+ * it ends up AFTER C moves it away and S' maps things back (a genuinely
+ * misplaced edge left EVERY ONE of 1440 tried pairs at exactly the same
+ * wrong count). The correct condition needs a JOINT (2-condition) setup
+ * search instead: piece `target` ends up at HOME (= `target` itself,
+ * since piece ids equal home positions) if and only if the setup S
+ * satisfies TWO things at once:
  *   1. s.perm[anchor] === target        (piece target sits at anchor)
  *   2. s.perm[C.destination[anchor]] === displaced   (whatever currently
  *      occupies target's own home ends up at C's own image of anchor)
  * where `displaced` is whatever piece is CURRENTLY at position `target`
  * in `current` (the piece that needs to be swapped OUT to make room).
- * Condition 2 exists because conjugation acts on POSITIONS uniformly
- * (C sends anchor's occupant, whoever it is, to C.destination[anchor]
+ * Condition 2 exists because conjugation acts on POSITIONS uniformly (C
+ * sends anchor's occupant, whoever it is, to C.destination[anchor]
  * regardless of who that occupant is) -- so undoing S only delivers our
  * piece back to `target` if `displaced` is ALSO exactly where S's own
- * inverse expects it, at C.destination[anchor], when S' runs.
- *
- * Both are position-only conditions on 2 specific pieces, so this is
- * really the SAME joint machinery as findFinishingApplication (a sound,
- * position-only key, verified by full replay) -- just with a goal
- * PREDICATE instead of a precomputed reach table, since here there's
- * only one (target, displaced) pair to search for per anchor, not many
- * candidate assignments to look up.
+ * inverse expects it, at C.destination[anchor], when S' runs. Both are
+ * position-only conditions on 2 specific pieces, so this is really the
+ * SAME joint machinery as findFinishingApplication (a sound, position-
+ * only key, verified by full replay) -- just with a goal PREDICATE
+ * instead of a precomputed reach table, since here there's only one
+ * (target, displaced) pair to search for per anchor, not many candidate
+ * assignments to look up.
  */
 /**
  * Uploads `library` to the Wasm module ONCE per distinct array (cached
  * by the array's own identity -- each phase's own library, built via
- * `lazy()`, is a stable reference reused across every findSafeApplication
- * call for that phase) instead of re-serializing it on every call. See
- * findSafeApplication's own dev notes for why the whole function moved
- * to Wasm, not just its own buildReachableMap call.
+ * `lazy()`, is a stable reference reused across every findSafeApplication/
+ * findFinishingApplication call for that phase) instead of re-serializing
+ * it on every call. See findSafeApplication's own dev notes for why the
+ * whole function moved to Wasm, not just its own reachable-map BFS.
  */
 const libraryHandleCache = new WeakMap<readonly Commutator[], number>();
 function getLibraryHandle(kind: PieceKind, library: readonly Commutator[]): number {
@@ -659,17 +523,49 @@ function getLibraryHandle(kind: PieceKind, library: readonly Commutator[]): numb
  * applySeq, fixedOk, countWrongKind, for every (commutator, anchor) pair,
  * potentially hundreds per call -- had grown to ~49% of a full solve's
  * own time (same absolute cost as before, just a bigger share of a much
- * smaller total). Moved the whole function (not just its own
- * buildReachableMap call, unlike findFinishingApplication which still
- * runs its matching loop in JS) into Wasm: wasm-search/src/lib.rs's own
- * find_safe_application mirrors this function's two branches (single-
- * anchor vs joint target+displaced routing) exactly, byte-for-byte
- * against the JS version this replaced.
+ * smaller total). Moved the whole function (not just its own reachable-
+ * map BFS) into Wasm: wasm-search/src/lib.rs's own find_safe_application
+ * mirrors this function's two branches (single-anchor vs joint
+ * target+displaced routing) exactly, byte-for-byte against the JS version
+ * this replaced. findFinishingApplication's own matching loop later got
+ * the same treatment (find_finishing_application, see its own dev notes
+ * below) once profiling showed it was a comparably-sized JS-side cost.
  */
 function findSafeApplication(kind: PieceKind, library: readonly Commutator[], current: MegaminxState, fixedCorners: readonly number[], fixedEdges: readonly number[], targetPositions: readonly number[], target: number, wrongBefore: number, requireImprovement: boolean): { state: MegaminxState; seq: MegaminxTurn[] } | null {
   const displaced = kind.perm(current)[target];
   const handle = getLibraryHandle(kind, library);
   return findSafeApplicationWasm(handle, current, kind.name === "corner" ? 0 : 1, target, displaced, fixedCorners, fixedEdges, targetPositions, wrongBefore, requireImprovement);
+}
+
+/**
+ * Tiers the cap DOWN as `n` (wrongPositions.length) grows, instead of one
+ * fixed cap for every size 2..8 -- larger n is BOTH more expensive per
+ * reachable node (more permutations to check against it in the matching
+ * loop below) and combinatorially less likely to land an exact-finish
+ * match at all, so it gets the smallest budget.
+ *
+ * Cut to ~1/4 of their post-Wasm-port values (Task #38/#39) after
+ * findFinishingApplication's own ~91% miss rate (see its own dev notes
+ * below) made clear that most of even the CHEAP Wasm search was still
+ * being paid on attempts that were going to fail anyway --
+ * findFinishingApplication always has a safe fallback (findSafeApplication,
+ * called next by solveTargetPositions on a miss), unlike findSafeApplication
+ * itself, which has none and was NOT touched here (an earlier session
+ * round found reducing ITS OWN depth caused real regressions -- see this
+ * module's own git history). Swept empirically (20 seeds, well past the
+ * 10 used elsewhere in this file) to find the safety cliff before picking
+ * a value: full pipeline solves stay 20/20 correct all the way down to
+ * roughly half these numbers again, but disabling the search entirely
+ * (maxDepth=0) collapses to 9/20 -- confirming this function is genuinely
+ * load-bearing, not just slow. This tier keeps real margin before that
+ * cliff rather than sitting right on top of it.
+ */
+function finishingSearchCap(n: number): { maxDepth: number; maxReachable: number } {
+  if (n <= 3) return { maxDepth: 4, maxReachable: 2_000 };
+  if (n === 4) return { maxDepth: 3, maxReachable: 1_000 };
+  if (n === 5) return { maxDepth: 2, maxReachable: 400 };
+  if (n === 6) return { maxDepth: 2, maxReachable: 200 };
+  return { maxDepth: 1, maxReachable: 100 }; // n=7,8
 }
 
 /**
@@ -679,8 +575,7 @@ function findSafeApplication(kind: PieceKind, library: readonly Commutator[], cu
  * callers should keep wrongPositions small (solveTargetPositions caps it
  * at 6); this guard is a defense-in-depth backstop, not the primary
  * control.
- */
-/**
+ *
  * Profiled directly (see this module's own dev notes on the Wasm search
  * port): findFinishingApplication's own buildReachableMapWasm call was
  * ~75% of a full solve's own time (3-seed sample), and its own JS-side
@@ -702,37 +597,6 @@ function findSafeApplication(kind: PieceKind, library: readonly Commutator[], cu
  * (confirmed empirically, same algorithm) -- only its own per-call cost
  * (paid on both hits and misses) is now much cheaper.
  */
-/**
- * Tiers the cap DOWN as `n` (wrongPositions.length) grows, instead of one
- * fixed cap for every size 2..8 -- larger n is BOTH more expensive per
- * reachable node (more permutations to check against it in the matching
- * loop below) and combinatorially less likely to land an exact-finish
- * match at all, so it gets the smallest budget.
- *
- * Cut to ~1/4 of their post-Wasm-port values (Task #38/#39) after this
- * function's own ~91% miss rate (see dev notes above) made clear that
- * most of even the CHEAP Wasm search was still being paid on attempts
- * that were going to fail anyway -- findFinishingApplication always has
- * a safe fallback (findSafeApplication, called next by solveTargetPositions
- * on a miss), unlike findSafeApplication itself, which has none and was
- * NOT touched here (an earlier session round found reducing ITS OWN depth
- * caused real regressions -- see this module's own git history). Swept
- * empirically (20 seeds, well past the 10 used elsewhere in this file) to
- * find the safety cliff before picking a value: full pipeline solves stay
- * 20/20 correct all the way down to roughly half these numbers again, but
- * disabling the search entirely (maxDepth=0) collapses to 9/20 --
- * confirming this function is genuinely load-bearing, not just slow. This
- * tier keeps real margin before that cliff rather than sitting right on
- * top of it.
- */
-function finishingSearchCap(n: number): { maxDepth: number; maxReachable: number } {
-  if (n <= 3) return { maxDepth: 4, maxReachable: 2_000 };
-  if (n === 4) return { maxDepth: 3, maxReachable: 1_000 };
-  if (n === 5) return { maxDepth: 2, maxReachable: 400 };
-  if (n === 6) return { maxDepth: 2, maxReachable: 200 };
-  return { maxDepth: 1, maxReachable: 100 }; // n=7,8
-}
-
 function findFinishingApplication(kind: PieceKind, library: readonly Commutator[], current: MegaminxState, fixedCorners: readonly number[], fixedEdges: readonly number[], wrongPositions: readonly number[]): { state: MegaminxState; seq: MegaminxTurn[] } | null {
   if (wrongPositions.length > 8) return null;
   const { maxDepth, maxReachable } = finishingSearchCap(wrongPositions.length);
@@ -884,10 +748,6 @@ export function isMiddleCornersSolved(state: MegaminxState): boolean {
   return MIDDLE_CORNER_POSITIONS.every((p) => state.cornerPerm[p] === p && state.cornerOrient[p] === 0);
 }
 
-export function solveMiddleCorners(state: MegaminxState, maxAttempts = 400): MegaminxTurn[] {
-  return solveTargetPositions(CORNER_KIND, middleCornerLibrary(), state, MIDDLE_CORNER_POSITIONS, new Set(FIRST_LAYER_CORNER_POSITIONS), MIDDLE_CORNER_FIXED_EDGES, maxAttempts);
-}
-
 const TOP_AND_MIDDLE_CORNERS = new Set([...FIRST_LAYER_CORNER_POSITIONS, ...MIDDLE_CORNER_POSITIONS]);
 
 /**
@@ -921,11 +781,6 @@ const equatorialEdgeLibrary = lazy(() => buildCommutatorLibrary(EDGE_KIND, new S
 
 export function isEquatorialEdgesSolved(state: MegaminxState): boolean {
   return LOWER_UPPER_EDGE_POSITIONS.every((p) => state.edgePerm[p] === p && state.edgeOrient[p] === 0);
-}
-
-/** Solves the equatorial edges alone, deliberately allowed to disturb the middle corners (see solveMiddleLayer). */
-export function solveEquatorialEdges(state: MegaminxState, maxAttempts = 400): MegaminxTurn[] {
-  return solveTargetPositions(EDGE_KIND, equatorialEdgeLibrary(), state, LOWER_UPPER_EDGE_POSITIONS, new Set(FIRST_LAYER_CORNER_POSITIONS), EQUATORIAL_FIXED_EDGES, maxAttempts);
 }
 
 export function solveMiddleLayer(state: MegaminxState, maxRounds = 12): MegaminxTurn[] {
@@ -1003,10 +858,6 @@ export function isBottomCornersSolved(state: MegaminxState): boolean {
   return LAST_LAYER_CORNER_POSITIONS.every((p) => state.cornerPerm[p] === p && state.cornerOrient[p] === 0);
 }
 
-export function solveBottomCorners(state: MegaminxState, maxAttempts = 400): MegaminxTurn[] {
-  return solveTargetPositions(CORNER_KIND, bottomCornerLibrary(), state, LAST_LAYER_CORNER_POSITIONS, TOP_AND_MIDDLE_CORNERS, BOTTOM_CORNER_FIXED_EDGES, maxAttempts);
-}
-
 /**
  * The bottom face's own 5 edges. Fixed corners: only the top+middle 15
  * (the bottom 5 are deliberately left FREE -- see solveLastLayer's own dev
@@ -1018,11 +869,6 @@ const bottomEdgeLibrary = lazy(() => buildCommutatorLibrary(EDGE_KIND, TOP_AND_M
 
 export function isBottomEdgesSolved(state: MegaminxState): boolean {
   return BOTTOM_LOWER_EDGE_POSITIONS.every((p) => state.edgePerm[p] === p && state.edgeOrient[p] === 0);
-}
-
-/** Solves the bottom edges alone, deliberately allowed to disturb the bottom corners (see solveLastLayer). */
-export function solveBottomEdges(state: MegaminxState, maxAttempts = 400): MegaminxTurn[] {
-  return solveTargetPositions(EDGE_KIND, bottomEdgeLibrary(), state, BOTTOM_LOWER_EDGE_POSITIONS, TOP_AND_MIDDLE_CORNERS, BOTTOM_EDGE_FIXED_EDGES, maxAttempts);
 }
 
 function correctPositions(positions: readonly number[], perm: Int8Array, orient: Int8Array): number[] {
@@ -1038,8 +884,8 @@ function correctPositions(positions: readonly number[], perm: Int8Array, orient:
  * strictly sequential "corners then edges" pass has nothing to fall back
  * on if the edge step needs to disturb a corner.
  *
- * Blind ping-pong (just alternating solveBottomCorners/solveBottomEdges)
- * risks a period-2 cycle: each greedy solve is deterministic, so if fixing
+ * Blind ping-pong (just alternating a corners-only solve and an edges-only
+ * solve) risks a period-2 cycle: each greedy solve is deterministic, so if fixing
  * corners always scrambles edges into pattern E and fixing E always
  * scrambles corners back into the SAME pattern C this started from, it
  * repeats forever regardless of the round budget. To break that, each

@@ -1,18 +1,20 @@
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { MOVE_TABLE, type MegaminxState, type MegaminxTurn } from "./megaminxState";
 import type { FaceIndex } from "./dodecaMath";
 
 /**
- * Wasm-backed drop-in for megaminxSolver.ts's own buildReachableMap (see
- * wasm-search/src/lib.rs's own top comment for why only this one loop was
- * ported, not the whole solve pipeline). Exposes the SAME `.has`/`.get`
- * surface findSafeApplication/findFinishingApplication already call, so
- * swapping one construction call for the other is the only change their
- * own code needs -- every query key they compute themselves (jointPositionKey,
- * or a raw position for the single-piece case) stays byte-for-byte the same
- * JS, since the Wasm side mirrors that exact base-30 packing internally.
+ * JS binding layer for wasm-search's own Rust functions (raw `extern "C"`
+ * exports moved through Wasm linear memory, no wasm-bindgen -- see
+ * wasm-search/src/lib.rs's own top comment). `buildReachableMapWasm`
+ * below was the first of these (a direct BFS port, exposing the same
+ * `.has`/`.get` surface the original JS buildReachableMap did) and is
+ * still used by megaminxSearchWasm.test.ts's own differential test; the
+ * megaminx solver itself has since moved on to calling the full-function
+ * ports (`findSafeApplicationWasm`, `findFinishingApplicationWasm`,
+ * `solveCrossWasm`) directly, each doing its own reachable-map BFS
+ * internally in Rust rather than round-tripping through this one.
  */
 
 interface WasmExports {
@@ -87,10 +89,6 @@ function flattenMoveTable(): Int8Array {
     }
   }
   return out;
-}
-
-export function isWasmSearchAvailable(): boolean {
-  return existsSync(WASM_PATH);
 }
 
 /**
@@ -211,7 +209,7 @@ export function uploadLibraryWasm(kind: 0 | 1, entries: readonly UploadableCommu
   return handle;
 }
 
-export interface WasmSafeApplicationResult {
+export interface WasmMatchResult {
   state: MegaminxState;
   seq: MegaminxTurn[];
 }
@@ -239,7 +237,7 @@ export function findSafeApplicationWasm(
   targetPositions: readonly number[],
   wrongBefore: number,
   requireImprovement: boolean,
-): WasmSafeApplicationResult | null {
+): WasmMatchResult | null {
   const exports = ensureWasm();
   const s = scratch!;
 
@@ -289,7 +287,7 @@ export function findSafeApplicationWasm(
  * uses (never called concurrently with it), `fixedCorners`/`fixedEdges`
  * the same scratch findSafeApplicationWasm uses.
  */
-export function findFinishingApplicationWasm(libHandle: number, current: MegaminxState, kind: 0 | 1, wrongPositions: readonly number[], fixedCorners: readonly number[], fixedEdges: readonly number[], maxDepth: number, maxReachable: number): WasmSafeApplicationResult | null {
+export function findFinishingApplicationWasm(libHandle: number, current: MegaminxState, kind: 0 | 1, wrongPositions: readonly number[], fixedCorners: readonly number[], fixedEdges: readonly number[], maxDepth: number, maxReachable: number): WasmMatchResult | null {
   const exports = ensureWasm();
   const s = scratch!;
 
