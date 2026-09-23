@@ -87,7 +87,8 @@ function edgeIndexOf(a: number, b: number): number {
   return i;
 }
 
-const FIRST_LAYER_CORNER_POSITIONS: readonly number[] = FACE_VERTEX_INDICES[0];
+/** Exported for MEGAMINX_3SEC_PHASE2BC_LIBRARY_SUPPORT_OPTIMIZATION_V1's own bench harness -- see that Sprint's own dev notes there for why (needs to replicate solveMiddleLayer's own equatorial-edge step with a candidate library, not modify this function). Pure visibility change, no behavior change. */
+export const FIRST_LAYER_CORNER_POSITIONS: readonly number[] = FACE_VERTEX_INDICES[0];
 const FIRST_LAYER_EDGE_POSITIONS: readonly number[] = FACE_VERTEX_INDICES[0].map((v, j) => edgeIndexOf(v, FACE_VERTEX_INDICES[0][(j + 1) % 5]));
 
 /**
@@ -158,12 +159,13 @@ function edgesInBand(bandA: string, bandB: string): number[] {
   return out;
 }
 const UPPER_UPPER_EDGE_POSITIONS: readonly number[] = edgesInBand("upper", "upper");
-const LOWER_UPPER_EDGE_POSITIONS: readonly number[] = edgesInBand("lower", "upper");
+/** Exported for MEGAMINX_3SEC_PHASE2BC_LIBRARY_SUPPORT_OPTIMIZATION_V1 -- see FIRST_LAYER_CORNER_POSITIONS's own dev note above. */
+export const LOWER_UPPER_EDGE_POSITIONS: readonly number[] = edgesInBand("lower", "upper");
 const LOWER_LOWER_EDGE_POSITIONS: readonly number[] = edgesInBand("lower", "lower");
 const BOTTOM_LOWER_EDGE_POSITIONS: readonly number[] = edgesInBand("bottom", "lower");
 
 /** The 10 "middle band" corners (between the top and bottom layers) -- same technique as kilominxSolver.ts's own MIDDLE_LAYER_POSITIONS. */
-const MIDDLE_CORNER_POSITIONS: readonly number[] = Array.from({ length: 20 }, (_, i) => i).filter((p) => !FIRST_LAYER_CORNER_POSITIONS.includes(p) && !FACE_VERTEX_INDICES[BOTTOM_FACE].includes(p));
+export const MIDDLE_CORNER_POSITIONS: readonly number[] = Array.from({ length: 20 }, (_, i) => i).filter((p) => !FIRST_LAYER_CORNER_POSITIONS.includes(p) && !FACE_VERTEX_INDICES[BOTTOM_FACE].includes(p));
 const LAST_LAYER_CORNER_POSITIONS: readonly number[] = FACE_VERTEX_INDICES[BOTTOM_FACE];
 
 /**
@@ -212,7 +214,7 @@ export function isFirstLayerSolved(state: MegaminxState): boolean {
  * so a commutator is free to scramble any OTHER corner or edge as long as
  * it leaves the 5 cross edges alone.
  */
-interface Commutator {
+export interface Commutator {
   seq: MegaminxTurn[];
   cornerSupport: number[];
   edgeSupport: number[];
@@ -316,7 +318,7 @@ function buildCommutatorPool(faces: readonly FaceIndex[], aDepth: number, bDepth
 const { As: COMMUTATOR_As, Bs: COMMUTATOR_Bs } = buildCommutatorPool(FACE_INDICES, 2, 3);
 
 /** Which array a "kind" of piece lives in, and its orientation modulus -- lets the insertion machinery below (setup search, exact/greedy finishers) stay ONE generic implementation instead of a separate copy for corners and for edges. */
-interface PieceKind {
+export interface PieceKind {
   name: string;
   count: number;
   mod: number;
@@ -328,8 +330,8 @@ interface PieceKind {
   /** See Commutator's own cornerDestination/edgeDestination comment. */
   destination(c: Commutator): readonly number[];
 }
-const CORNER_KIND: PieceKind = { name: "corner", count: 20, mod: 3, perm: (s) => s.cornerPerm, orient: (s) => s.cornerOrient, support: (c) => c.cornerSupport, movingSupport: (c) => c.cornerMovingSupport, destination: (c) => c.cornerDestination };
-const EDGE_KIND: PieceKind = { name: "edge", count: 30, mod: 2, perm: (s) => s.edgePerm, orient: (s) => s.edgeOrient, support: (c) => c.edgeSupport, movingSupport: (c) => c.edgeMovingSupport, destination: (c) => c.edgeDestination };
+export const CORNER_KIND: PieceKind = { name: "corner", count: 20, mod: 3, perm: (s) => s.cornerPerm, orient: (s) => s.cornerOrient, support: (c) => c.cornerSupport, movingSupport: (c) => c.cornerMovingSupport, destination: (c) => c.cornerDestination };
+export const EDGE_KIND: PieceKind = { name: "edge", count: 30, mod: 2, perm: (s) => s.edgePerm, orient: (s) => s.edgeOrient, support: (c) => c.edgeSupport, movingSupport: (c) => c.edgeMovingSupport, destination: (c) => c.edgeDestination };
 
 /**
  * Computed library of commutators useful for inserting `targetKind`
@@ -394,7 +396,7 @@ function saveCachedLibrary(cacheKey: string, fingerprint: string, commutators: C
   }
 }
 
-function buildCommutatorLibrary(targetKind: PieceKind, fixedCorners: ReadonlySet<number>, fixedEdges: ReadonlySet<number>, maxSupport = 6, perSizeCap = 80, maxPairsExamined = 1_500_000, pool: { As: MegaminxTurn[][]; Bs: MegaminxTurn[][] } = { As: COMMUTATOR_As, Bs: COMMUTATOR_Bs }, cacheKey?: string): Commutator[] {
+export function buildCommutatorLibrary(targetKind: PieceKind, fixedCorners: ReadonlySet<number>, fixedEdges: ReadonlySet<number>, maxSupport = 6, perSizeCap = 80, maxPairsExamined = 1_500_000, pool: { As: MegaminxTurn[][]; Bs: MegaminxTurn[][] } = { As: COMMUTATOR_As, Bs: COMMUTATOR_Bs }, cacheKey?: string): Commutator[] {
   const fingerprint = cacheKey ? libraryFingerprint(fixedCorners, fixedEdges, maxSupport, perSizeCap, maxPairsExamined, pool) : undefined;
   if (cacheKey && fingerprint) {
     const cached = loadCachedLibrary(cacheKey, fingerprint);
@@ -741,8 +743,8 @@ export function solveUpperEdges(state: MegaminxState, maxAttempts = 400): Megami
  * first layer (5 corners + 5 edges) AND the 5 upper-upper edges from
  * Phase 2a.
  */
-const MIDDLE_CORNER_FIXED_EDGES = new Set([...FIRST_LAYER_EDGE_POSITIONS, ...UPPER_UPPER_EDGE_POSITIONS]);
-const middleCornerLibrary = lazy(() => buildCommutatorLibrary(CORNER_KIND, new Set(FIRST_LAYER_CORNER_POSITIONS), MIDDLE_CORNER_FIXED_EDGES, undefined, undefined, undefined, undefined, "middleCorner"));
+export const MIDDLE_CORNER_FIXED_EDGES = new Set([...FIRST_LAYER_EDGE_POSITIONS, ...UPPER_UPPER_EDGE_POSITIONS]);
+export const middleCornerLibrary = lazy(() => buildCommutatorLibrary(CORNER_KIND, new Set(FIRST_LAYER_CORNER_POSITIONS), MIDDLE_CORNER_FIXED_EDGES, undefined, undefined, undefined, undefined, "middleCorner"));
 
 export function isMiddleCornersSolved(state: MegaminxState): boolean {
   return MIDDLE_CORNER_POSITIONS.every((p) => state.cornerPerm[p] === p && state.cornerOrient[p] === 0);
@@ -776,7 +778,7 @@ const lastLayerPool = lazy(() => buildCommutatorPool(LAST_LAYER_FACES, 3, 3));
  * need each other's freedom to have a rich enough library, not just a
  * bigger search budget on the fully-fixed version.
  */
-const EQUATORIAL_FIXED_EDGES = new Set([...FIRST_LAYER_EDGE_POSITIONS, ...UPPER_UPPER_EDGE_POSITIONS]);
+export const EQUATORIAL_FIXED_EDGES = new Set([...FIRST_LAYER_EDGE_POSITIONS, ...UPPER_UPPER_EDGE_POSITIONS]);
 /**
  * MEGAMINX_3SEC_PHASE2BC_LIBRARY_SUPPORT_PRODUCTION_INTEGRATION_V1 --
  * maxSupport lowered 10 -> 6, per that Sprint's own real-solver gates
@@ -789,7 +791,7 @@ const EQUATORIAL_FIXED_EDGES = new Set([...FIRST_LAYER_EDGE_POSITIONS, ...UPPER_
  * Nothing else about this function, buildCommutatorLibrary, or any other
  * phase's library changed.
  */
-const equatorialEdgeLibrary = lazy(() => buildCommutatorLibrary(EDGE_KIND, new Set(FIRST_LAYER_CORNER_POSITIONS), EQUATORIAL_FIXED_EDGES, 6, 80, 8_000_000, undefined, "equatorialEdge"));
+export const equatorialEdgeLibrary = lazy(() => buildCommutatorLibrary(EDGE_KIND, new Set(FIRST_LAYER_CORNER_POSITIONS), EQUATORIAL_FIXED_EDGES, 6, 80, 8_000_000, undefined, "equatorialEdge"));
 
 export function isEquatorialEdgesSolved(state: MegaminxState): boolean {
   return LOWER_UPPER_EDGE_POSITIONS.every((p) => state.edgePerm[p] === p && state.edgeOrient[p] === 0);
@@ -883,7 +885,7 @@ export function isBottomEdgesSolved(state: MegaminxState): boolean {
   return BOTTOM_LOWER_EDGE_POSITIONS.every((p) => state.edgePerm[p] === p && state.edgeOrient[p] === 0);
 }
 
-function correctPositions(positions: readonly number[], perm: Int8Array, orient: Int8Array): number[] {
+export function correctPositions(positions: readonly number[], perm: Int8Array, orient: Int8Array): number[] {
   return positions.filter((p) => perm[p] === p && orient[p] === 0);
 }
 
@@ -910,7 +912,7 @@ function correctPositions(positions: readonly number[], perm: Int8Array, orient:
  * to disturbing -- whichever option actually avoids undoing progress.
  */
 /** Tries the stricter (protected) fixed set first; falls back to the phase's own normal fixed set if that's over-constrained and finds nothing (see solveLastLayer's own dev notes: protection is a preference, not a requirement). */
-function solveTargetPositionsPreferring(kind: PieceKind, library: readonly Commutator[], current: MegaminxState, targetPositions: readonly number[], strictFixedCorners: ReadonlySet<number>, strictFixedEdges: ReadonlySet<number>, looseFixedCorners: ReadonlySet<number>, looseFixedEdges: ReadonlySet<number>): MegaminxTurn[] {
+export function solveTargetPositionsPreferring(kind: PieceKind, library: readonly Commutator[], current: MegaminxState, targetPositions: readonly number[], strictFixedCorners: ReadonlySet<number>, strictFixedEdges: ReadonlySet<number>, looseFixedCorners: ReadonlySet<number>, looseFixedEdges: ReadonlySet<number>): MegaminxTurn[] {
   try {
     return solveTargetPositions(kind, library, current, targetPositions, strictFixedCorners, strictFixedEdges, 400);
   } catch {
