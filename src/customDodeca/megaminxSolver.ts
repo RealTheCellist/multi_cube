@@ -777,7 +777,19 @@ const lastLayerPool = lazy(() => buildCommutatorPool(LAST_LAYER_FACES, 3, 3));
  * bigger search budget on the fully-fixed version.
  */
 const EQUATORIAL_FIXED_EDGES = new Set([...FIRST_LAYER_EDGE_POSITIONS, ...UPPER_UPPER_EDGE_POSITIONS]);
-const equatorialEdgeLibrary = lazy(() => buildCommutatorLibrary(EDGE_KIND, new Set(FIRST_LAYER_CORNER_POSITIONS), EQUATORIAL_FIXED_EDGES, 10, 80, 8_000_000, undefined, "equatorialEdge"));
+/**
+ * MEGAMINX_3SEC_PHASE2BC_LIBRARY_SUPPORT_PRODUCTION_INTEGRATION_V1 --
+ * maxSupport lowered 10 -> 6, per that Sprint's own real-solver gates
+ * (Gate A/B/C, see that Sprint's report): 100-scramble regression against
+ * the real solver found 0 correctness/completeness loss at maxSupport=6
+ * (including the 18/18 scrambles whose winning candidate had support=7
+ * under maxSupport=10 -- solveTargetPositionsPreferring's own retry/fallback
+ * across target positions absorbed every one of those losses), while
+ * cutting phase2bc's own wall time ~34.8% (4,160 -> 1,440 library pairs).
+ * Nothing else about this function, buildCommutatorLibrary, or any other
+ * phase's library changed.
+ */
+const equatorialEdgeLibrary = lazy(() => buildCommutatorLibrary(EDGE_KIND, new Set(FIRST_LAYER_CORNER_POSITIONS), EQUATORIAL_FIXED_EDGES, 6, 80, 8_000_000, undefined, "equatorialEdge"));
 
 export function isEquatorialEdgesSolved(state: MegaminxState): boolean {
   return LOWER_UPPER_EDGE_POSITIONS.every((p) => state.edgePerm[p] === p && state.edgeOrient[p] === 0);
