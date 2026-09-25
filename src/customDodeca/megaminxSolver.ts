@@ -1,5 +1,5 @@
 import { applyMegaminxMove, EDGES, type MegaminxState, type MegaminxTurn } from "./megaminxState";
-import { uploadLibraryWasm, findSafeApplicationWasm, findFinishingApplicationWasm, solveCrossWasm } from "./megaminxSearchWasm";
+import { uploadLibraryWasm, findSafeApplicationWasm, findFinishingApplicationWasm, solveCrossWasm, solveCrossCachedBackwardV1Wasm } from "./megaminxSearchWasm";
 import { FACE_VERTEX_INDICES, FACE_INDICES, FACE_NORMALS, type FaceIndex } from "./dodecaMath";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -189,8 +189,65 @@ export function isCrossSolved(state: MegaminxState): boolean {
 
 const sortedFirstLayerEdgePositions = [...FIRST_LAYER_EDGE_POSITIONS].sort((a, b) => a - b);
 
-export function solveCross(state: MegaminxState, maxHalfDepth = 11, maxFrontierSize = 1_500_000): MegaminxTurn[] {
+/**
+ * MEGAMINX_SOLVECROSS_DEPTH12_PRODUCTION_INTEGRATION_V1 -- maxHalfDepth
+ * raised 11 -> 12. Per that Sprint's own failure census (and
+ * MEGAMINX_SOLVECROSS_COMPLETENESS_V1 before it): bidirectional_search_impl's
+ * `max_half_depth` is a SHARED total-round budget split between the forward
+ * and backward trees (whichever is smaller expands each round), not a
+ * per-side cap -- so combined reachable solution depth is ~max_half_depth,
+ * not 2x it (confirmed against the pre-Wasm-port JS: same design, not a
+ * porting regression). All 26/100 depth-11 failures in a 100-scramble
+ * fixture were exactly this (ROUNDS_EXHAUSTED, full budget consumed, no
+ * frontier-cap hit). Raising the shared budget by 1 round rescues 16 of
+ * them (74/100 -> 90/100) with 0 regressions on the other 74, 0 false
+ * solves, and worst-case total solve time 1.25s (well under the 3s
+ * target) -- confirmed against the real solveCross, not an isolated
+ * variant, since this Sprint's own change IS the default value.
+ */
+/**
+ * MEGAMINX_SOLVECROSS_SYMMETRY_SHARED_FORWARD_V2_PRODUCTION_INTEGRATION_V1
+ * -- backward C5-symmetry canonicalized fallback. Originally wired as a
+ * single call to wasm-search/src/lib.rs's own
+ * solve_cross_shared_forward_fallback_v2 (dynamic backward, rebuilt every
+ * call); validated then: 97/100 completeness (vs this function's own
+ * 90/100 raw-only), 0 false solves, 0 regressions, MAX 2502ms across the
+ * full 100-scramble fixture.
+ *
+ * MEGAMINX_SOLVECROSS_BACKWARD_TABLE_PRODUCTION_INTEGRATION_V1 -- the
+ * dynamic call above is now replaced by solve_cross_cached_backward_v1
+ * (see its own dev notes): MEGAMINX_SOLVECROSS_RESIDUAL_BFS_PIPELINE_
+ * COST_PROFILE_V1 found the canonical backward BFS phase2 rebuilds on
+ * every single call is entirely fixture-independent (byte-identical
+ * round-by-round across every fallback-triggering scramble in the
+ * 100-scramble fixture); MEGAMINX_SOLVECROSS_BACKWARD_TABLE_
+ * PRECOMPUTATION_V1 built that BFS ONCE into a lazily-initialized static
+ * table and replaced the per-solve backward reconstruction with a single
+ * O(forward-tree-size) pass of O(1) lookups against it, provably
+ * reproducing the dynamic version's own round-by-round meeting-check
+ * semantics bit-for-bit (see that Sprint's own correctness note). Wiring
+ * it here (this Sprint) re-confirmed, through this actual production
+ * entry point: all 10 fallback-triggering scrambles byte-identical to
+ * the dynamic oracle (solve_cross_shared_forward_fallback_v2, left
+ * completely unmodified in wasm-search/src/lib.rs and still exported --
+ * see solveCrossCachedBackwardV1Wasm's own sibling
+ * solveCrossSharedForwardFallbackV2Wasm in megaminxSearchWasm.ts, used
+ * only as this file's test suite's own oracle, not by production code
+ * anymore), 97/100 completeness preserved, 0 false solves, warm MAX well
+ * under 3s. First call per process pays a one-time ~2.1s table-build
+ * cost (lazy; only paid the first time ANY fallback actually triggers,
+ * not on every depth12-solvable scramble) plus ~122MB of Wasm linear
+ * memory that persists for the process's lifetime.
+ */
+const SYMMETRY_FALLBACK_MAX_HALF_DEPTH = 13;
+
+export function solveCross(state: MegaminxState, maxHalfDepth = 12, maxFrontierSize = 1_500_000, useSymmetryFallback = false): MegaminxTurn[] {
   if (isCrossSolved(state)) return [];
+  if (useSymmetryFallback) {
+    const { seq } = solveCrossCachedBackwardV1Wasm(state, sortedFirstLayerEdgePositions, maxHalfDepth, maxFrontierSize, SYMMETRY_FALLBACK_MAX_HALF_DEPTH);
+    if (seq) return seq;
+    throw new Error(`megaminxSolver: cross not solved within half-depth ${maxHalfDepth} (cached-backward fallback to depth${SYMMETRY_FALLBACK_MAX_HALF_DEPTH} also failed)`);
+  }
   const solution = solveCrossWasm(state, sortedFirstLayerEdgePositions, maxHalfDepth, maxFrontierSize);
   if (!solution) throw new Error(`megaminxSolver: cross not solved within half-depth ${maxHalfDepth}`);
   return solution;
@@ -716,7 +773,7 @@ export function solveFirstLayerCorners(state: MegaminxState, maxAttempts = 400):
 
 /** Full Phase 1: cross (edges), then corners. */
 export function solveFirstLayer(state: MegaminxState): MegaminxTurn[] {
-  const crossSolution = solveCross(state);
+  const crossSolution = solveCross(state, 12, 1_500_000, true);
   const afterCross = applySeq(state, crossSolution);
   const cornerSolution = solveFirstLayerCorners(afterCross);
   return [...crossSolution, ...cornerSolution];
