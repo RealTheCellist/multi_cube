@@ -17,8 +17,10 @@ function applySeq(state: GigaminxState, seq: readonly GigaminxTurn[]): GigaminxS
   return s;
 }
 
+const seeds = process.env.GIGA_SEEDS ? process.env.GIGA_SEEDS.split(",").map(Number) : [1];
+
 describe("gigaminxSolver Phase 1+2: corners and wings", () => {
-  it.each([1])("seed %i: corners+wings solve, replay-verified", (seed) => {
+  it.each(seeds)("seed %i: corners+wings solve, replay-verified", (seed) => {
     const rng = mulberry32(seed * 13 + 7);
     const scramble = randomGigaminxScramble(30, rng);
     const scrambled = applyGigaminxScramble(solvedGigaminxState(), scramble);
