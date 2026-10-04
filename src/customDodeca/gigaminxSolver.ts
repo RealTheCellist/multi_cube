@@ -514,7 +514,18 @@ function tryCompoundFinishWings(commutators: readonly Commutator[], current: Gig
 }
 
 /** `wrongAfterThreshold` is the max acceptable wrongAfter -- callers pass wrongBefore-1 for strict improvement, wrongBefore for lateral, wrongBefore+step for a regression-ladder rung. */
-function findSafeWingApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[]): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+/**
+ * `enforceFixed=true` (strict/lateral tiers) rejects any move that disturbs an
+ * already-solved piece -- but once wrongBefore drops below the smallest usable
+ * commutator support, EVERY commutator's support necessarily overlaps at least
+ * one already-fixed piece (there just aren't enough wrong slots left to host
+ * the whole support), so that gate becomes unsatisfiable by construction, not
+ * by bad luck. The regression-ladder tier passes `enforceFixed=false` to allow
+ * exactly that -- temporarily re-breaking a fixed piece -- relying solely on
+ * the wrongAfterThreshold (computed over ALL positions, so it already counts
+ * any such collateral damage) to bound how much damage is acceptable.
+ */
+function findSafeWingApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[], enforceFixed = true): { state: GigaminxState; seq: GigaminxTurn[] } | null {
   const setupKey = wingKeyFor([target]);
   for (const C of commutators) {
     for (const anchor of C.support) {
@@ -523,8 +534,10 @@ function findSafeWingApplication(commutators: readonly Commutator[], current: Gi
       const Sinv = invertSeq(S);
       const fullSeq = [...S, ...C.seq, ...Sinv];
       const resultState = applySeq(current, fullSeq);
-      const fixedPreserved = [...fixed].every((p) => resultState.wingPerm[p] === p && resultState.wingOrient[p] === 0);
-      if (!fixedPreserved) continue;
+      if (enforceFixed) {
+        const fixedPreserved = [...fixed].every((p) => resultState.wingPerm[p] === p && resultState.wingOrient[p] === 0);
+        if (!fixedPreserved) continue;
+      }
       const wrongAfter = countWrongWings(resultState, remaining);
       if (wrongAfter > wrongAfterThreshold) continue;
       return { state: resultState, seq: fullSeq };
@@ -658,7 +671,7 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
                 for (let i = 0; i < tries; i++) {
                   const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
                   const target = current.wingPerm[pos];
-                  regressiveFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions);
+                  regressiveFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, false);
                   if (regressiveFound) break outerRegress;
                 }
               }
@@ -683,6 +696,10 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
 
       current = found.state;
       solution.push(...found.seq);
+      // Rebuild (not just add-to) fixed: a regression step can legitimately
+      // re-break a previously-fixed piece, and if `fixed` only ever grew,
+      // that piece would stay falsely "protected" and could never be fixed again.
+      fixed.clear();
       for (const p of targetPositions) if (current.wingPerm[p] === p && current.wingOrient[p] === 0) fixed.add(p);
     }
     return { moves: solution, trace: { name: "wings", rounds: attempts, movesEmitted: solution.length, succeeded: true } };
