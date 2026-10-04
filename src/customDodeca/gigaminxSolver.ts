@@ -1,0 +1,351 @@
+import { applyGigaminxMove, solvedGigaminxState, type GigaminxState, type GigaminxDepth, type GigaminxTurn } from "./gigaminxState";
+import { FACE_INDICES } from "./dodecaMath";
+
+/**
+ * GIGAMINX_SOLVER_V1 (reconstructed): Phase-based reduction solver, same
+ * architecture as kilominxSolver.ts's own commutator-library +
+ * greedy-safe-application + dedicated-finisher approach, generalized for
+ * Gigaminx's 96-wide move set (12 faces x 4 depths x 2 signs, not 24) and
+ * its larger piece orbits.
+ *
+ * Phases:
+ *   Phase 1: 20 outer CORNERS (position + orientation).
+ *   Phase 2: 60 WINGS (position + orientation), corners fixed.
+ *   Phase 3: 60 INNER CORNERS (position only, no orientation), corners+wings fixed.
+ *
+ * NOTE on scope (reconstruction after uncommitted work was lost to a
+ * container reset -- see repo history): this rebuild prioritizes
+ * correctness over the original's accumulated performance tuning (expanded
+ * libraries, candidate-ordering heuristics, hybrid exact-finish policies
+ * from many later Sprints). It is NOT expected to hit the original's
+ * ~3-second production runtime target out of the box.
+ */
+
+export const ALL_MOVES: readonly GigaminxTurn[] = (() => {
+  const out: GigaminxTurn[] = [];
+  for (const face of FACE_INDICES) for (const depth of [1, 2, 3, 4] as GigaminxDepth[]) for (const sign of [1, -1] as const) out.push({ face, sign, depth });
+  return out;
+})();
+
+function applySeq(state: GigaminxState, seq: readonly GigaminxTurn[]): GigaminxState {
+  let s = state;
+  for (const t of seq) s = applyGigaminxMove(s, t.face, t.sign, t.depth);
+  return s;
+}
+function invertSeq(seq: readonly GigaminxTurn[]): GigaminxTurn[] {
+  return [...seq].reverse().map((t) => ({ face: t.face, sign: (t.sign * -1) as 1 | -1, depth: t.depth }));
+}
+
+/** Single-direction forward BFS that stops as soon as `goal(state)` is true. */
+function forwardSearchUntil(state: GigaminxState, goal: (s: GigaminxState) => boolean, keyFn: (s: GigaminxState) => string, maxDepth: number, maxFrontierSize = 300_000): GigaminxTurn[] | null {
+  if (goal(state)) return [];
+  let frontier = new Map<string, { state: GigaminxState; path: GigaminxTurn[] }>([[keyFn(state), { state, path: [] }]]);
+  for (let depth = 0; depth < maxDepth; depth++) {
+    const next = new Map<string, { state: GigaminxState; path: GigaminxTurn[] }>();
+    for (const { state: base, path } of frontier.values()) {
+      for (const t of ALL_MOVES) {
+        const child = applyGigaminxMove(base, t.face, t.sign, t.depth);
+        const childPath = [...path, t];
+        if (goal(child)) return childPath;
+        const key = keyFn(child);
+        if (next.has(key)) continue;
+        if (next.size >= maxFrontierSize) return null;
+        next.set(key, { state: child, path: childPath });
+      }
+    }
+    frontier = next;
+    if (frontier.size === 0) return null;
+  }
+  return null;
+}
+
+function setKeyOf(positions: readonly number[]): string {
+  return [...positions].sort((a, b) => a - b).join(",");
+}
+
+function combinations<T>(items: readonly T[], size: number): T[][] {
+  if (size === 0) return [[]];
+  if (items.length < size) return [];
+  const [first, ...rest] = items;
+  return [...combinations(rest, size - 1).map((c) => [first, ...c]), ...combinations(rest, size)];
+}
+
+function permutations<T>(items: readonly T[]): T[][] {
+  if (items.length <= 1) return [items.slice()];
+  const out: T[][] = [];
+  for (let i = 0; i < items.length; i++) {
+    const rest = [...items.slice(0, i), ...items.slice(i + 1)];
+    for (const p of permutations(rest)) out.push([items[i], ...p]);
+  }
+  return out;
+}
+
+export interface PhaseTrace {
+  name: string;
+  rounds: number;
+  movesEmitted: number;
+  succeeded: boolean;
+  error?: string;
+}
+
+// ===================== Corner orbit (Phase 1) =====================
+
+function cornerKeyFor(pieces: readonly number[]): (s: GigaminxState) => string {
+  const sorted = [...pieces].sort((a, b) => a - b);
+  return (s: GigaminxState) => {
+    const loc = new Array<number>(20);
+    for (let pos = 0; pos < 20; pos++) loc[s.cornerPerm[pos]] = pos;
+    return sorted.map((piece) => `${loc[piece]}:${s.cornerOrient[loc[piece]]}`).join(",");
+  };
+}
+function positionOnlyCornerKeyFor(pieces: readonly number[]): (s: GigaminxState) => string {
+  const sorted = [...pieces].sort((a, b) => a - b);
+  return (s: GigaminxState) => {
+    const loc = new Array<number>(20);
+    for (let pos = 0; pos < 20; pos++) loc[s.cornerPerm[pos]] = pos;
+    return sorted.map((piece) => loc[piece]).join(",");
+  };
+}
+function countWrongCorners(state: GigaminxState, positions: readonly number[]): number {
+  let n = 0;
+  for (const p of positions) if (state.cornerPerm[p] !== p || state.cornerOrient[p] !== 0) n++;
+  return n;
+}
+export function areCornersSolved(state: GigaminxState): boolean {
+  return state.cornerPerm.every((p, i) => p === i) && state.cornerOrient.every((o) => o === 0);
+}
+
+interface Commutator {
+  seq: GigaminxTurn[];
+  support: number[];
+}
+
+function makeCornerCommutator(a: GigaminxTurn[], b: GigaminxTurn[], solved: GigaminxState): Commutator {
+  const seq = [...a, ...b, ...invertSeq(a), ...invertSeq(b)];
+  const result = applySeq(solved, seq);
+  const support: number[] = [];
+  for (let i = 0; i < 20; i++) if (result.cornerPerm[i] !== i || result.cornerOrient[i] !== 0) support.push(i);
+  return { seq, support };
+}
+
+/** A/B pair sequences up to the given lengths, over the full 96-move grammar, never repeating the immediately-previous move's face. */
+function admissibleSeqs(maxLen: number): GigaminxTurn[][] {
+  let seqs: GigaminxTurn[][] = ALL_MOVES.map((t) => [t]);
+  let out: GigaminxTurn[][] = seqs;
+  for (let len = 2; len <= maxLen; len++) {
+    const next = seqs.flatMap((seq) => ALL_MOVES.filter((t) => t.face !== seq[seq.length - 1].face).map((t) => [...seq, t]));
+    out = out.concat(next);
+    seqs = next;
+  }
+  return out;
+}
+
+function buildCommutatorLibrary(
+  solved: GigaminxState,
+  As: GigaminxTurn[][],
+  Bs: GigaminxTurn[][],
+  maxSupport: number,
+  perSizeCap: number,
+  maxPairsExamined: number,
+  isPure: (result: GigaminxState) => boolean,
+  support: (result: GigaminxState) => number[],
+): Commutator[] {
+  const buckets = new Map<number, Commutator[]>();
+  for (let n = 1; n <= maxSupport; n++) buckets.set(n, []);
+  const seen = new Set<string>();
+  let examined = 0;
+
+  outer: for (const A of As) {
+    for (const B of Bs) {
+      if (examined++ >= maxPairsExamined) break outer;
+      const seq = [...A, ...B, ...invertSeq(A), ...invertSeq(B)];
+      const result = applySeq(solved, seq);
+      if (!isPure(result)) continue;
+      const sup = support(result);
+      if (sup.length === 0 || sup.length > maxSupport) continue;
+      const key = sup.join(",");
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const bucket = buckets.get(sup.length)!;
+      if (bucket.length >= perSizeCap) continue;
+      bucket.push({ seq, support: sup });
+      if ([...buckets.values()].every((b) => b.length >= perSizeCap)) break outer;
+    }
+  }
+  const out: Commutator[] = [];
+  for (let n = 1; n <= maxSupport; n++) out.push(...buckets.get(n)!);
+  return out;
+}
+
+let cornerCommutatorsCache: Commutator[] | null = null;
+function cornerCommutators(): Commutator[] {
+  if (cornerCommutatorsCache) return cornerCommutatorsCache;
+  const solved = solvedGigaminxState();
+  const As = admissibleSeqs(2);
+  const Bs = admissibleSeqs(3);
+  cornerCommutatorsCache = buildCommutatorLibrary(
+    solved,
+    As,
+    Bs,
+    6,
+    200,
+    20_000_000,
+    () => true,
+    (result) => {
+      const sup: number[] = [];
+      for (let i = 0; i < 20; i++) if (result.cornerPerm[i] !== i || result.cornerOrient[i] !== 0) sup.push(i);
+      return sup;
+    },
+  );
+  return cornerCommutatorsCache;
+}
+
+interface JointReachTable {
+  reachable: Map<string, GigaminxTurn[][]>;
+  setIndex: Map<string, string[]>;
+}
+
+function buildJointCornerReachTable(current: GigaminxState, pieces: readonly number[]): JointReachTable {
+  const posKeyFn = positionOnlyCornerKeyFor(pieces);
+  const MAX_DEPTH = 8;
+  const MAX_REACHABLE = 5_000;
+  const MAX_BUCKET = 6;
+  const reachable = new Map<string, GigaminxTurn[][]>([[posKeyFn(current), [[]]]]);
+  let totalPaths = 1;
+  let frontier: { state: GigaminxState; path: GigaminxTurn[] }[] = [{ state: current, path: [] }];
+  for (let depth = 0; depth < MAX_DEPTH && frontier.length > 0 && totalPaths < MAX_REACHABLE; depth++) {
+    const next: { state: GigaminxState; path: GigaminxTurn[] }[] = [];
+    for (const { state: base, path } of frontier) {
+      for (const t of ALL_MOVES) {
+        const child = applyGigaminxMove(base, t.face, t.sign, t.depth);
+        const key = posKeyFn(child);
+        const childPath = [...path, t];
+        let bucket = reachable.get(key);
+        if (bucket) {
+          if (bucket.length < MAX_BUCKET) {
+            bucket.push(childPath);
+            totalPaths++;
+          }
+          continue;
+        }
+        if (totalPaths >= MAX_REACHABLE) break;
+        bucket = [childPath];
+        reachable.set(key, bucket);
+        totalPaths++;
+        next.push({ state: child, path: childPath });
+      }
+    }
+    frontier = next;
+  }
+  const setIndex = new Map<string, string[]>();
+  for (const key of reachable.keys()) {
+    const positions = key.split(",").map(Number);
+    const sk = setKeyOf(positions);
+    if (!setIndex.has(sk)) setIndex.set(sk, []);
+    setIndex.get(sk)!.push(key);
+  }
+  return { reachable, setIndex };
+}
+
+function tryExactFinishCorners(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, pieces: readonly number[]): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+  const matchingEntries = commutators.filter((c) => c.support.length === pieces.length);
+  if (matchingEntries.length === 0) return null;
+  const { reachable, setIndex } = buildJointCornerReachTable(current, pieces);
+  for (const C of matchingEntries) {
+    const sk = setKeyOf(C.support);
+    const matchingKeys = setIndex.get(sk);
+    if (!matchingKeys) continue;
+    for (const key of matchingKeys) {
+      const bucket = reachable.get(key)!;
+      for (const S of bucket) {
+        const Sinv = invertSeq(S);
+        const fullSeq = [...S, ...C.seq, ...Sinv];
+        const resultState = applySeq(current, fullSeq);
+        const fixedPreserved = [...fixed].every((p) => resultState.cornerPerm[p] === p && resultState.cornerOrient[p] === 0);
+        if (!fixedPreserved) continue;
+        if (pieces.some((piece) => resultState.cornerPerm[piece] !== piece || resultState.cornerOrient[piece] !== 0)) continue;
+        return { state: resultState, seq: fullSeq };
+      }
+    }
+  }
+  return null;
+}
+
+function tryCompoundFinishCorners(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, wrongPieces: readonly number[]): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+  for (let size = wrongPieces.length - 1; size >= 2; size--) {
+    for (const subset of combinations(wrongPieces, size)) {
+      const partial = tryExactFinishCorners(commutators, current, fixed, subset);
+      if (partial) return partial;
+    }
+  }
+  return null;
+}
+
+function findSafeCornerApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongBefore: number, remaining: readonly number[], requireImprovement: boolean): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+  const setupKey = cornerKeyFor([target]);
+  for (const C of commutators) {
+    for (const anchor of C.support) {
+      const S = forwardSearchUntil(current, (s) => s.cornerPerm[anchor] === target, setupKey, 7);
+      if (!S) continue;
+      const Sinv = invertSeq(S);
+      const fullSeq = [...S, ...C.seq, ...Sinv];
+      const resultState = applySeq(current, fullSeq);
+      const fixedPreserved = [...fixed].every((p) => resultState.cornerPerm[p] === p && resultState.cornerOrient[p] === 0);
+      if (!fixedPreserved) continue;
+      const wrongAfter = countWrongCorners(resultState, remaining);
+      if (requireImprovement ? wrongAfter >= wrongBefore : wrongAfter > wrongBefore) continue;
+      return { state: resultState, seq: fullSeq };
+    }
+  }
+  return null;
+}
+
+export function solveCorners(state: GigaminxState, maxAttempts = 400): { moves: GigaminxTurn[]; trace: PhaseTrace } {
+  const commutators = cornerCommutators();
+  const targetPositions = Array.from({ length: 20 }, (_, i) => i);
+  let current = state;
+  const solution: GigaminxTurn[] = [];
+  const fixed = new Set<number>();
+  let attempts = 0;
+  let consecutiveLateral = 0;
+  const maxConsecutiveLateral = 8;
+
+  try {
+    while (targetPositions.some((p) => current.cornerPerm[p] !== p || current.cornerOrient[p] !== 0)) {
+      attempts++;
+      if (attempts > maxAttempts) throw new Error(`solveCorners exceeded ${maxAttempts} attempts`);
+
+      const wrongPositions = targetPositions.filter((p) => current.cornerPerm[p] !== p || current.cornerOrient[p] !== 0);
+      const wrongBefore = wrongPositions.length;
+
+      let found: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
+      if (wrongBefore >= 2 && wrongBefore <= 6) {
+        found = tryExactFinishCorners(commutators, current, fixed, wrongPositions.map((p) => current.cornerPerm[p]));
+      }
+      if (found) {
+        consecutiveLateral = 0;
+      } else {
+        const target = wrongPositions[0];
+        found = findSafeCornerApplication(commutators, current, fixed, target, wrongBefore, targetPositions, true);
+        if (found) {
+          consecutiveLateral = 0;
+        } else if (consecutiveLateral >= maxConsecutiveLateral) {
+          found = wrongBefore >= 2 && wrongBefore <= 5 ? tryCompoundFinishCorners(commutators, current, fixed, wrongPositions.map((p) => current.cornerPerm[p])) : null;
+          if (!found) throw new Error(`solveCorners stuck (${wrongBefore} corners still wrong, ${maxConsecutiveLateral} lateral moves without progress)`);
+          consecutiveLateral = 0;
+        } else {
+          found = findSafeCornerApplication(commutators, current, fixed, target, wrongBefore, targetPositions, false);
+          if (!found) throw new Error(`solveCorners stuck (${wrongBefore} corners still wrong, no safe application found)`);
+          consecutiveLateral++;
+        }
+      }
+
+      current = found.state;
+      solution.push(...found.seq);
+      for (const p of targetPositions) if (current.cornerPerm[p] === p && current.cornerOrient[p] === 0) fixed.add(p);
+    }
+    return { moves: solution, trace: { name: "corners", rounds: attempts, movesEmitted: solution.length, succeeded: true } };
+  } catch (err) {
+    return { moves: solution, trace: { name: "corners", rounds: attempts, movesEmitted: solution.length, succeeded: false, error: String(err) } };
+  }
+}
