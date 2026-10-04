@@ -398,6 +398,12 @@ export function areWingsSolved(state: GigaminxState): boolean {
 let wingCommutatorsCache: Commutator[] | null = null;
 function wingCommutators(): Commutator[] {
   if (wingCommutatorsCache) return wingCommutatorsCache;
+  const diskCachePath = process.env.GIGA_WING_LIB_CACHE;
+  if (diskCachePath && require("node:fs").existsSync(diskCachePath)) {
+    wingCommutatorsCache = JSON.parse(require("node:fs").readFileSync(diskCachePath, "utf8"));
+    if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[wingCommutators] loaded from disk cache count=${wingCommutatorsCache!.length}\n`);
+    return wingCommutatorsCache!;
+  }
   if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[wingCommutators] build starting\n`);
   const tLib0 = Date.now();
   const solved = solvedGigaminxState();
@@ -422,6 +428,7 @@ function wingCommutators(): Commutator[] {
     [3, 5, 6, 8, 9, 10, 12, 13, 14, 16],
   );
   if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[wingCommutators] build done count=${wingCommutatorsCache.length} elapsedMs=${Date.now() - tLib0}\n`);
+  if (diskCachePath) require("node:fs").writeFileSync(diskCachePath, JSON.stringify(wingCommutatorsCache));
   return wingCommutatorsCache;
 }
 
@@ -693,3 +700,6 @@ export function solveCornersAndWings(state: GigaminxState, maxAttempts = 400): {
   const wingResult = solveWings(afterCorners, maxAttempts);
   return { moves: [...cornerResult.moves, ...wingResult.moves], cornersTrace: cornerResult.trace, wingsTrace: wingResult.trace };
 }
+
+/** Dev-only re-exports for ad-hoc experimentation against a saved GIGA_WING_CKPT checkpoint. Not part of the public solver API. */
+export const __dev = { applySeq, invertSeq, forwardSearchUntil, wingKeyFor, countWrongWings, wingCommutators, tryExactFinishWings, tryCompoundFinishWings, findSafeWingApplication };
