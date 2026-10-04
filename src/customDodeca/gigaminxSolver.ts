@@ -145,10 +145,27 @@ function buildCommutatorLibrary(
   As: GigaminxTurn[][],
   Bs: GigaminxTurn[][],
   maxSupport: number,
-  perSizeCap: number,
+  // Per-size cap: smaller support sizes need a MUCH higher cap than larger
+  // ones. A large-support commutator (8-16) almost always collides with an
+  // already-fixed position once few pieces remain wrong (its setup search
+  // only pins ONE target position, leaving the other 7-15 support slots to
+  // chance -- see findSafeWingApplication's own dev notes), so it's only
+  // useful for bulk early progress; a small handful suffices. Small-support
+  // commutators (3,5,6) are what the ENDGAME's joint/exact-finish search
+  // actually needs in quantity, to have enough distinct template shapes to
+  // match an arbitrary small residual.
+  perSizeCap: (size: number) => number,
   maxPairsExamined: number,
   isPure: (result: GigaminxState) => boolean,
   support: (result: GigaminxState) => number[],
+  // Which support sizes actually occur for this orbit's commutator shape --
+  // some sizes are structurally impossible (e.g. a lone 2-fold piece can't
+  // be twisted alone without violating the move group's own parity) and
+  // would otherwise force scanning the ENTIRE maxPairsExamined budget every
+  // time, since "every bucket full" could never be satisfied. Defaults to
+  // every size 1..maxSupport (safe/original behavior) -- pass the
+  // empirically observed subset for orbits where some sizes never occur.
+  requiredSizes: readonly number[] = Array.from({ length: maxSupport }, (_, i) => i + 1),
 ): Commutator[] {
   const buckets = new Map<number, Commutator[]>();
   for (let n = 1; n <= maxSupport; n++) buckets.set(n, []);
@@ -167,9 +184,10 @@ function buildCommutatorLibrary(
       if (seen.has(key)) continue;
       seen.add(key);
       const bucket = buckets.get(sup.length)!;
-      if (bucket.length >= perSizeCap) continue;
+      const cap = perSizeCap(sup.length);
+      if (bucket.length >= cap) continue;
       bucket.push({ seq, support: sup });
-      if ([...buckets.values()].every((b) => b.length >= perSizeCap)) break outer;
+      if (requiredSizes.every((n) => buckets.get(n)!.length >= perSizeCap(n))) break outer;
     }
   }
   const out: Commutator[] = [];
@@ -188,7 +206,7 @@ function cornerCommutators(): Commutator[] {
     As,
     Bs,
     6,
-    200,
+    () => 200,
     20_000_000,
     () => true,
     (result) => {
@@ -348,4 +366,330 @@ export function solveCorners(state: GigaminxState, maxAttempts = 400): { moves: 
   } catch (err) {
     return { moves: solution, trace: { name: "corners", rounds: attempts, movesEmitted: solution.length, succeeded: false, error: String(err) } };
   }
+}
+
+// ===================== Wing orbit (Phase 2, corners fixed) =====================
+
+function wingKeyFor(pieces: readonly number[]): (s: GigaminxState) => string {
+  const sorted = [...pieces].sort((a, b) => a - b);
+  return (s: GigaminxState) => {
+    const loc = new Array<number>(60);
+    for (let pos = 0; pos < 60; pos++) loc[s.wingPerm[pos]] = pos;
+    return sorted.map((piece) => `${loc[piece]}:${s.wingOrient[loc[piece]]}`).join(",");
+  };
+}
+function positionOnlyWingKeyFor(pieces: readonly number[]): (s: GigaminxState) => string {
+  const sorted = [...pieces].sort((a, b) => a - b);
+  return (s: GigaminxState) => {
+    const loc = new Array<number>(60);
+    for (let pos = 0; pos < 60; pos++) loc[s.wingPerm[pos]] = pos;
+    return sorted.map((piece) => loc[piece]).join(",");
+  };
+}
+function countWrongWings(state: GigaminxState, positions: readonly number[]): number {
+  let n = 0;
+  for (const p of positions) if (state.wingPerm[p] !== p || state.wingOrient[p] !== 0) n++;
+  return n;
+}
+export function areWingsSolved(state: GigaminxState): boolean {
+  return state.wingPerm.every((p, i) => p === i) && state.wingOrient.every((o) => o === 0);
+}
+
+let wingCommutatorsCache: Commutator[] | null = null;
+function wingCommutators(): Commutator[] {
+  if (wingCommutatorsCache) return wingCommutatorsCache;
+  if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[wingCommutators] build starting\n`);
+  const tLib0 = Date.now();
+  const solved = solvedGigaminxState();
+  const As = admissibleSeqs(2);
+  const Bs = admissibleSeqs(3);
+  wingCommutatorsCache = buildCommutatorLibrary(
+    solved,
+    As,
+    Bs,
+    16,
+    (size) => (size <= 6 ? 200 : 80),
+    30_000_000,
+    (result) => areCornersSolved(result),
+    (result) => {
+      const sup: number[] = [];
+      for (let i = 0; i < 60; i++) if (result.wingPerm[i] !== i || result.wingOrient[i] !== 0) sup.push(i);
+      return sup;
+    },
+    // Empirically observed (see dev probe): corner-pure wing commutators
+    // from this A/B grammar only ever land on support sizes 3,5,6,8,9,10,
+    // 12,13,14,16 -- sizes 1,2,4,7,11,15 never occur in this construction.
+    [3, 5, 6, 8, 9, 10, 12, 13, 14, 16],
+  );
+  if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[wingCommutators] build done count=${wingCommutatorsCache.length} elapsedMs=${Date.now() - tLib0}\n`);
+  return wingCommutatorsCache;
+}
+
+function buildJointWingReachTable(current: GigaminxState, pieces: readonly number[]): JointReachTable {
+  const posKeyFn = positionOnlyWingKeyFor(pieces);
+  // Wider than the corner orbit's own table: wing commutators from this
+  // grammar naturally land on larger support (up to 16, see wingCommutators'
+  // own dev notes), so exact/compound-finish needs a correspondingly richer
+  // joint-position search to find a setup matching those bigger templates --
+  // matching kilominxSolver.ts's own proven endgame-finishing table size.
+  const MAX_DEPTH = 10;
+  const MAX_REACHABLE = 300_000;
+  const MAX_BUCKET = 6;
+  const reachable = new Map<string, GigaminxTurn[][]>([[posKeyFn(current), [[]]]]);
+  let totalPaths = 1;
+  let frontier: { state: GigaminxState; path: GigaminxTurn[] }[] = [{ state: current, path: [] }];
+  for (let depth = 0; depth < MAX_DEPTH && frontier.length > 0 && totalPaths < MAX_REACHABLE; depth++) {
+    const next: { state: GigaminxState; path: GigaminxTurn[] }[] = [];
+    for (const { state: base, path } of frontier) {
+      for (const t of ALL_MOVES) {
+        const child = applyGigaminxMove(base, t.face, t.sign, t.depth);
+        const key = posKeyFn(child);
+        const childPath = [...path, t];
+        let bucket = reachable.get(key);
+        if (bucket) {
+          if (bucket.length < MAX_BUCKET) {
+            bucket.push(childPath);
+            totalPaths++;
+          }
+          continue;
+        }
+        if (totalPaths >= MAX_REACHABLE) break;
+        bucket = [childPath];
+        reachable.set(key, bucket);
+        totalPaths++;
+        next.push({ state: child, path: childPath });
+      }
+    }
+    frontier = next;
+  }
+  const setIndex = new Map<string, string[]>();
+  for (const key of reachable.keys()) {
+    const positions = key.split(",").map(Number);
+    const sk = setKeyOf(positions);
+    if (!setIndex.has(sk)) setIndex.set(sk, []);
+    setIndex.get(sk)!.push(key);
+  }
+  return { reachable, setIndex };
+}
+
+function tryExactFinishWings(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, pieces: readonly number[]): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+  const matchingEntries = commutators.filter((c) => c.support.length === pieces.length);
+  if (matchingEntries.length === 0) return null;
+  const { reachable, setIndex } = buildJointWingReachTable(current, pieces);
+  for (const C of matchingEntries) {
+    const sk = setKeyOf(C.support);
+    const matchingKeys = setIndex.get(sk);
+    if (!matchingKeys) continue;
+    for (const key of matchingKeys) {
+      const bucket = reachable.get(key)!;
+      for (const S of bucket) {
+        const Sinv = invertSeq(S);
+        const fullSeq = [...S, ...C.seq, ...Sinv];
+        const resultState = applySeq(current, fullSeq);
+        const fixedPreserved = [...fixed].every((p) => resultState.wingPerm[p] === p && resultState.wingOrient[p] === 0);
+        if (!fixedPreserved) continue;
+        if (pieces.some((piece) => resultState.wingPerm[piece] !== piece || resultState.wingOrient[piece] !== 0)) continue;
+        return { state: resultState, seq: fullSeq };
+      }
+    }
+  }
+  return null;
+}
+
+function tryCompoundFinishWings(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, wrongPieces: readonly number[]): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+  for (let size = wrongPieces.length - 1; size >= 2; size--) {
+    for (const subset of combinations(wrongPieces, size)) {
+      const partial = tryExactFinishWings(commutators, current, fixed, subset);
+      if (partial) return partial;
+    }
+  }
+  return null;
+}
+
+/** `wrongAfterThreshold` is the max acceptable wrongAfter -- callers pass wrongBefore-1 for strict improvement, wrongBefore for lateral, wrongBefore+step for a regression-ladder rung. */
+function findSafeWingApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[]): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+  const setupKey = wingKeyFor([target]);
+  for (const C of commutators) {
+    for (const anchor of C.support) {
+      const S = forwardSearchUntil(current, (s) => s.wingPerm[anchor] === target, setupKey, 7, 100_000);
+      if (!S) continue;
+      const Sinv = invertSeq(S);
+      const fullSeq = [...S, ...C.seq, ...Sinv];
+      const resultState = applySeq(current, fullSeq);
+      const fixedPreserved = [...fixed].every((p) => resultState.wingPerm[p] === p && resultState.wingOrient[p] === 0);
+      if (!fixedPreserved) continue;
+      const wrongAfter = countWrongWings(resultState, remaining);
+      if (wrongAfter > wrongAfterThreshold) continue;
+      return { state: resultState, seq: fullSeq };
+    }
+  }
+  return null;
+}
+
+/** Dev-only checkpoint shape for GIGA_WING_CKPT; lets a long solveWings run be resumed without redoing earlier rounds. */
+interface WingCheckpoint {
+  state: { cornerPerm: number[]; cornerOrient: number[]; wingPerm: number[]; wingOrient: number[]; innerCornerPerm: number[]; edgeBridgePerm: number[]; centerBridgePerm: number[] };
+  solution: GigaminxTurn[];
+  fixed: number[];
+  attempts: number;
+}
+
+function stateToPlain(s: GigaminxState): WingCheckpoint["state"] {
+  return {
+    cornerPerm: Array.from(s.cornerPerm),
+    cornerOrient: Array.from(s.cornerOrient),
+    wingPerm: Array.from(s.wingPerm),
+    wingOrient: Array.from(s.wingOrient),
+    innerCornerPerm: Array.from(s.innerCornerPerm),
+    edgeBridgePerm: Array.from(s.edgeBridgePerm),
+    centerBridgePerm: Array.from(s.centerBridgePerm),
+  };
+}
+
+function plainToState(p: WingCheckpoint["state"]): GigaminxState {
+  return {
+    cornerPerm: Int8Array.from(p.cornerPerm),
+    cornerOrient: Int8Array.from(p.cornerOrient),
+    wingPerm: Int8Array.from(p.wingPerm),
+    wingOrient: Int8Array.from(p.wingOrient),
+    innerCornerPerm: Int8Array.from(p.innerCornerPerm),
+    edgeBridgePerm: Int8Array.from(p.edgeBridgePerm),
+    centerBridgePerm: Int8Array.from(p.centerBridgePerm),
+  };
+}
+
+export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: GigaminxTurn[]; trace: PhaseTrace } {
+  (globalThis as any).__gigaWingT0 = Date.now();
+  const commutators = wingCommutators();
+  const targetPositions = Array.from({ length: 60 }, (_, i) => i);
+  let current = state;
+  const solution: GigaminxTurn[] = [];
+  const fixed = new Set<number>();
+  let attempts = 0;
+
+  const ckptPath = process.env.GIGA_WING_CKPT;
+  if (ckptPath && require("node:fs").existsSync(ckptPath)) {
+    const ckpt: WingCheckpoint = JSON.parse(require("node:fs").readFileSync(ckptPath, "utf8"));
+    current = plainToState(ckpt.state);
+    solution.push(...ckpt.solution);
+    for (const p of ckpt.fixed) fixed.add(p);
+    attempts = ckpt.attempts;
+    if (process.env.GIGA_DEBUG) {
+      require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveWings] resumed from checkpoint at attempts=${attempts}\n`);
+    }
+  }
+
+  let consecutiveLateral = 0;
+  const maxConsecutiveLateral = 8;
+  let targetCursor = 0;
+  const TARGETS_PER_ROUND = 6;
+  const REGRESSION_LADDER = [2, 5, 10, 20];
+  let consecutiveRegressive = 0;
+  const maxConsecutiveRegressive = 20;
+
+  try {
+    while (targetPositions.some((p) => current.wingPerm[p] !== p || current.wingOrient[p] !== 0)) {
+      attempts++;
+      if (attempts > maxAttempts) throw new Error(`solveWings exceeded ${maxAttempts} attempts`);
+
+      const wrongPositions = targetPositions.filter((p) => current.wingPerm[p] !== p || current.wingOrient[p] !== 0);
+      const wrongBefore = wrongPositions.length;
+      const tries = Math.min(TARGETS_PER_ROUND, wrongPositions.length);
+      if (process.env.GIGA_DEBUG) {
+        require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveWings] round=${attempts} wrongBefore=${wrongBefore} elapsedMs=${Date.now() - (globalThis as any).__gigaWingT0}\n`);
+      }
+      if (ckptPath) {
+        const ckpt: WingCheckpoint = { state: stateToPlain(current), solution, fixed: [...fixed], attempts };
+        require("node:fs").writeFileSync(ckptPath, JSON.stringify(ckpt));
+      }
+
+      let found: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
+      if (wrongBefore >= 2 && wrongBefore <= 16) {
+        found = tryExactFinishWings(commutators, current, fixed, wrongPositions.map((p) => current.wingPerm[p]));
+      }
+      if (found) {
+        consecutiveLateral = 0;
+        targetCursor = 0;
+        consecutiveRegressive = 0;
+      } else {
+        let strictFound: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
+        for (let i = 0; i < tries; i++) {
+          const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
+          const target = current.wingPerm[pos];
+          strictFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore - 1, targetPositions);
+          if (strictFound) break;
+        }
+        if (strictFound) {
+          found = strictFound;
+          consecutiveLateral = 0;
+          targetCursor = 0;
+          consecutiveRegressive = 0;
+        } else {
+          let lateralFound: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
+          if (consecutiveLateral < maxConsecutiveLateral) {
+            for (let i = 0; i < tries; i++) {
+              const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
+              const target = current.wingPerm[pos];
+              lateralFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore, targetPositions);
+              if (lateralFound) break;
+            }
+          }
+          if (lateralFound) {
+            found = lateralFound;
+            consecutiveLateral++;
+            targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
+          } else {
+            const compoundFound = wrongBefore >= 2 && wrongBefore <= 15 ? tryCompoundFinishWings(commutators, current, fixed, wrongPositions.map((p) => current.wingPerm[p])) : null;
+            if (compoundFound) {
+              found = compoundFound;
+              consecutiveLateral = 0;
+              targetCursor = 0;
+              consecutiveRegressive = 0;
+            } else {
+              let regressiveFound: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
+              outerRegress: for (const step of REGRESSION_LADDER) {
+                for (let i = 0; i < tries; i++) {
+                  const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
+                  const target = current.wingPerm[pos];
+                  regressiveFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions);
+                  if (regressiveFound) break outerRegress;
+                }
+              }
+              if (!regressiveFound) {
+                if (process.env.GIGA_DEBUG) {
+                  const detail = wrongPositions.map((p) => `${p}->${current.wingPerm[p]}(o${current.wingOrient[p]})`).join(", ");
+                  require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveWings] STUCK wrongPositions: ${detail}\n`);
+                }
+                throw new Error(`solveWings stuck (${wrongBefore} wings still wrong, no move found even allowing up to +${REGRESSION_LADDER[REGRESSION_LADDER.length - 1]} temporary regression)`);
+              }
+              if (consecutiveRegressive >= maxConsecutiveRegressive) {
+                throw new Error(`solveWings stuck (${wrongBefore} wings still wrong, exhausted ${maxConsecutiveRegressive}-round regression budget)`);
+              }
+              found = regressiveFound;
+              consecutiveLateral = 0;
+              consecutiveRegressive++;
+              targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
+            }
+          }
+        }
+      }
+
+      current = found.state;
+      solution.push(...found.seq);
+      for (const p of targetPositions) if (current.wingPerm[p] === p && current.wingOrient[p] === 0) fixed.add(p);
+    }
+    return { moves: solution, trace: { name: "wings", rounds: attempts, movesEmitted: solution.length, succeeded: true } };
+  } catch (err) {
+    return { moves: solution, trace: { name: "wings", rounds: attempts, movesEmitted: solution.length, succeeded: false, error: String(err) } };
+  }
+}
+
+export function solveCornersAndWings(state: GigaminxState, maxAttempts = 400): { moves: GigaminxTurn[]; cornersTrace: PhaseTrace; wingsTrace: PhaseTrace } {
+  const cornerResult = solveCorners(state, maxAttempts);
+  if (!cornerResult.trace.succeeded) {
+    return { moves: cornerResult.moves, cornersTrace: cornerResult.trace, wingsTrace: { name: "wings", rounds: 0, movesEmitted: 0, succeeded: false, error: "skipped: corners not solved" } };
+  }
+  const afterCorners = applySeq(state, cornerResult.moves);
+  const wingResult = solveWings(afterCorners, maxAttempts);
+  return { moves: [...cornerResult.moves, ...wingResult.moves], cornersTrace: cornerResult.trace, wingsTrace: wingResult.trace };
 }
