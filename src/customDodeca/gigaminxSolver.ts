@@ -479,6 +479,10 @@ function buildJointWingReachTable(current: GigaminxState, pieces: readonly numbe
   return { reachable, setIndex };
 }
 
+function wingStateSignature(state: GigaminxState): string {
+  return `${state.wingPerm.join(",")}|${state.wingOrient.join(",")}`;
+}
+
 function tryExactFinishWings(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, pieces: readonly number[]): { state: GigaminxState; seq: GigaminxTurn[] } | null {
   const matchingEntries = commutators.filter((c) => c.support.length === pieces.length);
   if (matchingEntries.length === 0) return null;
@@ -525,7 +529,7 @@ function tryCompoundFinishWings(commutators: readonly Commutator[], current: Gig
  * the wrongAfterThreshold (computed over ALL positions, so it already counts
  * any such collateral damage) to bound how much damage is acceptable.
  */
-function findSafeWingApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[], enforceFixed = true): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+function findSafeWingApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[], enforceFixed = true, visited?: ReadonlySet<string>): { state: GigaminxState; seq: GigaminxTurn[] } | null {
   const setupKey = wingKeyFor([target]);
   for (const C of commutators) {
     for (const anchor of C.support) {
@@ -540,6 +544,13 @@ function findSafeWingApplication(commutators: readonly Commutator[], current: Gi
       }
       const wrongAfter = countWrongWings(resultState, remaining);
       if (wrongAfter > wrongAfterThreshold) continue;
+      // Without enforceFixed, strict/lateral/regression can otherwise rediscover
+      // the exact same resultState every time the same (current, target,
+      // threshold) recurs -- since the search is fully deterministic, that
+      // produces a stable 2-(or N-)cycle that never converges. Skipping any
+      // candidate that returns to an already-visited state forces a genuinely
+      // new state each round instead.
+      if (visited?.has(wingStateSignature(resultState))) continue;
       return { state: resultState, seq: fullSeq };
     }
   }
@@ -606,6 +617,12 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
   const REGRESSION_LADDER = [2, 5, 10, 20];
   let consecutiveRegressive = 0;
   const maxConsecutiveRegressive = 20;
+  // Tracks every full wing state this run has passed through, so
+  // findSafeWingApplication can refuse to re-enter one -- otherwise a fully
+  // deterministic search can settle into a stable N-cycle (most visibly a
+  // 2-cycle: regress away from a hard residual, then lateral/strict straight
+  // back to it) and never converge.
+  const visited = new Set<string>([wingStateSignature(current)]);
 
   try {
     while (targetPositions.some((p) => current.wingPerm[p] !== p || current.wingOrient[p] !== 0)) {
@@ -636,7 +653,7 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
         for (let i = 0; i < tries; i++) {
           const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
           const target = current.wingPerm[pos];
-          strictFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore - 1, targetPositions);
+          strictFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore - 1, targetPositions, true, visited);
           if (strictFound) break;
         }
         if (strictFound) {
@@ -650,7 +667,7 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
             for (let i = 0; i < tries; i++) {
               const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
               const target = current.wingPerm[pos];
-              lateralFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore, targetPositions);
+              lateralFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore, targetPositions, true, visited);
               if (lateralFound) break;
             }
           }
@@ -671,7 +688,7 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
                 for (let i = 0; i < tries; i++) {
                   const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
                   const target = current.wingPerm[pos];
-                  regressiveFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, false);
+                  regressiveFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, false, visited);
                   if (regressiveFound) break outerRegress;
                 }
               }
@@ -696,6 +713,7 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
 
       current = found.state;
       solution.push(...found.seq);
+      visited.add(wingStateSignature(current));
       // Rebuild (not just add-to) fixed: a regression step can legitimately
       // re-break a previously-fixed piece, and if `fixed` only ever grew,
       // that piece would stay falsely "protected" and could never be fixed again.
