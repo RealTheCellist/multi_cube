@@ -36,6 +36,64 @@ function invertSeq(seq: readonly GigaminxTurn[]): GigaminxTurn[] {
   return [...seq].reverse().map((t) => ({ face: t.face, sign: (t.sign * -1) as 1 | -1, depth: t.depth }));
 }
 
+/**
+ * S1 (permutation-backed candidate evaluation): `applySeq(solved, seq)` for any
+ * sequence is itself exactly a "virtual move" -- a GigaminxState whose perm/
+ * orient arrays generalize a single raw move's XPerm/XOrientDelta, because
+ * `solved` starts at the identity. Two such virtual moves compose via cheap
+ * O(orbit-size) array indexing, with NO replay of the underlying move
+ * sequences -- this is the exact generalization of applyGigaminxMove's own
+ * per-field update rule (gigaminxState.ts: `cornerPerm[pos] =
+ * state.cornerPerm[move.cornerPerm[pos]]`, etc.), with `outer` playing
+ * `state`'s role (the sequence that happened first) and `inner` playing
+ * `move`'s role (the sequence applied second, on top of outer).
+ */
+function composeSeqFirstThenSecond(outer: GigaminxState, inner: GigaminxState): GigaminxState {
+  const cornerPerm = new Int8Array(20);
+  const cornerOrient = new Int8Array(20);
+  for (let pos = 0; pos < 20; pos++) {
+    const from = inner.cornerPerm[pos];
+    cornerPerm[pos] = outer.cornerPerm[from];
+    cornerOrient[pos] = ((outer.cornerOrient[from] + inner.cornerOrient[pos]) % 3) as number;
+  }
+  const wingPerm = new Int8Array(60);
+  const wingOrient = new Int8Array(60);
+  for (let pos = 0; pos < 60; pos++) {
+    const from = inner.wingPerm[pos];
+    wingPerm[pos] = outer.wingPerm[from];
+    wingOrient[pos] = ((outer.wingOrient[from] + inner.wingOrient[pos]) % 2) as number;
+  }
+  const innerCornerPerm = new Int8Array(60);
+  for (let pos = 0; pos < 60; pos++) innerCornerPerm[pos] = outer.innerCornerPerm[inner.innerCornerPerm[pos]];
+  const edgeBridgePerm = new Int8Array(60);
+  for (let pos = 0; pos < 60; pos++) edgeBridgePerm[pos] = outer.edgeBridgePerm[inner.edgeBridgePerm[pos]];
+  const centerBridgePerm = new Int8Array(60);
+  for (let pos = 0; pos < 60; pos++) centerBridgePerm[pos] = outer.centerBridgePerm[inner.centerBridgePerm[pos]];
+  return { cornerPerm, cornerOrient, wingPerm, wingOrient, innerCornerPerm, edgeBridgePerm, centerBridgePerm };
+}
+
+/** The virtual move of `invertSeq(seq)`, computed directly from `S = applySeq(solved, seq)`'s own arrays -- no extra BFS/simulation needed. */
+function invertVirtualMove(S: GigaminxState): GigaminxState {
+  const cornerPerm = new Int8Array(20);
+  for (let pos = 0; pos < 20; pos++) cornerPerm[S.cornerPerm[pos]] = pos;
+  const cornerOrient = new Int8Array(20);
+  for (let pos = 0; pos < 20; pos++) cornerOrient[pos] = ((3 - S.cornerOrient[cornerPerm[pos]]) % 3) as number;
+
+  const wingPerm = new Int8Array(60);
+  for (let pos = 0; pos < 60; pos++) wingPerm[S.wingPerm[pos]] = pos;
+  const wingOrient = new Int8Array(60);
+  for (let pos = 0; pos < 60; pos++) wingOrient[pos] = ((2 - S.wingOrient[wingPerm[pos]]) % 2) as number;
+
+  const innerCornerPerm = new Int8Array(60);
+  for (let pos = 0; pos < 60; pos++) innerCornerPerm[S.innerCornerPerm[pos]] = pos;
+  const edgeBridgePerm = new Int8Array(60);
+  for (let pos = 0; pos < 60; pos++) edgeBridgePerm[S.edgeBridgePerm[pos]] = pos;
+  const centerBridgePerm = new Int8Array(60);
+  for (let pos = 0; pos < 60; pos++) centerBridgePerm[S.centerBridgePerm[pos]] = pos;
+
+  return { cornerPerm, cornerOrient, wingPerm, wingOrient, innerCornerPerm, edgeBridgePerm, centerBridgePerm };
+}
+
 /** Single-direction forward BFS that stops as soon as `goal(state)` is true. */
 function forwardSearchUntil(state: GigaminxState, goal: (s: GigaminxState) => boolean, keyFn: (s: GigaminxState) => string, maxDepth: number, maxFrontierSize = 300_000): GigaminxTurn[] | null {
   if (goal(state)) return [];
@@ -61,6 +119,152 @@ function forwardSearchUntil(state: GigaminxState, goal: (s: GigaminxState) => bo
 
 function setKeyOf(positions: readonly number[]): string {
   return [...positions].sort((a, b) => a - b).join(",");
+}
+
+/**
+ * Lookup table per orbit: "sourcePosition->destPosition" -> a move sequence
+ * whose PERMUTATION effect sends whatever piece currently sits at
+ * sourcePosition to destPosition. This is state-independent (it depends only
+ * on the move group's action on positions, not on which piece occupies which
+ * slot), so it can be computed once, offline, and reused by every future
+ * solve -- unlike the per-round forwardSearchUntil setup search this
+ * replaces (a fresh BFS on every single findSafe*Application call, by far
+ * the dominant cost in the whole solver; see solveWings' own benchmark notes).
+ */
+/** A setup sequence plus its precomputed virtual move (`applySeq(solved, seq)`), so candidate evaluation can compose instead of replay -- see composeSeqFirstThenSecond's own dev notes. */
+interface SetupEntry {
+  seq: GigaminxTurn[];
+  move: GigaminxState;
+}
+
+interface PositionSetupTables {
+  corner: Map<string, SetupEntry>;
+  wing: Map<string, SetupEntry>;
+  innerCorner: Map<string, SetupEntry>;
+  edgeBridge: Map<string, SetupEntry>;
+  centerBridge: Map<string, SetupEntry>;
+}
+
+function recordPositionPairs(table: Map<string, SetupEntry>, child: GigaminxState, perm: Int8Array, size: number, path: readonly GigaminxTurn[]): number {
+  let added = 0;
+  for (let q = 0; q < size; q++) {
+    const p = perm[q];
+    if (p === q) continue;
+    const key = `${p}->${q}`;
+    if (!table.has(key)) {
+      table.set(key, { seq: path as GigaminxTurn[], move: child });
+      added++;
+    }
+  }
+  return added;
+}
+
+function buildPositionSetupTables(maxDepth = 10, maxStates = 400_000): PositionSetupTables {
+  const solved = solvedGigaminxState();
+  const tables: PositionSetupTables = {
+    corner: new Map(),
+    wing: new Map(),
+    innerCorner: new Map(),
+    edgeBridge: new Map(),
+    centerBridge: new Map(),
+  };
+  const neededTotal = 20 * 19 + 60 * 59 * 4;
+  let found = 0;
+  const sigOf = (s: GigaminxState) => `${s.cornerPerm.join(",")}|${s.wingPerm.join(",")}|${s.innerCornerPerm.join(",")}|${s.edgeBridgePerm.join(",")}|${s.centerBridgePerm.join(",")}`;
+  const seen = new Set<string>([sigOf(solved)]);
+  let frontier: { state: GigaminxState; path: GigaminxTurn[] }[] = [{ state: solved, path: [] }];
+  for (let depth = 0; depth < maxDepth && frontier.length > 0 && found < neededTotal && seen.size < maxStates; depth++) {
+    const next: { state: GigaminxState; path: GigaminxTurn[] }[] = [];
+    outer: for (const { state: base, path } of frontier) {
+      for (const t of ALL_MOVES) {
+        const child = applyGigaminxMove(base, t.face, t.sign, t.depth);
+        const sig = sigOf(child);
+        if (seen.has(sig)) continue;
+        seen.add(sig);
+        const childPath = [...path, t];
+        found += recordPositionPairs(tables.corner, child, child.cornerPerm, 20, childPath);
+        found += recordPositionPairs(tables.wing, child, child.wingPerm, 60, childPath);
+        found += recordPositionPairs(tables.innerCorner, child, child.innerCornerPerm, 60, childPath);
+        found += recordPositionPairs(tables.edgeBridge, child, child.edgeBridgePerm, 60, childPath);
+        found += recordPositionPairs(tables.centerBridge, child, child.centerBridgePerm, 60, childPath);
+        next.push({ state: child, path: childPath });
+        if (seen.size >= maxStates || found >= neededTotal) break outer;
+      }
+    }
+    frontier = next;
+  }
+  return tables;
+}
+
+// Disk format stores only `seq` (unchanged from before S1), so existing cache
+// files stay valid -- `move` is cheap to re-derive in one pass after load
+// (applySeq(solved, seq) per entry, same computation the BFS already does
+// once during a fresh build) rather than bloating the cache with redundant
+// Int8Array data.
+function serializeSetupTable(table: Map<string, SetupEntry>): Record<string, GigaminxTurn[]> {
+  const out: Record<string, GigaminxTurn[]> = {};
+  for (const [k, v] of table) out[k] = v.seq;
+  return out;
+}
+function deserializeSetupTable(obj: Record<string, GigaminxTurn[]>, solved: GigaminxState): Map<string, SetupEntry> {
+  const m = new Map<string, SetupEntry>();
+  for (const k of Object.keys(obj)) {
+    const seq = obj[k];
+    m.set(k, { seq, move: applySeq(solved, seq) });
+  }
+  return m;
+}
+
+let positionSetupTablesCache: PositionSetupTables | null = null;
+function positionSetupTables(): PositionSetupTables {
+  if (positionSetupTablesCache) return positionSetupTablesCache;
+  const diskCachePath = process.env.GIGA_SETUP_TABLES_CACHE;
+  if (diskCachePath && require("node:fs").existsSync(diskCachePath)) {
+    const raw = JSON.parse(require("node:fs").readFileSync(diskCachePath, "utf8"));
+    const solved = solvedGigaminxState();
+    positionSetupTablesCache = {
+      corner: deserializeSetupTable(raw.corner, solved),
+      wing: deserializeSetupTable(raw.wing, solved),
+      innerCorner: deserializeSetupTable(raw.innerCorner, solved),
+      edgeBridge: deserializeSetupTable(raw.edgeBridge, solved),
+      centerBridge: deserializeSetupTable(raw.centerBridge, solved),
+    };
+    if (process.env.GIGA_DEBUG) {
+      const t = positionSetupTablesCache;
+      require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[positionSetupTables] loaded from disk cache sizes corner=${t.corner.size} wing=${t.wing.size} innerCorner=${t.innerCorner.size} edgeBridge=${t.edgeBridge.size} centerBridge=${t.centerBridge.size}\n`);
+    }
+    return positionSetupTablesCache;
+  }
+  const t0 = Date.now();
+  if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[positionSetupTables] build starting\n`);
+  positionSetupTablesCache = buildPositionSetupTables();
+  if (process.env.GIGA_DEBUG) {
+    const t = positionSetupTablesCache;
+    require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[positionSetupTables] build done elapsedMs=${Date.now() - t0} sizes corner=${t.corner.size} wing=${t.wing.size} innerCorner=${t.innerCorner.size} edgeBridge=${t.edgeBridge.size} centerBridge=${t.centerBridge.size}\n`);
+  }
+  if (diskCachePath) {
+    require("node:fs").writeFileSync(
+      diskCachePath,
+      JSON.stringify({
+        corner: serializeSetupTable(positionSetupTablesCache.corner),
+        wing: serializeSetupTable(positionSetupTablesCache.wing),
+        innerCorner: serializeSetupTable(positionSetupTablesCache.innerCorner),
+        edgeBridge: serializeSetupTable(positionSetupTablesCache.edgeBridge),
+        centerBridge: serializeSetupTable(positionSetupTablesCache.centerBridge),
+      }),
+    );
+  }
+  return positionSetupTablesCache;
+}
+
+/** O(1) setup lookup (seq + precomputed virtual move) with a BFS fallback (should essentially never trigger once the table is fully built) for safety. */
+function lookupSetup(table: Map<string, SetupEntry>, sourcePos: number, destPos: number, fallback: () => GigaminxTurn[] | null): SetupEntry | null {
+  if (sourcePos === destPos) return { seq: [], move: solvedGigaminxState() };
+  const hit = table.get(`${sourcePos}->${destPos}`);
+  if (hit) return hit;
+  const seq = fallback();
+  if (!seq) return null;
+  return { seq, move: applySeq(solvedGigaminxState(), seq) };
 }
 
 function combinations<T>(items: readonly T[], size: number): T[][] {
@@ -118,6 +322,8 @@ export function areCornersSolved(state: GigaminxState): boolean {
 interface Commutator {
   seq: GigaminxTurn[];
   support: number[];
+  /** `applySeq(solved, seq)` -- this commutator's net effect as a composable virtual move (see composeSeqFirstThenSecond's own dev notes). */
+  move: GigaminxState;
 }
 
 function makeCornerCommutator(a: GigaminxTurn[], b: GigaminxTurn[], solved: GigaminxState): Commutator {
@@ -125,7 +331,7 @@ function makeCornerCommutator(a: GigaminxTurn[], b: GigaminxTurn[], solved: Giga
   const result = applySeq(solved, seq);
   const support: number[] = [];
   for (let i = 0; i < 20; i++) if (result.cornerPerm[i] !== i || result.cornerOrient[i] !== 0) support.push(i);
-  return { seq, support };
+  return { seq, support, move: result };
 }
 
 /** A/B pair sequences up to the given lengths, over the full 96-move grammar, never repeating the immediately-previous move's face. */
@@ -186,7 +392,7 @@ function buildCommutatorLibrary(
       const bucket = buckets.get(sup.length)!;
       const cap = perSizeCap(sup.length);
       if (bucket.length >= cap) continue;
-      bucket.push({ seq, support: sup });
+      bucket.push({ seq, support: sup, move: result });
       if (requiredSizes.every((n) => buckets.get(n)!.length >= perSizeCap(n))) break outer;
     }
   }
@@ -195,9 +401,26 @@ function buildCommutatorLibrary(
   return out;
 }
 
+// Disk format stores only `seq`/`support` (unchanged from before S1) --
+// `move` is re-derived in one cheap pass after load (applySeq(solved, seq)
+// per entry) rather than serializing redundant Int8Array data, same pattern
+// as serializeSetupTable/deserializeSetupTable above.
+function stripMove(commutators: readonly Commutator[]): { seq: GigaminxTurn[]; support: number[] }[] {
+  return commutators.map(({ seq, support }) => ({ seq, support }));
+}
+function deriveMoves(raw: readonly { seq: GigaminxTurn[]; support: number[] }[], solved: GigaminxState): Commutator[] {
+  return raw.map((c) => ({ seq: c.seq, support: c.support, move: applySeq(solved, c.seq) }));
+}
+
 let cornerCommutatorsCache: Commutator[] | null = null;
 function cornerCommutators(): Commutator[] {
   if (cornerCommutatorsCache) return cornerCommutatorsCache;
+  const diskCachePath = process.env.GIGA_CORNER_LIB_CACHE;
+  if (diskCachePath && require("node:fs").existsSync(diskCachePath)) {
+    const raw = JSON.parse(require("node:fs").readFileSync(diskCachePath, "utf8"));
+    cornerCommutatorsCache = deriveMoves(raw, solvedGigaminxState());
+    return cornerCommutatorsCache;
+  }
   const solved = solvedGigaminxState();
   const As = admissibleSeqs(2);
   const Bs = admissibleSeqs(3);
@@ -214,7 +437,14 @@ function cornerCommutators(): Commutator[] {
       for (let i = 0; i < 20; i++) if (result.cornerPerm[i] !== i || result.cornerOrient[i] !== 0) sup.push(i);
       return sup;
     },
+    // Empirically observed (see dev probe, mirrors wingCommutators' own
+    // note): sizes 1,2 never occur for corner-only commutators from this
+    // grammar, so without this the build never early-exits and scans the
+    // entire maxPairsExamined budget every single time (this was corners'
+    // actual bottleneck -- a ~170s one-time cost, not per-round search).
+    [3, 4, 5, 6],
   );
+  if (diskCachePath) require("node:fs").writeFileSync(diskCachePath, JSON.stringify(stripMove(cornerCommutatorsCache)));
   return cornerCommutatorsCache;
 }
 
@@ -299,19 +529,31 @@ function tryCompoundFinishCorners(commutators: readonly Commutator[], current: G
   return null;
 }
 
-function findSafeCornerApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongBefore: number, remaining: readonly number[], requireImprovement: boolean): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+function cornerStateSignature(state: GigaminxState): string {
+  return `${state.cornerPerm.join(",")}|${state.cornerOrient.join(",")}`;
+}
+
+/** Same enforceFixed-relaxation + visited-state-rejection pattern as the later phases (see findSafeWingApplication's own dev notes) -- corners lacked both until now, which was the real cause of its highly variable solve time (occasionally settling into an unproductive deterministic cycle, exactly like wings did before those fixes). */
+function findSafeCornerApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[], setupTables: PositionSetupTables, enforceFixed = true, visited?: ReadonlySet<string>): { state: GigaminxState; seq: GigaminxTurn[] } | null {
   const setupKey = cornerKeyFor([target]);
+  const loc = new Array<number>(20);
+  for (let p = 0; p < 20; p++) loc[current.cornerPerm[p]] = p;
+  const sourcePos = loc[target];
   for (const C of commutators) {
     for (const anchor of C.support) {
-      const S = forwardSearchUntil(current, (s) => s.cornerPerm[anchor] === target, setupKey, 7);
+      const S = lookupSetup(setupTables.corner, sourcePos, anchor, () => forwardSearchUntil(current, (s) => s.cornerPerm[anchor] === target, setupKey, 7));
       if (!S) continue;
-      const Sinv = invertSeq(S);
-      const fullSeq = [...S, ...C.seq, ...Sinv];
-      const resultState = applySeq(current, fullSeq);
-      const fixedPreserved = [...fixed].every((p) => resultState.cornerPerm[p] === p && resultState.cornerOrient[p] === 0);
-      if (!fixedPreserved) continue;
+      const SinvMove = invertVirtualMove(S.move);
+      const fullMove = composeSeqFirstThenSecond(composeSeqFirstThenSecond(S.move, C.move), SinvMove);
+      const resultState = composeSeqFirstThenSecond(current, fullMove);
+      if (enforceFixed) {
+        const fixedPreserved = [...fixed].every((p) => resultState.cornerPerm[p] === p && resultState.cornerOrient[p] === 0);
+        if (!fixedPreserved) continue;
+      }
       const wrongAfter = countWrongCorners(resultState, remaining);
-      if (requireImprovement ? wrongAfter >= wrongBefore : wrongAfter > wrongBefore) continue;
+      if (wrongAfter > wrongAfterThreshold) continue;
+      if (visited?.has(cornerStateSignature(resultState))) continue;
+      const fullSeq = [...S.seq, ...C.seq, ...invertSeq(S.seq)];
       return { state: resultState, seq: fullSeq };
     }
   }
@@ -320,6 +562,7 @@ function findSafeCornerApplication(commutators: readonly Commutator[], current: 
 
 export function solveCorners(state: GigaminxState, maxAttempts = 400): { moves: GigaminxTurn[]; trace: PhaseTrace } {
   const commutators = cornerCommutators();
+  const setupTables = positionSetupTables();
   const targetPositions = Array.from({ length: 20 }, (_, i) => i);
   let current = state;
   const solution: GigaminxTurn[] = [];
@@ -327,6 +570,12 @@ export function solveCorners(state: GigaminxState, maxAttempts = 400): { moves: 
   let attempts = 0;
   let consecutiveLateral = 0;
   const maxConsecutiveLateral = 8;
+  let targetCursor = 0;
+  const TARGETS_PER_ROUND = 6;
+  const REGRESSION_LADDER = [2, 5, 10, 20];
+  let consecutiveRegressive = 0;
+  const maxConsecutiveRegressive = 20;
+  const visited = new Set<string>([cornerStateSignature(current)]);
 
   try {
     while (targetPositions.some((p) => current.cornerPerm[p] !== p || current.cornerOrient[p] !== 0)) {
@@ -335,6 +584,7 @@ export function solveCorners(state: GigaminxState, maxAttempts = 400): { moves: 
 
       const wrongPositions = targetPositions.filter((p) => current.cornerPerm[p] !== p || current.cornerOrient[p] !== 0);
       const wrongBefore = wrongPositions.length;
+      const tries = Math.min(TARGETS_PER_ROUND, wrongPositions.length);
 
       let found: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
       if (wrongBefore >= 2 && wrongBefore <= 6) {
@@ -342,24 +592,71 @@ export function solveCorners(state: GigaminxState, maxAttempts = 400): { moves: 
       }
       if (found) {
         consecutiveLateral = 0;
+        targetCursor = 0;
+        consecutiveRegressive = 0;
       } else {
-        const target = wrongPositions[0];
-        found = findSafeCornerApplication(commutators, current, fixed, target, wrongBefore, targetPositions, true);
-        if (found) {
+        let strictFound: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
+        for (let i = 0; i < tries; i++) {
+          const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
+          const target = current.cornerPerm[pos];
+          strictFound = findSafeCornerApplication(commutators, current, fixed, target, wrongBefore - 1, targetPositions, setupTables, true, visited);
+          if (strictFound) break;
+        }
+        if (strictFound) {
+          found = strictFound;
           consecutiveLateral = 0;
-        } else if (consecutiveLateral >= maxConsecutiveLateral) {
-          found = wrongBefore >= 2 && wrongBefore <= 5 ? tryCompoundFinishCorners(commutators, current, fixed, wrongPositions.map((p) => current.cornerPerm[p])) : null;
-          if (!found) throw new Error(`solveCorners stuck (${wrongBefore} corners still wrong, ${maxConsecutiveLateral} lateral moves without progress)`);
-          consecutiveLateral = 0;
+          targetCursor = 0;
+          consecutiveRegressive = 0;
         } else {
-          found = findSafeCornerApplication(commutators, current, fixed, target, wrongBefore, targetPositions, false);
-          if (!found) throw new Error(`solveCorners stuck (${wrongBefore} corners still wrong, no safe application found)`);
-          consecutiveLateral++;
+          let lateralFound: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
+          if (consecutiveLateral < maxConsecutiveLateral) {
+            for (let i = 0; i < tries; i++) {
+              const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
+              const target = current.cornerPerm[pos];
+              lateralFound = findSafeCornerApplication(commutators, current, fixed, target, wrongBefore, targetPositions, setupTables, true, visited);
+              if (lateralFound) break;
+            }
+          }
+          if (lateralFound) {
+            found = lateralFound;
+            consecutiveLateral++;
+            targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
+          } else {
+            const compoundFound = wrongBefore >= 2 && wrongBefore <= 5 ? tryCompoundFinishCorners(commutators, current, fixed, wrongPositions.map((p) => current.cornerPerm[p])) : null;
+            if (compoundFound) {
+              found = compoundFound;
+              consecutiveLateral = 0;
+              targetCursor = 0;
+              consecutiveRegressive = 0;
+            } else {
+              let regressiveFound: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
+              outerRegress: for (const step of REGRESSION_LADDER) {
+                for (let i = 0; i < tries; i++) {
+                  const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
+                  const target = current.cornerPerm[pos];
+                  regressiveFound = findSafeCornerApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, setupTables, false, visited);
+                  if (regressiveFound) break outerRegress;
+                }
+              }
+              if (!regressiveFound) {
+                throw new Error(`solveCorners stuck (${wrongBefore} corners still wrong, no move found even allowing up to +${REGRESSION_LADDER[REGRESSION_LADDER.length - 1]} temporary regression)`);
+              }
+              if (consecutiveRegressive >= maxConsecutiveRegressive) {
+                throw new Error(`solveCorners stuck (${wrongBefore} corners still wrong, exhausted ${maxConsecutiveRegressive}-round regression budget)`);
+              }
+              found = regressiveFound;
+              consecutiveLateral = 0;
+              consecutiveRegressive++;
+              targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
+            }
+          }
         }
       }
 
       current = found.state;
       solution.push(...found.seq);
+      visited.add(cornerStateSignature(current));
+      fixed.clear();
       for (const p of targetPositions) if (current.cornerPerm[p] === p && current.cornerOrient[p] === 0) fixed.add(p);
     }
     return { moves: solution, trace: { name: "corners", rounds: attempts, movesEmitted: solution.length, succeeded: true } };
@@ -400,7 +697,8 @@ function wingCommutators(): Commutator[] {
   if (wingCommutatorsCache) return wingCommutatorsCache;
   const diskCachePath = process.env.GIGA_WING_LIB_CACHE;
   if (diskCachePath && require("node:fs").existsSync(diskCachePath)) {
-    wingCommutatorsCache = JSON.parse(require("node:fs").readFileSync(diskCachePath, "utf8"));
+    const raw = JSON.parse(require("node:fs").readFileSync(diskCachePath, "utf8"));
+    wingCommutatorsCache = deriveMoves(raw, solvedGigaminxState());
     if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[wingCommutators] loaded from disk cache count=${wingCommutatorsCache!.length}\n`);
     return wingCommutatorsCache!;
   }
@@ -428,20 +726,22 @@ function wingCommutators(): Commutator[] {
     [3, 5, 6, 8, 9, 10, 12, 13, 14, 16],
   );
   if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[wingCommutators] build done count=${wingCommutatorsCache.length} elapsedMs=${Date.now() - tLib0}\n`);
-  if (diskCachePath) require("node:fs").writeFileSync(diskCachePath, JSON.stringify(wingCommutatorsCache));
+  if (diskCachePath) require("node:fs").writeFileSync(diskCachePath, JSON.stringify(stripMove(wingCommutatorsCache)));
   return wingCommutatorsCache;
 }
 
 function buildJointWingReachTable(current: GigaminxState, pieces: readonly number[]): JointReachTable {
   const posKeyFn = positionOnlyWingKeyFor(pieces);
-  // Wider than the corner orbit's own table: wing commutators from this
-  // grammar naturally land on larger support (up to 16, see wingCommutators'
-  // own dev notes), so exact/compound-finish needs a correspondingly richer
-  // joint-position search to find a setup matching those bigger templates --
-  // matching kilominxSolver.ts's own proven endgame-finishing table size.
-  const MAX_DEPTH = 10;
-  const MAX_REACHABLE = 300_000;
-  const MAX_BUCKET = 6;
+  // Deliberately small: exact-finish is now only a nice-to-have (it can emit
+  // a cleaner multi-piece fix in one shot), not load-bearing for correctness
+  // -- the strict/lateral/regression tiers use O(1) setup-table lookups now
+  // and already proved they can solve hard residuals on their own (see
+  // solveWings' visited-state dev notes). A cheap, mostly-empty table here
+  // is far better than paying a multi-hundred-thousand-state BFS every
+  // single round just to occasionally save a few moves.
+  const MAX_DEPTH = 5;
+  const MAX_REACHABLE = 3_000;
+  const MAX_BUCKET = 4;
   const reachable = new Map<string, GigaminxTurn[][]>([[posKeyFn(current), [[]]]]);
   let totalPaths = 1;
   let frontier: { state: GigaminxState; path: GigaminxTurn[] }[] = [{ state: current, path: [] }];
@@ -529,15 +829,18 @@ function tryCompoundFinishWings(commutators: readonly Commutator[], current: Gig
  * the wrongAfterThreshold (computed over ALL positions, so it already counts
  * any such collateral damage) to bound how much damage is acceptable.
  */
-function findSafeWingApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[], enforceFixed = true, visited?: ReadonlySet<string>): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+function findSafeWingApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[], setupTables: PositionSetupTables, enforceFixed = true, visited?: ReadonlySet<string>): { state: GigaminxState; seq: GigaminxTurn[] } | null {
   const setupKey = wingKeyFor([target]);
+  const loc = new Array<number>(60);
+  for (let p = 0; p < 60; p++) loc[current.wingPerm[p]] = p;
+  const sourcePos = loc[target];
   for (const C of commutators) {
     for (const anchor of C.support) {
-      const S = forwardSearchUntil(current, (s) => s.wingPerm[anchor] === target, setupKey, 7, 100_000);
+      const S = lookupSetup(setupTables.wing, sourcePos, anchor, () => forwardSearchUntil(current, (s) => s.wingPerm[anchor] === target, setupKey, 7, 100_000));
       if (!S) continue;
-      const Sinv = invertSeq(S);
-      const fullSeq = [...S, ...C.seq, ...Sinv];
-      const resultState = applySeq(current, fullSeq);
+      const SinvMove = invertVirtualMove(S.move);
+      const fullMove = composeSeqFirstThenSecond(composeSeqFirstThenSecond(S.move, C.move), SinvMove);
+      const resultState = composeSeqFirstThenSecond(current, fullMove);
       if (enforceFixed) {
         const fixedPreserved = [...fixed].every((p) => resultState.wingPerm[p] === p && resultState.wingOrient[p] === 0);
         if (!fixedPreserved) continue;
@@ -551,6 +854,7 @@ function findSafeWingApplication(commutators: readonly Commutator[], current: Gi
       // candidate that returns to an already-visited state forces a genuinely
       // new state each round instead.
       if (visited?.has(wingStateSignature(resultState))) continue;
+      const fullSeq = [...S.seq, ...C.seq, ...invertSeq(S.seq)];
       return { state: resultState, seq: fullSeq };
     }
   }
@@ -592,6 +896,7 @@ function plainToState(p: PhaseCheckpoint["state"]): GigaminxState {
 export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: GigaminxTurn[]; trace: PhaseTrace } {
   (globalThis as any).__gigaWingT0 = Date.now();
   const commutators = wingCommutators();
+  const setupTables = positionSetupTables();
   const targetPositions = Array.from({ length: 60 }, (_, i) => i);
   let current = state;
   const solution: GigaminxTurn[] = [];
@@ -653,7 +958,7 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
         for (let i = 0; i < tries; i++) {
           const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
           const target = current.wingPerm[pos];
-          strictFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore - 1, targetPositions, true, visited);
+          strictFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore - 1, targetPositions, setupTables, true, visited);
           if (strictFound) break;
         }
         if (strictFound) {
@@ -667,7 +972,7 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
             for (let i = 0; i < tries; i++) {
               const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
               const target = current.wingPerm[pos];
-              lateralFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore, targetPositions, true, visited);
+              lateralFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore, targetPositions, setupTables, true, visited);
               if (lateralFound) break;
             }
           }
@@ -688,7 +993,7 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
                 for (let i = 0; i < tries; i++) {
                   const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
                   const target = current.wingPerm[pos];
-                  regressiveFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, false, visited);
+                  regressiveFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, setupTables, false, visited);
                   if (regressiveFound) break outerRegress;
                 }
               }
@@ -768,7 +1073,8 @@ function innerCornerCommutators(): Commutator[] {
   if (innerCornerCommutatorsCache) return innerCornerCommutatorsCache;
   const diskCachePath = process.env.GIGA_INNERCORNER_LIB_CACHE;
   if (diskCachePath && require("node:fs").existsSync(diskCachePath)) {
-    innerCornerCommutatorsCache = JSON.parse(require("node:fs").readFileSync(diskCachePath, "utf8"));
+    const raw = JSON.parse(require("node:fs").readFileSync(diskCachePath, "utf8"));
+    innerCornerCommutatorsCache = deriveMoves(raw, solvedGigaminxState());
     if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[innerCornerCommutators] loaded from disk cache count=${innerCornerCommutatorsCache!.length}\n`);
     return innerCornerCommutatorsCache!;
   }
@@ -803,15 +1109,18 @@ function innerCornerCommutators(): Commutator[] {
     // it all to find whichever sizes truly occur is cheap (~tens of seconds).
   );
   if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[innerCornerCommutators] build done count=${innerCornerCommutatorsCache.length} elapsedMs=${Date.now() - tLib0}\n`);
-  if (diskCachePath) require("node:fs").writeFileSync(diskCachePath, JSON.stringify(innerCornerCommutatorsCache));
+  if (diskCachePath) require("node:fs").writeFileSync(diskCachePath, JSON.stringify(stripMove(innerCornerCommutatorsCache)));
   return innerCornerCommutatorsCache;
 }
 
 function buildJointInnerCornerReachTable(current: GigaminxState, pieces: readonly number[]): JointReachTable {
   const posKeyFn = innerCornerKeyFor(pieces);
-  const MAX_DEPTH = 10;
-  const MAX_REACHABLE = 300_000;
-  const MAX_BUCKET = 6;
+  // See buildJointWingReachTable's own dev notes: deliberately small now
+  // that the strict/lateral/regression tiers use O(1) setup-table lookups
+  // and no longer need exact-finish to be load-bearing.
+  const MAX_DEPTH = 5;
+  const MAX_REACHABLE = 3_000;
+  const MAX_BUCKET = 4;
   const reachable = new Map<string, GigaminxTurn[][]>([[posKeyFn(current), [[]]]]);
   let totalPaths = 1;
   let frontier: { state: GigaminxState; path: GigaminxTurn[] }[] = [{ state: current, path: [] }];
@@ -883,15 +1192,18 @@ function tryCompoundFinishInnerCorners(commutators: readonly Commutator[], curre
   return null;
 }
 
-function findSafeInnerCornerApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[], enforceFixed = true, visited?: ReadonlySet<string>): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+function findSafeInnerCornerApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[], setupTables: PositionSetupTables, enforceFixed = true, visited?: ReadonlySet<string>): { state: GigaminxState; seq: GigaminxTurn[] } | null {
   const setupKey = innerCornerKeyFor([target]);
+  const loc = new Array<number>(60);
+  for (let p = 0; p < 60; p++) loc[current.innerCornerPerm[p]] = p;
+  const sourcePos = loc[target];
   for (const C of commutators) {
     for (const anchor of C.support) {
-      const S = forwardSearchUntil(current, (s) => s.innerCornerPerm[anchor] === target, setupKey, 7, 100_000);
+      const S = lookupSetup(setupTables.innerCorner, sourcePos, anchor, () => forwardSearchUntil(current, (s) => s.innerCornerPerm[anchor] === target, setupKey, 7, 100_000));
       if (!S) continue;
-      const Sinv = invertSeq(S);
-      const fullSeq = [...S, ...C.seq, ...Sinv];
-      const resultState = applySeq(current, fullSeq);
+      const SinvMove = invertVirtualMove(S.move);
+      const fullMove = composeSeqFirstThenSecond(composeSeqFirstThenSecond(S.move, C.move), SinvMove);
+      const resultState = composeSeqFirstThenSecond(current, fullMove);
       if (enforceFixed) {
         const fixedPreserved = [...fixed].every((p) => resultState.innerCornerPerm[p] === p);
         if (!fixedPreserved) continue;
@@ -899,6 +1211,7 @@ function findSafeInnerCornerApplication(commutators: readonly Commutator[], curr
       const wrongAfter = countWrongInnerCorners(resultState, remaining);
       if (wrongAfter > wrongAfterThreshold) continue;
       if (visited?.has(innerCornerStateSignature(resultState))) continue;
+      const fullSeq = [...S.seq, ...C.seq, ...invertSeq(S.seq)];
       return { state: resultState, seq: fullSeq };
     }
   }
@@ -908,6 +1221,7 @@ function findSafeInnerCornerApplication(commutators: readonly Commutator[], curr
 export function solveInnerCorners(state: GigaminxState, maxAttempts = 400): { moves: GigaminxTurn[]; trace: PhaseTrace } {
   (globalThis as any).__gigaInnerCornerT0 = Date.now();
   const commutators = innerCornerCommutators();
+  const setupTables = positionSetupTables();
   const targetPositions = Array.from({ length: 60 }, (_, i) => i);
   let current = state;
   const solution: GigaminxTurn[] = [];
@@ -964,7 +1278,7 @@ export function solveInnerCorners(state: GigaminxState, maxAttempts = 400): { mo
         for (let i = 0; i < tries; i++) {
           const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
           const target = current.innerCornerPerm[pos];
-          strictFound = findSafeInnerCornerApplication(commutators, current, fixed, target, wrongBefore - 1, targetPositions, true, visited);
+          strictFound = findSafeInnerCornerApplication(commutators, current, fixed, target, wrongBefore - 1, targetPositions, setupTables, true, visited);
           if (strictFound) break;
         }
         if (strictFound) {
@@ -978,7 +1292,7 @@ export function solveInnerCorners(state: GigaminxState, maxAttempts = 400): { mo
             for (let i = 0; i < tries; i++) {
               const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
               const target = current.innerCornerPerm[pos];
-              lateralFound = findSafeInnerCornerApplication(commutators, current, fixed, target, wrongBefore, targetPositions, true, visited);
+              lateralFound = findSafeInnerCornerApplication(commutators, current, fixed, target, wrongBefore, targetPositions, setupTables, true, visited);
               if (lateralFound) break;
             }
           }
@@ -999,7 +1313,7 @@ export function solveInnerCorners(state: GigaminxState, maxAttempts = 400): { mo
                 for (let i = 0; i < tries; i++) {
                   const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
                   const target = current.innerCornerPerm[pos];
-                  regressiveFound = findSafeInnerCornerApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, false, visited);
+                  regressiveFound = findSafeInnerCornerApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, setupTables, false, visited);
                   if (regressiveFound) break outerRegress;
                 }
               }
@@ -1079,7 +1393,8 @@ function edgeBridgeCommutators(): Commutator[] {
   if (edgeBridgeCommutatorsCache) return edgeBridgeCommutatorsCache;
   const diskCachePath = process.env.GIGA_EDGEBRIDGE_LIB_CACHE;
   if (diskCachePath && require("node:fs").existsSync(diskCachePath)) {
-    edgeBridgeCommutatorsCache = JSON.parse(require("node:fs").readFileSync(diskCachePath, "utf8"));
+    const raw = JSON.parse(require("node:fs").readFileSync(diskCachePath, "utf8"));
+    edgeBridgeCommutatorsCache = deriveMoves(raw, solvedGigaminxState());
     if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[edgeBridgeCommutators] loaded from disk cache count=${edgeBridgeCommutatorsCache!.length}\n`);
     return edgeBridgeCommutatorsCache!;
   }
@@ -1102,15 +1417,16 @@ function edgeBridgeCommutators(): Commutator[] {
     },
   );
   if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[edgeBridgeCommutators] build done count=${edgeBridgeCommutatorsCache.length} elapsedMs=${Date.now() - tLib0}\n`);
-  if (diskCachePath) require("node:fs").writeFileSync(diskCachePath, JSON.stringify(edgeBridgeCommutatorsCache));
+  if (diskCachePath) require("node:fs").writeFileSync(diskCachePath, JSON.stringify(stripMove(edgeBridgeCommutatorsCache)));
   return edgeBridgeCommutatorsCache;
 }
 
 function buildJointEdgeBridgeReachTable(current: GigaminxState, pieces: readonly number[]): JointReachTable {
   const posKeyFn = edgeBridgeKeyFor(pieces);
-  const MAX_DEPTH = 10;
-  const MAX_REACHABLE = 300_000;
-  const MAX_BUCKET = 6;
+  // See buildJointWingReachTable's own dev notes.
+  const MAX_DEPTH = 5;
+  const MAX_REACHABLE = 3_000;
+  const MAX_BUCKET = 4;
   const reachable = new Map<string, GigaminxTurn[][]>([[posKeyFn(current), [[]]]]);
   let totalPaths = 1;
   let frontier: { state: GigaminxState; path: GigaminxTurn[] }[] = [{ state: current, path: [] }];
@@ -1182,15 +1498,18 @@ function tryCompoundFinishEdgeBridges(commutators: readonly Commutator[], curren
   return null;
 }
 
-function findSafeEdgeBridgeApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[], enforceFixed = true, visited?: ReadonlySet<string>): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+function findSafeEdgeBridgeApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[], setupTables: PositionSetupTables, enforceFixed = true, visited?: ReadonlySet<string>): { state: GigaminxState; seq: GigaminxTurn[] } | null {
   const setupKey = edgeBridgeKeyFor([target]);
+  const loc = new Array<number>(60);
+  for (let p = 0; p < 60; p++) loc[current.edgeBridgePerm[p]] = p;
+  const sourcePos = loc[target];
   for (const C of commutators) {
     for (const anchor of C.support) {
-      const S = forwardSearchUntil(current, (s) => s.edgeBridgePerm[anchor] === target, setupKey, 7, 100_000);
+      const S = lookupSetup(setupTables.edgeBridge, sourcePos, anchor, () => forwardSearchUntil(current, (s) => s.edgeBridgePerm[anchor] === target, setupKey, 7, 100_000));
       if (!S) continue;
-      const Sinv = invertSeq(S);
-      const fullSeq = [...S, ...C.seq, ...Sinv];
-      const resultState = applySeq(current, fullSeq);
+      const SinvMove = invertVirtualMove(S.move);
+      const fullMove = composeSeqFirstThenSecond(composeSeqFirstThenSecond(S.move, C.move), SinvMove);
+      const resultState = composeSeqFirstThenSecond(current, fullMove);
       if (enforceFixed) {
         const fixedPreserved = [...fixed].every((p) => resultState.edgeBridgePerm[p] === p);
         if (!fixedPreserved) continue;
@@ -1198,6 +1517,7 @@ function findSafeEdgeBridgeApplication(commutators: readonly Commutator[], curre
       const wrongAfter = countWrongEdgeBridges(resultState, remaining);
       if (wrongAfter > wrongAfterThreshold) continue;
       if (visited?.has(edgeBridgeStateSignature(resultState))) continue;
+      const fullSeq = [...S.seq, ...C.seq, ...invertSeq(S.seq)];
       return { state: resultState, seq: fullSeq };
     }
   }
@@ -1207,6 +1527,7 @@ function findSafeEdgeBridgeApplication(commutators: readonly Commutator[], curre
 export function solveEdgeBridges(state: GigaminxState, maxAttempts = 400): { moves: GigaminxTurn[]; trace: PhaseTrace } {
   (globalThis as any).__gigaEdgeBridgeT0 = Date.now();
   const commutators = edgeBridgeCommutators();
+  const setupTables = positionSetupTables();
   const targetPositions = Array.from({ length: 60 }, (_, i) => i);
   let current = state;
   const solution: GigaminxTurn[] = [];
@@ -1263,7 +1584,7 @@ export function solveEdgeBridges(state: GigaminxState, maxAttempts = 400): { mov
         for (let i = 0; i < tries; i++) {
           const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
           const target = current.edgeBridgePerm[pos];
-          strictFound = findSafeEdgeBridgeApplication(commutators, current, fixed, target, wrongBefore - 1, targetPositions, true, visited);
+          strictFound = findSafeEdgeBridgeApplication(commutators, current, fixed, target, wrongBefore - 1, targetPositions, setupTables, true, visited);
           if (strictFound) break;
         }
         if (strictFound) {
@@ -1277,7 +1598,7 @@ export function solveEdgeBridges(state: GigaminxState, maxAttempts = 400): { mov
             for (let i = 0; i < tries; i++) {
               const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
               const target = current.edgeBridgePerm[pos];
-              lateralFound = findSafeEdgeBridgeApplication(commutators, current, fixed, target, wrongBefore, targetPositions, true, visited);
+              lateralFound = findSafeEdgeBridgeApplication(commutators, current, fixed, target, wrongBefore, targetPositions, setupTables, true, visited);
               if (lateralFound) break;
             }
           }
@@ -1298,7 +1619,7 @@ export function solveEdgeBridges(state: GigaminxState, maxAttempts = 400): { mov
                 for (let i = 0; i < tries; i++) {
                   const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
                   const target = current.edgeBridgePerm[pos];
-                  regressiveFound = findSafeEdgeBridgeApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, false, visited);
+                  regressiveFound = findSafeEdgeBridgeApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, setupTables, false, visited);
                   if (regressiveFound) break outerRegress;
                 }
               }
@@ -1377,7 +1698,8 @@ function centerBridgeCommutators(): Commutator[] {
   if (centerBridgeCommutatorsCache) return centerBridgeCommutatorsCache;
   const diskCachePath = process.env.GIGA_CENTERBRIDGE_LIB_CACHE;
   if (diskCachePath && require("node:fs").existsSync(diskCachePath)) {
-    centerBridgeCommutatorsCache = JSON.parse(require("node:fs").readFileSync(diskCachePath, "utf8"));
+    const raw = JSON.parse(require("node:fs").readFileSync(diskCachePath, "utf8"));
+    centerBridgeCommutatorsCache = deriveMoves(raw, solvedGigaminxState());
     if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[centerBridgeCommutators] loaded from disk cache count=${centerBridgeCommutatorsCache!.length}\n`);
     return centerBridgeCommutatorsCache!;
   }
@@ -1400,15 +1722,16 @@ function centerBridgeCommutators(): Commutator[] {
     },
   );
   if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[centerBridgeCommutators] build done count=${centerBridgeCommutatorsCache.length} elapsedMs=${Date.now() - tLib0}\n`);
-  if (diskCachePath) require("node:fs").writeFileSync(diskCachePath, JSON.stringify(centerBridgeCommutatorsCache));
+  if (diskCachePath) require("node:fs").writeFileSync(diskCachePath, JSON.stringify(stripMove(centerBridgeCommutatorsCache)));
   return centerBridgeCommutatorsCache;
 }
 
 function buildJointCenterBridgeReachTable(current: GigaminxState, pieces: readonly number[]): JointReachTable {
   const posKeyFn = centerBridgeKeyFor(pieces);
-  const MAX_DEPTH = 10;
-  const MAX_REACHABLE = 300_000;
-  const MAX_BUCKET = 6;
+  // See buildJointWingReachTable's own dev notes.
+  const MAX_DEPTH = 5;
+  const MAX_REACHABLE = 3_000;
+  const MAX_BUCKET = 4;
   const reachable = new Map<string, GigaminxTurn[][]>([[posKeyFn(current), [[]]]]);
   let totalPaths = 1;
   let frontier: { state: GigaminxState; path: GigaminxTurn[] }[] = [{ state: current, path: [] }];
@@ -1480,15 +1803,18 @@ function tryCompoundFinishCenterBridges(commutators: readonly Commutator[], curr
   return null;
 }
 
-function findSafeCenterBridgeApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[], enforceFixed = true, visited?: ReadonlySet<string>): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+function findSafeCenterBridgeApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[], setupTables: PositionSetupTables, enforceFixed = true, visited?: ReadonlySet<string>): { state: GigaminxState; seq: GigaminxTurn[] } | null {
   const setupKey = centerBridgeKeyFor([target]);
+  const loc = new Array<number>(60);
+  for (let p = 0; p < 60; p++) loc[current.centerBridgePerm[p]] = p;
+  const sourcePos = loc[target];
   for (const C of commutators) {
     for (const anchor of C.support) {
-      const S = forwardSearchUntil(current, (s) => s.centerBridgePerm[anchor] === target, setupKey, 7, 100_000);
+      const S = lookupSetup(setupTables.centerBridge, sourcePos, anchor, () => forwardSearchUntil(current, (s) => s.centerBridgePerm[anchor] === target, setupKey, 7, 100_000));
       if (!S) continue;
-      const Sinv = invertSeq(S);
-      const fullSeq = [...S, ...C.seq, ...Sinv];
-      const resultState = applySeq(current, fullSeq);
+      const SinvMove = invertVirtualMove(S.move);
+      const fullMove = composeSeqFirstThenSecond(composeSeqFirstThenSecond(S.move, C.move), SinvMove);
+      const resultState = composeSeqFirstThenSecond(current, fullMove);
       if (enforceFixed) {
         const fixedPreserved = [...fixed].every((p) => resultState.centerBridgePerm[p] === p);
         if (!fixedPreserved) continue;
@@ -1496,6 +1822,7 @@ function findSafeCenterBridgeApplication(commutators: readonly Commutator[], cur
       const wrongAfter = countWrongCenterBridges(resultState, remaining);
       if (wrongAfter > wrongAfterThreshold) continue;
       if (visited?.has(centerBridgeStateSignature(resultState))) continue;
+      const fullSeq = [...S.seq, ...C.seq, ...invertSeq(S.seq)];
       return { state: resultState, seq: fullSeq };
     }
   }
@@ -1505,6 +1832,7 @@ function findSafeCenterBridgeApplication(commutators: readonly Commutator[], cur
 export function solveCenterBridges(state: GigaminxState, maxAttempts = 400): { moves: GigaminxTurn[]; trace: PhaseTrace } {
   (globalThis as any).__gigaCenterBridgeT0 = Date.now();
   const commutators = centerBridgeCommutators();
+  const setupTables = positionSetupTables();
   const targetPositions = Array.from({ length: 60 }, (_, i) => i);
   let current = state;
   const solution: GigaminxTurn[] = [];
@@ -1561,7 +1889,7 @@ export function solveCenterBridges(state: GigaminxState, maxAttempts = 400): { m
         for (let i = 0; i < tries; i++) {
           const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
           const target = current.centerBridgePerm[pos];
-          strictFound = findSafeCenterBridgeApplication(commutators, current, fixed, target, wrongBefore - 1, targetPositions, true, visited);
+          strictFound = findSafeCenterBridgeApplication(commutators, current, fixed, target, wrongBefore - 1, targetPositions, setupTables, true, visited);
           if (strictFound) break;
         }
         if (strictFound) {
@@ -1575,7 +1903,7 @@ export function solveCenterBridges(state: GigaminxState, maxAttempts = 400): { m
             for (let i = 0; i < tries; i++) {
               const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
               const target = current.centerBridgePerm[pos];
-              lateralFound = findSafeCenterBridgeApplication(commutators, current, fixed, target, wrongBefore, targetPositions, true, visited);
+              lateralFound = findSafeCenterBridgeApplication(commutators, current, fixed, target, wrongBefore, targetPositions, setupTables, true, visited);
               if (lateralFound) break;
             }
           }
@@ -1596,7 +1924,7 @@ export function solveCenterBridges(state: GigaminxState, maxAttempts = 400): { m
                 for (let i = 0; i < tries; i++) {
                   const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
                   const target = current.centerBridgePerm[pos];
-                  regressiveFound = findSafeCenterBridgeApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, false, visited);
+                  regressiveFound = findSafeCenterBridgeApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, setupTables, false, visited);
                   if (regressiveFound) break outerRegress;
                 }
               }
@@ -1645,6 +1973,8 @@ export function solveFullGigaminx(state: GigaminxState, maxAttempts = 400): { mo
 export const __dev = {
   applySeq,
   invertSeq,
+  composeSeqFirstThenSecond,
+  invertVirtualMove,
   forwardSearchUntil,
   wingKeyFor,
   countWrongWings,
@@ -1670,4 +2000,6 @@ export const __dev = {
   tryExactFinishCenterBridges,
   tryCompoundFinishCenterBridges,
   findSafeCenterBridgeApplication,
+  buildPositionSetupTables,
+  positionSetupTables,
 };
