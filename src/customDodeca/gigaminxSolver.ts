@@ -829,32 +829,118 @@ function tryCompoundFinishWings(commutators: readonly Commutator[], current: Gig
  * the wrongAfterThreshold (computed over ALL positions, so it already counts
  * any such collateral damage) to bound how much damage is acceptable.
  */
-function findSafeWingApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[], setupTables: PositionSetupTables, enforceFixed = true, visited?: ReadonlySet<string>): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+/**
+ * S(C.support): the positions a conjugate `S路C路S^-1` actually touches, read
+ * straight off the already-looked-up setup move's permutation array -- no
+ * compose needed. `support(S C S^-1) = S(support(C))` is an exact algebraic
+ * identity (conjugation preserves support under relabeling by S); see
+ * gigaminxS4ConjugationSupportPrefilter.test.ts for the full derivation and
+ * its empirical validation. Returns true iff ANY mapped position is in
+ * `fixed` -- i.e. the conjugate is NOT provably disjoint from fixed.
+ */
+function wingSupportOverlapsFixed(support: readonly number[], setupWingPerm: Int8Array, fixed: ReadonlySet<number>): boolean {
+  for (const c of support) {
+    if (fixed.has(setupWingPerm[c])) return true;
+  }
+  return false;
+}
+
+/**
+ * `candidatesOverride`/`onEval`/`onGenerate` are opt-in, no-op-by-default
+ * instrumentation/ordering hooks for the S2/S3/S4 screening sprints (see
+ * gigaminxS2WingOrderingBench.test.ts, gigaminxS3WingCostDecomposition.test.ts,
+ * gigaminxS4ConjugationSupportPrefilter.test.ts) -- `commutators` is still
+ * iterated in array order exactly as before, and no continue/return site's
+ * CONDITION changes when these are omitted, so passing none of them leaves
+ * behavior and output byte-identical to the pre-S2 function. `onGenerate`
+ * fires once per (C, anchor) pair considered, before the setup-table lookup
+ * (S3's "generatedCandidates"); `onEval` fires once per pair that reached a
+ * concrete setup S (S3's "evaluatedCandidates"), tagged with exactly which
+ * existing branch it fell into -- no new branches, just naming the ones
+ * already here. `candidatesOverride` lets a caller search a reordered (but
+ * set-identical) copy of `commutators` without touching production call
+ * sites, which always omit it. `usePrefilter` (S4, default false) is the
+ * ONLY parameter that can change a return value: when true, and
+ * `enforceFixed` is true, and `wingSupportOverlapsFixed` finds an overlap,
+ * the candidate is rejected (exactly the same `continue` the existing
+ * fixedPreserved check would have taken) WITHOUT running the S1 compose
+ * that would otherwise be needed to compute `resultState` for that check --
+ * production call sites never pass `usePrefilter`, so this is unreachable
+ * there; every production candidate is still decided by the full, exact
+ * `fixedPreserved` compose+check exactly as before.
+ */
+function findSafeWingApplication(
+  commutators: readonly Commutator[],
+  current: GigaminxState,
+  fixed: ReadonlySet<number>,
+  target: number,
+  wrongAfterThreshold: number,
+  remaining: readonly number[],
+  setupTables: PositionSetupTables,
+  enforceFixed = true,
+  visited?: ReadonlySet<string>,
+  candidatesOverride?: readonly Commutator[],
+  onEval?: (info: { commutator: Commutator; anchor: number; setupSeqLen: number; localRank: number; outcome: "fixedReject" | "improvementReject" | "visitedReject" | "accepted"; lookupMs: number; composeMs: number; checkMs: number; prefilterOverlap: boolean; composeSkipped: boolean }) => void,
+  onGenerate?: () => void,
+  usePrefilter = false,
+): { state: GigaminxState; seq: GigaminxTurn[] } | null {
   const setupKey = wingKeyFor([target]);
   const loc = new Array<number>(60);
   for (let p = 0; p < 60; p++) loc[current.wingPerm[p]] = p;
   const sourcePos = loc[target];
-  for (const C of commutators) {
+  let localRank = 0;
+  // `timed` gates the extra performance.now() calls below behind the SAME
+  // boolean every time, so when onEval is omitted (every production call
+  // site) this is one cheap check per candidate and no timestamps are taken
+  // -- S3's fine-grained per-step timing (lookup/compose/check) never runs
+  // unless a caller explicitly opts in by passing onEval.
+  const timed = !!onEval;
+  for (const C of candidatesOverride ?? commutators) {
     for (const anchor of C.support) {
+      onGenerate?.();
+      const tLookup0 = timed ? performance.now() : 0;
       const S = lookupSetup(setupTables.wing, sourcePos, anchor, () => forwardSearchUntil(current, (s) => s.wingPerm[anchor] === target, setupKey, 7, 100_000));
+      const tLookup1 = timed ? performance.now() : 0;
       if (!S) continue;
+      localRank++;
+      const prefilterOverlap = onEval || usePrefilter ? wingSupportOverlapsFixed(C.support, S.move.wingPerm, fixed) : false;
+      if (enforceFixed && usePrefilter && prefilterOverlap) {
+        const tCheck1 = timed ? performance.now() : 0;
+        onEval?.({ commutator: C, anchor, setupSeqLen: S.seq.length, localRank, outcome: "fixedReject", lookupMs: tLookup1 - tLookup0, composeMs: 0, checkMs: tCheck1 - tLookup1, prefilterOverlap, composeSkipped: true });
+        continue;
+      }
       const SinvMove = invertVirtualMove(S.move);
       const fullMove = composeSeqFirstThenSecond(composeSeqFirstThenSecond(S.move, C.move), SinvMove);
       const resultState = composeSeqFirstThenSecond(current, fullMove);
+      const tCompose1 = timed ? performance.now() : 0;
       if (enforceFixed) {
         const fixedPreserved = [...fixed].every((p) => resultState.wingPerm[p] === p && resultState.wingOrient[p] === 0);
-        if (!fixedPreserved) continue;
+        if (!fixedPreserved) {
+          const tCheck1 = timed ? performance.now() : 0;
+          onEval?.({ commutator: C, anchor, setupSeqLen: S.seq.length, localRank, outcome: "fixedReject", lookupMs: tLookup1 - tLookup0, composeMs: tCompose1 - tLookup1, checkMs: tCheck1 - tCompose1, prefilterOverlap, composeSkipped: false });
+          continue;
+        }
       }
       const wrongAfter = countWrongWings(resultState, remaining);
-      if (wrongAfter > wrongAfterThreshold) continue;
+      if (wrongAfter > wrongAfterThreshold) {
+        const tCheck1 = timed ? performance.now() : 0;
+        onEval?.({ commutator: C, anchor, setupSeqLen: S.seq.length, localRank, outcome: "improvementReject", lookupMs: tLookup1 - tLookup0, composeMs: tCompose1 - tLookup1, checkMs: tCheck1 - tCompose1, prefilterOverlap, composeSkipped: false });
+        continue;
+      }
       // Without enforceFixed, strict/lateral/regression can otherwise rediscover
       // the exact same resultState every time the same (current, target,
       // threshold) recurs -- since the search is fully deterministic, that
       // produces a stable 2-(or N-)cycle that never converges. Skipping any
       // candidate that returns to an already-visited state forces a genuinely
       // new state each round instead.
-      if (visited?.has(wingStateSignature(resultState))) continue;
+      if (visited?.has(wingStateSignature(resultState))) {
+        const tCheck1 = timed ? performance.now() : 0;
+        onEval?.({ commutator: C, anchor, setupSeqLen: S.seq.length, localRank, outcome: "visitedReject", lookupMs: tLookup1 - tLookup0, composeMs: tCompose1 - tLookup1, checkMs: tCheck1 - tCompose1, prefilterOverlap, composeSkipped: false });
+        continue;
+      }
       const fullSeq = [...S.seq, ...C.seq, ...invertSeq(S.seq)];
+      const tCheck1 = timed ? performance.now() : 0;
+      onEval?.({ commutator: C, anchor, setupSeqLen: S.seq.length, localRank, outcome: "accepted", lookupMs: tLookup1 - tLookup0, composeMs: tCompose1 - tLookup1, checkMs: tCheck1 - tCompose1, prefilterOverlap, composeSkipped: false });
       return { state: resultState, seq: fullSeq };
     }
   }
@@ -892,6 +978,23 @@ function plainToState(p: PhaseCheckpoint["state"]): GigaminxState {
     centerBridgePerm: Int8Array.from(p.centerBridgePerm),
   };
 }
+
+/**
+ * S5 (production integration): S4 verified, across every enforceFixed=true
+ * candidate evaluated in 3 seeds (2,844,216 of them), that `wingSupport
+ * OverlapsFixed` decides the exact same accept/reject outcome as the full
+ * S1 compose + fixedPreserved check -- zero false-safe (the direction
+ * proven algebraically: no overlap => fixedPreserved is guaranteed true)
+ * and zero false-reject (the direction validated empirically, not proven
+ * for every conceivable state) -- with trajectory, regression suite, and
+ * replay all unaffected, and Wing Phase 2 time cut ~2.63x by skipping the
+ * S1 compose on ~99.75% of candidates. See gigaminx_s4_conjugation_support_
+ * prefilter_conclusion.md. Conservative by construction even if the
+ * empirical direction ever stops holding: an overlap NEVER short-circuits
+ * accept/reject on its own -- it only ever falls through to the exact same
+ * full compose + fixedPreserved check this file always ran.
+ */
+const WING_USE_PREFILTER = true;
 
 export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: GigaminxTurn[]; trace: PhaseTrace } {
   (globalThis as any).__gigaWingT0 = Date.now();
@@ -958,7 +1061,7 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
         for (let i = 0; i < tries; i++) {
           const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
           const target = current.wingPerm[pos];
-          strictFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore - 1, targetPositions, setupTables, true, visited);
+          strictFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore - 1, targetPositions, setupTables, true, visited, undefined, undefined, undefined, WING_USE_PREFILTER);
           if (strictFound) break;
         }
         if (strictFound) {
@@ -972,7 +1075,7 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
             for (let i = 0; i < tries; i++) {
               const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
               const target = current.wingPerm[pos];
-              lateralFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore, targetPositions, setupTables, true, visited);
+              lateralFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore, targetPositions, setupTables, true, visited, undefined, undefined, undefined, WING_USE_PREFILTER);
               if (lateralFound) break;
             }
           }
@@ -993,7 +1096,11 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
                 for (let i = 0; i < tries; i++) {
                   const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
                   const target = current.wingPerm[pos];
-                  regressiveFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, setupTables, false, visited);
+                  // enforceFixed=false here means usePrefilter is structurally inert
+                  // (findSafeWingApplication only engages it when enforceFixed is also
+                  // true) -- passed anyway for consistency; Gate D-A in the S5 report
+                  // verifies this guard holds.
+                  regressiveFound = findSafeWingApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, setupTables, false, visited, undefined, undefined, undefined, WING_USE_PREFILTER);
                   if (regressiveFound) break outerRegress;
                 }
               }
@@ -1974,6 +2081,7 @@ export const __dev = {
   applySeq,
   invertSeq,
   composeSeqFirstThenSecond,
+  wingSupportOverlapsFixed,
   invertVirtualMove,
   forwardSearchUntil,
   wingKeyFor,
