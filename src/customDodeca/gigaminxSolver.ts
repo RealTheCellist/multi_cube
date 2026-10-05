@@ -557,15 +557,15 @@ function findSafeWingApplication(commutators: readonly Commutator[], current: Gi
   return null;
 }
 
-/** Dev-only checkpoint shape for GIGA_WING_CKPT; lets a long solveWings run be resumed without redoing earlier rounds. */
-interface WingCheckpoint {
+/** Dev-only checkpoint shape (full state + solution-so-far); lets a long solveWings/solveInnerCorners run be resumed without redoing earlier rounds. */
+interface PhaseCheckpoint {
   state: { cornerPerm: number[]; cornerOrient: number[]; wingPerm: number[]; wingOrient: number[]; innerCornerPerm: number[]; edgeBridgePerm: number[]; centerBridgePerm: number[] };
   solution: GigaminxTurn[];
   fixed: number[];
   attempts: number;
 }
 
-function stateToPlain(s: GigaminxState): WingCheckpoint["state"] {
+function stateToPlain(s: GigaminxState): PhaseCheckpoint["state"] {
   return {
     cornerPerm: Array.from(s.cornerPerm),
     cornerOrient: Array.from(s.cornerOrient),
@@ -577,7 +577,7 @@ function stateToPlain(s: GigaminxState): WingCheckpoint["state"] {
   };
 }
 
-function plainToState(p: WingCheckpoint["state"]): GigaminxState {
+function plainToState(p: PhaseCheckpoint["state"]): GigaminxState {
   return {
     cornerPerm: Int8Array.from(p.cornerPerm),
     cornerOrient: Int8Array.from(p.cornerOrient),
@@ -600,7 +600,7 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
 
   const ckptPath = process.env.GIGA_WING_CKPT;
   if (ckptPath && require("node:fs").existsSync(ckptPath)) {
-    const ckpt: WingCheckpoint = JSON.parse(require("node:fs").readFileSync(ckptPath, "utf8"));
+    const ckpt: PhaseCheckpoint = JSON.parse(require("node:fs").readFileSync(ckptPath, "utf8"));
     current = plainToState(ckpt.state);
     solution.push(...ckpt.solution);
     for (const p of ckpt.fixed) fixed.add(p);
@@ -636,7 +636,7 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
         require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveWings] round=${attempts} wrongBefore=${wrongBefore} elapsedMs=${Date.now() - (globalThis as any).__gigaWingT0}\n`);
       }
       if (ckptPath) {
-        const ckpt: WingCheckpoint = { state: stateToPlain(current), solution, fixed: [...fixed], attempts };
+        const ckpt: PhaseCheckpoint = { state: stateToPlain(current), solution, fixed: [...fixed], attempts };
         require("node:fs").writeFileSync(ckptPath, JSON.stringify(ckpt));
       }
 
@@ -736,5 +736,329 @@ export function solveCornersAndWings(state: GigaminxState, maxAttempts = 400): {
   return { moves: [...cornerResult.moves, ...wingResult.moves], cornersTrace: cornerResult.trace, wingsTrace: wingResult.trace };
 }
 
-/** Dev-only re-exports for ad-hoc experimentation against a saved GIGA_WING_CKPT checkpoint. Not part of the public solver API. */
-export const __dev = { applySeq, invertSeq, forwardSearchUntil, wingKeyFor, countWrongWings, wingCommutators, tryExactFinishWings, tryCompoundFinishWings, findSafeWingApplication };
+// ===================== Inner corner orbit (Phase 3, corners+wings fixed) =====================
+// Pure permutation, no orientation -- otherwise the same commutator-library +
+// greedy-safe-application architecture as the wing orbit (Phase 2), with the
+// enforceFixed relaxation and visited-state cycle-breaking built in from the
+// start this time (both were hard-won fixes discovered while debugging
+// Phase 2 -- see findSafeWingApplication's and solveWings' own dev notes).
+
+function innerCornerKeyFor(pieces: readonly number[]): (s: GigaminxState) => string {
+  const sorted = [...pieces].sort((a, b) => a - b);
+  return (s: GigaminxState) => {
+    const loc = new Array<number>(60);
+    for (let pos = 0; pos < 60; pos++) loc[s.innerCornerPerm[pos]] = pos;
+    return sorted.map((piece) => loc[piece]).join(",");
+  };
+}
+function countWrongInnerCorners(state: GigaminxState, positions: readonly number[]): number {
+  let n = 0;
+  for (const p of positions) if (state.innerCornerPerm[p] !== p) n++;
+  return n;
+}
+export function areInnerCornersSolved(state: GigaminxState): boolean {
+  return state.innerCornerPerm.every((p, i) => p === i);
+}
+function innerCornerStateSignature(state: GigaminxState): string {
+  return state.innerCornerPerm.join(",");
+}
+
+let innerCornerCommutatorsCache: Commutator[] | null = null;
+function innerCornerCommutators(): Commutator[] {
+  if (innerCornerCommutatorsCache) return innerCornerCommutatorsCache;
+  const diskCachePath = process.env.GIGA_INNERCORNER_LIB_CACHE;
+  if (diskCachePath && require("node:fs").existsSync(diskCachePath)) {
+    innerCornerCommutatorsCache = JSON.parse(require("node:fs").readFileSync(diskCachePath, "utf8"));
+    if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[innerCornerCommutators] loaded from disk cache count=${innerCornerCommutatorsCache!.length}\n`);
+    return innerCornerCommutatorsCache!;
+  }
+  if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[innerCornerCommutators] build starting\n`);
+  const tLib0 = Date.now();
+  const solved = solvedGigaminxState();
+  // Raw A/B move-pair commutators essentially never land on dual (corner+wing)
+  // purity -- an empirical probe found ZERO hits in 2,000,000 admissibleSeqs(2)
+  // x admissibleSeqs(3) pairs. Instead, build "commutators of commutators":
+  // pair entries from the already-corner-pure wing commutator library and
+  // take [W1, W2]. Since each Wi is corner-pure by construction, so is
+  // [W1, W2] automatically; whether it's ALSO wing-pure depends on how W1 and
+  // W2's wing-moving parts interact, which turned out to happen often enough
+  // to be very usable (a probe found 7,752 hits, mostly support 3, in just
+  // 400,000 of the ~1.34M possible pairs).
+  const wingComms = wingCommutators().map((c) => c.seq);
+  innerCornerCommutatorsCache = buildCommutatorLibrary(
+    solved,
+    wingComms,
+    wingComms,
+    16,
+    (size) => (size <= 6 ? 200 : 80),
+    wingComms.length * wingComms.length + 1,
+    (result) => areCornersSolved(result) && areWingsSolved(result),
+    (result) => {
+      const sup: number[] = [];
+      for (let i = 0; i < 60; i++) if (result.innerCornerPerm[i] !== i) sup.push(i);
+      return sup;
+    },
+    // Default requiredSizes (every size 1..16) is fine here: the full pair
+    // space is only ~1.3M (vs wings' ~8 billion raw A/B pairs), so scanning
+    // it all to find whichever sizes truly occur is cheap (~tens of seconds).
+  );
+  if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[innerCornerCommutators] build done count=${innerCornerCommutatorsCache.length} elapsedMs=${Date.now() - tLib0}\n`);
+  if (diskCachePath) require("node:fs").writeFileSync(diskCachePath, JSON.stringify(innerCornerCommutatorsCache));
+  return innerCornerCommutatorsCache;
+}
+
+function buildJointInnerCornerReachTable(current: GigaminxState, pieces: readonly number[]): JointReachTable {
+  const posKeyFn = innerCornerKeyFor(pieces);
+  const MAX_DEPTH = 10;
+  const MAX_REACHABLE = 300_000;
+  const MAX_BUCKET = 6;
+  const reachable = new Map<string, GigaminxTurn[][]>([[posKeyFn(current), [[]]]]);
+  let totalPaths = 1;
+  let frontier: { state: GigaminxState; path: GigaminxTurn[] }[] = [{ state: current, path: [] }];
+  for (let depth = 0; depth < MAX_DEPTH && frontier.length > 0 && totalPaths < MAX_REACHABLE; depth++) {
+    const next: { state: GigaminxState; path: GigaminxTurn[] }[] = [];
+    for (const { state: base, path } of frontier) {
+      for (const t of ALL_MOVES) {
+        const child = applyGigaminxMove(base, t.face, t.sign, t.depth);
+        const key = posKeyFn(child);
+        const childPath = [...path, t];
+        let bucket = reachable.get(key);
+        if (bucket) {
+          if (bucket.length < MAX_BUCKET) {
+            bucket.push(childPath);
+            totalPaths++;
+          }
+          continue;
+        }
+        if (totalPaths >= MAX_REACHABLE) break;
+        bucket = [childPath];
+        reachable.set(key, bucket);
+        totalPaths++;
+        next.push({ state: child, path: childPath });
+      }
+    }
+    frontier = next;
+  }
+  const setIndex = new Map<string, string[]>();
+  for (const key of reachable.keys()) {
+    const positions = key.split(",").map(Number);
+    const sk = setKeyOf(positions);
+    if (!setIndex.has(sk)) setIndex.set(sk, []);
+    setIndex.get(sk)!.push(key);
+  }
+  return { reachable, setIndex };
+}
+
+function tryExactFinishInnerCorners(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, pieces: readonly number[]): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+  const matchingEntries = commutators.filter((c) => c.support.length === pieces.length);
+  if (matchingEntries.length === 0) return null;
+  const { reachable, setIndex } = buildJointInnerCornerReachTable(current, pieces);
+  for (const C of matchingEntries) {
+    const sk = setKeyOf(C.support);
+    const matchingKeys = setIndex.get(sk);
+    if (!matchingKeys) continue;
+    for (const key of matchingKeys) {
+      const bucket = reachable.get(key)!;
+      for (const S of bucket) {
+        const Sinv = invertSeq(S);
+        const fullSeq = [...S, ...C.seq, ...Sinv];
+        const resultState = applySeq(current, fullSeq);
+        const fixedPreserved = [...fixed].every((p) => resultState.innerCornerPerm[p] === p);
+        if (!fixedPreserved) continue;
+        if (pieces.some((piece) => resultState.innerCornerPerm[piece] !== piece)) continue;
+        return { state: resultState, seq: fullSeq };
+      }
+    }
+  }
+  return null;
+}
+
+function tryCompoundFinishInnerCorners(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, wrongPieces: readonly number[]): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+  for (let size = wrongPieces.length - 1; size >= 2; size--) {
+    for (const subset of combinations(wrongPieces, size)) {
+      const partial = tryExactFinishInnerCorners(commutators, current, fixed, subset);
+      if (partial) return partial;
+    }
+  }
+  return null;
+}
+
+function findSafeInnerCornerApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[], enforceFixed = true, visited?: ReadonlySet<string>): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+  const setupKey = innerCornerKeyFor([target]);
+  for (const C of commutators) {
+    for (const anchor of C.support) {
+      const S = forwardSearchUntil(current, (s) => s.innerCornerPerm[anchor] === target, setupKey, 7, 100_000);
+      if (!S) continue;
+      const Sinv = invertSeq(S);
+      const fullSeq = [...S, ...C.seq, ...Sinv];
+      const resultState = applySeq(current, fullSeq);
+      if (enforceFixed) {
+        const fixedPreserved = [...fixed].every((p) => resultState.innerCornerPerm[p] === p);
+        if (!fixedPreserved) continue;
+      }
+      const wrongAfter = countWrongInnerCorners(resultState, remaining);
+      if (wrongAfter > wrongAfterThreshold) continue;
+      if (visited?.has(innerCornerStateSignature(resultState))) continue;
+      return { state: resultState, seq: fullSeq };
+    }
+  }
+  return null;
+}
+
+export function solveInnerCorners(state: GigaminxState, maxAttempts = 400): { moves: GigaminxTurn[]; trace: PhaseTrace } {
+  (globalThis as any).__gigaInnerCornerT0 = Date.now();
+  const commutators = innerCornerCommutators();
+  const targetPositions = Array.from({ length: 60 }, (_, i) => i);
+  let current = state;
+  const solution: GigaminxTurn[] = [];
+  const fixed = new Set<number>();
+  let attempts = 0;
+
+  const ckptPath = process.env.GIGA_INNERCORNER_CKPT;
+  if (ckptPath && require("node:fs").existsSync(ckptPath)) {
+    const ckpt: PhaseCheckpoint = JSON.parse(require("node:fs").readFileSync(ckptPath, "utf8"));
+    current = plainToState(ckpt.state);
+    solution.push(...ckpt.solution);
+    for (const p of ckpt.fixed) fixed.add(p);
+    attempts = ckpt.attempts;
+    if (process.env.GIGA_DEBUG) {
+      require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveInnerCorners] resumed from checkpoint at attempts=${attempts}\n`);
+    }
+  }
+
+  let consecutiveLateral = 0;
+  const maxConsecutiveLateral = 8;
+  let targetCursor = 0;
+  const TARGETS_PER_ROUND = 6;
+  const REGRESSION_LADDER = [2, 5, 10, 20];
+  let consecutiveRegressive = 0;
+  const maxConsecutiveRegressive = 20;
+  const visited = new Set<string>([innerCornerStateSignature(current)]);
+
+  try {
+    while (targetPositions.some((p) => current.innerCornerPerm[p] !== p)) {
+      attempts++;
+      if (attempts > maxAttempts) throw new Error(`solveInnerCorners exceeded ${maxAttempts} attempts`);
+
+      const wrongPositions = targetPositions.filter((p) => current.innerCornerPerm[p] !== p);
+      const wrongBefore = wrongPositions.length;
+      const tries = Math.min(TARGETS_PER_ROUND, wrongPositions.length);
+      if (process.env.GIGA_DEBUG) {
+        require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveInnerCorners] round=${attempts} wrongBefore=${wrongBefore} elapsedMs=${Date.now() - (globalThis as any).__gigaInnerCornerT0}\n`);
+      }
+      if (ckptPath) {
+        const ckpt: PhaseCheckpoint = { state: stateToPlain(current), solution, fixed: [...fixed], attempts };
+        require("node:fs").writeFileSync(ckptPath, JSON.stringify(ckpt));
+      }
+
+      let found: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
+      if (wrongBefore >= 2 && wrongBefore <= 16) {
+        found = tryExactFinishInnerCorners(commutators, current, fixed, wrongPositions.map((p) => current.innerCornerPerm[p]));
+      }
+      if (found) {
+        consecutiveLateral = 0;
+        targetCursor = 0;
+        consecutiveRegressive = 0;
+      } else {
+        let strictFound: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
+        for (let i = 0; i < tries; i++) {
+          const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
+          const target = current.innerCornerPerm[pos];
+          strictFound = findSafeInnerCornerApplication(commutators, current, fixed, target, wrongBefore - 1, targetPositions, true, visited);
+          if (strictFound) break;
+        }
+        if (strictFound) {
+          found = strictFound;
+          consecutiveLateral = 0;
+          targetCursor = 0;
+          consecutiveRegressive = 0;
+        } else {
+          let lateralFound: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
+          if (consecutiveLateral < maxConsecutiveLateral) {
+            for (let i = 0; i < tries; i++) {
+              const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
+              const target = current.innerCornerPerm[pos];
+              lateralFound = findSafeInnerCornerApplication(commutators, current, fixed, target, wrongBefore, targetPositions, true, visited);
+              if (lateralFound) break;
+            }
+          }
+          if (lateralFound) {
+            found = lateralFound;
+            consecutiveLateral++;
+            targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
+          } else {
+            const compoundFound = wrongBefore >= 2 && wrongBefore <= 15 ? tryCompoundFinishInnerCorners(commutators, current, fixed, wrongPositions.map((p) => current.innerCornerPerm[p])) : null;
+            if (compoundFound) {
+              found = compoundFound;
+              consecutiveLateral = 0;
+              targetCursor = 0;
+              consecutiveRegressive = 0;
+            } else {
+              let regressiveFound: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
+              outerRegress: for (const step of REGRESSION_LADDER) {
+                for (let i = 0; i < tries; i++) {
+                  const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
+                  const target = current.innerCornerPerm[pos];
+                  regressiveFound = findSafeInnerCornerApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, false, visited);
+                  if (regressiveFound) break outerRegress;
+                }
+              }
+              if (!regressiveFound) {
+                if (process.env.GIGA_DEBUG) {
+                  const detail = wrongPositions.map((p) => `${p}->${current.innerCornerPerm[p]}`).join(", ");
+                  require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveInnerCorners] STUCK wrongPositions: ${detail}\n`);
+                }
+                throw new Error(`solveInnerCorners stuck (${wrongBefore} inner corners still wrong, no move found even allowing up to +${REGRESSION_LADDER[REGRESSION_LADDER.length - 1]} temporary regression)`);
+              }
+              if (consecutiveRegressive >= maxConsecutiveRegressive) {
+                throw new Error(`solveInnerCorners stuck (${wrongBefore} inner corners still wrong, exhausted ${maxConsecutiveRegressive}-round regression budget)`);
+              }
+              found = regressiveFound;
+              consecutiveLateral = 0;
+              consecutiveRegressive++;
+              targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
+            }
+          }
+        }
+      }
+
+      current = found.state;
+      solution.push(...found.seq);
+      visited.add(innerCornerStateSignature(current));
+      fixed.clear();
+      for (const p of targetPositions) if (current.innerCornerPerm[p] === p) fixed.add(p);
+    }
+    return { moves: solution, trace: { name: "innerCorners", rounds: attempts, movesEmitted: solution.length, succeeded: true } };
+  } catch (err) {
+    return { moves: solution, trace: { name: "innerCorners", rounds: attempts, movesEmitted: solution.length, succeeded: false, error: String(err) } };
+  }
+}
+
+export function solveCornersWingsAndInnerCorners(state: GigaminxState, maxAttempts = 400): { moves: GigaminxTurn[]; cornersTrace: PhaseTrace; wingsTrace: PhaseTrace; innerCornersTrace: PhaseTrace } {
+  const { moves: cwMoves, cornersTrace, wingsTrace } = solveCornersAndWings(state, maxAttempts);
+  if (!cornersTrace.succeeded || !wingsTrace.succeeded) {
+    return { moves: cwMoves, cornersTrace, wingsTrace, innerCornersTrace: { name: "innerCorners", rounds: 0, movesEmitted: 0, succeeded: false, error: "skipped: corners/wings not solved" } };
+  }
+  const afterCW = applySeq(state, cwMoves);
+  const innerCornersResult = solveInnerCorners(afterCW, maxAttempts);
+  return { moves: [...cwMoves, ...innerCornersResult.moves], cornersTrace, wingsTrace, innerCornersTrace: innerCornersResult.trace };
+}
+
+/** Dev-only re-exports for ad-hoc experimentation against a saved checkpoint. Not part of the public solver API. */
+export const __dev = {
+  applySeq,
+  invertSeq,
+  forwardSearchUntil,
+  wingKeyFor,
+  countWrongWings,
+  wingCommutators,
+  tryExactFinishWings,
+  tryCompoundFinishWings,
+  findSafeWingApplication,
+  innerCornerKeyFor,
+  countWrongInnerCorners,
+  innerCornerCommutators,
+  tryExactFinishInnerCorners,
+  tryCompoundFinishInnerCorners,
+  findSafeInnerCornerApplication,
+};
