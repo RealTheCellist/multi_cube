@@ -1044,6 +1044,305 @@ export function solveCornersWingsAndInnerCorners(state: GigaminxState, maxAttemp
   return { moves: [...cwMoves, ...innerCornersResult.moves], cornersTrace, wingsTrace, innerCornersTrace: innerCornersResult.trace };
 }
 
+// ===================== Edge bridge orbit (Phase 4, corners+wings+innerCorners fixed) =====================
+// Pure permutation, no orientation -- identical architecture to Phase 3, one
+// level deeper in the "commutator of commutators" chain: raw A/B pairs don't
+// reach triple (corner+wing+innerCorner) purity any more reliably than they
+// reached dual purity for Phase 3, so build from pairs of innerCorner
+// commutators instead (each already corner+wing pure by construction; an
+// empirical probe found the resulting [IC1,IC2] is ALSO innerCorner-pure
+// often enough to be very usable -- 61,242 hits across sizes 3-10 scanning
+// the full ~239K-pair space in 24s).
+
+function edgeBridgeKeyFor(pieces: readonly number[]): (s: GigaminxState) => string {
+  const sorted = [...pieces].sort((a, b) => a - b);
+  return (s: GigaminxState) => {
+    const loc = new Array<number>(60);
+    for (let pos = 0; pos < 60; pos++) loc[s.edgeBridgePerm[pos]] = pos;
+    return sorted.map((piece) => loc[piece]).join(",");
+  };
+}
+function countWrongEdgeBridges(state: GigaminxState, positions: readonly number[]): number {
+  let n = 0;
+  for (const p of positions) if (state.edgeBridgePerm[p] !== p) n++;
+  return n;
+}
+export function areEdgeBridgesSolved(state: GigaminxState): boolean {
+  return state.edgeBridgePerm.every((p, i) => p === i);
+}
+function edgeBridgeStateSignature(state: GigaminxState): string {
+  return state.edgeBridgePerm.join(",");
+}
+
+let edgeBridgeCommutatorsCache: Commutator[] | null = null;
+function edgeBridgeCommutators(): Commutator[] {
+  if (edgeBridgeCommutatorsCache) return edgeBridgeCommutatorsCache;
+  const diskCachePath = process.env.GIGA_EDGEBRIDGE_LIB_CACHE;
+  if (diskCachePath && require("node:fs").existsSync(diskCachePath)) {
+    edgeBridgeCommutatorsCache = JSON.parse(require("node:fs").readFileSync(diskCachePath, "utf8"));
+    if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[edgeBridgeCommutators] loaded from disk cache count=${edgeBridgeCommutatorsCache!.length}\n`);
+    return edgeBridgeCommutatorsCache!;
+  }
+  if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[edgeBridgeCommutators] build starting\n`);
+  const tLib0 = Date.now();
+  const solved = solvedGigaminxState();
+  const icComms = innerCornerCommutators().map((c) => c.seq);
+  edgeBridgeCommutatorsCache = buildCommutatorLibrary(
+    solved,
+    icComms,
+    icComms,
+    16,
+    (size) => (size <= 6 ? 200 : 80),
+    icComms.length * icComms.length + 1,
+    (result) => areCornersSolved(result) && areWingsSolved(result) && areInnerCornersSolved(result),
+    (result) => {
+      const sup: number[] = [];
+      for (let i = 0; i < 60; i++) if (result.edgeBridgePerm[i] !== i) sup.push(i);
+      return sup;
+    },
+  );
+  if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[edgeBridgeCommutators] build done count=${edgeBridgeCommutatorsCache.length} elapsedMs=${Date.now() - tLib0}\n`);
+  if (diskCachePath) require("node:fs").writeFileSync(diskCachePath, JSON.stringify(edgeBridgeCommutatorsCache));
+  return edgeBridgeCommutatorsCache;
+}
+
+function buildJointEdgeBridgeReachTable(current: GigaminxState, pieces: readonly number[]): JointReachTable {
+  const posKeyFn = edgeBridgeKeyFor(pieces);
+  const MAX_DEPTH = 10;
+  const MAX_REACHABLE = 300_000;
+  const MAX_BUCKET = 6;
+  const reachable = new Map<string, GigaminxTurn[][]>([[posKeyFn(current), [[]]]]);
+  let totalPaths = 1;
+  let frontier: { state: GigaminxState; path: GigaminxTurn[] }[] = [{ state: current, path: [] }];
+  for (let depth = 0; depth < MAX_DEPTH && frontier.length > 0 && totalPaths < MAX_REACHABLE; depth++) {
+    const next: { state: GigaminxState; path: GigaminxTurn[] }[] = [];
+    for (const { state: base, path } of frontier) {
+      for (const t of ALL_MOVES) {
+        const child = applyGigaminxMove(base, t.face, t.sign, t.depth);
+        const key = posKeyFn(child);
+        const childPath = [...path, t];
+        let bucket = reachable.get(key);
+        if (bucket) {
+          if (bucket.length < MAX_BUCKET) {
+            bucket.push(childPath);
+            totalPaths++;
+          }
+          continue;
+        }
+        if (totalPaths >= MAX_REACHABLE) break;
+        bucket = [childPath];
+        reachable.set(key, bucket);
+        totalPaths++;
+        next.push({ state: child, path: childPath });
+      }
+    }
+    frontier = next;
+  }
+  const setIndex = new Map<string, string[]>();
+  for (const key of reachable.keys()) {
+    const positions = key.split(",").map(Number);
+    const sk = setKeyOf(positions);
+    if (!setIndex.has(sk)) setIndex.set(sk, []);
+    setIndex.get(sk)!.push(key);
+  }
+  return { reachable, setIndex };
+}
+
+function tryExactFinishEdgeBridges(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, pieces: readonly number[]): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+  const matchingEntries = commutators.filter((c) => c.support.length === pieces.length);
+  if (matchingEntries.length === 0) return null;
+  const { reachable, setIndex } = buildJointEdgeBridgeReachTable(current, pieces);
+  for (const C of matchingEntries) {
+    const sk = setKeyOf(C.support);
+    const matchingKeys = setIndex.get(sk);
+    if (!matchingKeys) continue;
+    for (const key of matchingKeys) {
+      const bucket = reachable.get(key)!;
+      for (const S of bucket) {
+        const Sinv = invertSeq(S);
+        const fullSeq = [...S, ...C.seq, ...Sinv];
+        const resultState = applySeq(current, fullSeq);
+        const fixedPreserved = [...fixed].every((p) => resultState.edgeBridgePerm[p] === p);
+        if (!fixedPreserved) continue;
+        if (pieces.some((piece) => resultState.edgeBridgePerm[piece] !== piece)) continue;
+        return { state: resultState, seq: fullSeq };
+      }
+    }
+  }
+  return null;
+}
+
+function tryCompoundFinishEdgeBridges(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, wrongPieces: readonly number[]): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+  for (let size = wrongPieces.length - 1; size >= 2; size--) {
+    for (const subset of combinations(wrongPieces, size)) {
+      const partial = tryExactFinishEdgeBridges(commutators, current, fixed, subset);
+      if (partial) return partial;
+    }
+  }
+  return null;
+}
+
+function findSafeEdgeBridgeApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[], enforceFixed = true, visited?: ReadonlySet<string>): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+  const setupKey = edgeBridgeKeyFor([target]);
+  for (const C of commutators) {
+    for (const anchor of C.support) {
+      const S = forwardSearchUntil(current, (s) => s.edgeBridgePerm[anchor] === target, setupKey, 7, 100_000);
+      if (!S) continue;
+      const Sinv = invertSeq(S);
+      const fullSeq = [...S, ...C.seq, ...Sinv];
+      const resultState = applySeq(current, fullSeq);
+      if (enforceFixed) {
+        const fixedPreserved = [...fixed].every((p) => resultState.edgeBridgePerm[p] === p);
+        if (!fixedPreserved) continue;
+      }
+      const wrongAfter = countWrongEdgeBridges(resultState, remaining);
+      if (wrongAfter > wrongAfterThreshold) continue;
+      if (visited?.has(edgeBridgeStateSignature(resultState))) continue;
+      return { state: resultState, seq: fullSeq };
+    }
+  }
+  return null;
+}
+
+export function solveEdgeBridges(state: GigaminxState, maxAttempts = 400): { moves: GigaminxTurn[]; trace: PhaseTrace } {
+  (globalThis as any).__gigaEdgeBridgeT0 = Date.now();
+  const commutators = edgeBridgeCommutators();
+  const targetPositions = Array.from({ length: 60 }, (_, i) => i);
+  let current = state;
+  const solution: GigaminxTurn[] = [];
+  const fixed = new Set<number>();
+  let attempts = 0;
+
+  const ckptPath = process.env.GIGA_EDGEBRIDGE_CKPT;
+  if (ckptPath && require("node:fs").existsSync(ckptPath)) {
+    const ckpt: PhaseCheckpoint = JSON.parse(require("node:fs").readFileSync(ckptPath, "utf8"));
+    current = plainToState(ckpt.state);
+    solution.push(...ckpt.solution);
+    for (const p of ckpt.fixed) fixed.add(p);
+    attempts = ckpt.attempts;
+    if (process.env.GIGA_DEBUG) {
+      require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveEdgeBridges] resumed from checkpoint at attempts=${attempts}\n`);
+    }
+  }
+
+  let consecutiveLateral = 0;
+  const maxConsecutiveLateral = 8;
+  let targetCursor = 0;
+  const TARGETS_PER_ROUND = 6;
+  const REGRESSION_LADDER = [2, 5, 10, 20];
+  let consecutiveRegressive = 0;
+  const maxConsecutiveRegressive = 20;
+  const visited = new Set<string>([edgeBridgeStateSignature(current)]);
+
+  try {
+    while (targetPositions.some((p) => current.edgeBridgePerm[p] !== p)) {
+      attempts++;
+      if (attempts > maxAttempts) throw new Error(`solveEdgeBridges exceeded ${maxAttempts} attempts`);
+
+      const wrongPositions = targetPositions.filter((p) => current.edgeBridgePerm[p] !== p);
+      const wrongBefore = wrongPositions.length;
+      const tries = Math.min(TARGETS_PER_ROUND, wrongPositions.length);
+      if (process.env.GIGA_DEBUG) {
+        require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveEdgeBridges] round=${attempts} wrongBefore=${wrongBefore} elapsedMs=${Date.now() - (globalThis as any).__gigaEdgeBridgeT0}\n`);
+      }
+      if (ckptPath) {
+        const ckpt: PhaseCheckpoint = { state: stateToPlain(current), solution, fixed: [...fixed], attempts };
+        require("node:fs").writeFileSync(ckptPath, JSON.stringify(ckpt));
+      }
+
+      let found: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
+      if (wrongBefore >= 2 && wrongBefore <= 16) {
+        found = tryExactFinishEdgeBridges(commutators, current, fixed, wrongPositions.map((p) => current.edgeBridgePerm[p]));
+      }
+      if (found) {
+        consecutiveLateral = 0;
+        targetCursor = 0;
+        consecutiveRegressive = 0;
+      } else {
+        let strictFound: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
+        for (let i = 0; i < tries; i++) {
+          const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
+          const target = current.edgeBridgePerm[pos];
+          strictFound = findSafeEdgeBridgeApplication(commutators, current, fixed, target, wrongBefore - 1, targetPositions, true, visited);
+          if (strictFound) break;
+        }
+        if (strictFound) {
+          found = strictFound;
+          consecutiveLateral = 0;
+          targetCursor = 0;
+          consecutiveRegressive = 0;
+        } else {
+          let lateralFound: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
+          if (consecutiveLateral < maxConsecutiveLateral) {
+            for (let i = 0; i < tries; i++) {
+              const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
+              const target = current.edgeBridgePerm[pos];
+              lateralFound = findSafeEdgeBridgeApplication(commutators, current, fixed, target, wrongBefore, targetPositions, true, visited);
+              if (lateralFound) break;
+            }
+          }
+          if (lateralFound) {
+            found = lateralFound;
+            consecutiveLateral++;
+            targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
+          } else {
+            const compoundFound = wrongBefore >= 2 && wrongBefore <= 15 ? tryCompoundFinishEdgeBridges(commutators, current, fixed, wrongPositions.map((p) => current.edgeBridgePerm[p])) : null;
+            if (compoundFound) {
+              found = compoundFound;
+              consecutiveLateral = 0;
+              targetCursor = 0;
+              consecutiveRegressive = 0;
+            } else {
+              let regressiveFound: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
+              outerRegress: for (const step of REGRESSION_LADDER) {
+                for (let i = 0; i < tries; i++) {
+                  const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
+                  const target = current.edgeBridgePerm[pos];
+                  regressiveFound = findSafeEdgeBridgeApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, false, visited);
+                  if (regressiveFound) break outerRegress;
+                }
+              }
+              if (!regressiveFound) {
+                if (process.env.GIGA_DEBUG) {
+                  const detail = wrongPositions.map((p) => `${p}->${current.edgeBridgePerm[p]}`).join(", ");
+                  require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveEdgeBridges] STUCK wrongPositions: ${detail}\n`);
+                }
+                throw new Error(`solveEdgeBridges stuck (${wrongBefore} edge bridges still wrong, no move found even allowing up to +${REGRESSION_LADDER[REGRESSION_LADDER.length - 1]} temporary regression)`);
+              }
+              if (consecutiveRegressive >= maxConsecutiveRegressive) {
+                throw new Error(`solveEdgeBridges stuck (${wrongBefore} edge bridges still wrong, exhausted ${maxConsecutiveRegressive}-round regression budget)`);
+              }
+              found = regressiveFound;
+              consecutiveLateral = 0;
+              consecutiveRegressive++;
+              targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
+            }
+          }
+        }
+      }
+
+      current = found.state;
+      solution.push(...found.seq);
+      visited.add(edgeBridgeStateSignature(current));
+      fixed.clear();
+      for (const p of targetPositions) if (current.edgeBridgePerm[p] === p) fixed.add(p);
+    }
+    return { moves: solution, trace: { name: "edgeBridges", rounds: attempts, movesEmitted: solution.length, succeeded: true } };
+  } catch (err) {
+    return { moves: solution, trace: { name: "edgeBridges", rounds: attempts, movesEmitted: solution.length, succeeded: false, error: String(err) } };
+  }
+}
+
+export function solveCornersWingsInnerCornersAndEdgeBridges(state: GigaminxState, maxAttempts = 400): { moves: GigaminxTurn[]; cornersTrace: PhaseTrace; wingsTrace: PhaseTrace; innerCornersTrace: PhaseTrace; edgeBridgesTrace: PhaseTrace } {
+  const { moves: cwiMoves, cornersTrace, wingsTrace, innerCornersTrace } = solveCornersWingsAndInnerCorners(state, maxAttempts);
+  if (!cornersTrace.succeeded || !wingsTrace.succeeded || !innerCornersTrace.succeeded) {
+    return { moves: cwiMoves, cornersTrace, wingsTrace, innerCornersTrace, edgeBridgesTrace: { name: "edgeBridges", rounds: 0, movesEmitted: 0, succeeded: false, error: "skipped: corners/wings/innerCorners not solved" } };
+  }
+  const afterCWI = applySeq(state, cwiMoves);
+  const edgeBridgesResult = solveEdgeBridges(afterCWI, maxAttempts);
+  return { moves: [...cwiMoves, ...edgeBridgesResult.moves], cornersTrace, wingsTrace, innerCornersTrace, edgeBridgesTrace: edgeBridgesResult.trace };
+}
+
 /** Dev-only re-exports for ad-hoc experimentation against a saved checkpoint. Not part of the public solver API. */
 export const __dev = {
   applySeq,
@@ -1061,4 +1360,10 @@ export const __dev = {
   tryExactFinishInnerCorners,
   tryCompoundFinishInnerCorners,
   findSafeInnerCornerApplication,
+  edgeBridgeKeyFor,
+  countWrongEdgeBridges,
+  edgeBridgeCommutators,
+  tryExactFinishEdgeBridges,
+  tryCompoundFinishEdgeBridges,
+  findSafeEdgeBridgeApplication,
 };
