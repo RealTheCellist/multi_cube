@@ -904,6 +904,18 @@ function findSafeWingApplication(
   // one invocation (sourcePos/current/target are all fixed for the whole
   // call) returns byte-identical S values, just without repeating the work.
   const setupCache = new Map<number, SetupEntry | null>();
+  // S17: wingSupportOverlapsFixed(C.support, S.move.wingPerm, fixed) re-checks
+  // `fixed.has(S.move.wingPerm[c])` from scratch for every (C, anchor) pair --
+  // but for a FIXED anchor (hence fixed S.move, per the S16 cache above) and
+  // the call's constant `fixed` set, that boolean depends only on the
+  // position `c`, not on which commutator owns it. Measured ~31.7x redundant
+  // repeats of the identical (anchor, position) check across commutators
+  // sharing both the anchor and an overlapping support position. Caching a
+  // per-anchor 60-entry danger-position array (built lazily, once per anchor
+  // actually visited) and reducing the overlap check to array lookups
+  // returns a byte-identical boolean, just without redoing the same
+  // `fixed.has(...)` call over and over.
+  const dangerPosCache = new Map<number, boolean[]>();
   for (const C of candidatesOverride ?? commutators) {
     for (const anchor of C.support) {
       onGenerate?.();
@@ -918,7 +930,16 @@ function findSafeWingApplication(
       const tLookup1 = timed ? performance.now() : 0;
       if (!S) continue;
       localRank++;
-      const prefilterOverlap = onEval || usePrefilter ? wingSupportOverlapsFixed(C.support, S.move.wingPerm, fixed) : false;
+      let prefilterOverlap = false;
+      if (onEval || usePrefilter) {
+        let dangerPos = dangerPosCache.get(anchor);
+        if (!dangerPos) {
+          dangerPos = new Array(60);
+          for (let p = 0; p < 60; p++) dangerPos[p] = fixed.has(S.move.wingPerm[p]);
+          dangerPosCache.set(anchor, dangerPos);
+        }
+        prefilterOverlap = C.support.some((c) => dangerPos![c]);
+      }
       if (enforceFixed && usePrefilter && prefilterOverlap) {
         const tCheck1 = timed ? performance.now() : 0;
         onEval?.({ commutator: C, anchor, setupSeqLen: S.seq.length, localRank, outcome: "fixedReject", lookupMs: tLookup1 - tLookup0, composeMs: 0, checkMs: tCheck1 - tLookup1, prefilterOverlap, composeSkipped: true });
@@ -1653,6 +1674,11 @@ function findSafeEdgeBridgeApplication(
   // within this one invocation is byte-identical, just without redoing the
   // same lookup once per commutator that happens to share an anchor.
   const setupCache = new Map<number, SetupEntry | null>();
+  // See findSafeWingApplication's own dev notes (S17) -- the overlap check
+  // depends only on (anchor, position), not on C, so a per-anchor
+  // danger-position array avoids rechecking the same (anchor, position)
+  // pair once per commutator that shares both.
+  const dangerPosCache = new Map<number, boolean[]>();
   for (const C of commutators) {
     for (const anchor of C.support) {
       onGenerate?.();
@@ -1665,7 +1691,16 @@ function findSafeEdgeBridgeApplication(
       }
       if (!S) continue;
       localRank++;
-      const prefilterOverlap = onEval || usePrefilter ? edgeBridgeSupportOverlapsFixed(C.support, S.move.edgeBridgePerm, fixed) : false;
+      let prefilterOverlap = false;
+      if (onEval || usePrefilter) {
+        let dangerPos = dangerPosCache.get(anchor);
+        if (!dangerPos) {
+          dangerPos = new Array(60);
+          for (let p = 0; p < 60; p++) dangerPos[p] = fixed.has(S.move.edgeBridgePerm[p]);
+          dangerPosCache.set(anchor, dangerPos);
+        }
+        prefilterOverlap = C.support.some((c) => dangerPos![c]);
+      }
       if (enforceFixed && usePrefilter && prefilterOverlap) {
         onEval?.({ commutator: C, anchor, setupSeqLen: S.seq.length, localRank, outcome: "fixedReject", prefilterOverlap, composeSkipped: true });
         continue;
@@ -2018,6 +2053,11 @@ function findSafeCenterBridgeApplication(
   // within this one invocation is byte-identical, just without redoing the
   // same lookup once per commutator that happens to share an anchor.
   const setupCache = new Map<number, SetupEntry | null>();
+  // See findSafeWingApplication's own dev notes (S17) -- the overlap check
+  // depends only on (anchor, position), not on C, so a per-anchor
+  // danger-position array avoids rechecking the same (anchor, position)
+  // pair once per commutator that shares both.
+  const dangerPosCache = new Map<number, boolean[]>();
   for (const C of commutators) {
     for (const anchor of C.support) {
       onGenerate?.();
@@ -2030,7 +2070,16 @@ function findSafeCenterBridgeApplication(
       }
       if (!S) continue;
       localRank++;
-      const prefilterOverlap = onEval || usePrefilter ? centerBridgeSupportOverlapsFixed(C.support, S.move.centerBridgePerm, fixed) : false;
+      let prefilterOverlap = false;
+      if (onEval || usePrefilter) {
+        let dangerPos = dangerPosCache.get(anchor);
+        if (!dangerPos) {
+          dangerPos = new Array(60);
+          for (let p = 0; p < 60; p++) dangerPos[p] = fixed.has(S.move.centerBridgePerm[p]);
+          dangerPosCache.set(anchor, dangerPos);
+        }
+        prefilterOverlap = C.support.some((c) => dangerPos![c]);
+      }
       if (enforceFixed && usePrefilter && prefilterOverlap) {
         onEval?.({ commutator: C, anchor, setupSeqLen: S.seq.length, localRank, outcome: "fixedReject", prefilterOverlap, composeSkipped: true });
         continue;
