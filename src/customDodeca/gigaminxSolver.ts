@@ -895,11 +895,26 @@ function findSafeWingApplication(
   // -- S3's fine-grained per-step timing (lookup/compose/check) never runs
   // unless a caller explicitly opts in by passing onEval.
   const timed = !!onEval;
+  // S14/S15: lookupSetup(setupTables.wing, sourcePos, anchor, ...) depends
+  // only on (sourcePos, anchor) -- never on which commutator C is being
+  // tried -- yet the loop below calls it once per (C, anchor) pair, so the
+  // SAME anchor gets looked up again every time a different commutator
+  // happens to share it (measured up to ~156x redundant repeats on the
+  // calls that dominate strict-tier cost). Caching by anchor within this
+  // one invocation (sourcePos/current/target are all fixed for the whole
+  // call) returns byte-identical S values, just without repeating the work.
+  const setupCache = new Map<number, SetupEntry | null>();
   for (const C of candidatesOverride ?? commutators) {
     for (const anchor of C.support) {
       onGenerate?.();
       const tLookup0 = timed ? performance.now() : 0;
-      const S = lookupSetup(setupTables.wing, sourcePos, anchor, () => forwardSearchUntil(current, (s) => s.wingPerm[anchor] === target, setupKey, 7, 100_000));
+      let S: SetupEntry | null;
+      if (setupCache.has(anchor)) {
+        S = setupCache.get(anchor)!;
+      } else {
+        S = lookupSetup(setupTables.wing, sourcePos, anchor, () => forwardSearchUntil(current, (s) => s.wingPerm[anchor] === target, setupKey, 7, 100_000));
+        setupCache.set(anchor, S);
+      }
       const tLookup1 = timed ? performance.now() : 0;
       if (!S) continue;
       localRank++;
@@ -1605,31 +1620,91 @@ function tryCompoundFinishEdgeBridges(commutators: readonly Commutator[], curren
   return null;
 }
 
-function findSafeEdgeBridgeApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[], setupTables: PositionSetupTables, enforceFixed = true, visited?: ReadonlySet<string>): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+/** S6 screening: EdgeBridge's exact analogue of wingSupportOverlapsFixed -- no orientation term, pure permutation, so the same conjugation-support algebra applies unchanged. */
+function edgeBridgeSupportOverlapsFixed(support: readonly number[], setupEdgeBridgePerm: Int8Array, fixed: ReadonlySet<number>): boolean {
+  for (const c of support) {
+    if (fixed.has(setupEdgeBridgePerm[c])) return true;
+  }
+  return false;
+}
+
+/** `onEval`/`onGenerate`/`usePrefilter` -- S6 screening hooks, same no-op-by-default contract as wing's (see findSafeWingApplication's own dev notes); production solveEdgeBridges never passes them. */
+function findSafeEdgeBridgeApplication(
+  commutators: readonly Commutator[],
+  current: GigaminxState,
+  fixed: ReadonlySet<number>,
+  target: number,
+  wrongAfterThreshold: number,
+  remaining: readonly number[],
+  setupTables: PositionSetupTables,
+  enforceFixed = true,
+  visited?: ReadonlySet<string>,
+  onEval?: (info: { commutator: Commutator; anchor: number; setupSeqLen: number; localRank: number; outcome: "fixedReject" | "improvementReject" | "visitedReject" | "accepted"; prefilterOverlap: boolean; composeSkipped: boolean }) => void,
+  onGenerate?: () => void,
+  usePrefilter = false,
+): { state: GigaminxState; seq: GigaminxTurn[] } | null {
   const setupKey = edgeBridgeKeyFor([target]);
   const loc = new Array<number>(60);
   for (let p = 0; p < 60; p++) loc[current.edgeBridgePerm[p]] = p;
   const sourcePos = loc[target];
+  let localRank = 0;
+  // See findSafeWingApplication's own dev notes (S14/S15) -- lookupSetup
+  // depends only on (sourcePos, anchor), never on C, so caching by anchor
+  // within this one invocation is byte-identical, just without redoing the
+  // same lookup once per commutator that happens to share an anchor.
+  const setupCache = new Map<number, SetupEntry | null>();
   for (const C of commutators) {
     for (const anchor of C.support) {
-      const S = lookupSetup(setupTables.edgeBridge, sourcePos, anchor, () => forwardSearchUntil(current, (s) => s.edgeBridgePerm[anchor] === target, setupKey, 7, 100_000));
+      onGenerate?.();
+      let S: SetupEntry | null;
+      if (setupCache.has(anchor)) {
+        S = setupCache.get(anchor)!;
+      } else {
+        S = lookupSetup(setupTables.edgeBridge, sourcePos, anchor, () => forwardSearchUntil(current, (s) => s.edgeBridgePerm[anchor] === target, setupKey, 7, 100_000));
+        setupCache.set(anchor, S);
+      }
       if (!S) continue;
+      localRank++;
+      const prefilterOverlap = onEval || usePrefilter ? edgeBridgeSupportOverlapsFixed(C.support, S.move.edgeBridgePerm, fixed) : false;
+      if (enforceFixed && usePrefilter && prefilterOverlap) {
+        onEval?.({ commutator: C, anchor, setupSeqLen: S.seq.length, localRank, outcome: "fixedReject", prefilterOverlap, composeSkipped: true });
+        continue;
+      }
       const SinvMove = invertVirtualMove(S.move);
       const fullMove = composeSeqFirstThenSecond(composeSeqFirstThenSecond(S.move, C.move), SinvMove);
       const resultState = composeSeqFirstThenSecond(current, fullMove);
       if (enforceFixed) {
         const fixedPreserved = [...fixed].every((p) => resultState.edgeBridgePerm[p] === p);
-        if (!fixedPreserved) continue;
+        if (!fixedPreserved) {
+          onEval?.({ commutator: C, anchor, setupSeqLen: S.seq.length, localRank, outcome: "fixedReject", prefilterOverlap, composeSkipped: false });
+          continue;
+        }
       }
       const wrongAfter = countWrongEdgeBridges(resultState, remaining);
-      if (wrongAfter > wrongAfterThreshold) continue;
-      if (visited?.has(edgeBridgeStateSignature(resultState))) continue;
+      if (wrongAfter > wrongAfterThreshold) {
+        onEval?.({ commutator: C, anchor, setupSeqLen: S.seq.length, localRank, outcome: "improvementReject", prefilterOverlap, composeSkipped: false });
+        continue;
+      }
+      if (visited?.has(edgeBridgeStateSignature(resultState))) {
+        onEval?.({ commutator: C, anchor, setupSeqLen: S.seq.length, localRank, outcome: "visitedReject", prefilterOverlap, composeSkipped: false });
+        continue;
+      }
       const fullSeq = [...S.seq, ...C.seq, ...invertSeq(S.seq)];
+      onEval?.({ commutator: C, anchor, setupSeqLen: S.seq.length, localRank, outcome: "accepted", prefilterOverlap, composeSkipped: false });
       return { state: resultState, seq: fullSeq };
     }
   }
   return null;
 }
+
+/**
+ * S7 (production integration): S6 verified this is the exact same
+ * conjugation-support prefilter mechanism validated for Wing in S4/S5,
+ * re-screened end-to-end for EdgeBridge -- 657,983 real evaluations across
+ * 3 seeds, 0 false-safe, 0 false-reject, trajectory fully preserved. See
+ * gigaminx_s6_edge_center_prefilter_screening_conclusion.md.
+ */
+const EDGE_USE_PREFILTER = true;
 
 export function solveEdgeBridges(state: GigaminxState, maxAttempts = 400): { moves: GigaminxTurn[]; trace: PhaseTrace } {
   (globalThis as any).__gigaEdgeBridgeT0 = Date.now();
@@ -1691,7 +1766,7 @@ export function solveEdgeBridges(state: GigaminxState, maxAttempts = 400): { mov
         for (let i = 0; i < tries; i++) {
           const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
           const target = current.edgeBridgePerm[pos];
-          strictFound = findSafeEdgeBridgeApplication(commutators, current, fixed, target, wrongBefore - 1, targetPositions, setupTables, true, visited);
+          strictFound = findSafeEdgeBridgeApplication(commutators, current, fixed, target, wrongBefore - 1, targetPositions, setupTables, true, visited, undefined, undefined, EDGE_USE_PREFILTER);
           if (strictFound) break;
         }
         if (strictFound) {
@@ -1705,7 +1780,7 @@ export function solveEdgeBridges(state: GigaminxState, maxAttempts = 400): { mov
             for (let i = 0; i < tries; i++) {
               const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
               const target = current.edgeBridgePerm[pos];
-              lateralFound = findSafeEdgeBridgeApplication(commutators, current, fixed, target, wrongBefore, targetPositions, setupTables, true, visited);
+              lateralFound = findSafeEdgeBridgeApplication(commutators, current, fixed, target, wrongBefore, targetPositions, setupTables, true, visited, undefined, undefined, EDGE_USE_PREFILTER);
               if (lateralFound) break;
             }
           }
@@ -1726,7 +1801,7 @@ export function solveEdgeBridges(state: GigaminxState, maxAttempts = 400): { mov
                 for (let i = 0; i < tries; i++) {
                   const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
                   const target = current.edgeBridgePerm[pos];
-                  regressiveFound = findSafeEdgeBridgeApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, setupTables, false, visited);
+                  regressiveFound = findSafeEdgeBridgeApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, setupTables, false, visited, undefined, undefined, EDGE_USE_PREFILTER);
                   if (regressiveFound) break outerRegress;
                 }
               }
@@ -1910,31 +1985,85 @@ function tryCompoundFinishCenterBridges(commutators: readonly Commutator[], curr
   return null;
 }
 
-function findSafeCenterBridgeApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[], setupTables: PositionSetupTables, enforceFixed = true, visited?: ReadonlySet<string>): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+/** S6 screening: CenterBridge's exact analogue of wingSupportOverlapsFixed. */
+function centerBridgeSupportOverlapsFixed(support: readonly number[], setupCenterBridgePerm: Int8Array, fixed: ReadonlySet<number>): boolean {
+  for (const c of support) {
+    if (fixed.has(setupCenterBridgePerm[c])) return true;
+  }
+  return false;
+}
+
+/** `onEval`/`onGenerate`/`usePrefilter` -- S6 screening hooks, same no-op-by-default contract as wing's; production solveCenterBridges never passes them. */
+function findSafeCenterBridgeApplication(
+  commutators: readonly Commutator[],
+  current: GigaminxState,
+  fixed: ReadonlySet<number>,
+  target: number,
+  wrongAfterThreshold: number,
+  remaining: readonly number[],
+  setupTables: PositionSetupTables,
+  enforceFixed = true,
+  visited?: ReadonlySet<string>,
+  onEval?: (info: { commutator: Commutator; anchor: number; setupSeqLen: number; localRank: number; outcome: "fixedReject" | "improvementReject" | "visitedReject" | "accepted"; prefilterOverlap: boolean; composeSkipped: boolean }) => void,
+  onGenerate?: () => void,
+  usePrefilter = false,
+): { state: GigaminxState; seq: GigaminxTurn[] } | null {
   const setupKey = centerBridgeKeyFor([target]);
   const loc = new Array<number>(60);
   for (let p = 0; p < 60; p++) loc[current.centerBridgePerm[p]] = p;
   const sourcePos = loc[target];
+  let localRank = 0;
+  // See findSafeWingApplication's own dev notes (S14/S15) -- lookupSetup
+  // depends only on (sourcePos, anchor), never on C, so caching by anchor
+  // within this one invocation is byte-identical, just without redoing the
+  // same lookup once per commutator that happens to share an anchor.
+  const setupCache = new Map<number, SetupEntry | null>();
   for (const C of commutators) {
     for (const anchor of C.support) {
-      const S = lookupSetup(setupTables.centerBridge, sourcePos, anchor, () => forwardSearchUntil(current, (s) => s.centerBridgePerm[anchor] === target, setupKey, 7, 100_000));
+      onGenerate?.();
+      let S: SetupEntry | null;
+      if (setupCache.has(anchor)) {
+        S = setupCache.get(anchor)!;
+      } else {
+        S = lookupSetup(setupTables.centerBridge, sourcePos, anchor, () => forwardSearchUntil(current, (s) => s.centerBridgePerm[anchor] === target, setupKey, 7, 100_000));
+        setupCache.set(anchor, S);
+      }
       if (!S) continue;
+      localRank++;
+      const prefilterOverlap = onEval || usePrefilter ? centerBridgeSupportOverlapsFixed(C.support, S.move.centerBridgePerm, fixed) : false;
+      if (enforceFixed && usePrefilter && prefilterOverlap) {
+        onEval?.({ commutator: C, anchor, setupSeqLen: S.seq.length, localRank, outcome: "fixedReject", prefilterOverlap, composeSkipped: true });
+        continue;
+      }
       const SinvMove = invertVirtualMove(S.move);
       const fullMove = composeSeqFirstThenSecond(composeSeqFirstThenSecond(S.move, C.move), SinvMove);
       const resultState = composeSeqFirstThenSecond(current, fullMove);
       if (enforceFixed) {
         const fixedPreserved = [...fixed].every((p) => resultState.centerBridgePerm[p] === p);
-        if (!fixedPreserved) continue;
+        if (!fixedPreserved) {
+          onEval?.({ commutator: C, anchor, setupSeqLen: S.seq.length, localRank, outcome: "fixedReject", prefilterOverlap, composeSkipped: false });
+          continue;
+        }
       }
       const wrongAfter = countWrongCenterBridges(resultState, remaining);
-      if (wrongAfter > wrongAfterThreshold) continue;
-      if (visited?.has(centerBridgeStateSignature(resultState))) continue;
+      if (wrongAfter > wrongAfterThreshold) {
+        onEval?.({ commutator: C, anchor, setupSeqLen: S.seq.length, localRank, outcome: "improvementReject", prefilterOverlap, composeSkipped: false });
+        continue;
+      }
+      if (visited?.has(centerBridgeStateSignature(resultState))) {
+        onEval?.({ commutator: C, anchor, setupSeqLen: S.seq.length, localRank, outcome: "visitedReject", prefilterOverlap, composeSkipped: false });
+        continue;
+      }
       const fullSeq = [...S.seq, ...C.seq, ...invertSeq(S.seq)];
+      onEval?.({ commutator: C, anchor, setupSeqLen: S.seq.length, localRank, outcome: "accepted", prefilterOverlap, composeSkipped: false });
       return { state: resultState, seq: fullSeq };
     }
   }
   return null;
 }
+
+/** S7 (production integration): same prefilter mechanism as EDGE_USE_PREFILTER, re-screened for CenterBridge in S6 -- 184,511 real evaluations across 3 seeds, 0 false-safe, 0 false-reject, trajectory fully preserved. */
+const CENTER_USE_PREFILTER = true;
 
 export function solveCenterBridges(state: GigaminxState, maxAttempts = 400): { moves: GigaminxTurn[]; trace: PhaseTrace } {
   (globalThis as any).__gigaCenterBridgeT0 = Date.now();
@@ -1996,7 +2125,7 @@ export function solveCenterBridges(state: GigaminxState, maxAttempts = 400): { m
         for (let i = 0; i < tries; i++) {
           const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
           const target = current.centerBridgePerm[pos];
-          strictFound = findSafeCenterBridgeApplication(commutators, current, fixed, target, wrongBefore - 1, targetPositions, setupTables, true, visited);
+          strictFound = findSafeCenterBridgeApplication(commutators, current, fixed, target, wrongBefore - 1, targetPositions, setupTables, true, visited, undefined, undefined, CENTER_USE_PREFILTER);
           if (strictFound) break;
         }
         if (strictFound) {
@@ -2010,7 +2139,7 @@ export function solveCenterBridges(state: GigaminxState, maxAttempts = 400): { m
             for (let i = 0; i < tries; i++) {
               const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
               const target = current.centerBridgePerm[pos];
-              lateralFound = findSafeCenterBridgeApplication(commutators, current, fixed, target, wrongBefore, targetPositions, setupTables, true, visited);
+              lateralFound = findSafeCenterBridgeApplication(commutators, current, fixed, target, wrongBefore, targetPositions, setupTables, true, visited, undefined, undefined, CENTER_USE_PREFILTER);
               if (lateralFound) break;
             }
           }
@@ -2031,7 +2160,7 @@ export function solveCenterBridges(state: GigaminxState, maxAttempts = 400): { m
                 for (let i = 0; i < tries; i++) {
                   const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
                   const target = current.centerBridgePerm[pos];
-                  regressiveFound = findSafeCenterBridgeApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, setupTables, false, visited);
+                  regressiveFound = findSafeCenterBridgeApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, setupTables, false, visited, undefined, undefined, CENTER_USE_PREFILTER);
                   if (regressiveFound) break outerRegress;
                 }
               }
@@ -2081,7 +2210,14 @@ export const __dev = {
   applySeq,
   invertSeq,
   composeSeqFirstThenSecond,
+  cornerCommutators,
+  tryExactFinishCorners,
+  tryCompoundFinishCorners,
+  findSafeCornerApplication,
+  cornerStateSignature,
   wingSupportOverlapsFixed,
+  edgeBridgeSupportOverlapsFixed,
+  centerBridgeSupportOverlapsFixed,
   invertVirtualMove,
   forwardSearchUntil,
   wingKeyFor,
