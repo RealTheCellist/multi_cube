@@ -258,6 +258,29 @@ function positionSetupTables(): PositionSetupTables {
 }
 
 /** O(1) setup lookup (seq + precomputed virtual move) with a BFS fallback (should essentially never trigger once the table is fully built) for safety. */
+/**
+ * S21 measurement-only diagnostic logging: when `GIGA_S21_LOG` is set, each
+ * round-loop phase (Corners/InnerCorners/Wings/EdgeBridges/CenterBridges)
+ * appends one JSON line per round describing which tier resolved it and how
+ * long that round took. No-op (not even the Date.now() calls at the sites
+ * that use it are gated out, but the append itself is skipped) when unset --
+ * zero behavior change to the solver, same pattern as the pre-existing
+ * `GIGA_DEBUG` free-text logging already in solveWings/etc.
+ */
+function s21Log(obj: Record<string, unknown>): void {
+  const path = process.env.GIGA_S21_LOG;
+  if (!path) return;
+  require("node:fs").appendFileSync(path, JSON.stringify(obj) + "\n");
+}
+
+/** S28 measurement-only diagnostic: per-regressive-call rung/setup-lookup
+ * breakdown for InnerCorner. Same no-op-when-unset contract as s21Log. */
+function s28Log(obj: Record<string, unknown>): void {
+  const path = process.env.GIGA_S28_LOG;
+  if (!path) return;
+  require("node:fs").appendFileSync(path, JSON.stringify(obj) + "\n");
+}
+
 function lookupSetup(table: Map<string, SetupEntry>, sourcePos: number, destPos: number, fallback: () => GigaminxTurn[] | null): SetupEntry | null {
   if (sourcePos === destPos) return { seq: [], move: solvedGigaminxState() };
   const hit = table.get(`${sourcePos}->${destPos}`);
@@ -272,6 +295,32 @@ function combinations<T>(items: readonly T[], size: number): T[][] {
   if (items.length < size) return [];
   const [first, ...rest] = items;
   return [...combinations(rest, size - 1).map((c) => [first, ...c]), ...combinations(rest, size)];
+}
+
+/**
+ * S19/S20: compound-finish (tryCompoundFinish{Wings,EdgeBridges,CenterBridges})
+ * enumerates combinatorial subsets of the wrong-piece set, nearly all of which
+ * fail (S18 measured a 4.3% success rate) -- S19 confirmed, across 40 seeds,
+ * that capping this search to 25% of its full subset count loses essentially
+ * all individual compound successes but still yields 40/40 correct full
+ * solves (a lost compound success just reroutes that round through the
+ * regression tier, an equally valid resolution), while cutting mean/median/
+ * p90/p95/max by 24-40% relative to the unbounded search. Not applied to
+ * corners/innerCorners, which S19 did not screen.
+ */
+const COMPOUND_FINISH_BUDGET_FRACTION = 0.1;
+/** S32: EdgeBridge-only probe knob, separate from the shared constant above
+ * so Wing/InnerCorner/CenterBridge are untouched while this value is swept. */
+const EDGEBRIDGE_COMPOUND_BUDGET_FRACTION = 0.02;
+
+function totalSubsetCount(len: number): number {
+  let total = 0;
+  for (let size = 2; size <= len - 1; size++) {
+    let c = 1;
+    for (let i = 0; i < size; i++) c = (c * (len - i)) / (i + 1);
+    total += Math.round(c);
+  }
+  return total;
 }
 
 function permutations<T>(items: readonly T[]): T[][] {
@@ -586,6 +635,8 @@ export function solveCorners(state: GigaminxState, maxAttempts = 400): { moves: 
       const wrongBefore = wrongPositions.length;
       const tries = Math.min(TARGETS_PER_ROUND, wrongPositions.length);
 
+      const roundT0 = process.env.GIGA_S21_LOG ? Date.now() : 0;
+      let branch = "exact";
       let found: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
       if (wrongBefore >= 2 && wrongBefore <= 6) {
         found = tryExactFinishCorners(commutators, current, fixed, wrongPositions.map((p) => current.cornerPerm[p]));
@@ -604,6 +655,7 @@ export function solveCorners(state: GigaminxState, maxAttempts = 400): { moves: 
         }
         if (strictFound) {
           found = strictFound;
+          branch = "strict";
           consecutiveLateral = 0;
           targetCursor = 0;
           consecutiveRegressive = 0;
@@ -619,12 +671,14 @@ export function solveCorners(state: GigaminxState, maxAttempts = 400): { moves: 
           }
           if (lateralFound) {
             found = lateralFound;
+            branch = "lateral";
             consecutiveLateral++;
             targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
           } else {
             const compoundFound = wrongBefore >= 2 && wrongBefore <= 5 ? tryCompoundFinishCorners(commutators, current, fixed, wrongPositions.map((p) => current.cornerPerm[p])) : null;
             if (compoundFound) {
               found = compoundFound;
+              branch = "compound";
               consecutiveLateral = 0;
               targetCursor = 0;
               consecutiveRegressive = 0;
@@ -645,6 +699,7 @@ export function solveCorners(state: GigaminxState, maxAttempts = 400): { moves: 
                 throw new Error(`solveCorners stuck (${wrongBefore} corners still wrong, exhausted ${maxConsecutiveRegressive}-round regression budget)`);
               }
               found = regressiveFound;
+              branch = "regressive";
               consecutiveLateral = 0;
               consecutiveRegressive++;
               targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
@@ -653,6 +708,9 @@ export function solveCorners(state: GigaminxState, maxAttempts = 400): { moves: 
         }
       }
 
+      if (process.env.GIGA_S21_LOG) {
+        s21Log({ phase: "corners", round: attempts, wrongBefore, branch, ms: Date.now() - roundT0 });
+      }
       current = found.state;
       solution.push(...found.seq);
       visited.add(cornerStateSignature(current));
@@ -807,13 +865,25 @@ function tryExactFinishWings(commutators: readonly Commutator[], current: Gigami
   return null;
 }
 
-function tryCompoundFinishWings(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, wrongPieces: readonly number[]): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+function tryCompoundFinishWings(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, wrongPieces: readonly number[], statsOut?: { subsetsExamined: number; totalSubsets: number }): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+  const totalSubsets = totalSubsetCount(wrongPieces.length);
+  const maxSubsets = Math.max(1, Math.ceil(totalSubsets * COMPOUND_FINISH_BUDGET_FRACTION));
+  let subsetsExamined = 0;
   for (let size = wrongPieces.length - 1; size >= 2; size--) {
     for (const subset of combinations(wrongPieces, size)) {
+      if (subsetsExamined >= maxSubsets) {
+        if (statsOut) { statsOut.subsetsExamined = subsetsExamined; statsOut.totalSubsets = totalSubsets; }
+        return null;
+      }
+      subsetsExamined++;
       const partial = tryExactFinishWings(commutators, current, fixed, subset);
-      if (partial) return partial;
+      if (partial) {
+        if (statsOut) { statsOut.subsetsExamined = subsetsExamined; statsOut.totalSubsets = totalSubsets; }
+        return partial;
+      }
     }
   }
+  if (statsOut) { statsOut.subsetsExamined = subsetsExamined; statsOut.totalSubsets = totalSubsets; }
   return null;
 }
 
@@ -1084,6 +1154,9 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
         require("node:fs").writeFileSync(ckptPath, JSON.stringify(ckpt));
       }
 
+      const roundT0 = process.env.GIGA_S21_LOG ? Date.now() : 0;
+      let branch = "exact";
+      const compoundStats = { subsetsExamined: 0, totalSubsets: 0 };
       let found: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
       if (wrongBefore >= 2 && wrongBefore <= 16) {
         found = tryExactFinishWings(commutators, current, fixed, wrongPositions.map((p) => current.wingPerm[p]));
@@ -1102,6 +1175,7 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
         }
         if (strictFound) {
           found = strictFound;
+          branch = "strict";
           consecutiveLateral = 0;
           targetCursor = 0;
           consecutiveRegressive = 0;
@@ -1117,12 +1191,16 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
           }
           if (lateralFound) {
             found = lateralFound;
+            branch = "lateral";
             consecutiveLateral++;
             targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
           } else {
-            const compoundFound = wrongBefore >= 2 && wrongBefore <= 15 ? tryCompoundFinishWings(commutators, current, fixed, wrongPositions.map((p) => current.wingPerm[p])) : null;
+            const compoundT0 = process.env.GIGA_S21_LOG ? Date.now() : 0;
+            const compoundFound = wrongBefore >= 2 && wrongBefore <= 15 ? tryCompoundFinishWings(commutators, current, fixed, wrongPositions.map((p) => current.wingPerm[p]), compoundStats) : null;
+            if (process.env.GIGA_S21_LOG && wrongBefore >= 2 && wrongBefore <= 15) (compoundStats as any).compoundMs = Date.now() - compoundT0;
             if (compoundFound) {
               found = compoundFound;
+              branch = "compound";
               consecutiveLateral = 0;
               targetCursor = 0;
               consecutiveRegressive = 0;
@@ -1151,6 +1229,7 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
                 throw new Error(`solveWings stuck (${wrongBefore} wings still wrong, exhausted ${maxConsecutiveRegressive}-round regression budget)`);
               }
               found = regressiveFound;
+              branch = "regressive";
               consecutiveLateral = 0;
               consecutiveRegressive++;
               targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
@@ -1159,6 +1238,9 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
         }
       }
 
+      if (process.env.GIGA_S21_LOG) {
+        s21Log({ phase: "wings", round: attempts, wrongBefore, branch, ms: Date.now() - roundT0, compoundSubsetsExamined: compoundStats.subsetsExamined, compoundTotalSubsets: compoundStats.totalSubsets, compoundMs: (compoundStats as any).compoundMs ?? 0 });
+      }
       current = found.state;
       solution.push(...found.seq);
       visited.add(wingStateSignature(current));
@@ -1325,25 +1407,93 @@ function tryExactFinishInnerCorners(commutators: readonly Commutator[], current:
   return null;
 }
 
-function tryCompoundFinishInnerCorners(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, wrongPieces: readonly number[]): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+function tryCompoundFinishInnerCorners(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, wrongPieces: readonly number[], statsOut?: { subsetsExamined: number; totalSubsets: number }): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+  // S29: port of S20's compound-finish subset-count budget (Wing/EdgeBridge/
+  // CenterBridge) to InnerCorner -- S28 found this was the one orbit still
+  // running the unbounded search, and that its cost (not the regressive
+  // ladder, which S28 measured at ~0ms/call) is what was driving the
+  // InnerCorner slow-tail.
+  const totalSubsets = totalSubsetCount(wrongPieces.length);
+  const maxSubsets = Math.max(1, Math.ceil(totalSubsets * COMPOUND_FINISH_BUDGET_FRACTION));
+  let subsetsExamined = 0;
   for (let size = wrongPieces.length - 1; size >= 2; size--) {
     for (const subset of combinations(wrongPieces, size)) {
+      if (subsetsExamined >= maxSubsets) {
+        if (statsOut) { statsOut.subsetsExamined = subsetsExamined; statsOut.totalSubsets = totalSubsets; }
+        return null;
+      }
+      subsetsExamined++;
       const partial = tryExactFinishInnerCorners(commutators, current, fixed, subset);
-      if (partial) return partial;
+      if (partial) {
+        if (statsOut) { statsOut.subsetsExamined = subsetsExamined; statsOut.totalSubsets = totalSubsets; }
+        return partial;
+      }
     }
   }
+  if (statsOut) { statsOut.subsetsExamined = subsetsExamined; statsOut.totalSubsets = totalSubsets; }
   return null;
 }
 
-function findSafeInnerCornerApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[], setupTables: PositionSetupTables, enforceFixed = true, visited?: ReadonlySet<string>): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+function findSafeInnerCornerApplication(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, target: number, wrongAfterThreshold: number, remaining: readonly number[], setupTables: PositionSetupTables, enforceFixed = true, visited?: ReadonlySet<string>, lookupStatsOut?: { hits: number; misses: number; fallbackCalls: number; fallbackMs: number }): { state: GigaminxState; seq: GigaminxTurn[] } | null {
   const setupKey = innerCornerKeyFor([target]);
   const loc = new Array<number>(60);
   for (let p = 0; p < 60; p++) loc[current.innerCornerPerm[p]] = p;
   const sourcePos = loc[target];
+  // S22: port of S16's anchor-level setup-lookup memoization (lookupSetup
+  // depends only on (sourcePos, anchor), not on which commutator C is being
+  // tried) and S17's per-anchor danger-position prefilter (whether C's
+  // support overlaps a fixed piece, read straight off S.move, depends only
+  // on (anchor, position) once S.move is fixed by the S16 cache) -- same
+  // pattern already validated byte-identical on Wing/EdgeBridge/CenterBridge.
+  // The prefilter below is an exact reformulation of the old
+  // post-compose `fixedPreserved` check (same positions, same predicate),
+  // not a heuristic -- it just avoids the compose+full-state check when the
+  // reject is already decidable from S.move alone.
+  const setupCache = new Map<number, SetupEntry | null>();
+  const dangerPosCache = new Map<number, boolean[]>();
+  // S22 Gate (structural verification only): counts raw vs actual
+  // lookup/danger-calc executions to compute the cache elimination ratio.
+  // Env-gated, no-op by default -- matches the GIGA_S21_LOG pattern.
+  const s22Stats = process.env.GIGA_S22_CACHE_LOG ? ((globalThis as any).__s22CacheStats ??= { rawSetupRequests: 0, actualSetupLookups: 0, rawDangerRequests: 0, actualDangerCalcs: 0 }) : null;
   for (const C of commutators) {
     for (const anchor of C.support) {
-      const S = lookupSetup(setupTables.innerCorner, sourcePos, anchor, () => forwardSearchUntil(current, (s) => s.innerCornerPerm[anchor] === target, setupKey, 7, 100_000));
+      if (s22Stats) s22Stats.rawSetupRequests++;
+      let S: SetupEntry | null;
+      if (setupCache.has(anchor)) {
+        S = setupCache.get(anchor)!;
+        if (lookupStatsOut) lookupStatsOut.hits++;
+      } else {
+        if (s22Stats) s22Stats.actualSetupLookups++;
+        if (lookupStatsOut) lookupStatsOut.misses++;
+        S = lookupSetup(setupTables.innerCorner, sourcePos, anchor, () => {
+          const t0 = lookupStatsOut ? Date.now() : 0;
+          const r = forwardSearchUntil(current, (s) => s.innerCornerPerm[anchor] === target, setupKey, 7, 100_000);
+          if (lookupStatsOut) {
+            lookupStatsOut.fallbackCalls++;
+            lookupStatsOut.fallbackMs += Date.now() - t0;
+          }
+          return r;
+        });
+        setupCache.set(anchor, S);
+      }
       if (!S) continue;
+      if (enforceFixed) {
+        if (s22Stats) s22Stats.rawDangerRequests++;
+        let dangerPos = dangerPosCache.get(anchor);
+        if (!dangerPos) {
+          if (s22Stats) s22Stats.actualDangerCalcs++;
+          dangerPos = new Array(60);
+          for (let p = 0; p < 60; p++) dangerPos[p] = fixed.has(S.move.innerCornerPerm[p]);
+          dangerPosCache.set(anchor, dangerPos);
+        }
+        // Prefilter: a definite reject (same conclusion the post-compose
+        // fixedPreserved check below would reach) skipped early, before
+        // paying for compose. Candidates that pass still go through the
+        // real post-compose check -- this mirrors Wing/EdgeBridge/
+        // CenterBridge's S17 integration exactly (early-reject only, never
+        // a replacement for the full check).
+        if (C.support.some((c) => dangerPos![c])) continue;
+      }
       const SinvMove = invertVirtualMove(S.move);
       const fullMove = composeSeqFirstThenSecond(composeSeqFirstThenSecond(S.move, C.move), SinvMove);
       const resultState = composeSeqFirstThenSecond(current, fullMove);
@@ -1408,6 +1558,8 @@ export function solveInnerCorners(state: GigaminxState, maxAttempts = 400): { mo
         require("node:fs").writeFileSync(ckptPath, JSON.stringify(ckpt));
       }
 
+      const roundT0 = process.env.GIGA_S21_LOG ? Date.now() : 0;
+      let branch = "exact";
       let found: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
       if (wrongBefore >= 2 && wrongBefore <= 16) {
         found = tryExactFinishInnerCorners(commutators, current, fixed, wrongPositions.map((p) => current.innerCornerPerm[p]));
@@ -1426,6 +1578,7 @@ export function solveInnerCorners(state: GigaminxState, maxAttempts = 400): { mo
         }
         if (strictFound) {
           found = strictFound;
+          branch = "strict";
           consecutiveLateral = 0;
           targetCursor = 0;
           consecutiveRegressive = 0;
@@ -1441,12 +1594,19 @@ export function solveInnerCorners(state: GigaminxState, maxAttempts = 400): { mo
           }
           if (lateralFound) {
             found = lateralFound;
+            branch = "lateral";
             consecutiveLateral++;
             targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
           } else {
-            const compoundFound = wrongBefore >= 2 && wrongBefore <= 15 ? tryCompoundFinishInnerCorners(commutators, current, fixed, wrongPositions.map((p) => current.innerCornerPerm[p])) : null;
+            const s28CompoundT0 = process.env.GIGA_S28_LOG ? Date.now() : 0;
+            const s29CompoundStats = process.env.GIGA_S28_LOG ? { subsetsExamined: 0, totalSubsets: 0 } : undefined;
+            const compoundFound = wrongBefore >= 2 && wrongBefore <= 15 ? tryCompoundFinishInnerCorners(commutators, current, fixed, wrongPositions.map((p) => current.innerCornerPerm[p]), s29CompoundStats) : null;
+            if (process.env.GIGA_S28_LOG) {
+              s28Log({ seed: (globalThis as any).__gigaS28Seed, kind: "compound", round: attempts, wrongBefore, ms: Date.now() - s28CompoundT0, accepted: !!compoundFound, ...s29CompoundStats });
+            }
             if (compoundFound) {
               found = compoundFound;
+              branch = "compound";
               consecutiveLateral = 0;
               targetCursor = 0;
               consecutiveRegressive = 0;
@@ -1456,7 +1616,13 @@ export function solveInnerCorners(state: GigaminxState, maxAttempts = 400): { mo
                 for (let i = 0; i < tries; i++) {
                   const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
                   const target = current.innerCornerPerm[pos];
-                  regressiveFound = findSafeInnerCornerApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, setupTables, false, visited);
+                  const s28Enabled = !!process.env.GIGA_S28_LOG;
+                  const s28T0 = s28Enabled ? Date.now() : 0;
+                  const s28Stats = s28Enabled ? { hits: 0, misses: 0, fallbackCalls: 0, fallbackMs: 0 } : undefined;
+                  regressiveFound = findSafeInnerCornerApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, setupTables, false, visited, s28Stats);
+                  if (s28Enabled) {
+                    s28Log({ seed: (globalThis as any).__gigaS28Seed, round: attempts, wrongBefore, rung: step, tryIndex: i, ms: Date.now() - s28T0, accepted: !!regressiveFound, ...s28Stats });
+                  }
                   if (regressiveFound) break outerRegress;
                 }
               }
@@ -1471,6 +1637,7 @@ export function solveInnerCorners(state: GigaminxState, maxAttempts = 400): { mo
                 throw new Error(`solveInnerCorners stuck (${wrongBefore} inner corners still wrong, exhausted ${maxConsecutiveRegressive}-round regression budget)`);
               }
               found = regressiveFound;
+              branch = "regressive";
               consecutiveLateral = 0;
               consecutiveRegressive++;
               targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
@@ -1479,6 +1646,9 @@ export function solveInnerCorners(state: GigaminxState, maxAttempts = 400): { mo
         }
       }
 
+      if (process.env.GIGA_S21_LOG) {
+        s21Log({ phase: "innerCorners", round: attempts, wrongBefore, branch, ms: Date.now() - roundT0 });
+      }
       current = found.state;
       solution.push(...found.seq);
       visited.add(innerCornerStateSignature(current));
@@ -1631,13 +1801,25 @@ function tryExactFinishEdgeBridges(commutators: readonly Commutator[], current: 
   return null;
 }
 
-function tryCompoundFinishEdgeBridges(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, wrongPieces: readonly number[]): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+function tryCompoundFinishEdgeBridges(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, wrongPieces: readonly number[], statsOut?: { subsetsExamined: number; totalSubsets: number }): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+  const totalSubsets = totalSubsetCount(wrongPieces.length);
+  const maxSubsets = Math.max(1, Math.ceil(totalSubsets * EDGEBRIDGE_COMPOUND_BUDGET_FRACTION));
+  let subsetsExamined = 0;
   for (let size = wrongPieces.length - 1; size >= 2; size--) {
     for (const subset of combinations(wrongPieces, size)) {
+      if (subsetsExamined >= maxSubsets) {
+        if (statsOut) { statsOut.subsetsExamined = subsetsExamined; statsOut.totalSubsets = totalSubsets; }
+        return null;
+      }
+      subsetsExamined++;
       const partial = tryExactFinishEdgeBridges(commutators, current, fixed, subset);
-      if (partial) return partial;
+      if (partial) {
+        if (statsOut) { statsOut.subsetsExamined = subsetsExamined; statsOut.totalSubsets = totalSubsets; }
+        return partial;
+      }
     }
   }
+  if (statsOut) { statsOut.subsetsExamined = subsetsExamined; statsOut.totalSubsets = totalSubsets; }
   return null;
 }
 
@@ -1788,6 +1970,9 @@ export function solveEdgeBridges(state: GigaminxState, maxAttempts = 400): { mov
         require("node:fs").writeFileSync(ckptPath, JSON.stringify(ckpt));
       }
 
+      const roundT0 = process.env.GIGA_S21_LOG ? Date.now() : 0;
+      let branch = "exact";
+      const compoundStats = { subsetsExamined: 0, totalSubsets: 0 };
       let found: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
       if (wrongBefore >= 2 && wrongBefore <= 16) {
         found = tryExactFinishEdgeBridges(commutators, current, fixed, wrongPositions.map((p) => current.edgeBridgePerm[p]));
@@ -1806,6 +1991,7 @@ export function solveEdgeBridges(state: GigaminxState, maxAttempts = 400): { mov
         }
         if (strictFound) {
           found = strictFound;
+          branch = "strict";
           consecutiveLateral = 0;
           targetCursor = 0;
           consecutiveRegressive = 0;
@@ -1821,12 +2007,16 @@ export function solveEdgeBridges(state: GigaminxState, maxAttempts = 400): { mov
           }
           if (lateralFound) {
             found = lateralFound;
+            branch = "lateral";
             consecutiveLateral++;
             targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
           } else {
-            const compoundFound = wrongBefore >= 2 && wrongBefore <= 15 ? tryCompoundFinishEdgeBridges(commutators, current, fixed, wrongPositions.map((p) => current.edgeBridgePerm[p])) : null;
+            const compoundT0 = process.env.GIGA_S21_LOG ? Date.now() : 0;
+            const compoundFound = wrongBefore >= 2 && wrongBefore <= 15 ? tryCompoundFinishEdgeBridges(commutators, current, fixed, wrongPositions.map((p) => current.edgeBridgePerm[p]), compoundStats) : null;
+            if (process.env.GIGA_S21_LOG && wrongBefore >= 2 && wrongBefore <= 15) (compoundStats as any).compoundMs = Date.now() - compoundT0;
             if (compoundFound) {
               found = compoundFound;
+              branch = "compound";
               consecutiveLateral = 0;
               targetCursor = 0;
               consecutiveRegressive = 0;
@@ -1851,6 +2041,7 @@ export function solveEdgeBridges(state: GigaminxState, maxAttempts = 400): { mov
                 throw new Error(`solveEdgeBridges stuck (${wrongBefore} edge bridges still wrong, exhausted ${maxConsecutiveRegressive}-round regression budget)`);
               }
               found = regressiveFound;
+              branch = "regressive";
               consecutiveLateral = 0;
               consecutiveRegressive++;
               targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
@@ -1859,6 +2050,9 @@ export function solveEdgeBridges(state: GigaminxState, maxAttempts = 400): { mov
         }
       }
 
+      if (process.env.GIGA_S21_LOG) {
+        s21Log({ phase: "edgeBridges", round: attempts, wrongBefore, branch, ms: Date.now() - roundT0, compoundSubsetsExamined: compoundStats.subsetsExamined, compoundTotalSubsets: compoundStats.totalSubsets, compoundMs: (compoundStats as any).compoundMs ?? 0 });
+      }
       current = found.state;
       solution.push(...found.seq);
       visited.add(edgeBridgeStateSignature(current));
@@ -2010,13 +2204,25 @@ function tryExactFinishCenterBridges(commutators: readonly Commutator[], current
   return null;
 }
 
-function tryCompoundFinishCenterBridges(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, wrongPieces: readonly number[]): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+function tryCompoundFinishCenterBridges(commutators: readonly Commutator[], current: GigaminxState, fixed: ReadonlySet<number>, wrongPieces: readonly number[], statsOut?: { subsetsExamined: number; totalSubsets: number }): { state: GigaminxState; seq: GigaminxTurn[] } | null {
+  const totalSubsets = totalSubsetCount(wrongPieces.length);
+  const maxSubsets = Math.max(1, Math.ceil(totalSubsets * COMPOUND_FINISH_BUDGET_FRACTION));
+  let subsetsExamined = 0;
   for (let size = wrongPieces.length - 1; size >= 2; size--) {
     for (const subset of combinations(wrongPieces, size)) {
+      if (subsetsExamined >= maxSubsets) {
+        if (statsOut) { statsOut.subsetsExamined = subsetsExamined; statsOut.totalSubsets = totalSubsets; }
+        return null;
+      }
+      subsetsExamined++;
       const partial = tryExactFinishCenterBridges(commutators, current, fixed, subset);
-      if (partial) return partial;
+      if (partial) {
+        if (statsOut) { statsOut.subsetsExamined = subsetsExamined; statsOut.totalSubsets = totalSubsets; }
+        return partial;
+      }
     }
   }
+  if (statsOut) { statsOut.subsetsExamined = subsetsExamined; statsOut.totalSubsets = totalSubsets; }
   return null;
 }
 
@@ -2161,6 +2367,9 @@ export function solveCenterBridges(state: GigaminxState, maxAttempts = 400): { m
         require("node:fs").writeFileSync(ckptPath, JSON.stringify(ckpt));
       }
 
+      const roundT0 = process.env.GIGA_S21_LOG ? Date.now() : 0;
+      let branch = "exact";
+      const compoundStats = { subsetsExamined: 0, totalSubsets: 0 };
       let found: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
       if (wrongBefore >= 2 && wrongBefore <= 16) {
         found = tryExactFinishCenterBridges(commutators, current, fixed, wrongPositions.map((p) => current.centerBridgePerm[p]));
@@ -2179,6 +2388,7 @@ export function solveCenterBridges(state: GigaminxState, maxAttempts = 400): { m
         }
         if (strictFound) {
           found = strictFound;
+          branch = "strict";
           consecutiveLateral = 0;
           targetCursor = 0;
           consecutiveRegressive = 0;
@@ -2194,12 +2404,16 @@ export function solveCenterBridges(state: GigaminxState, maxAttempts = 400): { m
           }
           if (lateralFound) {
             found = lateralFound;
+            branch = "lateral";
             consecutiveLateral++;
             targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
           } else {
-            const compoundFound = wrongBefore >= 2 && wrongBefore <= 15 ? tryCompoundFinishCenterBridges(commutators, current, fixed, wrongPositions.map((p) => current.centerBridgePerm[p])) : null;
+            const compoundT0 = process.env.GIGA_S21_LOG ? Date.now() : 0;
+            const compoundFound = wrongBefore >= 2 && wrongBefore <= 15 ? tryCompoundFinishCenterBridges(commutators, current, fixed, wrongPositions.map((p) => current.centerBridgePerm[p]), compoundStats) : null;
+            if (process.env.GIGA_S21_LOG && wrongBefore >= 2 && wrongBefore <= 15) (compoundStats as any).compoundMs = Date.now() - compoundT0;
             if (compoundFound) {
               found = compoundFound;
+              branch = "compound";
               consecutiveLateral = 0;
               targetCursor = 0;
               consecutiveRegressive = 0;
@@ -2224,6 +2438,7 @@ export function solveCenterBridges(state: GigaminxState, maxAttempts = 400): { m
                 throw new Error(`solveCenterBridges stuck (${wrongBefore} center bridges still wrong, exhausted ${maxConsecutiveRegressive}-round regression budget)`);
               }
               found = regressiveFound;
+              branch = "regressive";
               consecutiveLateral = 0;
               consecutiveRegressive++;
               targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
@@ -2232,6 +2447,9 @@ export function solveCenterBridges(state: GigaminxState, maxAttempts = 400): { m
         }
       }
 
+      if (process.env.GIGA_S21_LOG) {
+        s21Log({ phase: "centerBridges", round: attempts, wrongBefore, branch, ms: Date.now() - roundT0, compoundSubsetsExamined: compoundStats.subsetsExamined, compoundTotalSubsets: compoundStats.totalSubsets, compoundMs: (compoundStats as any).compoundMs ?? 0 });
+      }
       current = found.state;
       solution.push(...found.seq);
       visited.add(centerBridgeStateSignature(current));

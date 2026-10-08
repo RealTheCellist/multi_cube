@@ -1,4 +1,5 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, afterAll } from "vitest";
+import { appendFileSync, writeFileSync } from "node:fs";
 import {
   applyGigaminxMove,
   applyGigaminxScramble,
@@ -36,9 +37,12 @@ function applySeq(state: GigaminxState, seq: readonly GigaminxTurn[]): GigaminxS
 }
 
 const seeds = process.env.GIGA_SEEDS ? process.env.GIGA_SEEDS.split(",").map(Number) : [1];
+const benchLogFile = process.env.GIGA_BENCH_LOG_FILE;
+if (benchLogFile) writeFileSync(benchLogFile, "");
 
 describe("gigaminx solve-speed benchmark (per-phase timing, libraries pre-cached)", () => {
   it.each(seeds)("seed %i: per-phase timing breakdown", (seed) => {
+    (globalThis as any).__gigaS28Seed = seed;
     const rng = mulberry32(seed * 13 + 7);
     const scramble = randomGigaminxScramble(30, rng);
     const scrambled = applyGigaminxScramble(solvedGigaminxState(), scramble);
@@ -97,13 +101,19 @@ describe("gigaminx solve-speed benchmark (per-phase timing, libraries pre-cached
     expect(areEdgeBridgesSolved(replayed)).toBe(true);
     expect(areCenterBridgesSolved(replayed)).toBe(true);
 
-    console.log(
+    const line =
       `BENCH seed=${seed} totalMs=${totalMs} totalMoves=${allMoves.length} ` +
-        `cornersMs=${timings.corners} cornersMoves=${moves.corners} ` +
-        `wingsMs=${timings.wings} wingsMoves=${moves.wings} ` +
-        `innerCornersMs=${timings.innerCorners} innerCornersMoves=${moves.innerCorners} ` +
-        `edgeBridgesMs=${timings.edgeBridges} edgeBridgesMoves=${moves.edgeBridges} ` +
-        `centerBridgesMs=${timings.centerBridges} centerBridgesMoves=${moves.centerBridges}`,
-    );
+      `cornersMs=${timings.corners} cornersMoves=${moves.corners} ` +
+      `wingsMs=${timings.wings} wingsMoves=${moves.wings} ` +
+      `innerCornersMs=${timings.innerCorners} innerCornersMoves=${moves.innerCorners} ` +
+      `edgeBridgesMs=${timings.edgeBridges} edgeBridgesMoves=${moves.edgeBridges} ` +
+      `centerBridgesMs=${timings.centerBridges} centerBridgesMoves=${moves.centerBridges}`;
+    console.log(line);
+    if (benchLogFile) appendFileSync(benchLogFile, line + "\n");
   }, 7_000_000);
+
+  afterAll(() => {
+    const cacheLogFile = process.env.GIGA_S22_CACHE_LOG;
+    if (cacheLogFile) writeFileSync(cacheLogFile, JSON.stringify((globalThis as any).__s22CacheStats ?? {}));
+  });
 });
