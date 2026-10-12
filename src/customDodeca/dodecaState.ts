@@ -352,21 +352,43 @@ function stickerDepthFromFace(corners: readonly THREE.Vector3[], faceIndex: Face
   return depthFromFace(stickerCentroid(corners), faceIndex, layerCount);
 }
 
+const VERTEX_EPS_SQ = 1e-6;
+/** Whether `p` sits exactly on one of the dodecahedron's 20 true vertices (as opposed to an interior lerped point). */
+function isNearTrueVertex(p: THREE.Vector3): boolean {
+  for (const v of VERTICES) if (p.distanceToSquared(v) < VERTEX_EPS_SQ) return true;
+  return false;
+}
+
 /** Stickers that belong to a turn about `faceIndex`'s axis at cutoff depth `depth` (1..layerCount-1). */
 export function stickersForTurn(state: DodecaState, faceIndex: FaceIndex, depth: number): Sticker[] {
-  // A face's own true fixed center (pieceType "center") is core-mounted and
-  // must never move under ANY turn but its own (where it's geometrically
-  // invariant anyway, rotating about its own axis) -- but for N=5
-  // specifically, depth>=2 turns were found (via gigaminxStateBridge's
-  // round-trip correctness tests, cross-checking against
-  // gigaminxSolver.ts's own "12 fixed, untracked centers" assumption) to
-  // sweep in up to 5 OTHER faces' centers purely from the generic
-  // depth-from-face distance classification below, which has no notion of
-  // piece identity. Scoped to layerCount===5 only: N=3's own existing test
-  // suite expects its deepest cut (depth=2) to sweep in other faces'
-  // centers too, and whether that's actually correct for N=3 wasn't
-  // investigated here.
-  return state.stickers.filter((s) => (state.layerCount !== 5 || s.pieceType !== "center" || s.homeFaceIndex === faceIndex) && stickerDepthFromFace(s.corners, faceIndex, state.layerCount) < depth);
+  return state.stickers.filter((s) => {
+    if (s.homeFaceIndex !== faceIndex) {
+      // A piece that never legitimately crosses faces must never be swept
+      // by a FOREIGN face's turn, regardless of the generic depth-from-face
+      // distance classification below (which has no notion of piece
+      // identity):
+      // - A face's own true fixed center (pieceType "center", N=3/N=5) is
+      //   core-mounted and only ever turns about its own axis. Originally
+      //   found and fixed for N=5 only (via gigaminxStateBridge's
+      //   round-trip correctness tests, cross-checking against
+      //   gigaminxSolver.ts's own "12 fixed, untracked centers"
+      //   assumption); the identical bug was later confirmed present for
+      //   N=3 too (MASTER_KILOMINX_SOLVER_UI_INTEGRATION_V1's own
+      //   depth-expansion investigation) and is fixed here for both.
+      // - N=4 has no "center" pieceType at all -- its 12 face-center
+      //   regions are instead 5 "corner"-tagged wedge stickers per face,
+      //   apex at that face's own center point (never a shared vertex),
+      //   confirmed empirically (same investigation) to never leave their
+      //   home face. Narrowly scoped to N=4 and to corner-tagged stickers
+      //   whose own vertex-aligned corner ISN'T a true dodecahedron
+      //   vertex: N=5's own legitimate cross-face "corner"-tagged
+      //   innerCorner pieces (ring-1 kites, apex at an interior lerped
+      //   point too) must NOT be caught by this, hence N=4-only.
+      if ((state.layerCount === 5 || state.layerCount === 3) && s.pieceType === "center") return false;
+      if (state.layerCount === 4 && s.pieceType === "corner" && !isNearTrueVertex(s.corners[1])) return false;
+    }
+    return stickerDepthFromFace(s.corners, faceIndex, state.layerCount) < depth;
+  });
 }
 
 /** Applies one raw turn about `faceIndex`'s axis at cutoff `depth`, in place. */
@@ -396,8 +418,21 @@ export interface RawDodecaTurn {
 
 /** Random (face, depth, sign) turns, avoiding immediate repeats of the same (face, depth) pair. */
 export function generateRandomFifthTurns(layerCount: number, length = 20, rng: Rng = Math.random): RawDodecaTurn[] {
+  // Only Gigaminx (N=5) models and solves depth>=2 turns as real moves
+  // (ALL_MOVES spans depth 1..4). For N=2..4, a depth>=2 turn isn't
+  // reachable by any real gesture (dodecaSwipeControls.ts's TURN_DEPTH is
+  // hardcoded to 1 for every size) and isn't a real move on a physical
+  // Kilominx/Megaminx/Master Kilominx either (single-layer turns only) --
+  // so scrambling with one produced states the player could never undo by
+  // hand, and that none of kilominxState.ts/megaminxState.ts/
+  // masterKilominxState.ts's own depth=1-only abstract models could solve
+  // (MASTER_KILOMINX_SOLVER_UI_INTEGRATION_V1's own investigation:
+  // confirmed those states are provably unreachable via depth=1 moves
+  // alone, not just unsolved by a specific algorithm). Restricting the
+  // scramble generator itself to depth=1 for N=2..4 fixes both at once.
+  const maxDepth = layerCount === 5 ? layerCount - 1 : 1;
   const depths: number[] = [];
-  for (let d = 1; d <= layerCount - 1; d++) depths.push(d);
+  for (let d = 1; d <= maxDepth; d++) depths.push(d);
 
   const turns: RawDodecaTurn[] = [];
   let lastKey = "";

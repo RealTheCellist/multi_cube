@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { buildSolvedDodeca, applyRawFifthTurn } from "./dodecaState";
+import { buildSolvedDodeca, applyRawFifthTurn, type DodecaState, type RawDodecaTurn } from "./dodecaState";
 import { VERTICES, FACE_VERTEX_INDICES, FACE_NORMALS, FACE_INDICES, nearestFaceIndex, type FaceIndex } from "./dodecaMath";
 import type { Rng } from "./dodecaState";
 
@@ -151,6 +151,47 @@ function deriveMove(face: FaceIndex, sign: 1 | -1): KilominxMoveTable {
 
 /** MOVE_TABLE[face][0] = sign +1, MOVE_TABLE[face][1] = sign -1. */
 export const MOVE_TABLE: readonly (readonly [KilominxMoveTable, KilominxMoveTable])[] = FACE_INDICES.map((f) => [deriveMove(f, 1), deriveMove(f, -1)] as const);
+
+/**
+ * Bridges the live rendering scene's state (DodecaState, geometry-based)
+ * to this module's own abstract piece model -- same reading loop as
+ * deriveMove, generalized to an arbitrary input state instead of always a
+ * post-move scramble (GIGAMINX_STATE_BRIDGE_AND_ROUNDTRIP_CORRECTNESS_V1's
+ * technique, applied here).
+ */
+export function dodecaStateToKilominxState(state: DodecaState): KilominxState {
+  if (state.layerCount !== 2) throw new Error(`dodecaStateToKilominxState: expected layerCount=2 (Kilominx), got ${state.layerCount}`);
+
+  const pieceIdOfFaceTriple = new Map<string, number>();
+  for (let v = 0; v < 20; v++) pieceIdOfFaceTriple.set([...FACES_AT_VERTEX[v]].sort((a, b) => a - b).join(","), v);
+
+  const byVertex: { homeFace: number; curFace: number }[][] = Array.from({ length: 20 }, () => []);
+  for (const st of state.stickers) {
+    const v = nearestVertexIndex(st.corners[1]);
+    const curFace = nearestFaceIndex(centroid(st.corners));
+    byVertex[v].push({ homeFace: st.homeFaceIndex, curFace });
+  }
+
+  const perm: number[] = new Array(20).fill(-1);
+  const orient: number[] = new Array(20).fill(0);
+  for (let v = 0; v < 20; v++) {
+    const triple = byVertex[v]
+      .map((x) => x.homeFace)
+      .sort((a, b) => a - b)
+      .join(",");
+    const pieceId = pieceIdOfFaceTriple.get(triple);
+    if (pieceId === undefined) throw new Error(`dodecaStateToKilominxState: no piece match at vertex ${v}: [${triple}]`);
+    perm[v] = pieceId;
+    const bySlot = [...byVertex[v]].sort((a, b) => FACES_AT_VERTEX[v].indexOf(a.curFace) - FACES_AT_VERTEX[v].indexOf(b.curFace));
+    const slot0HomeFace = FACES_AT_VERTEX[pieceId][0];
+    orient[v] = bySlot.findIndex((x) => x.homeFace === slot0HomeFace);
+  }
+  return { perm, orient };
+}
+
+export function kilominxTurnToRawTurn(turn: KilominxTurn): RawDodecaTurn {
+  return { faceIndex: turn.face, depth: 1, sign: turn.sign };
+}
 
 export function solvedKilominxState(): KilominxState {
   return { perm: Array.from({ length: 20 }, (_, i) => i), orient: new Array(20).fill(0) };

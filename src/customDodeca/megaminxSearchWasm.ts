@@ -1,8 +1,19 @@
-import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 import { MOVE_TABLE, type MegaminxState, type MegaminxTurn } from "./megaminxState";
 import type { FaceIndex } from "./dodecaMath";
+// `?url` gives Vite's resolved asset URL for the real browser bundle (a
+// same-origin path `fetch()` can load); under Node/vitest it resolves to a
+// dev-server-relative path with no origin, which `fetch()` can't parse at
+// all -- so the Node path below reads the file directly instead, same
+// environment-branch shape as gigaminxSolver.ts's getEnv(). `node:fs`/
+// `node:path`/`node:url` are deliberately NOT imported at the top level:
+// Vite's dev server throws immediately on merely importing a named binding
+// off an externalized Node builtin (confirmed: "Cannot access
+// 'node:fs.readFileSync' in client code", thrown at the import statement
+// itself, before any call) -- this is a stricter failure mode than the
+// production build's warning-only externalization, and the same class of
+// bug as GIGAMINX_SOLVE_PRODUCTION_ACCEPTANCE_V1's `process.env` one.
+// They're `require()`'d lazily, only on the Node branch, below.
+import megaminxWasmUrl from "./wasm-search/megaminx_search.wasm?url";
 
 /**
  * JS binding layer for wasm-search's own Rust functions (raw `extern "C"`
@@ -185,9 +196,31 @@ interface ScratchPointers {
 }
 let scratch: ScratchPointers | null = null;
 
-const WASM_PATH = join(dirname(fileURLToPath(import.meta.url)), "wasm-search", "megaminx_search.wasm");
+function nodeWasmPath(): string {
+  const { dirname, join } = require("node:path");
+  const { fileURLToPath } = require("node:url");
+  return join(dirname(fileURLToPath(import.meta.url)), "wasm-search", "megaminx_search.wasm");
+}
 
 let wasm: WasmExports | null = null;
+let cachedWasmBytes: Uint8Array | null = null;
+
+/**
+ * Fetches the wasm binary's raw bytes ahead of time, so `ensureWasm()` can
+ * stay fully synchronous (see its own docstring -- every caller in this
+ * module's solve chain is synchronous by design, and converting that whole
+ * chain to async would be a much larger, riskier refactor than just
+ * pre-warming the bytes). Call this once, awaited, before any solve
+ * attempt in a browser context; a no-op if already warmed. Node callers
+ * (tests, the benchmark harness) don't need this at all -- `ensureWasm()`
+ * falls back to a direct synchronous `readFileSync` there, same as before.
+ */
+export async function warmupMegaminxSearchWasm(): Promise<void> {
+  if (cachedWasmBytes || typeof window === "undefined") return;
+  const res = await fetch(megaminxWasmUrl);
+  if (!res.ok) throw new Error(`megaminx wasm fetch failed: HTTP ${res.status}`);
+  cachedWasmBytes = new Uint8Array(await res.arrayBuffer());
+}
 
 /** [face 0..12][sign 0=+1,1=-1] x (cornerPerm[20] ++ cornerOrientDelta[20] ++ edgePerm[30] ++ edgeOrientDelta[30]) -- exactly the layout wasm-search/src/lib.rs's own init_move_table expects. */
 function flattenMoveTable(): Int8Array {
@@ -219,7 +252,7 @@ function flattenMoveTable(): Int8Array {
  */
 function ensureWasm(): WasmExports {
   if (wasm) return wasm;
-  const bytes = readFileSync(WASM_PATH);
+  const bytes = cachedWasmBytes ?? (typeof window === "undefined" ? require("node:fs").readFileSync(nodeWasmPath()) : (() => { throw new Error("megaminx wasm not warmed -- call warmupMegaminxSearchWasm() and await it before solving"); })());
   const module = new WebAssembly.Module(bytes);
   const instance = new WebAssembly.Instance(module);
   const exports = instance.exports as unknown as WasmExports;

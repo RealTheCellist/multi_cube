@@ -476,9 +476,9 @@ function App() {
     }
   }, []);
 
-  // Dodeca's solve-hint press -- same contract as handleTetraSolve, against
-  // gigaminxSolvePlayback.ts instead. Only meaningful for layerCount===5
-  // (Gigaminx); DodecaView's own solveNextMove is a no-op hint for N=2..4.
+  // Dodeca's solve-hint press -- same contract as handleTetraSolve.
+  // DodecaView's own solveNextMove dispatches to gigaminxSolvePlayback.ts
+  // (N=5) or kilominxFamilySolvePlayback.ts (N=2..4) internally.
   const handleDodecaSolve = useCallback(async () => {
     setIsSolving(true);
     try {
@@ -778,10 +778,12 @@ function App() {
           </p>
         )}
 
-        {puzzleKind === "dodeca" && dodecaLayerCount === 5 && (
+        {puzzleKind === "dodeca" && (
           <p className="mode-hint">
             {isSolving
-              ? "다음 수 계산 중... (처음 누르면 몇 초 걸릴 수 있어요)"
+              ? dodecaLayerCount === 2
+                ? "다음 수 계산 중... (10초 이상 걸릴 수 있어요)"
+                : "다음 수 계산 중... (처음 누르면 몇 초 걸릴 수 있어요)"
               : solveError
                 ? "솔버 실행 중 오류가 발생했습니다. 다시 시도해보세요"
                 : ""}
@@ -886,17 +888,9 @@ function App() {
           <button type="button" className="btn3d btn-orange" onClick={handleReset} disabled={isSolving}>
             리셋
           </button>
-          {dodecaLayerCount === 5 && (
-            <button
-              type="button"
-              className="btn3d btn-accent"
-              onClick={handleDodecaSolve}
-              disabled={isSolving}
-              title="다음 수를 바로 진행해요"
-            >
-              솔브
-            </button>
-          )}
+          <button type="button" className="btn3d btn-accent" onClick={handleDodecaSolve} disabled={isSolving} title="다음 수를 바로 진행해요">
+            솔브
+          </button>
           <button type="button" className="btn3d btn-rose" onClick={handleScramble} disabled={isSolving}>
             스크램블
           </button>

@@ -3,16 +3,18 @@ import type { Rng } from "./customCube/cubeState";
 import { CustomDodecaScene } from "./customDodeca/CustomDodecaScene";
 import { attachDodecaSwipeTurning, type DodecaSwipeController } from "./customDodeca/dodecaSwipeControls";
 import { applyNextGigaminxSolveMove, type GigaminxSolveHint } from "./customDodeca/gigaminxSolvePlayback";
+import { applyNextKilominxFamilySolveMove, prewarmKilominxFamilySolve, type KilominxFamilySolveHint } from "./customDodeca/kilominxFamilySolvePlayback";
 
 export interface DodecaViewHandle {
   scramble: (rng?: Rng) => void;
   resetToSolved: () => void;
   isSolved: () => boolean;
   undoLastMove: () => boolean;
-  // Gigaminx (layerCount===5) only -- Kilominx/Megaminx/Master Kilominx
-  // (N=2..4) have no solver yet, so this resolves to a no-op hint
-  // (move: null) for those, same contract as a fully-solved puzzle.
-  solveNextMove: () => Promise<GigaminxSolveHint>;
+  // layerCount===5 (Gigaminx) dispatches to gigaminxSolvePlayback.ts;
+  // layerCount 2..4 (Kilominx/Megaminx/Master Kilominx) dispatch to
+  // kilominxFamilySolvePlayback.ts. Both resolve to a no-op hint (move:
+  // null) once the puzzle's already solved.
+  solveNextMove: () => Promise<GigaminxSolveHint | KilominxFamilySolveHint>;
 }
 
 interface DodecaViewProps {
@@ -28,9 +30,9 @@ interface DodecaViewProps {
   interactive?: boolean;
 }
 
-// solveNextMove exists only for Gigaminx (layerCount===5, see
-// gigaminxSolvePlayback.ts) -- Kilominx/Megaminx/Master Kilominx (N=2..4)
-// still have no solver, by explicit scope.
+// solveNextMove dispatches by layerCount: 5 (Gigaminx) uses
+// gigaminxSolvePlayback.ts, 2..4 (Kilominx/Megaminx/Master Kilominx) use
+// kilominxFamilySolvePlayback.ts.
 const DodecaView = forwardRef<DodecaViewHandle, DodecaViewProps>(function DodecaView(
   { onMoveCountChange, onFirstMove, onSolvedChange, layerCount, orbitMode, interactive = true },
   ref,
@@ -103,6 +105,12 @@ const DodecaView = forwardRef<DodecaViewHandle, DodecaViewProps>(function Dodeca
       moveCountRef.current = 0;
       sceneRef.current?.scramble(rng);
       callbacksRef.current.onMoveCountChange(0);
+      // Kick off the full solve in the background right away (N=2..4 only
+      // -- N=5/Gigaminx has its own, already-fast solver): by the time the
+      // player actually presses "솔브", the plan is usually already cached,
+      // so that first press only pays the move animation, not the solve
+      // itself (see kilominxFamilySolvePlayback.ts's own prewarm docstring).
+      if (layerCount !== 5 && sceneRef.current) prewarmKilominxFamilySolve(sceneRef.current);
     },
     resetToSolved: () => {
       hasMovedRef.current = false;
@@ -124,11 +132,11 @@ const DodecaView = forwardRef<DodecaViewHandle, DodecaViewProps>(function Dodeca
     },
     solveNextMove: async () => {
       const scene = sceneRef.current;
-      if (!scene || layerCount !== 5) return { move: null, movesRemaining: 0 };
+      if (!scene) return { move: null, movesRemaining: 0 };
       controllerRef.current?.setEnabled(false);
       const before = scene.getUndoCount();
       try {
-        return await applyNextGigaminxSolveMove(scene);
+        return layerCount === 5 ? await applyNextGigaminxSolveMove(scene) : await applyNextKilominxFamilySolveMove(scene);
       } finally {
         reportSolveCommit(scene, before);
         controllerRef.current?.setEnabled(interactiveRef.current && !orbitModeRef.current);

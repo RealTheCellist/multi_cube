@@ -116,8 +116,14 @@ describe("stickersForTurn depth semantics", () => {
     }
   });
 
-  it("N=3's deepest turn (depth=2, the only other option) splits the puzzle exactly in half", () => {
+  it("N=3's deepest turn (depth=2, the only other option) includes all 66 stickers in its half MINUS the 5 foreign fixed centers it used to wrongly sweep in", () => {
+    // Previously expected an exact half-split (66) -- that count silently
+    // included 5 OTHER faces' own true fixed-center stickers, the same bug
+    // class fixed for N=5 (see stickersForTurn's own comment) and later
+    // confirmed present for N=3 too (MASTER_KILOMINX_SOLVER_UI_INTEGRATION_V1).
+    // A true center is core-mounted and must never move under a foreign
+    // face's turn, so the real depth=2 sweep for N=3 is 66 - 5 = 61.
     const s = buildSolvedDodeca(3);
-    expect(stickersForTurn(s, 0, 2).length).toBe(s.stickers.length / 2);
+    expect(stickersForTurn(s, 0, 2).length).toBe(s.stickers.length / 2 - 5);
   });
 });
