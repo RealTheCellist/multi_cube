@@ -976,7 +976,6 @@ export function isBottomCornersSolved(state: MegaminxState): boolean {
  * (the bottom 5 are deliberately left FREE -- see solveLastLayer's own dev
  * notes above). Fixed edges: all 25 non-bottom edges.
  */
-const ALL_BUT_BOTTOM_CORNERS = new Set([...TOP_AND_MIDDLE_CORNERS, ...LAST_LAYER_CORNER_POSITIONS]);
 const BOTTOM_EDGE_FIXED_EDGES = new Set([...FIRST_LAYER_EDGE_POSITIONS, ...UPPER_UPPER_EDGE_POSITIONS, ...LOWER_UPPER_EDGE_POSITIONS, ...LOWER_LOWER_EDGE_POSITIONS]);
 const bottomEdgeLibrary = lazy(() => buildCommutatorLibrary(EDGE_KIND, TOP_AND_MIDDLE_CORNERS, BOTTOM_EDGE_FIXED_EDGES, 10, 150, 60_000_000, lastLayerDeepPool(), "bottomEdge"));
 

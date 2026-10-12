@@ -380,16 +380,6 @@ function totalSubsetCount(len: number): number {
   return total;
 }
 
-function permutations<T>(items: readonly T[]): T[][] {
-  if (items.length <= 1) return [items.slice()];
-  const out: T[][] = [];
-  for (let i = 0; i < items.length; i++) {
-    const rest = [...items.slice(0, i), ...items.slice(i + 1)];
-    for (const p of permutations(rest)) out.push([items[i], ...p]);
-  }
-  return out;
-}
-
 export interface PhaseTrace {
   name: string;
   rounds: number;
@@ -430,14 +420,6 @@ interface Commutator {
   support: number[];
   /** `applySeq(solved, seq)` -- this commutator's net effect as a composable virtual move (see composeSeqFirstThenSecond's own dev notes). */
   move: GigaminxState;
-}
-
-function makeCornerCommutator(a: GigaminxTurn[], b: GigaminxTurn[], solved: GigaminxState): Commutator {
-  const seq = [...a, ...b, ...invertSeq(a), ...invertSeq(b)];
-  const result = applySeq(solved, seq);
-  const support: number[] = [];
-  for (let i = 0; i < 20; i++) if (result.cornerPerm[i] !== i || result.cornerOrient[i] !== 0) support.push(i);
-  return { seq, support, move: result };
 }
 
 /** A/B pair sequences up to the given lengths, over the full 96-move grammar, never repeating the immediately-previous move's face. */

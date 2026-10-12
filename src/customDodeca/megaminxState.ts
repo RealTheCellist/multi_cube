@@ -90,7 +90,7 @@ export const FACES_AT_EDGE: readonly (readonly [number, number])[] = EDGES.map((
     }
   }
   if (faces.length !== 2) throw new Error(`megaminxState: edge [${a},${b}] touched by ${faces.length} faces, expected 2`);
-  return faces.sort((p, q) => p - q) as readonly [number, number];
+  return faces.sort((p, q) => p - q) as unknown as readonly [number, number];
 });
 
 const EDGE_MIDPOINTS: readonly THREE.Vector3[] = EDGES.map(([a, b]) => VERTICES[a].clone().add(VERTICES[b]).multiplyScalar(0.5));

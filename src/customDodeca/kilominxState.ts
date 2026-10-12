@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { buildSolvedDodeca, applyRawFifthTurn, type DodecaState, type RawDodecaTurn } from "./dodecaState";
-import { VERTICES, FACE_VERTEX_INDICES, FACE_NORMALS, FACE_INDICES, nearestFaceIndex, type FaceIndex } from "./dodecaMath";
+import { VERTICES, FACE_VERTEX_INDICES, FACE_INDICES, nearestFaceIndex, type FaceIndex } from "./dodecaMath";
 import type { Rng } from "./dodecaState";
 
 /**
@@ -82,7 +82,7 @@ export const FACES_AT_VERTEX: readonly (readonly [number, number, number])[] = (
       return Math.atan2(sin, cos);
     };
     const sorted = [...faces].sort((a, b) => angleFromRef(a) - angleFromRef(b));
-    return sorted as readonly [number, number, number];
+    return sorted as unknown as readonly [number, number, number];
   });
 })();
 

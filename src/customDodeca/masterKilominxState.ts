@@ -77,7 +77,7 @@ const FACES_AT_EDGE: readonly (readonly [number, number])[] = EDGES.map(([a, b])
     }
   }
   if (faces.length !== 2) throw new Error(`masterKilominxState: edge [${a},${b}] touched by ${faces.length} faces, expected 2`);
-  return faces.sort((p, q) => p - q) as readonly [number, number];
+  return faces.sort((p, q) => p - q) as unknown as readonly [number, number];
 });
 
 /**

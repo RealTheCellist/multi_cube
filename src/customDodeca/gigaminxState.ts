@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { buildSolvedDodeca, applyRawFifthTurn, type DodecaState, type RawDodecaTurn, type Rng } from "./dodecaState";
-import { VERTICES, FACE_VERTEX_INDICES, FACE_INDICES, nearestFaceIndex, type FaceIndex } from "./dodecaMath";
+import { FACE_VERTEX_INDICES, FACE_INDICES, nearestFaceIndex, type FaceIndex } from "./dodecaMath";
 import { FACES_AT_VERTEX, nearestVertexIndex, centroid } from "./kilominxState";
 
 export { type Rng };
@@ -99,7 +99,7 @@ const FACES_AT_EDGE: readonly (readonly [number, number])[] = EDGES.map(([a, b])
     }
   }
   if (faces.length !== 2) throw new Error(`gigaminxState: edge [${a},${b}] touched by ${faces.length} faces, expected 2`);
-  return faces.sort((p, q) => p - q) as readonly [number, number];
+  return faces.sort((p, q) => p - q) as unknown as readonly [number, number];
 });
 
 /** Wing piece identity: edgeIndex*2 + (0 if nearVertex is EDGES[edgeIndex][0], else 1). 60 total. */

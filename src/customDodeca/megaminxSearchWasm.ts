@@ -1238,7 +1238,8 @@ export function solveCrossSharedForwardFallbackV2Wasm(
     phase2Termination: phase2Term === 0xffffffff ? null : (phase2Term as CrossTerminationReason),
     totalRounds: words[8],
     peakForwardFrontier: words[9],
-    peakBackwardFrontier: words[10],
+    peakBackwardFrontierPhase1Raw: words[10],
+    peakBackwardFrontierPhase2Canonical: words[10],
   };
   if (len < 0) return { seq: null, stats };
 
