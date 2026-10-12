@@ -21,7 +21,10 @@ interface DodecaViewProps {
   onSolvedChange: (solved: boolean) => void;
   // 2 (Kilominx) through 5 (Gigaminx).
   layerCount: number;
-  // Same spirit as TetraView's `interactive` -- the home screen's static preview.
+  orbitMode: boolean;
+  // Same spirit as CubeView's `interactive` -- the home screen's static
+  // preview, distinct from orbitMode, which still lets the user drag to
+  // look around.
   interactive?: boolean;
 }
 
@@ -29,7 +32,7 @@ interface DodecaViewProps {
 // gigaminxSolvePlayback.ts) -- Kilominx/Megaminx/Master Kilominx (N=2..4)
 // still have no solver, by explicit scope.
 const DodecaView = forwardRef<DodecaViewHandle, DodecaViewProps>(function DodecaView(
-  { onMoveCountChange, onFirstMove, onSolvedChange, layerCount, interactive = true },
+  { onMoveCountChange, onFirstMove, onSolvedChange, layerCount, orbitMode, interactive = true },
   ref,
 ) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -37,6 +40,8 @@ const DodecaView = forwardRef<DodecaViewHandle, DodecaViewProps>(function Dodeca
   const controllerRef = useRef<DodecaSwipeController | null>(null);
   const hasMovedRef = useRef(false);
   const moveCountRef = useRef(0);
+  const orbitModeRef = useRef(orbitMode);
+  orbitModeRef.current = orbitMode;
   const interactiveRef = useRef(interactive);
   interactiveRef.current = interactive;
 
@@ -50,9 +55,10 @@ const DodecaView = forwardRef<DodecaViewHandle, DodecaViewProps>(function Dodeca
     moveCountRef.current = 0;
     const scene = new CustomDodecaScene(container, layerCount);
     sceneRef.current = scene;
+    scene.setOrbitEnabled(interactiveRef.current && orbitModeRef.current);
 
     const controller = attachDodecaSwipeTurning(scene, moveCountRef);
-    controller.setEnabled(interactiveRef.current);
+    controller.setEnabled(interactiveRef.current && !orbitModeRef.current);
     controller.onCommit = (count) => {
       callbacksRef.current.onMoveCountChange(count);
       if (count > 0 && !hasMovedRef.current) {
@@ -72,8 +78,9 @@ const DodecaView = forwardRef<DodecaViewHandle, DodecaViewProps>(function Dodeca
   }, [layerCount]);
 
   useEffect(() => {
-    controllerRef.current?.setEnabled(interactive);
-  }, [interactive]);
+    sceneRef.current?.setOrbitEnabled(interactive && orbitMode);
+    controllerRef.current?.setEnabled(interactive && !orbitMode);
+  }, [orbitMode, interactive]);
 
   // Solve-hint presses commit the move for real, exactly like a swipe --
   // same reportSolveCommit contract as TetraView/CubeView, using the
@@ -124,7 +131,7 @@ const DodecaView = forwardRef<DodecaViewHandle, DodecaViewProps>(function Dodeca
         return await applyNextGigaminxSolveMove(scene);
       } finally {
         reportSolveCommit(scene, before);
-        controllerRef.current?.setEnabled(interactiveRef.current);
+        controllerRef.current?.setEnabled(interactiveRef.current && !orbitModeRef.current);
       }
     },
   }));

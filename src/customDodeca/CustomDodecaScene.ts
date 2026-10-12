@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import type { Rng } from "../customCube/cubeState";
 import { faceAxis, FACE_VERTEX_INDICES, VERTICES, type FaceIndex } from "./dodecaMath";
 import { applyRawFifthTurn, buildSolvedDodeca, generateRandomFifthTurns, isSolved as isSolvedState, stickersForTurn, type DodecaState, type Sticker } from "./dodecaState";
@@ -85,6 +86,7 @@ export class CustomDodecaScene {
   readonly renderer: THREE.WebGLRenderer;
   readonly scene: THREE.Scene;
   readonly camera: THREE.PerspectiveCamera;
+  readonly controls: OrbitControls;
   readonly dodecaGroup: THREE.Group;
   readonly layerCount: number;
   private container: HTMLElement;
@@ -135,13 +137,27 @@ export class CustomDodecaScene {
       this.dodecaGroup.add(meshes.sticker, meshes.backing);
     }
 
+    // Same pattern as CustomCubeScene/CustomTetraScene's OrbitControls
+    // integration -- disabled by default (swipe-to-turn owns the pointer),
+    // enabled only in App.tsx's "둘러보기" (look-around) mode.
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.target.set(0, 0, 0);
+    this.controls.enablePan = false;
+    this.controls.enabled = false;
+    this.controls.update();
+
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(container);
     this.resize();
 
     this.renderer.setAnimationLoop(() => {
+      this.controls.update();
       this.renderer.render(this.scene, this.camera);
     });
+  }
+
+  setOrbitEnabled(enabled: boolean): void {
+    this.controls.enabled = enabled;
   }
 
   // A small, permanently-static solid dodecahedron at the origin -- same
@@ -309,6 +325,7 @@ export class CustomDodecaScene {
     this.disposed = true;
     this.resizeObserver.disconnect();
     this.renderer.setAnimationLoop(null);
+    this.controls.dispose();
     for (const meshes of this.meshesById.values()) {
       meshes.sticker.geometry.dispose();
       meshes.backing.geometry.dispose();

@@ -194,6 +194,7 @@ function App() {
       setLastRank(null);
       tetraRef.current?.scramble();
       setHasScrambled(true);
+      setMode("play");
       return;
     }
     if (puzzleKind === "dodeca") {
@@ -202,6 +203,7 @@ function App() {
       setLastRank(null);
       dodecaRef.current?.scramble();
       setHasScrambled(true);
+      setMode("play");
       return;
     }
     // Orbit mode while the scramble animation plays -- keeps the swipe
@@ -237,6 +239,7 @@ function App() {
       setSolveError(false);
       setLastRank(null);
       setHasScrambled(false);
+      setMode("play");
       return;
     }
     if (puzzleKind === "dodeca") {
@@ -245,6 +248,7 @@ function App() {
       setSolveError(false);
       setLastRank(null);
       setHasScrambled(false);
+      setMode("play");
       return;
     }
     cubeRef.current?.resetToSolved();
@@ -514,6 +518,7 @@ function App() {
         <div className="cube-stage">
           {puzzleKind === "tetra" ? (
             <TetraView
+              orbitMode={false}
               interactive={false}
               layerCount={tetraLayerCount}
               onMoveCountChange={() => {}}
@@ -522,6 +527,7 @@ function App() {
             />
           ) : puzzleKind === "dodeca" ? (
             <DodecaView
+              orbitMode={false}
               interactive={false}
               layerCount={dodecaLayerCount}
               onMoveCountChange={() => {}}
@@ -775,7 +781,7 @@ function App() {
         {puzzleKind === "dodeca" && dodecaLayerCount === 5 && (
           <p className="mode-hint">
             {isSolving
-              ? "다음 수 계산 중... (처음 누르면 20~30초 정도 걸릴 수 있어요)"
+              ? "다음 수 계산 중... (처음 누르면 몇 초 걸릴 수 있어요)"
               : solveError
                 ? "솔버 실행 중 오류가 발생했습니다. 다시 시도해보세요"
                 : ""}
@@ -794,6 +800,7 @@ function App() {
         {puzzleKind === "tetra" ? (
           <TetraView
             ref={tetraRef}
+            orbitMode={mode === "look"}
             layerCount={tetraLayerCount}
             onMoveCountChange={handleMoveCountChange}
             onFirstMove={() => {}}
@@ -802,6 +809,7 @@ function App() {
         ) : puzzleKind === "dodeca" ? (
           <DodecaView
             ref={dodecaRef}
+            orbitMode={mode === "look"}
             layerCount={dodecaLayerCount}
             onMoveCountChange={handleMoveCountChange}
             onFirstMove={() => {}}
@@ -821,7 +829,23 @@ function App() {
       </div>
 
       {puzzleKind === "tetra" ? (
-        <div className="bottom-controls bottom-controls--four">
+        <div className="bottom-controls">
+          <button
+            type="button"
+            className={`btn3d btn-blue${mode === "look" ? " selected" : ""}`}
+            onClick={handleLookAround}
+            disabled={isSolving}
+          >
+            둘러보기
+          </button>
+          <button
+            type="button"
+            className={`btn3d btn-green${mode === "play" ? " selected" : ""}`}
+            onClick={handleStart}
+            disabled={isSolving}
+          >
+            시작하기
+          </button>
           <button type="button" className="btn3d btn-orange" onClick={handleReset} disabled={isSolving}>
             리셋
           </button>
@@ -842,7 +866,23 @@ function App() {
           </button>
         </div>
       ) : puzzleKind === "dodeca" ? (
-        <div className={`bottom-controls${dodecaLayerCount === 5 ? " bottom-controls--four" : ""}`}>
+        <div className="bottom-controls">
+          <button
+            type="button"
+            className={`btn3d btn-blue${mode === "look" ? " selected" : ""}`}
+            onClick={handleLookAround}
+            disabled={isSolving}
+          >
+            둘러보기
+          </button>
+          <button
+            type="button"
+            className={`btn3d btn-green${mode === "play" ? " selected" : ""}`}
+            onClick={handleStart}
+            disabled={isSolving}
+          >
+            시작하기
+          </button>
           <button type="button" className="btn3d btn-orange" onClick={handleReset} disabled={isSolving}>
             리셋
           </button>

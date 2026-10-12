@@ -8,7 +8,6 @@
 import type { CustomDodecaScene } from "./CustomDodecaScene";
 import type { DodecaState } from "./dodecaState";
 import { dodecaStateToGigaminxState, gigaminxTurnToRawTurn, type GigaminxTurn } from "./gigaminxState";
-import { solveFullGigaminx } from "./gigaminxSolver";
 
 export interface GigaminxSolveHint {
   move: GigaminxTurn | null;
@@ -37,9 +36,17 @@ class GigaminxSolverEngine {
     return this.plan !== null && this.expectedUndoCount() === scene.getUndoCount();
   }
 
-  solve(scene: CustomDodecaScene): void {
+  async solve(scene: CustomDodecaScene): Promise<void> {
     const state: DodecaState = { layerCount: scene.layerCount, stickers: scene.getStickers() };
     const solverState = dodecaStateToGigaminxState(state);
+    // Dynamic import: gigaminxSolver.ts bundles the 5 precomputed commutator
+    // libraries (~179KB gzip, see GIGAMINX_SOLVE_PRODUCTION_ACCEPTANCE_V1).
+    // Loading it only here (not from a static top-level import) keeps that
+    // weight out of every DodecaView mount -- Cube/Tetra players, and even
+    // players on N=2..4 dodeca puzzles, never pay for it; only an actual
+    // Gigaminx Solve press does, exactly once (the dynamic import is
+    // memoized by the module loader after the first call).
+    const { solveFullGigaminx } = await import("./gigaminxSolver");
     const result = solveFullGigaminx(solverState);
     this.plan = result.moves;
     this.cursor = 0;
@@ -96,7 +103,7 @@ function animateProgress(scene: CustomDodecaScene, from: number, to: number, dur
  * contract as masterTetraSolveAsync.ts's applyNextMasterTetraSolveMove.
  */
 export async function applyNextGigaminxSolveMove(scene: CustomDodecaScene): Promise<GigaminxSolveHint> {
-  if (!engine.hasValidPlan(scene)) engine.solve(scene);
+  if (!engine.hasValidPlan(scene)) await engine.solve(scene);
 
   const move = engine.peekNextMove();
   if (!move) return { move: null, movesRemaining: 0 };

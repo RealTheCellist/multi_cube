@@ -22,16 +22,15 @@ interface TetraViewProps {
   // general in the model/rendering/gesture layers (verified for every N in
   // earlier phases), so this is just which one the player picked.
   layerCount: number;
-  // Fully static, non-turnable preview (the home screen's decorative
-  // shape) -- same spirit as CubeView's `interactive` prop. There's no
-  // orbitMode/`둘러보기` equivalent here: CustomTetraScene has no
-  // OrbitControls integration at all yet (its camera is a fixed, validated
-  // framing), so that's a later addition, not this pass.
+  orbitMode: boolean;
+  // Fully static, non-orbit, non-turnable preview (the home screen's
+  // decorative shape) -- same spirit as CubeView's `interactive` prop,
+  // distinct from orbitMode, which still lets the user drag to look around.
   interactive?: boolean;
 }
 
 const TetraView = forwardRef<TetraViewHandle, TetraViewProps>(function TetraView(
-  { onMoveCountChange, onFirstMove, onSolvedChange, layerCount, interactive = true },
+  { onMoveCountChange, onFirstMove, onSolvedChange, layerCount, orbitMode, interactive = true },
   ref,
 ) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -39,6 +38,8 @@ const TetraView = forwardRef<TetraViewHandle, TetraViewProps>(function TetraView
   const controllerRef = useRef<TetraSwipeController | null>(null);
   const hasMovedRef = useRef(false);
   const moveCountRef = useRef(0);
+  const orbitModeRef = useRef(orbitMode);
+  orbitModeRef.current = orbitMode;
   const interactiveRef = useRef(interactive);
   interactiveRef.current = interactive;
 
@@ -52,9 +53,10 @@ const TetraView = forwardRef<TetraViewHandle, TetraViewProps>(function TetraView
     moveCountRef.current = 0;
     const scene = new CustomTetraScene(container, layerCount);
     sceneRef.current = scene;
+    scene.setOrbitEnabled(interactiveRef.current && orbitModeRef.current);
 
     const controller = attachTetraSwipeTurning(scene, moveCountRef);
-    controller.setEnabled(interactiveRef.current);
+    controller.setEnabled(interactiveRef.current && !orbitModeRef.current);
     controller.onCommit = (count) => {
       callbacksRef.current.onMoveCountChange(count);
       if (count > 0 && !hasMovedRef.current) {
@@ -77,8 +79,9 @@ const TetraView = forwardRef<TetraViewHandle, TetraViewProps>(function TetraView
   }, [layerCount]);
 
   useEffect(() => {
-    controllerRef.current?.setEnabled(interactive);
-  }, [interactive]);
+    sceneRef.current?.setOrbitEnabled(interactive && orbitMode);
+    controllerRef.current?.setEnabled(interactive && !orbitMode);
+  }, [orbitMode, interactive]);
 
   // Solve-hint presses commit the move for real, exactly like a swipe --
   // same reportSolveCommit contract as CubeView, using the scene's own
@@ -143,7 +146,7 @@ const TetraView = forwardRef<TetraViewHandle, TetraViewProps>(function TetraView
             : applyNextMasterTetraSolveMove(scene));
       } finally {
         reportSolveCommit(scene, before);
-        controllerRef.current?.setEnabled(interactiveRef.current);
+        controllerRef.current?.setEnabled(interactiveRef.current && !orbitModeRef.current);
       }
     },
   }));

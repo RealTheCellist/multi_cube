@@ -15,6 +15,14 @@ import wingCommutatorsStatic from "./data/wingCommutators.json";
 import innerCornerCommutatorsStatic from "./data/innerCornerCommutators.json";
 import edgeBridgeCommutatorsStatic from "./data/edgeBridgeCommutators.json";
 import centerBridgeCommutatorsStatic from "./data/centerBridgeCommutators.json";
+// Same precompute treatment for positionSetupTables()'s BFS (S16/S17's
+// danger-position prefilter tables) -- measured at ~19.2s of the ~22.7s
+// total cold cost by itself, the single largest remaining contributor.
+import cornerSetupTableStatic from "./data/cornerSetupTable.json";
+import wingSetupTableStatic from "./data/wingSetupTable.json";
+import innerCornerSetupTableStatic from "./data/innerCornerSetupTable.json";
+import edgeBridgeSetupTableStatic from "./data/edgeBridgeSetupTable.json";
+import centerBridgeSetupTableStatic from "./data/centerBridgeSetupTable.json";
 
 /**
  * GIGAMINX_SOLVER_V1 (reconstructed): Phase-based reduction solver, same
@@ -256,6 +264,17 @@ function deserializeSetupTable(obj: Record<string, GigaminxTurn[]>, solved: Giga
 let positionSetupTablesCache: PositionSetupTables | null = null;
 function positionSetupTables(): PositionSetupTables {
   if (positionSetupTablesCache) return positionSetupTablesCache;
+  if (cornerSetupTableStatic && Object.keys(cornerSetupTableStatic).length > 0) {
+    const solved = solvedGigaminxState();
+    return (positionSetupTablesCache = {
+      corner: deserializeSetupTable(cornerSetupTableStatic as Record<string, GigaminxTurn[]>, solved),
+      wing: deserializeSetupTable(wingSetupTableStatic as Record<string, GigaminxTurn[]>, solved),
+      innerCorner: deserializeSetupTable(innerCornerSetupTableStatic as Record<string, GigaminxTurn[]>, solved),
+      edgeBridge: deserializeSetupTable(edgeBridgeSetupTableStatic as Record<string, GigaminxTurn[]>, solved),
+      centerBridge: deserializeSetupTable(centerBridgeSetupTableStatic as Record<string, GigaminxTurn[]>, solved),
+    });
+  }
+  assertStaticLibraryOrRebuildAllowed("positionSetupTables", Object.keys(cornerSetupTableStatic).length);
   const diskCachePath = getEnv("GIGA_SETUP_TABLES_CACHE");
   if (diskCachePath && require("node:fs").existsSync(diskCachePath)) {
     const raw = JSON.parse(require("node:fs").readFileSync(diskCachePath, "utf8"));

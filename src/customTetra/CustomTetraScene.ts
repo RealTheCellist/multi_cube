@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import type { Rng } from "../customCube/cubeState";
 import { axisVector, VERTICES, type VertexIndex } from "./tetraMath";
 import { applyRawThirdTurn, buildSolvedTetra, generateRandomThirdTurns, isSolved as isSolvedState, stickersForTurn, type Sticker, type TetraState } from "./tetraState";
@@ -80,6 +81,7 @@ export class CustomTetraScene {
   readonly renderer: THREE.WebGLRenderer;
   readonly scene: THREE.Scene;
   readonly camera: THREE.PerspectiveCamera;
+  readonly controls: OrbitControls;
   readonly tetraGroup: THREE.Group;
   readonly layerCount: number;
   private container: HTMLElement;
@@ -135,13 +137,29 @@ export class CustomTetraScene {
       this.tetraGroup.add(meshes.sticker, meshes.backing);
     }
 
+    // Same pattern as CustomCubeScene's own OrbitControls integration --
+    // disabled by default (swipe-to-turn owns the pointer), enabled only in
+    // App.tsx's "둘러보기" (look-around) mode. `target` is set to the same
+    // point the camera's initial lookAt() used, not the origin, since
+    // OrbitControls has no way to read lookAt() back out.
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.target.set(0, 0.05, 0);
+    this.controls.enablePan = false;
+    this.controls.enabled = false;
+    this.controls.update();
+
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(container);
     this.resize();
 
     this.renderer.setAnimationLoop(() => {
+      this.controls.update();
       this.renderer.render(this.scene, this.camera);
     });
+  }
+
+  setOrbitEnabled(enabled: boolean): void {
+    this.controls.enabled = enabled;
   }
 
   // A small, permanently-static solid at the origin -- the camera never
@@ -346,6 +364,7 @@ export class CustomTetraScene {
     this.disposed = true;
     this.resizeObserver.disconnect();
     this.renderer.setAnimationLoop(null);
+    this.controls.dispose();
     for (const meshes of this.meshesById.values()) {
       meshes.sticker.geometry.dispose();
       meshes.backing.geometry.dispose();
