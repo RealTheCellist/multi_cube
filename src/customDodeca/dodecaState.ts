@@ -354,7 +354,19 @@ function stickerDepthFromFace(corners: readonly THREE.Vector3[], faceIndex: Face
 
 /** Stickers that belong to a turn about `faceIndex`'s axis at cutoff depth `depth` (1..layerCount-1). */
 export function stickersForTurn(state: DodecaState, faceIndex: FaceIndex, depth: number): Sticker[] {
-  return state.stickers.filter((s) => stickerDepthFromFace(s.corners, faceIndex, state.layerCount) < depth);
+  // A face's own true fixed center (pieceType "center") is core-mounted and
+  // must never move under ANY turn but its own (where it's geometrically
+  // invariant anyway, rotating about its own axis) -- but for N=5
+  // specifically, depth>=2 turns were found (via gigaminxStateBridge's
+  // round-trip correctness tests, cross-checking against
+  // gigaminxSolver.ts's own "12 fixed, untracked centers" assumption) to
+  // sweep in up to 5 OTHER faces' centers purely from the generic
+  // depth-from-face distance classification below, which has no notion of
+  // piece identity. Scoped to layerCount===5 only: N=3's own existing test
+  // suite expects its deepest cut (depth=2) to sweep in other faces'
+  // centers too, and whether that's actually correct for N=3 wasn't
+  // investigated here.
+  return state.stickers.filter((s) => (state.layerCount !== 5 || s.pieceType !== "center" || s.homeFaceIndex === faceIndex) && stickerDepthFromFace(s.corners, faceIndex, state.layerCount) < depth);
 }
 
 /** Applies one raw turn about `faceIndex`'s axis at cutoff `depth`, in place. */

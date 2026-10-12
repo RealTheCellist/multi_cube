@@ -1,5 +1,20 @@
 import { applyGigaminxMove, solvedGigaminxState, type GigaminxState, type GigaminxDepth, type GigaminxTurn } from "./gigaminxState";
 import { FACE_INDICES } from "./dodecaMath";
+// Pre-built commutator libraries (GIGAMINX_COMMUTATOR_LIBRARY_PRECOMPUTE_V1):
+// building these 5 orbit libraries from scratch is a one-time ~15min cost in
+// total (measured cold, no disk cache) -- fine for a long-lived Node process
+// reusing an in-memory cache across many solves, but fatal for a browser tab
+// on its first Solve press. Each file holds only the stripped {seq,support}
+// form (no `move`, re-derived cheaply below), generated once via
+// __dev.*Commutators() and committed as a static asset Vite bundles like any
+// other JSON import -- works identically under Node (vitest) and the
+// browser, unlike the Node-only disk-cache path below which stays only as a
+// fallback for regenerating these files after a solver-logic change.
+import cornerCommutatorsStatic from "./data/cornerCommutators.json";
+import wingCommutatorsStatic from "./data/wingCommutators.json";
+import innerCornerCommutatorsStatic from "./data/innerCornerCommutators.json";
+import edgeBridgeCommutatorsStatic from "./data/edgeBridgeCommutators.json";
+import centerBridgeCommutatorsStatic from "./data/centerBridgeCommutators.json";
 
 /**
  * GIGAMINX_SOLVER_V1 (reconstructed): Phase-based reduction solver, same
@@ -20,6 +35,29 @@ import { FACE_INDICES } from "./dodecaMath";
  * from many later Sprints). It is NOT expected to hit the original's
  * ~3-second production runtime target out of the box.
  */
+
+// All of this file's disk-cache-path and debug-log env lookups assume a
+// Node process (vitest/benchmark runs) -- `process` itself doesn't exist in
+// the Vite browser bundle this solver also runs in (production
+// integration), so a bare `process.env.X` throws a ReferenceError on first
+// call there. This returns undefined in that case, same as an unset var.
+function getEnv(name: string): string | undefined {
+  return typeof process !== "undefined" && process.env ? process.env[name] : undefined;
+}
+
+// GIGAMINX_SOLVE_PRODUCTION_ACCEPTANCE_V1 Phase B: a static library that's
+// unexpectedly empty (corrupted commit, build misconfiguration stripping
+// the JSON asset, etc.) must fail loudly and immediately -- the fallback
+// below it is a real, from-scratch library build that takes minutes, which
+// in a browser tab reads as a silent multi-minute hang with no error, not a
+// usable degraded mode. Only the regeneration workflow (running the
+// generator script, which sets this explicitly) is allowed to fall through
+// to that rebuild.
+function assertStaticLibraryOrRebuildAllowed(name: string, staticLen: number): void {
+  if (staticLen > 0) return;
+  if (getEnv("GIGA_ALLOW_LIBRARY_REBUILD")) return;
+  throw new Error(`gigaminxSolver: static commutator library for "${name}" is empty/missing. Refusing to silently fall back to a from-scratch rebuild (can take minutes). Regenerate src/customDodeca/data/${name}Commutators.json, or set GIGA_ALLOW_LIBRARY_REBUILD=1 to intentionally rebuild.`);
+}
 
 export const ALL_MOVES: readonly GigaminxTurn[] = (() => {
   const out: GigaminxTurn[] = [];
@@ -218,7 +256,7 @@ function deserializeSetupTable(obj: Record<string, GigaminxTurn[]>, solved: Giga
 let positionSetupTablesCache: PositionSetupTables | null = null;
 function positionSetupTables(): PositionSetupTables {
   if (positionSetupTablesCache) return positionSetupTablesCache;
-  const diskCachePath = process.env.GIGA_SETUP_TABLES_CACHE;
+  const diskCachePath = getEnv("GIGA_SETUP_TABLES_CACHE");
   if (diskCachePath && require("node:fs").existsSync(diskCachePath)) {
     const raw = JSON.parse(require("node:fs").readFileSync(diskCachePath, "utf8"));
     const solved = solvedGigaminxState();
@@ -229,18 +267,18 @@ function positionSetupTables(): PositionSetupTables {
       edgeBridge: deserializeSetupTable(raw.edgeBridge, solved),
       centerBridge: deserializeSetupTable(raw.centerBridge, solved),
     };
-    if (process.env.GIGA_DEBUG) {
+    if (getEnv("GIGA_DEBUG")) {
       const t = positionSetupTablesCache;
-      require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[positionSetupTables] loaded from disk cache sizes corner=${t.corner.size} wing=${t.wing.size} innerCorner=${t.innerCorner.size} edgeBridge=${t.edgeBridge.size} centerBridge=${t.centerBridge.size}\n`);
+      require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[positionSetupTables] loaded from disk cache sizes corner=${t.corner.size} wing=${t.wing.size} innerCorner=${t.innerCorner.size} edgeBridge=${t.edgeBridge.size} centerBridge=${t.centerBridge.size}\n`);
     }
     return positionSetupTablesCache;
   }
   const t0 = Date.now();
-  if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[positionSetupTables] build starting\n`);
+  if (getEnv("GIGA_DEBUG")) require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[positionSetupTables] build starting\n`);
   positionSetupTablesCache = buildPositionSetupTables();
-  if (process.env.GIGA_DEBUG) {
+  if (getEnv("GIGA_DEBUG")) {
     const t = positionSetupTablesCache;
-    require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[positionSetupTables] build done elapsedMs=${Date.now() - t0} sizes corner=${t.corner.size} wing=${t.wing.size} innerCorner=${t.innerCorner.size} edgeBridge=${t.edgeBridge.size} centerBridge=${t.centerBridge.size}\n`);
+    require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[positionSetupTables] build done elapsedMs=${Date.now() - t0} sizes corner=${t.corner.size} wing=${t.wing.size} innerCorner=${t.innerCorner.size} edgeBridge=${t.edgeBridge.size} centerBridge=${t.centerBridge.size}\n`);
   }
   if (diskCachePath) {
     require("node:fs").writeFileSync(
@@ -268,7 +306,7 @@ function positionSetupTables(): PositionSetupTables {
  * `GIGA_DEBUG` free-text logging already in solveWings/etc.
  */
 function s21Log(obj: Record<string, unknown>): void {
-  const path = process.env.GIGA_S21_LOG;
+  const path = getEnv("GIGA_S21_LOG");
   if (!path) return;
   require("node:fs").appendFileSync(path, JSON.stringify(obj) + "\n");
 }
@@ -276,7 +314,7 @@ function s21Log(obj: Record<string, unknown>): void {
 /** S28 measurement-only diagnostic: per-regressive-call rung/setup-lookup
  * breakdown for InnerCorner. Same no-op-when-unset contract as s21Log. */
 function s28Log(obj: Record<string, unknown>): void {
-  const path = process.env.GIGA_S28_LOG;
+  const path = getEnv("GIGA_S28_LOG");
   if (!path) return;
   require("node:fs").appendFileSync(path, JSON.stringify(obj) + "\n");
 }
@@ -464,7 +502,9 @@ function deriveMoves(raw: readonly { seq: GigaminxTurn[]; support: number[] }[],
 let cornerCommutatorsCache: Commutator[] | null = null;
 function cornerCommutators(): Commutator[] {
   if (cornerCommutatorsCache) return cornerCommutatorsCache;
-  const diskCachePath = process.env.GIGA_CORNER_LIB_CACHE;
+  if (cornerCommutatorsStatic.length > 0) return (cornerCommutatorsCache = deriveMoves(cornerCommutatorsStatic as { seq: GigaminxTurn[]; support: number[] }[], solvedGigaminxState()));
+  assertStaticLibraryOrRebuildAllowed("corner", cornerCommutatorsStatic.length);
+  const diskCachePath = getEnv("GIGA_CORNER_LIB_CACHE");
   if (diskCachePath && require("node:fs").existsSync(diskCachePath)) {
     const raw = JSON.parse(require("node:fs").readFileSync(diskCachePath, "utf8"));
     cornerCommutatorsCache = deriveMoves(raw, solvedGigaminxState());
@@ -635,7 +675,7 @@ export function solveCorners(state: GigaminxState, maxAttempts = 400): { moves: 
       const wrongBefore = wrongPositions.length;
       const tries = Math.min(TARGETS_PER_ROUND, wrongPositions.length);
 
-      const roundT0 = process.env.GIGA_S21_LOG ? Date.now() : 0;
+      const roundT0 = getEnv("GIGA_S21_LOG") ? Date.now() : 0;
       let branch = "exact";
       let found: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
       if (wrongBefore >= 2 && wrongBefore <= 6) {
@@ -708,7 +748,7 @@ export function solveCorners(state: GigaminxState, maxAttempts = 400): { moves: 
         }
       }
 
-      if (process.env.GIGA_S21_LOG) {
+      if (getEnv("GIGA_S21_LOG")) {
         s21Log({ phase: "corners", round: attempts, wrongBefore, branch, ms: Date.now() - roundT0 });
       }
       current = found.state;
@@ -753,14 +793,16 @@ export function areWingsSolved(state: GigaminxState): boolean {
 let wingCommutatorsCache: Commutator[] | null = null;
 function wingCommutators(): Commutator[] {
   if (wingCommutatorsCache) return wingCommutatorsCache;
-  const diskCachePath = process.env.GIGA_WING_LIB_CACHE;
+  if (wingCommutatorsStatic.length > 0) return (wingCommutatorsCache = deriveMoves(wingCommutatorsStatic as { seq: GigaminxTurn[]; support: number[] }[], solvedGigaminxState()));
+  assertStaticLibraryOrRebuildAllowed("wing", wingCommutatorsStatic.length);
+  const diskCachePath = getEnv("GIGA_WING_LIB_CACHE");
   if (diskCachePath && require("node:fs").existsSync(diskCachePath)) {
     const raw = JSON.parse(require("node:fs").readFileSync(diskCachePath, "utf8"));
     wingCommutatorsCache = deriveMoves(raw, solvedGigaminxState());
-    if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[wingCommutators] loaded from disk cache count=${wingCommutatorsCache!.length}\n`);
+    if (getEnv("GIGA_DEBUG")) require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[wingCommutators] loaded from disk cache count=${wingCommutatorsCache!.length}\n`);
     return wingCommutatorsCache!;
   }
-  if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[wingCommutators] build starting\n`);
+  if (getEnv("GIGA_DEBUG")) require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[wingCommutators] build starting\n`);
   const tLib0 = Date.now();
   const solved = solvedGigaminxState();
   const As = admissibleSeqs(2);
@@ -783,7 +825,7 @@ function wingCommutators(): Commutator[] {
     // 12,13,14,16 -- sizes 1,2,4,7,11,15 never occur in this construction.
     [3, 5, 6, 8, 9, 10, 12, 13, 14, 16],
   );
-  if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[wingCommutators] build done count=${wingCommutatorsCache.length} elapsedMs=${Date.now() - tLib0}\n`);
+  if (getEnv("GIGA_DEBUG")) require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[wingCommutators] build done count=${wingCommutatorsCache.length} elapsedMs=${Date.now() - tLib0}\n`);
   if (diskCachePath) require("node:fs").writeFileSync(diskCachePath, JSON.stringify(stripMove(wingCommutatorsCache)));
   return wingCommutatorsCache;
 }
@@ -1112,15 +1154,15 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
   const fixed = new Set<number>();
   let attempts = 0;
 
-  const ckptPath = process.env.GIGA_WING_CKPT;
+  const ckptPath = getEnv("GIGA_WING_CKPT");
   if (ckptPath && require("node:fs").existsSync(ckptPath)) {
     const ckpt: PhaseCheckpoint = JSON.parse(require("node:fs").readFileSync(ckptPath, "utf8"));
     current = plainToState(ckpt.state);
     solution.push(...ckpt.solution);
     for (const p of ckpt.fixed) fixed.add(p);
     attempts = ckpt.attempts;
-    if (process.env.GIGA_DEBUG) {
-      require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveWings] resumed from checkpoint at attempts=${attempts}\n`);
+    if (getEnv("GIGA_DEBUG")) {
+      require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[solveWings] resumed from checkpoint at attempts=${attempts}\n`);
     }
   }
 
@@ -1146,15 +1188,15 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
       const wrongPositions = targetPositions.filter((p) => current.wingPerm[p] !== p || current.wingOrient[p] !== 0);
       const wrongBefore = wrongPositions.length;
       const tries = Math.min(TARGETS_PER_ROUND, wrongPositions.length);
-      if (process.env.GIGA_DEBUG) {
-        require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveWings] round=${attempts} wrongBefore=${wrongBefore} elapsedMs=${Date.now() - (globalThis as any).__gigaWingT0}\n`);
+      if (getEnv("GIGA_DEBUG")) {
+        require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[solveWings] round=${attempts} wrongBefore=${wrongBefore} elapsedMs=${Date.now() - (globalThis as any).__gigaWingT0}\n`);
       }
       if (ckptPath) {
         const ckpt: PhaseCheckpoint = { state: stateToPlain(current), solution, fixed: [...fixed], attempts };
         require("node:fs").writeFileSync(ckptPath, JSON.stringify(ckpt));
       }
 
-      const roundT0 = process.env.GIGA_S21_LOG ? Date.now() : 0;
+      const roundT0 = getEnv("GIGA_S21_LOG") ? Date.now() : 0;
       let branch = "exact";
       const compoundStats = { subsetsExamined: 0, totalSubsets: 0 };
       let found: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
@@ -1195,9 +1237,9 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
             consecutiveLateral++;
             targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
           } else {
-            const compoundT0 = process.env.GIGA_S21_LOG ? Date.now() : 0;
+            const compoundT0 = getEnv("GIGA_S21_LOG") ? Date.now() : 0;
             const compoundFound = wrongBefore >= 2 && wrongBefore <= 15 ? tryCompoundFinishWings(commutators, current, fixed, wrongPositions.map((p) => current.wingPerm[p]), compoundStats) : null;
-            if (process.env.GIGA_S21_LOG && wrongBefore >= 2 && wrongBefore <= 15) (compoundStats as any).compoundMs = Date.now() - compoundT0;
+            if (getEnv("GIGA_S21_LOG") && wrongBefore >= 2 && wrongBefore <= 15) (compoundStats as any).compoundMs = Date.now() - compoundT0;
             if (compoundFound) {
               found = compoundFound;
               branch = "compound";
@@ -1219,9 +1261,9 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
                 }
               }
               if (!regressiveFound) {
-                if (process.env.GIGA_DEBUG) {
+                if (getEnv("GIGA_DEBUG")) {
                   const detail = wrongPositions.map((p) => `${p}->${current.wingPerm[p]}(o${current.wingOrient[p]})`).join(", ");
-                  require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveWings] STUCK wrongPositions: ${detail}\n`);
+                  require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[solveWings] STUCK wrongPositions: ${detail}\n`);
                 }
                 throw new Error(`solveWings stuck (${wrongBefore} wings still wrong, no move found even allowing up to +${REGRESSION_LADDER[REGRESSION_LADDER.length - 1]} temporary regression)`);
               }
@@ -1238,7 +1280,7 @@ export function solveWings(state: GigaminxState, maxAttempts = 400): { moves: Gi
         }
       }
 
-      if (process.env.GIGA_S21_LOG) {
+      if (getEnv("GIGA_S21_LOG")) {
         s21Log({ phase: "wings", round: attempts, wrongBefore, branch, ms: Date.now() - roundT0, compoundSubsetsExamined: compoundStats.subsetsExamined, compoundTotalSubsets: compoundStats.totalSubsets, compoundMs: (compoundStats as any).compoundMs ?? 0 });
       }
       current = found.state;
@@ -1296,14 +1338,16 @@ function innerCornerStateSignature(state: GigaminxState): string {
 let innerCornerCommutatorsCache: Commutator[] | null = null;
 function innerCornerCommutators(): Commutator[] {
   if (innerCornerCommutatorsCache) return innerCornerCommutatorsCache;
-  const diskCachePath = process.env.GIGA_INNERCORNER_LIB_CACHE;
+  if (innerCornerCommutatorsStatic.length > 0) return (innerCornerCommutatorsCache = deriveMoves(innerCornerCommutatorsStatic as { seq: GigaminxTurn[]; support: number[] }[], solvedGigaminxState()));
+  assertStaticLibraryOrRebuildAllowed("innerCorner", innerCornerCommutatorsStatic.length);
+  const diskCachePath = getEnv("GIGA_INNERCORNER_LIB_CACHE");
   if (diskCachePath && require("node:fs").existsSync(diskCachePath)) {
     const raw = JSON.parse(require("node:fs").readFileSync(diskCachePath, "utf8"));
     innerCornerCommutatorsCache = deriveMoves(raw, solvedGigaminxState());
-    if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[innerCornerCommutators] loaded from disk cache count=${innerCornerCommutatorsCache!.length}\n`);
+    if (getEnv("GIGA_DEBUG")) require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[innerCornerCommutators] loaded from disk cache count=${innerCornerCommutatorsCache!.length}\n`);
     return innerCornerCommutatorsCache!;
   }
-  if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[innerCornerCommutators] build starting\n`);
+  if (getEnv("GIGA_DEBUG")) require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[innerCornerCommutators] build starting\n`);
   const tLib0 = Date.now();
   const solved = solvedGigaminxState();
   // Raw A/B move-pair commutators essentially never land on dual (corner+wing)
@@ -1333,7 +1377,7 @@ function innerCornerCommutators(): Commutator[] {
     // space is only ~1.3M (vs wings' ~8 billion raw A/B pairs), so scanning
     // it all to find whichever sizes truly occur is cheap (~tens of seconds).
   );
-  if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[innerCornerCommutators] build done count=${innerCornerCommutatorsCache.length} elapsedMs=${Date.now() - tLib0}\n`);
+  if (getEnv("GIGA_DEBUG")) require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[innerCornerCommutators] build done count=${innerCornerCommutatorsCache.length} elapsedMs=${Date.now() - tLib0}\n`);
   if (diskCachePath) require("node:fs").writeFileSync(diskCachePath, JSON.stringify(stripMove(innerCornerCommutatorsCache)));
   return innerCornerCommutatorsCache;
 }
@@ -1454,7 +1498,7 @@ function findSafeInnerCornerApplication(commutators: readonly Commutator[], curr
   // S22 Gate (structural verification only): counts raw vs actual
   // lookup/danger-calc executions to compute the cache elimination ratio.
   // Env-gated, no-op by default -- matches the GIGA_S21_LOG pattern.
-  const s22Stats = process.env.GIGA_S22_CACHE_LOG ? ((globalThis as any).__s22CacheStats ??= { rawSetupRequests: 0, actualSetupLookups: 0, rawDangerRequests: 0, actualDangerCalcs: 0 }) : null;
+  const s22Stats = getEnv("GIGA_S22_CACHE_LOG") ? ((globalThis as any).__s22CacheStats ??= { rawSetupRequests: 0, actualSetupLookups: 0, rawDangerRequests: 0, actualDangerCalcs: 0 }) : null;
   for (const C of commutators) {
     for (const anchor of C.support) {
       if (s22Stats) s22Stats.rawSetupRequests++;
@@ -1521,15 +1565,15 @@ export function solveInnerCorners(state: GigaminxState, maxAttempts = 400): { mo
   const fixed = new Set<number>();
   let attempts = 0;
 
-  const ckptPath = process.env.GIGA_INNERCORNER_CKPT;
+  const ckptPath = getEnv("GIGA_INNERCORNER_CKPT");
   if (ckptPath && require("node:fs").existsSync(ckptPath)) {
     const ckpt: PhaseCheckpoint = JSON.parse(require("node:fs").readFileSync(ckptPath, "utf8"));
     current = plainToState(ckpt.state);
     solution.push(...ckpt.solution);
     for (const p of ckpt.fixed) fixed.add(p);
     attempts = ckpt.attempts;
-    if (process.env.GIGA_DEBUG) {
-      require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveInnerCorners] resumed from checkpoint at attempts=${attempts}\n`);
+    if (getEnv("GIGA_DEBUG")) {
+      require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[solveInnerCorners] resumed from checkpoint at attempts=${attempts}\n`);
     }
   }
 
@@ -1550,15 +1594,15 @@ export function solveInnerCorners(state: GigaminxState, maxAttempts = 400): { mo
       const wrongPositions = targetPositions.filter((p) => current.innerCornerPerm[p] !== p);
       const wrongBefore = wrongPositions.length;
       const tries = Math.min(TARGETS_PER_ROUND, wrongPositions.length);
-      if (process.env.GIGA_DEBUG) {
-        require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveInnerCorners] round=${attempts} wrongBefore=${wrongBefore} elapsedMs=${Date.now() - (globalThis as any).__gigaInnerCornerT0}\n`);
+      if (getEnv("GIGA_DEBUG")) {
+        require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[solveInnerCorners] round=${attempts} wrongBefore=${wrongBefore} elapsedMs=${Date.now() - (globalThis as any).__gigaInnerCornerT0}\n`);
       }
       if (ckptPath) {
         const ckpt: PhaseCheckpoint = { state: stateToPlain(current), solution, fixed: [...fixed], attempts };
         require("node:fs").writeFileSync(ckptPath, JSON.stringify(ckpt));
       }
 
-      const roundT0 = process.env.GIGA_S21_LOG ? Date.now() : 0;
+      const roundT0 = getEnv("GIGA_S21_LOG") ? Date.now() : 0;
       let branch = "exact";
       let found: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
       if (wrongBefore >= 2 && wrongBefore <= 16) {
@@ -1598,10 +1642,10 @@ export function solveInnerCorners(state: GigaminxState, maxAttempts = 400): { mo
             consecutiveLateral++;
             targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
           } else {
-            const s28CompoundT0 = process.env.GIGA_S28_LOG ? Date.now() : 0;
-            const s29CompoundStats = process.env.GIGA_S28_LOG ? { subsetsExamined: 0, totalSubsets: 0 } : undefined;
+            const s28CompoundT0 = getEnv("GIGA_S28_LOG") ? Date.now() : 0;
+            const s29CompoundStats = getEnv("GIGA_S28_LOG") ? { subsetsExamined: 0, totalSubsets: 0 } : undefined;
             const compoundFound = wrongBefore >= 2 && wrongBefore <= 15 ? tryCompoundFinishInnerCorners(commutators, current, fixed, wrongPositions.map((p) => current.innerCornerPerm[p]), s29CompoundStats) : null;
-            if (process.env.GIGA_S28_LOG) {
+            if (getEnv("GIGA_S28_LOG")) {
               s28Log({ seed: (globalThis as any).__gigaS28Seed, kind: "compound", round: attempts, wrongBefore, ms: Date.now() - s28CompoundT0, accepted: !!compoundFound, ...s29CompoundStats });
             }
             if (compoundFound) {
@@ -1616,7 +1660,7 @@ export function solveInnerCorners(state: GigaminxState, maxAttempts = 400): { mo
                 for (let i = 0; i < tries; i++) {
                   const pos = wrongPositions[(targetCursor + i) % wrongPositions.length];
                   const target = current.innerCornerPerm[pos];
-                  const s28Enabled = !!process.env.GIGA_S28_LOG;
+                  const s28Enabled = !!getEnv("GIGA_S28_LOG");
                   const s28T0 = s28Enabled ? Date.now() : 0;
                   const s28Stats = s28Enabled ? { hits: 0, misses: 0, fallbackCalls: 0, fallbackMs: 0 } : undefined;
                   regressiveFound = findSafeInnerCornerApplication(commutators, current, fixed, target, wrongBefore + step, targetPositions, setupTables, false, visited, s28Stats);
@@ -1627,9 +1671,9 @@ export function solveInnerCorners(state: GigaminxState, maxAttempts = 400): { mo
                 }
               }
               if (!regressiveFound) {
-                if (process.env.GIGA_DEBUG) {
+                if (getEnv("GIGA_DEBUG")) {
                   const detail = wrongPositions.map((p) => `${p}->${current.innerCornerPerm[p]}`).join(", ");
-                  require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveInnerCorners] STUCK wrongPositions: ${detail}\n`);
+                  require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[solveInnerCorners] STUCK wrongPositions: ${detail}\n`);
                 }
                 throw new Error(`solveInnerCorners stuck (${wrongBefore} inner corners still wrong, no move found even allowing up to +${REGRESSION_LADDER[REGRESSION_LADDER.length - 1]} temporary regression)`);
               }
@@ -1646,7 +1690,7 @@ export function solveInnerCorners(state: GigaminxState, maxAttempts = 400): { mo
         }
       }
 
-      if (process.env.GIGA_S21_LOG) {
+      if (getEnv("GIGA_S21_LOG")) {
         s21Log({ phase: "innerCorners", round: attempts, wrongBefore, branch, ms: Date.now() - roundT0 });
       }
       current = found.state;
@@ -1704,14 +1748,16 @@ function edgeBridgeStateSignature(state: GigaminxState): string {
 let edgeBridgeCommutatorsCache: Commutator[] | null = null;
 function edgeBridgeCommutators(): Commutator[] {
   if (edgeBridgeCommutatorsCache) return edgeBridgeCommutatorsCache;
-  const diskCachePath = process.env.GIGA_EDGEBRIDGE_LIB_CACHE;
+  if (edgeBridgeCommutatorsStatic.length > 0) return (edgeBridgeCommutatorsCache = deriveMoves(edgeBridgeCommutatorsStatic as { seq: GigaminxTurn[]; support: number[] }[], solvedGigaminxState()));
+  assertStaticLibraryOrRebuildAllowed("edgeBridge", edgeBridgeCommutatorsStatic.length);
+  const diskCachePath = getEnv("GIGA_EDGEBRIDGE_LIB_CACHE");
   if (diskCachePath && require("node:fs").existsSync(diskCachePath)) {
     const raw = JSON.parse(require("node:fs").readFileSync(diskCachePath, "utf8"));
     edgeBridgeCommutatorsCache = deriveMoves(raw, solvedGigaminxState());
-    if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[edgeBridgeCommutators] loaded from disk cache count=${edgeBridgeCommutatorsCache!.length}\n`);
+    if (getEnv("GIGA_DEBUG")) require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[edgeBridgeCommutators] loaded from disk cache count=${edgeBridgeCommutatorsCache!.length}\n`);
     return edgeBridgeCommutatorsCache!;
   }
-  if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[edgeBridgeCommutators] build starting\n`);
+  if (getEnv("GIGA_DEBUG")) require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[edgeBridgeCommutators] build starting\n`);
   const tLib0 = Date.now();
   const solved = solvedGigaminxState();
   const icComms = innerCornerCommutators().map((c) => c.seq);
@@ -1729,7 +1775,7 @@ function edgeBridgeCommutators(): Commutator[] {
       return sup;
     },
   );
-  if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[edgeBridgeCommutators] build done count=${edgeBridgeCommutatorsCache.length} elapsedMs=${Date.now() - tLib0}\n`);
+  if (getEnv("GIGA_DEBUG")) require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[edgeBridgeCommutators] build done count=${edgeBridgeCommutatorsCache.length} elapsedMs=${Date.now() - tLib0}\n`);
   if (diskCachePath) require("node:fs").writeFileSync(diskCachePath, JSON.stringify(stripMove(edgeBridgeCommutatorsCache)));
   return edgeBridgeCommutatorsCache;
 }
@@ -1933,15 +1979,15 @@ export function solveEdgeBridges(state: GigaminxState, maxAttempts = 400): { mov
   const fixed = new Set<number>();
   let attempts = 0;
 
-  const ckptPath = process.env.GIGA_EDGEBRIDGE_CKPT;
+  const ckptPath = getEnv("GIGA_EDGEBRIDGE_CKPT");
   if (ckptPath && require("node:fs").existsSync(ckptPath)) {
     const ckpt: PhaseCheckpoint = JSON.parse(require("node:fs").readFileSync(ckptPath, "utf8"));
     current = plainToState(ckpt.state);
     solution.push(...ckpt.solution);
     for (const p of ckpt.fixed) fixed.add(p);
     attempts = ckpt.attempts;
-    if (process.env.GIGA_DEBUG) {
-      require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveEdgeBridges] resumed from checkpoint at attempts=${attempts}\n`);
+    if (getEnv("GIGA_DEBUG")) {
+      require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[solveEdgeBridges] resumed from checkpoint at attempts=${attempts}\n`);
     }
   }
 
@@ -1962,15 +2008,15 @@ export function solveEdgeBridges(state: GigaminxState, maxAttempts = 400): { mov
       const wrongPositions = targetPositions.filter((p) => current.edgeBridgePerm[p] !== p);
       const wrongBefore = wrongPositions.length;
       const tries = Math.min(TARGETS_PER_ROUND, wrongPositions.length);
-      if (process.env.GIGA_DEBUG) {
-        require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveEdgeBridges] round=${attempts} wrongBefore=${wrongBefore} elapsedMs=${Date.now() - (globalThis as any).__gigaEdgeBridgeT0}\n`);
+      if (getEnv("GIGA_DEBUG")) {
+        require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[solveEdgeBridges] round=${attempts} wrongBefore=${wrongBefore} elapsedMs=${Date.now() - (globalThis as any).__gigaEdgeBridgeT0}\n`);
       }
       if (ckptPath) {
         const ckpt: PhaseCheckpoint = { state: stateToPlain(current), solution, fixed: [...fixed], attempts };
         require("node:fs").writeFileSync(ckptPath, JSON.stringify(ckpt));
       }
 
-      const roundT0 = process.env.GIGA_S21_LOG ? Date.now() : 0;
+      const roundT0 = getEnv("GIGA_S21_LOG") ? Date.now() : 0;
       let branch = "exact";
       const compoundStats = { subsetsExamined: 0, totalSubsets: 0 };
       let found: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
@@ -2011,9 +2057,9 @@ export function solveEdgeBridges(state: GigaminxState, maxAttempts = 400): { mov
             consecutiveLateral++;
             targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
           } else {
-            const compoundT0 = process.env.GIGA_S21_LOG ? Date.now() : 0;
+            const compoundT0 = getEnv("GIGA_S21_LOG") ? Date.now() : 0;
             const compoundFound = wrongBefore >= 2 && wrongBefore <= 15 ? tryCompoundFinishEdgeBridges(commutators, current, fixed, wrongPositions.map((p) => current.edgeBridgePerm[p]), compoundStats) : null;
-            if (process.env.GIGA_S21_LOG && wrongBefore >= 2 && wrongBefore <= 15) (compoundStats as any).compoundMs = Date.now() - compoundT0;
+            if (getEnv("GIGA_S21_LOG") && wrongBefore >= 2 && wrongBefore <= 15) (compoundStats as any).compoundMs = Date.now() - compoundT0;
             if (compoundFound) {
               found = compoundFound;
               branch = "compound";
@@ -2031,9 +2077,9 @@ export function solveEdgeBridges(state: GigaminxState, maxAttempts = 400): { mov
                 }
               }
               if (!regressiveFound) {
-                if (process.env.GIGA_DEBUG) {
+                if (getEnv("GIGA_DEBUG")) {
                   const detail = wrongPositions.map((p) => `${p}->${current.edgeBridgePerm[p]}`).join(", ");
-                  require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveEdgeBridges] STUCK wrongPositions: ${detail}\n`);
+                  require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[solveEdgeBridges] STUCK wrongPositions: ${detail}\n`);
                 }
                 throw new Error(`solveEdgeBridges stuck (${wrongBefore} edge bridges still wrong, no move found even allowing up to +${REGRESSION_LADDER[REGRESSION_LADDER.length - 1]} temporary regression)`);
               }
@@ -2050,7 +2096,7 @@ export function solveEdgeBridges(state: GigaminxState, maxAttempts = 400): { mov
         }
       }
 
-      if (process.env.GIGA_S21_LOG) {
+      if (getEnv("GIGA_S21_LOG")) {
         s21Log({ phase: "edgeBridges", round: attempts, wrongBefore, branch, ms: Date.now() - roundT0, compoundSubsetsExamined: compoundStats.subsetsExamined, compoundTotalSubsets: compoundStats.totalSubsets, compoundMs: (compoundStats as any).compoundMs ?? 0 });
       }
       current = found.state;
@@ -2107,14 +2153,16 @@ function centerBridgeStateSignature(state: GigaminxState): string {
 let centerBridgeCommutatorsCache: Commutator[] | null = null;
 function centerBridgeCommutators(): Commutator[] {
   if (centerBridgeCommutatorsCache) return centerBridgeCommutatorsCache;
-  const diskCachePath = process.env.GIGA_CENTERBRIDGE_LIB_CACHE;
+  if (centerBridgeCommutatorsStatic.length > 0) return (centerBridgeCommutatorsCache = deriveMoves(centerBridgeCommutatorsStatic as { seq: GigaminxTurn[]; support: number[] }[], solvedGigaminxState()));
+  assertStaticLibraryOrRebuildAllowed("centerBridge", centerBridgeCommutatorsStatic.length);
+  const diskCachePath = getEnv("GIGA_CENTERBRIDGE_LIB_CACHE");
   if (diskCachePath && require("node:fs").existsSync(diskCachePath)) {
     const raw = JSON.parse(require("node:fs").readFileSync(diskCachePath, "utf8"));
     centerBridgeCommutatorsCache = deriveMoves(raw, solvedGigaminxState());
-    if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[centerBridgeCommutators] loaded from disk cache count=${centerBridgeCommutatorsCache!.length}\n`);
+    if (getEnv("GIGA_DEBUG")) require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[centerBridgeCommutators] loaded from disk cache count=${centerBridgeCommutatorsCache!.length}\n`);
     return centerBridgeCommutatorsCache!;
   }
-  if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[centerBridgeCommutators] build starting\n`);
+  if (getEnv("GIGA_DEBUG")) require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[centerBridgeCommutators] build starting\n`);
   const tLib0 = Date.now();
   const solved = solvedGigaminxState();
   const ebComms = edgeBridgeCommutators().map((c) => c.seq);
@@ -2132,7 +2180,7 @@ function centerBridgeCommutators(): Commutator[] {
       return sup;
     },
   );
-  if (process.env.GIGA_DEBUG) require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[centerBridgeCommutators] build done count=${centerBridgeCommutatorsCache.length} elapsedMs=${Date.now() - tLib0}\n`);
+  if (getEnv("GIGA_DEBUG")) require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[centerBridgeCommutators] build done count=${centerBridgeCommutatorsCache.length} elapsedMs=${Date.now() - tLib0}\n`);
   if (diskCachePath) require("node:fs").writeFileSync(diskCachePath, JSON.stringify(stripMove(centerBridgeCommutatorsCache)));
   return centerBridgeCommutatorsCache;
 }
@@ -2330,15 +2378,15 @@ export function solveCenterBridges(state: GigaminxState, maxAttempts = 400): { m
   const fixed = new Set<number>();
   let attempts = 0;
 
-  const ckptPath = process.env.GIGA_CENTERBRIDGE_CKPT;
+  const ckptPath = getEnv("GIGA_CENTERBRIDGE_CKPT");
   if (ckptPath && require("node:fs").existsSync(ckptPath)) {
     const ckpt: PhaseCheckpoint = JSON.parse(require("node:fs").readFileSync(ckptPath, "utf8"));
     current = plainToState(ckpt.state);
     solution.push(...ckpt.solution);
     for (const p of ckpt.fixed) fixed.add(p);
     attempts = ckpt.attempts;
-    if (process.env.GIGA_DEBUG) {
-      require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveCenterBridges] resumed from checkpoint at attempts=${attempts}\n`);
+    if (getEnv("GIGA_DEBUG")) {
+      require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[solveCenterBridges] resumed from checkpoint at attempts=${attempts}\n`);
     }
   }
 
@@ -2359,15 +2407,15 @@ export function solveCenterBridges(state: GigaminxState, maxAttempts = 400): { m
       const wrongPositions = targetPositions.filter((p) => current.centerBridgePerm[p] !== p);
       const wrongBefore = wrongPositions.length;
       const tries = Math.min(TARGETS_PER_ROUND, wrongPositions.length);
-      if (process.env.GIGA_DEBUG) {
-        require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveCenterBridges] round=${attempts} wrongBefore=${wrongBefore} elapsedMs=${Date.now() - (globalThis as any).__gigaCenterBridgeT0}\n`);
+      if (getEnv("GIGA_DEBUG")) {
+        require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[solveCenterBridges] round=${attempts} wrongBefore=${wrongBefore} elapsedMs=${Date.now() - (globalThis as any).__gigaCenterBridgeT0}\n`);
       }
       if (ckptPath) {
         const ckpt: PhaseCheckpoint = { state: stateToPlain(current), solution, fixed: [...fixed], attempts };
         require("node:fs").writeFileSync(ckptPath, JSON.stringify(ckpt));
       }
 
-      const roundT0 = process.env.GIGA_S21_LOG ? Date.now() : 0;
+      const roundT0 = getEnv("GIGA_S21_LOG") ? Date.now() : 0;
       let branch = "exact";
       const compoundStats = { subsetsExamined: 0, totalSubsets: 0 };
       let found: { state: GigaminxState; seq: GigaminxTurn[] } | null = null;
@@ -2408,9 +2456,9 @@ export function solveCenterBridges(state: GigaminxState, maxAttempts = 400): { m
             consecutiveLateral++;
             targetCursor = (targetCursor + tries) % Math.max(wrongPositions.length, 1);
           } else {
-            const compoundT0 = process.env.GIGA_S21_LOG ? Date.now() : 0;
+            const compoundT0 = getEnv("GIGA_S21_LOG") ? Date.now() : 0;
             const compoundFound = wrongBefore >= 2 && wrongBefore <= 15 ? tryCompoundFinishCenterBridges(commutators, current, fixed, wrongPositions.map((p) => current.centerBridgePerm[p]), compoundStats) : null;
-            if (process.env.GIGA_S21_LOG && wrongBefore >= 2 && wrongBefore <= 15) (compoundStats as any).compoundMs = Date.now() - compoundT0;
+            if (getEnv("GIGA_S21_LOG") && wrongBefore >= 2 && wrongBefore <= 15) (compoundStats as any).compoundMs = Date.now() - compoundT0;
             if (compoundFound) {
               found = compoundFound;
               branch = "compound";
@@ -2428,9 +2476,9 @@ export function solveCenterBridges(state: GigaminxState, maxAttempts = 400): { m
                 }
               }
               if (!regressiveFound) {
-                if (process.env.GIGA_DEBUG) {
+                if (getEnv("GIGA_DEBUG")) {
                   const detail = wrongPositions.map((p) => `${p}->${current.centerBridgePerm[p]}`).join(", ");
-                  require("node:fs").appendFileSync(process.env.GIGA_DEBUG, `[solveCenterBridges] STUCK wrongPositions: ${detail}\n`);
+                  require("node:fs").appendFileSync(getEnv("GIGA_DEBUG"), `[solveCenterBridges] STUCK wrongPositions: ${detail}\n`);
                 }
                 throw new Error(`solveCenterBridges stuck (${wrongBefore} center bridges still wrong, no move found even allowing up to +${REGRESSION_LADDER[REGRESSION_LADDER.length - 1]} temporary regression)`);
               }
@@ -2447,7 +2495,7 @@ export function solveCenterBridges(state: GigaminxState, maxAttempts = 400): { m
         }
       }
 
-      if (process.env.GIGA_S21_LOG) {
+      if (getEnv("GIGA_S21_LOG")) {
         s21Log({ phase: "centerBridges", round: attempts, wrongBefore, branch, ms: Date.now() - roundT0, compoundSubsetsExamined: compoundStats.subsetsExamined, compoundTotalSubsets: compoundStats.totalSubsets, compoundMs: (compoundStats as any).compoundMs ?? 0 });
       }
       current = found.state;

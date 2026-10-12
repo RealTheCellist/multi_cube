@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { buildSolvedDodeca, applyRawFifthTurn, type Rng } from "./dodecaState";
+import { buildSolvedDodeca, applyRawFifthTurn, type DodecaState, type RawDodecaTurn, type Rng } from "./dodecaState";
 import { VERTICES, FACE_VERTEX_INDICES, FACE_INDICES, nearestFaceIndex, type FaceIndex } from "./dodecaMath";
 import { FACES_AT_VERTEX, nearestVertexIndex, centroid } from "./kilominxState";
 
@@ -342,4 +342,121 @@ export function applyGigaminxScramble(state: GigaminxState, turns: readonly Giga
   let s = state;
   for (const t of turns) s = applyGigaminxMove(s, t.face, t.sign, t.depth);
   return s;
+}
+
+// ---- Bridge: reading an arbitrary live DodecaState (the real rendering/
+// interaction scene's own model, dodecaState.ts) back into this module's
+// abstract GigaminxState. This is the general case of deriveMove's own
+// post-move reading loop above (there, always applied to "solved + exactly
+// one move"): a sticker's `id` (and therefore its `pieceId`, via
+// computeStaticInfo against a solved reference) never changes once
+// assigned -- only its live `corners` do, as applyRawFifthTurn rotates
+// them -- so the exact same nearest-match-by-geometry technique that
+// derived MOVE_TABLE from one move reads off a full GigaminxState from any
+// number of moves, not just one. Solver algorithm itself (MOVE_TABLE,
+// applyGigaminxMove) is untouched by this addition.
+export function dodecaStateToGigaminxState(state: DodecaState): GigaminxState {
+  if (state.layerCount !== 5) throw new Error(`dodecaStateToGigaminxState: expected layerCount=5 (Gigaminx), got ${state.layerCount}`);
+
+  const solvedRef = buildSolvedDodeca(5);
+  const homeFaceOf = new Map<number, FaceIndex>(solvedRef.stickers.map((s) => [s.id, s.homeFaceIndex]));
+  const staticInfo = computeStaticInfo(homeFaceOf);
+
+  const wingRefs: { pieceId: number; point: THREE.Vector3 }[] = [];
+  const innerCornerRefs: { pieceId: number; point: THREE.Vector3 }[] = [];
+  const edgeBridgeRefs: { pieceId: number; point: THREE.Vector3 }[] = [];
+  const centerBridgeRefs: { pieceId: number; point: THREE.Vector3 }[] = [];
+  for (const s of solvedRef.stickers) {
+    const info = staticInfo.get(s.id);
+    if (!info) continue;
+    const pt = centroid(s.corners);
+    if (info.role === ROLE_WING_A || info.role === ROLE_WING_B) wingRefs.push({ pieceId: info.pieceId, point: pt });
+    else if (info.role === ROLE_CENTERS) innerCornerRefs.push({ pieceId: info.pieceId, point: pt });
+    else if (info.role === ROLE_EDGES2) edgeBridgeRefs.push({ pieceId: info.pieceId, point: pt });
+    else if (info.role === ROLE_CENTERS2) centerBridgeRefs.push({ pieceId: info.pieceId, point: pt });
+  }
+
+  function nearestRef(pt: THREE.Vector3, refs: { pieceId: number; point: THREE.Vector3 }[]): number {
+    let best = -1;
+    let bestD = Infinity;
+    for (const ref of refs) {
+      const d = pt.distanceToSquared(ref.point);
+      if (d < bestD) {
+        bestD = d;
+        best = ref.pieceId;
+      }
+    }
+    if (bestD > MAX_MATCH_DIST_SQ) throw new Error(`dodecaStateToGigaminxState: nearest-match distance ${Math.sqrt(bestD)} exceeds tolerance`);
+    return best;
+  }
+
+  const cornerPerm = new Int8Array(20).fill(-1);
+  const cornerOrient = new Int8Array(20);
+  const wingPerm = new Int8Array(60).fill(-1);
+  const wingOrient = new Int8Array(60);
+  const innerCornerPerm = new Int8Array(60).fill(-1);
+  const edgeBridgePerm = new Int8Array(60).fill(-1);
+  const centerBridgePerm = new Int8Array(60).fill(-1);
+
+  const byVertex: { homeFace: number; curFace: number }[][] = Array.from({ length: 20 }, () => []);
+  const byWing: { homeFace: number; curFace: number }[][] = Array.from({ length: 60 }, () => []);
+
+  for (const s of state.stickers) {
+    const info = staticInfo.get(s.id);
+    if (!info) continue;
+    const curFace = nearestFaceIndex(centroid(s.corners));
+    if (info.role === ROLE_CORNERS) {
+      const v = nearestVertexIndex(s.corners[1]);
+      cornerPerm[v] = info.pieceId;
+      byVertex[v].push({ homeFace: s.homeFaceIndex, curFace });
+    } else if (info.role === ROLE_WING_A || info.role === ROLE_WING_B) {
+      const w = nearestRef(centroid(s.corners), wingRefs);
+      wingPerm[w] = info.pieceId;
+      byWing[w].push({ homeFace: s.homeFaceIndex, curFace });
+    } else if (info.role === ROLE_CENTERS) {
+      innerCornerPerm[nearestRef(centroid(s.corners), innerCornerRefs)] = info.pieceId;
+    } else if (info.role === ROLE_EDGES2) {
+      edgeBridgePerm[nearestRef(centroid(s.corners), edgeBridgeRefs)] = info.pieceId;
+    } else {
+      centerBridgePerm[nearestRef(centroid(s.corners), centerBridgeRefs)] = info.pieceId;
+    }
+  }
+
+  // Orientation: among the 2-3 live stickers now occupying position v/w
+  // (one of the physical piece's facets each), order them by which
+  // CURRENT face they sit on (per FACES_AT_VERTEX[v]/WING_FACES[w]) and
+  // find where the occupying piece's own "slot 0" home face falls in that
+  // order -- unlike deriveMove's delta-from-solved shortcut (skipping when
+  // pieceId === position, valid only because the solved reference always
+  // starts at orientation 0), an arbitrary state needs this computed
+  // unconditionally: a piece can return to its home slot with a non-zero
+  // twist.
+  for (let v = 0; v < 20; v++) {
+    const pieceId = cornerPerm[v];
+    const bySlot = [...byVertex[v]].sort((a, b) => FACES_AT_VERTEX[v].indexOf(a.curFace) - FACES_AT_VERTEX[v].indexOf(b.curFace));
+    const slot0HomeFace = FACES_AT_VERTEX[pieceId][0];
+    const orient = bySlot.findIndex((x) => x.homeFace === slot0HomeFace);
+    if (orient < 0) throw new Error(`dodecaStateToGigaminxState: could not resolve corner orientation at vertex ${v}`);
+    cornerOrient[v] = orient;
+  }
+  for (let w = 0; w < 60; w++) {
+    const pieceId = wingPerm[w];
+    const bySlot = [...byWing[w]].sort((a, b) => WING_FACES[w].indexOf(a.curFace) - WING_FACES[w].indexOf(b.curFace));
+    const slot0HomeFace = WING_FACES[pieceId][0];
+    const orient = bySlot.findIndex((x) => x.homeFace === slot0HomeFace);
+    if (orient < 0) throw new Error(`dodecaStateToGigaminxState: could not resolve wing orientation at wing ${w}`);
+    wingOrient[w] = orient;
+  }
+
+  return { cornerPerm, cornerOrient, wingPerm, wingOrient, innerCornerPerm, edgeBridgePerm, centerBridgePerm };
+}
+
+/** Field-rename only -- both models already share the same face/depth/sign convention (proven by MOVE_TABLE's own derivation, which calls applyRawFifthTurn with these same values and reads the result back). */
+export function gigaminxTurnToRawTurn(turn: GigaminxTurn): RawDodecaTurn {
+  return { faceIndex: turn.face, depth: turn.depth, sign: turn.sign };
+}
+
+export function rawTurnToGigaminxTurn(turn: RawDodecaTurn): GigaminxTurn {
+  if (turn.depth < 1 || turn.depth > 4) throw new Error(`rawTurnToGigaminxTurn: depth ${turn.depth} out of Gigaminx range 1..4`);
+  return { face: turn.faceIndex, sign: turn.sign, depth: turn.depth as GigaminxDepth };
 }

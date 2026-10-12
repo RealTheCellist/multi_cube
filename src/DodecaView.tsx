@@ -2,12 +2,17 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import type { Rng } from "./customCube/cubeState";
 import { CustomDodecaScene } from "./customDodeca/CustomDodecaScene";
 import { attachDodecaSwipeTurning, type DodecaSwipeController } from "./customDodeca/dodecaSwipeControls";
+import { applyNextGigaminxSolveMove, type GigaminxSolveHint } from "./customDodeca/gigaminxSolvePlayback";
 
 export interface DodecaViewHandle {
   scramble: (rng?: Rng) => void;
   resetToSolved: () => void;
   isSolved: () => boolean;
   undoLastMove: () => boolean;
+  // Gigaminx (layerCount===5) only -- Kilominx/Megaminx/Master Kilominx
+  // (N=2..4) have no solver yet, so this resolves to a no-op hint
+  // (move: null) for those, same contract as a fully-solved puzzle.
+  solveNextMove: () => Promise<GigaminxSolveHint>;
 }
 
 interface DodecaViewProps {
@@ -20,9 +25,9 @@ interface DodecaViewProps {
   interactive?: boolean;
 }
 
-// No solveNextMove here (unlike TetraView/CubeView) -- this puzzle family is
-// geometry + rendering + manual turning only, by explicit scope; there is no
-// N=2..5 dodecahedron solver.
+// solveNextMove exists only for Gigaminx (layerCount===5, see
+// gigaminxSolvePlayback.ts) -- Kilominx/Megaminx/Master Kilominx (N=2..4)
+// still have no solver, by explicit scope.
 const DodecaView = forwardRef<DodecaViewHandle, DodecaViewProps>(function DodecaView(
   { onMoveCountChange, onFirstMove, onSolvedChange, layerCount, interactive = true },
   ref,
@@ -70,6 +75,21 @@ const DodecaView = forwardRef<DodecaViewHandle, DodecaViewProps>(function Dodeca
     controllerRef.current?.setEnabled(interactive);
   }, [interactive]);
 
+  // Solve-hint presses commit the move for real, exactly like a swipe --
+  // same reportSolveCommit contract as TetraView/CubeView, using the
+  // scene's own undo-count delta rather than assuming +1.
+  function reportSolveCommit(scene: CustomDodecaScene, before: number): void {
+    const applied = scene.getUndoCount() - before;
+    if (applied <= 0) return;
+    moveCountRef.current += applied;
+    callbacksRef.current.onMoveCountChange(moveCountRef.current);
+    if (!hasMovedRef.current) {
+      hasMovedRef.current = true;
+      callbacksRef.current.onFirstMove();
+    }
+    callbacksRef.current.onSolvedChange(scene.isSolved());
+  }
+
   useImperativeHandle(ref, () => ({
     scramble: (rng?: Rng) => {
       hasMovedRef.current = false;
@@ -94,6 +114,18 @@ const DodecaView = forwardRef<DodecaViewHandle, DodecaViewProps>(function Dodeca
         callbacksRef.current.onSolvedChange(scene.isSolved());
       }
       return didUndo;
+    },
+    solveNextMove: async () => {
+      const scene = sceneRef.current;
+      if (!scene || layerCount !== 5) return { move: null, movesRemaining: 0 };
+      controllerRef.current?.setEnabled(false);
+      const before = scene.getUndoCount();
+      try {
+        return await applyNextGigaminxSolveMove(scene);
+      } finally {
+        reportSolveCommit(scene, before);
+        controllerRef.current?.setEnabled(interactiveRef.current);
+      }
     },
   }));
 

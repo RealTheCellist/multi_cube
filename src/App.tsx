@@ -472,6 +472,21 @@ function App() {
     }
   }, []);
 
+  // Dodeca's solve-hint press -- same contract as handleTetraSolve, against
+  // gigaminxSolvePlayback.ts instead. Only meaningful for layerCount===5
+  // (Gigaminx); DodecaView's own solveNextMove is a no-op hint for N=2..4.
+  const handleDodecaSolve = useCallback(async () => {
+    setIsSolving(true);
+    try {
+      await dodecaRef.current?.solveNextMove();
+      setSolveError(false);
+    } catch {
+      setSolveError(true);
+    } finally {
+      setIsSolving(false);
+    }
+  }, []);
+
   const handleWatchAdForHint = useCallback(async () => {
     setIsWatchingAd(true);
     setAdUnavailable(false);
@@ -757,6 +772,16 @@ function App() {
           </p>
         )}
 
+        {puzzleKind === "dodeca" && dodecaLayerCount === 5 && (
+          <p className="mode-hint">
+            {isSolving
+              ? "다음 수 계산 중... (처음 누르면 20~30초 정도 걸릴 수 있어요)"
+              : solveError
+                ? "솔버 실행 중 오류가 발생했습니다. 다시 시도해보세요"
+                : ""}
+          </p>
+        )}
+
         {missionHintsExhausted && isRewardedAdAvailable() && (
           <button type="button" className="btn3d btn-accent watch-ad-btn" onClick={handleWatchAdForHint} disabled={isWatchingAd}>
             {isWatchingAd ? "광고 재생 중..." : `📺 광고 보고 힌트 ${MISSION_AD_BONUS_HINTS}개 더 받기`}
@@ -817,14 +842,25 @@ function App() {
           </button>
         </div>
       ) : puzzleKind === "dodeca" ? (
-        <div className="bottom-controls">
-          <button type="button" className="btn3d btn-orange" onClick={handleReset}>
+        <div className={`bottom-controls${dodecaLayerCount === 5 ? " bottom-controls--four" : ""}`}>
+          <button type="button" className="btn3d btn-orange" onClick={handleReset} disabled={isSolving}>
             리셋
           </button>
-          <button type="button" className="btn3d btn-rose" onClick={handleScramble}>
+          {dodecaLayerCount === 5 && (
+            <button
+              type="button"
+              className="btn3d btn-accent"
+              onClick={handleDodecaSolve}
+              disabled={isSolving}
+              title="다음 수를 바로 진행해요"
+            >
+              솔브
+            </button>
+          )}
+          <button type="button" className="btn3d btn-rose" onClick={handleScramble} disabled={isSolving}>
             스크램블
           </button>
-          <button type="button" className="btn3d btn-slate" onClick={handleUndo} disabled={moveCount === 0}>
+          <button type="button" className="btn3d btn-slate" onClick={handleUndo} disabled={isSolving || moveCount === 0}>
             실행취소
           </button>
         </div>
