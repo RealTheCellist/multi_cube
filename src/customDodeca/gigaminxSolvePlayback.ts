@@ -27,6 +27,10 @@ class GigaminxSolverEngine {
   private plan: GigaminxTurn[] | null = null;
   private cursor = 0;
   private planStartUndoCount = -1;
+  // Dedupes a background prewarm (fired right after scramble) against a
+  // real click landing before it finishes -- same reasoning as
+  // kilominxFamilySolvePlayback.ts's own KilominxFamilySolverEngine.pending.
+  private pending: { undoCountAtStart: number; promise: Promise<void> } | null = null;
 
   private expectedUndoCount(): number {
     return this.planStartUndoCount + this.cursor;
@@ -37,20 +41,31 @@ class GigaminxSolverEngine {
   }
 
   async solve(scene: CustomDodecaScene): Promise<void> {
-    const state: DodecaState = { layerCount: scene.layerCount, stickers: scene.getStickers() };
-    const solverState = dodecaStateToGigaminxState(state);
-    // Dynamic import: gigaminxSolver.ts bundles the 5 precomputed commutator
-    // libraries (~179KB gzip, see GIGAMINX_SOLVE_PRODUCTION_ACCEPTANCE_V1).
-    // Loading it only here (not from a static top-level import) keeps that
-    // weight out of every DodecaView mount -- Cube/Tetra players, and even
-    // players on N=2..4 dodeca puzzles, never pay for it; only an actual
-    // Gigaminx Solve press does, exactly once (the dynamic import is
-    // memoized by the module loader after the first call).
-    const { solveFullGigaminx } = await import("./gigaminxSolver");
-    const result = solveFullGigaminx(solverState);
-    this.plan = result.moves;
-    this.cursor = 0;
-    this.planStartUndoCount = scene.getUndoCount();
+    const undoCountAtStart = scene.getUndoCount();
+    if (this.pending && this.pending.undoCountAtStart === undoCountAtStart) return this.pending.promise;
+
+    const promise = (async () => {
+      const state: DodecaState = { layerCount: scene.layerCount, stickers: scene.getStickers() };
+      const solverState = dodecaStateToGigaminxState(state);
+      // Dynamic import: gigaminxSolver.ts bundles the 5 precomputed commutator
+      // libraries (~179KB gzip, see GIGAMINX_SOLVE_PRODUCTION_ACCEPTANCE_V1).
+      // Loading it only here (not from a static top-level import) keeps that
+      // weight out of every DodecaView mount -- Cube/Tetra players, and even
+      // players on N=2..4 dodeca puzzles, never pay for it; only an actual
+      // Gigaminx Solve press does, exactly once (the dynamic import is
+      // memoized by the module loader after the first call).
+      const { solveFullGigaminx } = await import("./gigaminxSolver");
+      const result = solveFullGigaminx(solverState);
+      this.plan = result.moves;
+      this.cursor = 0;
+      this.planStartUndoCount = undoCountAtStart;
+    })();
+    this.pending = { undoCountAtStart, promise };
+    try {
+      await promise;
+    } finally {
+      if (this.pending?.promise === promise) this.pending = null;
+    }
   }
 
   invalidate(): void {
@@ -120,4 +135,15 @@ export async function applyNextGigaminxSolveMove(scene: CustomDodecaScene): Prom
 /** Exposed for DodecaView's own scramble/reset/undo/manual-move handlers, matching the explicit-invalidate calls elsewhere are NOT needed for -- the engine already self-invalidates via undo-count mismatch; this is here only for a caller that wants to force a fresh plan (e.g. switching puzzles). */
 export function invalidateGigaminxSolvePlan(): void {
   engine.invalidate();
+}
+
+/**
+ * Fire-and-forget background prewarm, same contract and reasoning as
+ * kilominxFamilySolvePlayback.ts's own prewarmKilominxFamilySolve -- meant
+ * to be called right after a scramble so the plan is usually already
+ * cached by the time the player actually presses "솔브".
+ */
+export function prewarmGigaminxSolve(scene: CustomDodecaScene): void {
+  if (engine.hasValidPlan(scene)) return;
+  engine.solve(scene).catch(() => {});
 }

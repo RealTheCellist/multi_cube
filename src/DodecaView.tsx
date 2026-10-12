@@ -2,7 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 import type { Rng } from "./customCube/cubeState";
 import { CustomDodecaScene } from "./customDodeca/CustomDodecaScene";
 import { attachDodecaSwipeTurning, type DodecaSwipeController } from "./customDodeca/dodecaSwipeControls";
-import { applyNextGigaminxSolveMove, type GigaminxSolveHint } from "./customDodeca/gigaminxSolvePlayback";
+import { applyNextGigaminxSolveMove, prewarmGigaminxSolve, type GigaminxSolveHint } from "./customDodeca/gigaminxSolvePlayback";
 import { applyNextKilominxFamilySolveMove, prewarmKilominxFamilySolve, type KilominxFamilySolveHint } from "./customDodeca/kilominxFamilySolvePlayback";
 
 export interface DodecaViewHandle {
@@ -105,12 +105,16 @@ const DodecaView = forwardRef<DodecaViewHandle, DodecaViewProps>(function Dodeca
       moveCountRef.current = 0;
       sceneRef.current?.scramble(rng);
       callbacksRef.current.onMoveCountChange(0);
-      // Kick off the full solve in the background right away (N=2..4 only
-      // -- N=5/Gigaminx has its own, already-fast solver): by the time the
-      // player actually presses "솔브", the plan is usually already cached,
-      // so that first press only pays the move animation, not the solve
-      // itself (see kilominxFamilySolvePlayback.ts's own prewarm docstring).
-      if (layerCount !== 5 && sceneRef.current) prewarmKilominxFamilySolve(sceneRef.current);
+      // Kick off the full solve in the background right away: by the time
+      // the player actually presses "솔브", the plan is usually already
+      // cached, so that first press only pays the move animation, not the
+      // solve itself (see kilominxFamilySolvePlayback.ts's own prewarm
+      // docstring -- gigaminxSolvePlayback.ts's own prewarmGigaminxSolve
+      // mirrors it for N=5).
+      if (sceneRef.current) {
+        if (layerCount === 5) prewarmGigaminxSolve(sceneRef.current);
+        else prewarmKilominxFamilySolve(sceneRef.current);
+      }
     },
     resetToSolved: () => {
       hasMovedRef.current = false;
