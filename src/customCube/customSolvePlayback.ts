@@ -13,6 +13,7 @@ import { computeFourByFourStateHash } from "./fourByFourStateHash";
 import { decideNextPlanMove, isCubiesStateAt } from "./planCursor";
 import { solveTrueCenterPositions5 } from "./fiveByFiveCenters";
 import { wrongWingCount5 } from "./fiveByFiveEdges";
+import { computeEdgeSolverStateHash } from "./fiveByFiveEdgeStateHash";
 import { FiveByFiveEdgeSolverEngine, warmupFiveByFiveEdgeLibraries } from "./fiveByFiveEdgeSolverEngine";
 import { solveCentersHumanStyle } from "./fiveByFiveHumanCenters";
 import { solveReduced5 } from "./fiveByFiveReduction";
@@ -257,6 +258,19 @@ class FourByFourSolverEngine {
 const fourByFourEngine = new FourByFourSolverEngine();
 
 /**
+ * Fire-and-forget background prewarm for the 4x4x4 hint: starts
+ * computeFourByFourSolveMoves right away (meant to be called right after a
+ * scramble), so applyNextFourByFourMove's own `hasValidPlan` check usually
+ * finds a ready plan by the time the player actually presses "솔브". Errors
+ * are swallowed -- a failed prewarm just means the real press recomputes,
+ * same as if this were never called.
+ */
+export function prewarmFourByFourSolve(scene: CustomCubeScene): void {
+  if (fourByFourEngine.hasValidPlan(scene.getCubies())) return;
+  fourByFourEngine.solve(scene).catch(() => {});
+}
+
+/**
  * Solves for the scene's current actual state and plays the next move of a
  * CACHED plan for real: turns the layer and commits it, exactly as if the
  * player had swiped it themselves. The expensive full recompute
@@ -340,6 +354,92 @@ export interface FiveByFiveHint {
 const edgeSolverEngine = new FiveByFiveEdgeSolverEngine();
 let edgeLibrariesWarmed = false;
 
+/**
+ * Plan-once/consume-many cache for the true-center + human-style-center
+ * phase, same shape as FourByFourSolverEngine above (and the SAME
+ * decideNextPlanMove/isCubiesStateAt machinery FiveByFiveEdgeSolverEngine
+ * already uses -- see planCursor.ts). This replaces an earlier version that
+ * recomputed the whole phase from scratch on EVERY press just to extract
+ * ONE move (commitFirstMove only ever applies moves[0]) -- confirmed the
+ * hard way: solveCentersHumanStyle alone commonly spends its full 15s
+ * budget on EVERY press until centers are fully solved, not just the first
+ * one, since a fresh state-hash-only cache misses the instant a single move
+ * gets committed to the live scene. Stepping through ONE cached plan's own
+ * move queue (rebuilding only on scramble/reset/undo/an off-plan move)
+ * is what actually fixes that, matching how the wing-pairing phase
+ * (FiveByFiveEdgeSolverEngine) and the 4x4x4 hint already work.
+ */
+class CenterPhaseEngine {
+  private plan: Move[] | null = null;
+  private cursor = 0;
+  private planStartCubies: Cubie[] | null = null;
+
+  hasValidPlan(liveCubies: readonly Cubie[]): boolean {
+    if (!this.plan || !this.planStartCubies) return false;
+    return isCubiesStateAt(this.planStartCubies, this.plan.slice(0, this.cursor), liveCubies, computeEdgeSolverStateHash);
+  }
+
+  /** `cubies` must be a clone the caller owns -- solveTrueCenterPositions5/solveCentersHumanStyle mutate it in place as they search. */
+  solve(cubies: Cubie[]): void {
+    const startCubies = cloneCubies(cubies);
+    const trueCenterResult = solveTrueCenterPositions5(cubies);
+    const centerResult = solveCentersHumanStyle(cubies, 15000);
+    this.plan = [...trueCenterResult.moves, ...centerResult.moves];
+    this.cursor = 0;
+    this.planStartCubies = startCubies;
+  }
+
+  invalidate(): void {
+    this.plan = null;
+    this.cursor = 0;
+    this.planStartCubies = null;
+  }
+
+  syncAndPeekNextMove(liveCubies: readonly Cubie[]): Move | null {
+    if (!this.plan || !this.planStartCubies) return null;
+    const decision = decideNextPlanMove(this.planStartCubies, this.plan, this.cursor, liveCubies, computeEdgeSolverStateHash);
+    if (decision.kind === "stale") {
+      this.invalidate();
+      return null;
+    }
+    this.cursor = decision.currentMove;
+    return decision.move;
+  }
+
+  remainingMoves(): number {
+    return this.plan ? this.plan.length - this.cursor : 0;
+  }
+}
+
+const centerPhaseEngine = new CenterPhaseEngine();
+
+/**
+ * Fire-and-forget background prewarm for the 5x5x5 hint's centers phase
+ * (see CenterPhaseEngine's own comment for why that phase specifically).
+ * Meant to be called right after a scramble so the plan is usually already
+ * cached by the time the player actually presses "솔브" -- every press
+ * through the centers phase, not just the first, since the SAME plan now
+ * gets stepped through rather than rebuilt.
+ */
+export function prewarmFiveByFiveSolve(scene: CustomCubeScene): void {
+  if (!edgeLibrariesWarmed) {
+    warmupFiveByFiveEdgeLibraries();
+    edgeLibrariesWarmed = true;
+  }
+  const liveCubies = scene.getCubies();
+  if (centerPhaseEngine.hasValidPlan(liveCubies)) return;
+  // Synchronous and long-running (up to 15s, same as a real "솔브" press
+  // today) -- this project's solve searches have no async/worker variant
+  // for this phase, so there's no way to make the computation itself
+  // non-blocking here. The caller (CubeView's own scramble handler) is
+  // responsible for scheduling this via setTimeout(…, 0) rather than
+  // calling it inline, so the scramble's own UI update gets to paint
+  // BEFORE this long synchronous block starts (calling it inline from
+  // inside a click handler would freeze the page before the scramble
+  // itself ever became visible).
+  centerPhaseEngine.solve(cloneCubies(liveCubies));
+}
+
 async function commitFirstMove(scene: CustomCubeScene, moves: readonly Move[]): Promise<void> {
   const [axis, layer, sign] = moves[0];
   // See the matching check in applyNextFourByFourMove -- if the scene's
@@ -364,16 +464,18 @@ export async function applyNextFiveByFiveMove(scene: CustomCubeScene): Promise<F
     warmupFiveByFiveEdgeLibraries();
     edgeLibrariesWarmed = true;
   }
-  const cubies = cloneCubies(scene.getCubies());
-
-  const trueCenterResult = solveTrueCenterPositions5(cubies);
-  const centerResult = solveCentersHumanStyle(cubies, 15000);
-  const centerMoves = [...trueCenterResult.moves, ...centerResult.moves];
-  if (centerMoves.length > 0) {
-    await commitFirstMove(scene, centerMoves);
-    return { hasMove: true, movesRemaining: centerMoves.length - 1, solved: false };
+  const liveCubies = scene.getCubies();
+  let centerMove = centerPhaseEngine.syncAndPeekNextMove(liveCubies);
+  if (!centerMove && !centerPhaseEngine.hasValidPlan(liveCubies)) {
+    centerPhaseEngine.solve(cloneCubies(liveCubies));
+    centerMove = centerPhaseEngine.syncAndPeekNextMove(liveCubies);
+  }
+  if (centerMove) {
+    await commitFirstMove(scene, [centerMove]);
+    return { hasMove: true, movesRemaining: centerPhaseEngine.remainingMoves(), solved: false };
   }
 
+  const cubies = cloneCubies(scene.getCubies());
   if (wrongWingCount5(cubies) > 0) {
     let move = edgeSolverEngine.syncAndPeekNextMove(cubies);
     if (!move && !edgeSolverEngine.hasValidPlan(cubies)) {

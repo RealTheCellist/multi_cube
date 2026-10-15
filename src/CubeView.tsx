@@ -5,6 +5,8 @@ import {
   applyNextFiveByFiveMove,
   applyNextFourByFourMove,
   applyNextSolveMove,
+  prewarmFiveByFiveSolve,
+  prewarmFourByFourSolve,
   type FiveByFiveHint,
   type FourByFourHint,
 } from "./customCube/customSolvePlayback";
@@ -127,6 +129,19 @@ const CubeView = forwardRef<CubeViewHandle, CubeViewProps>(function CubeView(
       moveCountRef.current = 0;
       sceneRef.current?.scramble(rng);
       callbacksRef.current.onMoveCountChange(0);
+      // Kick off the next hint's expensive phase in the background so a
+      // real "솔브" press usually finds it already cached (see
+      // customSolvePlayback.ts's own prewarmFourByFourSolve/
+      // prewarmFiveByFiveSolve docstrings). Deferred via setTimeout(…, 0),
+      // not called inline: both are long synchronous blocks (5x5x5's
+      // centers phase alone can take up to 15s), and calling them inline
+      // here would freeze the page before this scramble's own
+      // "이동수 0" update ever got to paint.
+      const scene = sceneRef.current;
+      if (scene) {
+        if (gridSize === 4) setTimeout(() => prewarmFourByFourSolve(scene), 0);
+        else if (gridSize === 5) setTimeout(() => prewarmFiveByFiveSolve(scene), 0);
+      }
     },
     resetToSolved: () => {
       hasMovedRef.current = false;
