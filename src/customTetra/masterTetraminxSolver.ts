@@ -643,7 +643,57 @@ function buildCenterCommutatorTools(pre: PrecomputedMoves): CenterCommutatorTool
  * rounds (each fixes >=2 pieces) since the center commutator is fully
  * transitive (any 3 chosen center slots are reachable).
  */
+/**
+ * N=4 (Master Pyraminx) center cleanup. N=4 has only 4 centers (one per
+ * face) and an exhaustive search (all (A,B) with |A|,|B|<=3, ~208M pairs, plus
+ * |A|<=4 x |B|<=3, ~5B pairs, done in Rust) found NO commutator that 3-cycles
+ * centers: whenever a commutator moves any center it moves all 4 of them.
+ * It did find exactly three commutators that are PURE center double-swaps
+ * (zero axial/edge/tip collateral) -- the non-identity elements of the
+ * Klein four-group on the 4 centers. So N=4's 3-cycle machinery
+ * (buildCenterCommutatorTools, hand-built for N=5's depth-4 moves) can't
+ * apply, and centers are instead cleaned up by trying each double-swap.
+ * Each entry is [A, B] as (vertexIndex, depth, sign); the commutator is
+ * A B A' B'. Returns null if the centers aren't within that group.
+ */
+const N4_CENTER_DOUBLE_SWAPS: readonly (readonly [readonly TetraMove[], readonly TetraMove[]])[] = [
+  [
+    [{ vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: 1 }],
+    [{ vertexIndex: 1, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: -1 }],
+  ],
+  [
+    [{ vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: 1 }],
+    [{ vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: -1 }, { vertexIndex: 1, depth: 3, sign: 1 }],
+  ],
+  [
+    [{ vertexIndex: 0, depth: 3, sign: 1 }, { vertexIndex: 1, depth: 3, sign: 1 }, { vertexIndex: 0, depth: 3, sign: -1 }],
+    [{ vertexIndex: 2, depth: 3, sign: -1 }, { vertexIndex: 0, depth: 3, sign: -1 }, { vertexIndex: 2, depth: 3, sign: 1 }],
+  ],
+];
+
+function solveCentersN4(pre: PrecomputedMoves, currentFullPattern: readonly number[]): TetraMove[] | null {
+  const centerSlots: number[] = [];
+  for (let i = 0; i < pre.ns; i++) if (pre.pieceTypes[i] === "center") centerSlots.push(i);
+  const isSolved = (pieces: Map<number, number>) => centerSlots.every((s) => pieces.get(s) === s);
+  const start = new Map<number, number>(centerSlots.map((slot) => [slot, currentFullPattern[slot]]));
+  if (isSolved(start)) return [];
+
+  for (const [A, B] of N4_CENTER_DOUBLE_SWAPS) {
+    const moves: TetraMove[] = [...A, ...B, ...A.slice().reverse().map(invertMove), ...B.slice().reverse().map(invertMove)];
+    let pieces = start;
+    for (const m of moves) {
+      const perm = pre.permByMove.get(moveKey(m))!;
+      const next = new Map<number, number>();
+      for (const slot of centerSlots) next.set(slot, pieces.get(perm[slot])!);
+      pieces = next;
+    }
+    if (isSolved(pieces)) return moves;
+  }
+  return null;
+}
+
 function solveCentersByCommutator(pre: PrecomputedMoves, currentFullPattern: readonly number[]): TetraMove[] | null {
+  if (pre.layerCount === 4) return solveCentersN4(pre, currentFullPattern);
   const tools = buildCenterCommutatorTools(pre);
   const centerSlots: number[] = [];
   for (let i = 0; i < pre.ns; i++) if (pre.pieceTypes[i] === "center") centerSlots.push(i);
