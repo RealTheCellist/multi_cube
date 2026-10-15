@@ -3,7 +3,7 @@ import type { Rng } from "./customCube/cubeState";
 import { CustomTetraScene } from "./customTetra/CustomTetraScene";
 import { attachTetraSwipeTurning, type TetraSwipeController } from "./customTetra/tetraSwipeControls";
 import { applyNextTetraSolveMove, type TetraSolveHint } from "./customTetra/tetraSolvePlayback";
-import { applyNextMasterTetraSolveMove } from "./customTetra/masterTetraSolveAsync";
+import { applyNextMasterTetraSolveMove, prewarmMasterTetraSolve } from "./customTetra/masterTetraSolveAsync";
 import { applyNextRoyalPyraminxSolveMove } from "./solver/n6/royalPyraminxSolveAsync";
 
 export interface TetraViewHandle {
@@ -105,6 +105,10 @@ const TetraView = forwardRef<TetraViewHandle, TetraViewProps>(function TetraView
       moveCountRef.current = 0;
       sceneRef.current?.scramble(rng);
       callbacksRef.current.onMoveCountChange(0);
+      // N=4/5 (Master/Professor Pyraminx) only -- see
+      // masterTetraSolveAsync.ts's own prewarmMasterTetraSolve docstring.
+      // N=3 and N=6 already solve fast enough not to need this.
+      if ((layerCount === 4 || layerCount === 5) && sceneRef.current) prewarmMasterTetraSolve(sceneRef.current);
     },
     resetToSolved: () => {
       hasMovedRef.current = false;

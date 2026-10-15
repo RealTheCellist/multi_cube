@@ -168,6 +168,11 @@ class MasterTetraSolverEngine {
   private plan: TetraMove[] | null = null;
   private cursor = 0;
   private planStartUndoCount = -1;
+  // Dedupes a background prewarm (fired right after scramble) against a
+  // real click landing before it finishes -- same reasoning as
+  // kilominxFamilySolvePlayback.ts's own KilominxFamilySolverEngine.pending/
+  // gigaminxSolvePlayback.ts's own GigaminxSolverEngine.pending.
+  private pending: { undoCountAtStart: number; promise: Promise<void> } | null = null;
 
   private expectedUndoCount(): number {
     return this.planStartUndoCount + this.cursor;
@@ -178,11 +183,22 @@ class MasterTetraSolverEngine {
   }
 
   async solve(scene: CustomTetraScene): Promise<void> {
-    const state: TetraState = { layerCount: scene.layerCount, stickers: scene.getStickers() };
-    const result = await computeMasterTetraSolveMovesAsync(state);
-    this.plan = result.moves;
-    this.cursor = 0;
-    this.planStartUndoCount = scene.getUndoCount();
+    const undoCountAtStart = scene.getUndoCount();
+    if (this.pending && this.pending.undoCountAtStart === undoCountAtStart) return this.pending.promise;
+
+    const promise = (async () => {
+      const state: TetraState = { layerCount: scene.layerCount, stickers: scene.getStickers() };
+      const result = await computeMasterTetraSolveMovesAsync(state);
+      this.plan = result.moves;
+      this.cursor = 0;
+      this.planStartUndoCount = undoCountAtStart;
+    })();
+    this.pending = { undoCountAtStart, promise };
+    try {
+      await promise;
+    } finally {
+      if (this.pending?.promise === promise) this.pending = null;
+    }
   }
 
   invalidate(): void {
@@ -228,4 +244,19 @@ export async function applyNextMasterTetraSolveMove(scene: CustomTetraScene): Pr
     engine.advance();
   }
   return { move, movesRemaining: engine.remainingMoves() };
+}
+
+/**
+ * Fire-and-forget background prewarm, same contract as
+ * kilominxFamilySolvePlayback.ts's own prewarmKilominxFamilySolve/
+ * gigaminxSolvePlayback.ts's own prewarmGigaminxSolve -- meant to be called
+ * right after a scramble (N=4/5 only -- N=3 and N=6 use their own, already-
+ * fast dedicated solvers) so the plan is usually already cached by the time
+ * the player actually presses the solve hint. Errors are swallowed: a
+ * failed prewarm just means the real press recomputes, same as if this
+ * were never called.
+ */
+export function prewarmMasterTetraSolve(scene: CustomTetraScene): void {
+  if (engine.hasValidPlan(scene)) return;
+  engine.solve(scene).catch(() => {});
 }
