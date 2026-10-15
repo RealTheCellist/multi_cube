@@ -51,6 +51,9 @@ class RoyalPyraminxSolverEngine {
   private plan: TetraMove[] | null = null;
   private cursor = 0;
   private planStartUndoCount = -1;
+  // Dedupes a background prewarm against a real click landing first -- same
+  // reasoning as masterTetraSolveAsync.ts's MasterTetraSolverEngine.pending.
+  private pending: { undoCountAtStart: number; promise: Promise<void> } | null = null;
 
   private expectedUndoCount(): number {
     return this.planStartUndoCount + this.cursor;
@@ -61,12 +64,23 @@ class RoyalPyraminxSolverEngine {
   }
 
   async solve(scene: CustomTetraScene): Promise<void> {
-    const state: TetraState = { layerCount: scene.layerCount, stickers: scene.getStickers() };
-    const royalState = sceneStateToRoyalState(state);
-    const moveNames = await solveRoyalPyraminx(royalState, AXIAL_MAX_DEPTH_EACH_SIDE, AXIAL_MAX_STATES);
-    this.plan = royalMoveNamesToTetraMoves(moveNames);
-    this.cursor = 0;
-    this.planStartUndoCount = scene.getUndoCount();
+    const undoCountAtStart = scene.getUndoCount();
+    if (this.pending && this.pending.undoCountAtStart === undoCountAtStart) return this.pending.promise;
+
+    const promise = (async () => {
+      const state: TetraState = { layerCount: scene.layerCount, stickers: scene.getStickers() };
+      const royalState = sceneStateToRoyalState(state);
+      const moveNames = await solveRoyalPyraminx(royalState, AXIAL_MAX_DEPTH_EACH_SIDE, AXIAL_MAX_STATES);
+      this.plan = royalMoveNamesToTetraMoves(moveNames);
+      this.cursor = 0;
+      this.planStartUndoCount = undoCountAtStart;
+    })();
+    this.pending = { undoCountAtStart, promise };
+    try {
+      await promise;
+    } finally {
+      if (this.pending?.promise === promise) this.pending = null;
+    }
   }
 
   invalidate(): void {
@@ -112,4 +126,14 @@ export async function applyNextRoyalPyraminxSolveMove(scene: CustomTetraScene): 
     engine.advance();
   }
   return { move, movesRemaining: engine.remainingMoves() };
+}
+
+/**
+ * Fire-and-forget background prewarm, same contract as
+ * masterTetraSolveAsync.ts's prewarmMasterTetraSolve -- call right after a
+ * scramble so the first "솔브" press usually finds the plan already cached.
+ */
+export function prewarmRoyalPyraminxSolve(scene: CustomTetraScene): void {
+  if (engine.hasValidPlan(scene)) return;
+  engine.solve(scene).catch(() => {});
 }
