@@ -67,7 +67,7 @@ describe("solveRoyalAxialOnly / solveRoyalAxialOnlyFast agree and are correct", 
       const check = applyAll(state, fast);
       expect(check.axial.every((v, i) => v === i)).toBe(true);
     }
-  });
+  }, 60_000); // runs BOTH JS searches per seed; ~5s on a slow CI/sandbox CPU, so vitest's 5s default sat right on the edge
 
   it("returns [] when axial is already solved", () => {
     const solved = createSolvedRoyalState();
@@ -81,7 +81,7 @@ describe("solveRoyalAxialOnly / solveRoyalAxialOnlyFast agree and are correct", 
       const state = scrambledState(651, 25); // known-hard case from this session's own investigation
       expect(solveRoyalAxialOnlyFast(state.axial, 8, 4_000_000)).toBeNull();
     },
-    30_000,
+    120_000,
   );
 });
 

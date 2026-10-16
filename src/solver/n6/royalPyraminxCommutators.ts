@@ -593,7 +593,7 @@ function meetInMiddleOrbitSolve(state: RoyalPyraminxState, slots: readonly numbe
   const n = slots.length;
   const startState = Uint8Array.from(slots.map((s) => perm[s]));
   const solvedState = Uint8Array.from(slots);
-  const keyOf = (s: Uint8Array) => String.fromCharCode(...s);
+  const keyOf = (s: Uint8Array) => String.fromCharCode.apply(null, s as unknown as number[]);
 
   interface Entry {
     state: Uint8Array;
@@ -606,16 +606,28 @@ function meetInMiddleOrbitSolve(state: RoyalPyraminxState, slots: readonly numbe
     out.reverse();
     return out;
   };
-  const applyMoveToOrbit = (s: Uint8Array, move: string): Uint8Array => {
+  // Per-move "state index i goes to index targetByMove[move][i]" table, built
+  // once: the old per-node version re-derived it with slots.indexOf() on
+  // every single expansion (24-slot orbits, ~millions of nodes).
+  const targetByMove = new Map<string, Uint8Array>();
+  for (const move of ALL_ROYAL_MOVE_NAMES) {
     const pieceMove = pieceMoveByMove.get(move)!;
-    const out = new Uint8Array(n);
+    const t = new Uint8Array(n);
     for (let i = 0; i < n; i++) {
-      const newSlot = pieceMove[slots[i]];
-      const j = slots.indexOf(newSlot); // n is tiny (12) -- linear scan is fine
-      out[j === -1 ? i : j] = s[i];
+      const j = slots.indexOf(pieceMove[slots[i]]);
+      t[i] = j === -1 ? i : j;
     }
-    return out;
+    targetByMove.set(move, t);
+  }
+  // Writes the result into a caller-owned scratch buffer instead of
+  // allocating a fresh Uint8Array per candidate: most candidates turn out
+  // to be already-visited states, so allocating one for each was mostly
+  // garbage. A real copy is only made below for states that are new.
+  const applyInto = (s: Uint8Array, move: string, out: Uint8Array): void => {
+    const t = targetByMove.get(move)!;
+    for (let i = 0; i < n; i++) out[t[i]] = s[i];
   };
+  const scratch = new Uint8Array(n);
 
   const fwdVisited = new Map<string, Entry>();
   const startEntry: Entry = { state: startState, move: null, parent: null };
@@ -634,10 +646,10 @@ function meetInMiddleOrbitSolve(state: RoyalPyraminxState, slots: readonly numbe
     const newFwd: Entry[] = [];
     for (const parentEntry of fwdFrontier) {
       for (const move of ALL_ROYAL_MOVE_NAMES) {
-        const ns = applyMoveToOrbit(parentEntry.state, move);
-        const k = keyOf(ns);
+        applyInto(parentEntry.state, move, scratch);
+        const k = keyOf(scratch);
         if (!fwdVisited.has(k)) {
-          const entry: Entry = { state: ns, move, parent: parentEntry };
+          const entry: Entry = { state: scratch.slice(), move, parent: parentEntry };
           fwdVisited.set(k, entry);
           newFwd.push(entry);
           const hit = bwdVisited.get(k);
@@ -653,10 +665,10 @@ function meetInMiddleOrbitSolve(state: RoyalPyraminxState, slots: readonly numbe
     const newBwd: Entry[] = [];
     for (const parentEntry of bwdFrontier) {
       for (const move of ALL_ROYAL_MOVE_NAMES) {
-        const ns = applyMoveToOrbit(parentEntry.state, move);
-        const k = keyOf(ns);
+        applyInto(parentEntry.state, move, scratch);
+        const k = keyOf(scratch);
         if (!bwdVisited.has(k)) {
-          const entry: Entry = { state: ns, move, parent: parentEntry };
+          const entry: Entry = { state: scratch.slice(), move, parent: parentEntry };
           bwdVisited.set(k, entry);
           newBwd.push(entry);
           const hit = fwdVisited.get(k);
