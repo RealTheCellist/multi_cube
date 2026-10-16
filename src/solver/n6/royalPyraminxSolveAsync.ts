@@ -32,13 +32,17 @@ export interface RoyalPyraminxSolveHint {
   movesRemaining: number;
 }
 
-// axial search-or-fallback budget: matches royalPyraminxSolver.test.ts's
-// "ordinary scrambles" case (search succeeds fast for the common case) while
-// still bounded enough that the rare commutator-fallback path (100%
-// guaranteed, but 180-290 moves) completes in the tens-of-seconds range
-// documented in this feature's own conclusion report rather than hanging.
+// Axial search-or-fallback budget. The search only pays off for short
+// scrambles: measured (8 scrambles per cell, JS port of the same search) it
+// finds a solution 8/8 up to ~10 moves at 500k states, and only ~1-2/8 of
+// 20-move scrambles even at 4M states -- but 4M states cost ~5s of
+// main-thread time in the real browser, and a live run of 15 length-20
+// scrambles never once found a solution (always fell through to the
+// commutator fallback, which is 100% guaranteed). So spending 4M states on
+// every press bought almost nothing; 500k keeps the short-scramble wins and
+// makes the (common) failure ~8x cheaper.
 const AXIAL_MAX_DEPTH_EACH_SIDE = 8;
-const AXIAL_MAX_STATES = 4_000_000;
+const AXIAL_MAX_STATES = 500_000;
 
 /**
  * Plan-once/consume-many cache, same rationale as
