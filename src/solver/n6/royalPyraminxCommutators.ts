@@ -548,6 +548,23 @@ function axialPieceMoveByMove(): ReadonlyMap<string, Uint8Array> {
 const AXIAL_ORBIT2_SLOTS: readonly number[] = [2, 9, 11, 17, 24, 26, 32, 39, 41, 47, 54, 56];
 const AXIAL_ORBIT5_SLOTS: readonly number[] = [6, 7, 10, 21, 22, 25, 36, 37, 40, 51, 52, 55];
 
+/** Exports of wasm-orbit/ (royalOrbitSolver.wasm) -- see its lib.rs for the buffer protocol. */
+export interface RoyalOrbitWasmExports {
+  memory: WebAssembly.Memory;
+  perms_ptr(): number;
+  start_ptr(): number;
+  solved_ptr(): number;
+  out_ptr(): number;
+  solve(n: number, maxDepth: number, maxStates: number): number;
+}
+let orbitWasm: RoyalOrbitWasmExports | null = null;
+/** Installed by royalPyraminxSolver.ts once the wasm is loaded (async fetch there; this module stays synchronous and fetch-free). null = use the plain-JS search. */
+export function setRoyalOrbitWasm(w: RoyalOrbitWasmExports | null): void {
+  orbitWasm = w;
+}
+const ORBIT_WASM_MAX_SLOTS = 32;
+const ORBIT_WASM_MAX_STATES = 8_000_000;
+
 /**
  * Solves one 12-element axial orbit via a direct meet-in-the-middle
  * search over its own elements only (same shape as
@@ -628,6 +645,27 @@ function meetInMiddleOrbitSolve(state: RoyalPyraminxState, slots: readonly numbe
     for (let i = 0; i < n; i++) out[t[i]] = s[i];
   };
   const scratch = new Uint8Array(n);
+
+  if (orbitWasm && n <= ORBIT_WASM_MAX_SLOTS) {
+    const w = orbitWasm;
+    const buf = new Uint8Array(w.memory.buffer);
+    const permsAt = w.perms_ptr();
+    ALL_ROYAL_MOVE_NAMES.forEach((name, mi) => buf.set(targetByMove.get(name)!, permsAt + mi * ORBIT_WASM_MAX_SLOTS));
+    buf.set(startState, w.start_ptr());
+    buf.set(solvedState, w.solved_ptr());
+    const count = w.solve(n, 6, ORBIT_WASM_MAX_STATES);
+    if (count >= 0) {
+      // re-read memory.buffer: solve() can grow wasm memory and detach earlier views
+      const out = new Int32Array(w.memory.buffer, w.out_ptr(), count);
+      const found: string[] = [];
+      for (let i = 0; i < count; i++) {
+        const raw = out[i];
+        found.push(raw < ALL_ROYAL_MOVE_NAMES.length ? ALL_ROYAL_MOVE_NAMES[raw] : invertMoveName(ALL_ROYAL_MOVE_NAMES[raw - ALL_ROYAL_MOVE_NAMES.length]));
+      }
+      return { moves: found, state: applySeq(state, found) };
+    }
+    // count < 0: wasm hit its state cap -- fall through to the unbounded JS search below
+  }
 
   const fwdVisited = new Map<string, Entry>();
   const startEntry: Entry = { state: startState, move: null, parent: null };

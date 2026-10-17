@@ -23,7 +23,7 @@
 // separately.
 import { applyRoyalMove, ALL_ROYAL_MOVE_NAMES } from "./royalPyraminxMoves";
 import { AXIAL_COUNT, createSolvedRoyalState, isSolvedRoyal, type RoyalPyraminxState } from "./royalPyraminxState";
-import { solveAxialByCommutator, solveCentersByCommutator, solveEdgesByCommutator, solveTips } from "./royalPyraminxCommutators";
+import { setRoyalOrbitWasm, solveAxialByCommutator, solveCentersByCommutator, solveEdgesByCommutator, solveTips, type RoyalOrbitWasmExports } from "./royalPyraminxCommutators";
 
 function invertMoveName(move: string): string {
   return move.endsWith("'") ? move.slice(0, -1) : `${move}'`;
@@ -520,6 +520,41 @@ export async function solveRoyalAxialOnlyWasm(startAxial: Uint8Array, maxDepthEa
   return moves;
 }
 
+
+export const ROYAL_ORBIT_WASM_URL_PATH = "royalOrbitSolver.wasm";
+let royalOrbitWasmPromise: Promise<void> | null = null;
+
+/** Loads wasm-orbit/'s royalOrbitSolver.wasm once and installs it for the commutator fallback's orbit2+5 search. Never throws: on failure the fallback just keeps using its plain-JS search. */
+function loadRoyalOrbitWasm(): Promise<void> {
+  if (!royalOrbitWasmPromise) {
+    const env = (import.meta as unknown as { env?: { BASE_URL?: string } }).env;
+    const url = `${env?.BASE_URL ?? "/"}${ROYAL_ORBIT_WASM_URL_PATH}`;
+    royalOrbitWasmPromise = fetch(url)
+      .then((res) => {
+        if (!res.ok) throw new Error(`royal orbit wasm fetch failed: HTTP ${res.status}`);
+        return res.arrayBuffer();
+      })
+      .then((buf) => WebAssembly.instantiate(buf, {}))
+      .then((result) => setRoyalOrbitWasm(result.instance.exports as unknown as RoyalOrbitWasmExports))
+      .catch((err) => {
+        // Node/Vitest has no relative-URL fetch -- expected there, not worth logging.
+        if (typeof window !== "undefined") console.error("royal orbit wasm failed to load (non-fatal, falling back to the JS search):", err);
+      });
+  }
+  return royalOrbitWasmPromise;
+}
+
+/** Kicks off the orbit-wasm fetch early (safe to call repeatedly, or never). */
+export function preloadRoyalOrbitWasm(): void {
+  void loadRoyalOrbitWasm();
+}
+
+/** Test hook: install the orbit wasm from raw bytes (Node can't fetch a relative URL). */
+export function installRoyalOrbitWasmFromBytes(bytes: BufferSource): void {
+  const instance = new WebAssembly.Instance(new WebAssembly.Module(bytes), {});
+  setRoyalOrbitWasm(instance.exports as unknown as RoyalOrbitWasmExports);
+}
+
 // ---- Full pipeline (Phase 2, "option B" complete) ----
 //
 // Order is axial -> tips -> edges -> centers, NOT tips-first: axial is the
@@ -556,6 +591,7 @@ export async function solveRoyalPyraminx(start: RoyalPyraminxState, axialMaxDept
     moves.push(...axialSolution);
     cur = applyMoveSeq(cur, axialSolution);
   } else {
+    await loadRoyalOrbitWasm();
     const fallback = solveAxialByCommutator(cur);
     moves.push(...fallback.moves);
     cur = fallback.state;
