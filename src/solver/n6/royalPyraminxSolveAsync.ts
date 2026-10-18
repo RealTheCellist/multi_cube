@@ -6,7 +6,7 @@ import type { CustomTetraScene } from "../../customTetra/CustomTetraScene";
 import type { TetraMove } from "../../customTetra/masterTetraminxSolver";
 import type { TetraState } from "../../customTetra/tetraState";
 import { royalMoveNamesToTetraMoves, sceneStateToRoyalState } from "./royalPyraminxSceneAdapter";
-import { solveRoyalPyraminx } from "./royalPyraminxSolver";
+import { solveRoyalPyraminxOffThread } from "./royalSolveWorkerClient";
 
 const MOVE_ANIMATION_MS = 350;
 
@@ -74,7 +74,7 @@ class RoyalPyraminxSolverEngine {
     const promise = (async () => {
       const state: TetraState = { layerCount: scene.layerCount, stickers: scene.getStickers() };
       const royalState = sceneStateToRoyalState(state);
-      const moveNames = await solveRoyalPyraminx(royalState, AXIAL_MAX_DEPTH_EACH_SIDE, AXIAL_MAX_STATES);
+      const moveNames = await solveRoyalPyraminxOffThread(royalState, AXIAL_MAX_DEPTH_EACH_SIDE, AXIAL_MAX_STATES);
       this.plan = royalMoveNamesToTetraMoves(moveNames);
       this.cursor = 0;
       this.planStartUndoCount = undoCountAtStart;
