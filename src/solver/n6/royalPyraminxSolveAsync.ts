@@ -39,10 +39,13 @@ export interface RoyalPyraminxSolveHint {
 // main-thread time in the real browser, and a live run of 15 length-20
 // scrambles never once found a solution (always fell through to the
 // commutator fallback, which is 100% guaranteed). So spending 4M states on
-// every press bought almost nothing; 500k keeps the short-scramble wins and
-// makes the (common) failure ~8x cheaper.
+// every press bought almost nothing. 500k made the failure ~8x cheaper; 100k
+// (this value) cuts it another ~5x: live over 60 scrambles each, click ->
+// first move went from p50 1.17s / p90 1.74s (500k) to p50 0.72s / p90 1.15s
+// (100k). The slow tail (3-5% of scrambles over 3s) is the commutator
+// fallback's orbit2+5 search and doesn't depend on this budget.
 const AXIAL_MAX_DEPTH_EACH_SIDE = 8;
-const AXIAL_MAX_STATES = 500_000;
+const AXIAL_MAX_STATES = 100_000;
 
 /**
  * Plan-once/consume-many cache, same rationale as
