@@ -62,4 +62,32 @@ describe("royalOrbitSolver.wasm vs the plain-JS orbit2+5 search", () => {
       expect(applyAll(st, wasm.moves).axial, `seed ${c.seed}`).toEqual(wasm.state.axial);
     }
   }, 300_000);
+
+  // Needed depth 7-8 and ~12.8M visited states in the old joint orbit2+5 search (depth 6, the original limit, could not solve it).
+  it("solves the scramble that was hardest for the old joint orbit2+5 search", () => {
+    const st = scrambledState(952 * 17 + 3, 20);
+    installRoyalOrbitWasmFromBytes(bytes);
+    try {
+      const r = solveAxialLargeOrbits(st);
+      expect(applyAll(st, r.moves).axial).toEqual(r.state.axial);
+    } finally {
+      setRoyalOrbitWasm(null);
+    }
+  }, 120_000);
+
+  it("leaves orbit2 and orbit5 solved after solveAxialLargeOrbits on many scrambles (orbit2 via kernel words)", () => {
+    installRoyalOrbitWasmFromBytes(bytes);
+    try {
+      for (let seed = 1; seed <= 60; seed++) {
+        const st = scrambledState(seed * 13 + 5, 20);
+        const r = solveAxialLargeOrbits(st);
+        for (const slot of [2, 9, 11, 17, 24, 26, 32, 39, 41, 47, 54, 56, 6, 7, 10, 21, 22, 25, 36, 37, 40, 51, 52, 55]) {
+          expect(r.state.axial[slot], `seed ${seed} slot ${slot}`).toBe(slot);
+        }
+        expect(applyAll(st, r.moves).axial).toEqual(r.state.axial);
+      }
+    } finally {
+      setRoyalOrbitWasm(null);
+    }
+  }, 120_000);
 });

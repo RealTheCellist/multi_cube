@@ -7,7 +7,7 @@
 // MB of wasm memory -- off the page's main thread, so the UI never freezes
 // while it runs, and the memory goes away with the worker (the client
 // terminates it after each solve).
-import { solveRoyalPyraminx } from "./royalPyraminxSolver";
+import { solveRoyalPyraminx, type RoyalSolveTrace } from "./royalPyraminxSolver";
 import type { RoyalPyraminxState } from "./royalPyraminxState";
 
 export interface RoyalSolveWorkerRequest {
@@ -20,14 +20,16 @@ export interface RoyalSolveWorkerRequest {
 export interface RoyalSolveWorkerResponse {
   id: number;
   moves?: string[];
+  trace?: RoyalSolveTrace;
   error?: string;
 }
 
 self.onmessage = async (ev: MessageEvent<RoyalSolveWorkerRequest>) => {
   const { id, state, axialMaxDepthEachSide, axialMaxStates } = ev.data;
   try {
-    const moves = await solveRoyalPyraminx(state, axialMaxDepthEachSide, axialMaxStates);
-    const response: RoyalSolveWorkerResponse = { id, moves };
+    let trace: RoyalSolveTrace | undefined;
+    const moves = await solveRoyalPyraminx(state, axialMaxDepthEachSide, axialMaxStates, (t) => (trace = t));
+    const response: RoyalSolveWorkerResponse = { id, moves, trace };
     self.postMessage(response);
   } catch (err) {
     const response: RoyalSolveWorkerResponse = { id, error: err instanceof Error ? err.message : String(err) };

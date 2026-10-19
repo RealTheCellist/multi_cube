@@ -17,11 +17,14 @@
 //!   1. write NUM_MOVES*MAXN bytes at perms_ptr(): perms[m*MAXN + i] = the
 //!      state index slot i's piece moves to under move m
 //!   2. write n bytes at start_ptr() and at solved_ptr()
-//!   3. call solve(n, maxDepth, maxStates) -> move count, or -1 if no
-//!      meeting within maxDepth rounds / maxStates visited states
+//!   3. call solve(n, maxDepth, maxStates) -> move count (>= 0), or a negative
+//!      failure code: -1 visited-state cap exceeded, -2 no meeting within
+//!      maxDepth rounds, -3 bad input (n out of range / start holds a piece
+//!      that isn't in the orbit), -4 solution longer than the output buffer
 //!   4. read the result at out_ptr(): i32 per move, raw < NUM_MOVES means
 //!      "apply move raw", raw >= NUM_MOVES means "apply the inverse of
 //!      move raw - NUM_MOVES" (same encoding royalAxialSolver.wasm uses).
+
 
 use std::collections::HashMap;
 use std::hash::{BuildHasherDefault, Hasher};
@@ -34,6 +37,7 @@ static mut PERMS: [u8; NUM_MOVES * MAXN] = [0; NUM_MOVES * MAXN];
 static mut START: [u8; MAXN] = [0; MAXN];
 static mut SOLVED: [u8; MAXN] = [0; MAXN];
 static mut OUT: [i32; MAX_OUT] = [0; MAX_OUT];
+static mut LAST_VISITED: u32 = 0;
 
 #[no_mangle]
 pub extern "C" fn perms_ptr() -> *mut u8 {
@@ -47,36 +51,20 @@ pub extern "C" fn start_ptr() -> *mut u8 {
 pub extern "C" fn solved_ptr() -> *mut u8 {
     &raw mut SOLVED as *mut u8
 }
+/// Total states (both sides) the last solve() visited, for sizing the cap.
+#[no_mangle]
+pub extern "C" fn last_visited() -> u32 {
+    unsafe { LAST_VISITED }
+}
 #[no_mangle]
 pub extern "C" fn out_ptr() -> *const i32 {
     &raw const OUT as *const i32
 }
 
-#[derive(Default)]
-struct Mix(u64);
-impl Hasher for Mix {
-    fn write(&mut self, bytes: &[u8]) {
-        for &b in bytes {
-            self.0 = (self.0 ^ b as u64).wrapping_mul(0x0000_0100_0000_01b3);
-        }
-    }
-    fn write_u64(&mut self, v: u64) {
-        // Called once per word of the key; fold both words into one well-mixed value.
-        let mut h = (self.0 ^ v).wrapping_mul(0x9e37_79b9_7f4a_7c15);
-        h ^= h >> 32;
-        self.0 = h.rotate_left(23);
-    }
-    fn finish(&self) -> u64 {
-        let mut h = self.0.wrapping_mul(0xd6e8_feb8_6659_fd93);
-        h ^= h >> 32;
-        h
-    }
-}
-
 type Key = (u64, u64);
-type StateMap = HashMap<Key, u32, BuildHasherDefault<Mix>>;
 
 const MAXN_PACKED: usize = 24; // 12 entries * 5 bits = 60 bits per u64 word
+const EMPTY: u32 = u32::MAX; // "no parent" marker for a root row
 
 #[inline]
 fn pack(s: &[u8; MAXN_PACKED], n: usize) -> Key {
@@ -102,28 +90,74 @@ fn unpack(k: Key, n: usize) -> [u8; MAXN_PACKED] {
     s
 }
 
-/// One BFS side. `nodes[i]` = (parent index or u32::MAX, move that led here);
-/// `map` maps a packed state to its node index; `frontier` holds the states
-/// (and node indices) of the most recently completed round only, so the
-/// per-visited-state memory is just the 16-byte key + 4-byte index + a small node.
+/// Cheap hasher for the packed key (two u64 words): mixes both words so
+/// hashbrown's top/bottom bit uses both see well-spread bits.
+#[derive(Default)]
+struct Mix(u64);
+impl Hasher for Mix {
+    fn write(&mut self, bytes: &[u8]) {
+        for &b in bytes {
+            self.0 = (self.0 ^ b as u64).wrapping_mul(0x0000_0100_0000_01b3);
+        }
+    }
+    fn write_u64(&mut self, v: u64) {
+        let mut h = (self.0 ^ v).wrapping_mul(0x9e37_79b9_7f4a_7c15);
+        h ^= h >> 32;
+        self.0 = h.rotate_left(23);
+    }
+    fn finish(&self) -> u64 {
+        let mut h = self.0.wrapping_mul(0xd6e8_feb8_6659_fd93);
+        h ^= h >> 32;
+        h
+    }
+}
+type StateMap = HashMap<Key, u32, BuildHasherDefault<Mix>>;
+
+/// One BFS side. Hybrid layout, chosen by measurement: hashbrown's SIMD
+/// probing is markedly faster than a hand-rolled index table (~1.5x on the
+/// hard scrambles), but the old per-state overhead (separate node Vec,
+/// separate frontier Vec of key copies, map doubling) cost ~110 bytes. Here
+/// every visited state is one row of three parallel arrays (16-byte key,
+/// 4-byte parent, 1-byte move), and a round's frontier is just the
+/// contiguous range of rows appended during that round (BFS appends in
+/// order), so no frontier copy exists; the map only holds key -> row.
 struct Side {
-    nodes: Vec<(u32, u8)>,
+    keys: Vec<Key>,
+    parent: Vec<u32>,
+    mv: Vec<u8>,
     map: StateMap,
-    frontier: Vec<(Key, u32)>,
+    frontier_start: usize,
+    frontier_end: usize,
 }
 
 impl Side {
     fn new(root: Key) -> Self {
-        let mut map = StateMap::default();
-        map.insert(root, 0);
-        Side { nodes: vec![(u32::MAX, 0)], map, frontier: vec![(root, 0)] }
+        let mut side = Side { keys: Vec::new(), parent: Vec::new(), mv: Vec::new(), map: StateMap::default(), frontier_start: 0, frontier_end: 1 };
+        side.insert_new(root, EMPTY, 0);
+        side
     }
-    /// Moves from the root to node `idx`, in application order.
+
+    #[inline]
+    fn find(&self, k: &Key) -> Option<u32> {
+        self.map.get(k).copied()
+    }
+
+    /// Appends a state known not to be present yet; returns its row index.
+    fn insert_new(&mut self, k: Key, parent: u32, m: u8) -> u32 {
+        let idx = self.keys.len() as u32;
+        self.keys.push(k);
+        self.parent.push(parent);
+        self.mv.push(m);
+        self.map.insert(k, idx);
+        idx
+    }
+
+    /// Moves from the root to row `idx`, in application order.
     fn path(&self, mut idx: u32) -> Vec<u8> {
         let mut out = Vec::new();
-        while self.nodes[idx as usize].0 != u32::MAX {
-            out.push(self.nodes[idx as usize].1);
-            idx = self.nodes[idx as usize].0;
+        while self.parent[idx as usize] != EMPTY {
+            out.push(self.mv[idx as usize]);
+            idx = self.parent[idx as usize];
         }
         out.reverse();
         out
@@ -140,32 +174,29 @@ fn apply(tables: &[[u8; MAXN_PACKED]], n: usize, s: &[u8; MAXN_PACKED], m: usize
     pack(&out, n)
 }
 
-/// Expands `me`'s frontier by one round. Returns Some((meNodeIdx,
-/// otherNodeIdx)) the instant a new state is already known to `other`,
-/// Err(()) if the visited-state cap was exceeded.
+/// Expands `me`'s current frontier by one round. Returns Some((meRow,
+/// otherRow)) the instant a new state is already known to `other`, Err(())
+/// if the visited-state cap was exceeded.
 fn expand(tables: &[[u8; MAXN_PACKED]], n: usize, me: &mut Side, other: &Side, max_states: usize) -> Result<Option<(u32, u32)>, ()> {
-    let frontier = std::mem::take(&mut me.frontier);
-    let mut next: Vec<(Key, u32)> = Vec::new();
-    for (packed, parent) in &frontier {
-        let state = unpack(*packed, n);
+    let (start, end) = (me.frontier_start, me.frontier_end);
+    for row in start..end {
+        let state = unpack(me.keys[row], n);
         for m in 0..NUM_MOVES {
             let ns = apply(tables, n, &state, m);
-            if me.map.contains_key(&ns) {
+            if me.find(&ns).is_some() {
                 continue;
             }
-            let idx = me.nodes.len() as u32;
-            me.nodes.push((*parent, m as u8));
-            me.map.insert(ns, idx);
-            if let Some(&o) = other.map.get(&ns) {
+            let idx = me.insert_new(ns, row as u32, m as u8);
+            if let Some(o) = other.find(&ns) {
                 return Ok(Some((idx, o)));
             }
-            next.push((ns, idx));
-            if me.nodes.len() + other.nodes.len() > max_states {
+            if me.keys.len() + other.keys.len() > max_states {
                 return Err(());
             }
         }
     }
-    me.frontier = next;
+    me.frontier_start = end;
+    me.frontier_end = me.keys.len();
     Ok(None)
 }
 
@@ -173,7 +204,7 @@ fn expand(tables: &[[u8; MAXN_PACKED]], n: usize, me: &mut Side, other: &Side, m
 pub extern "C" fn solve(n: u32, max_depth: u32, max_states: u32) -> i32 {
     let n = n as usize;
     if n == 0 || n > MAXN_PACKED {
-        return -1;
+        return -3;
     }
     let (perms, start, solved) = unsafe { (&*(&raw const PERMS), &*(&raw const START), &*(&raw const SOLVED)) };
 
@@ -187,7 +218,7 @@ pub extern "C" fn solve(n: u32, max_depth: u32, max_states: u32) -> i32 {
     for i in 0..n {
         let l = label[start[i] as usize];
         if l == 255 {
-            return -1; // start holds a piece that isn't in this orbit
+            return -3; // start holds a piece that isn't in this orbit
         }
         start_s[i] = l;
         solved_s[i] = i as u8;
@@ -219,7 +250,12 @@ pub extern "C" fn solve(n: u32, max_depth: u32, max_states: u32) -> i32 {
                 break 'rounds;
             }
             Ok(None) => {}
-            Err(()) => return -1,
+            Err(()) => {
+                unsafe {
+                    LAST_VISITED = (fwd.keys.len() + bwd.keys.len()) as u32;
+                }
+                return -1;
+            }
         }
         match expand(&tables, n, &mut bwd, &fwd, cap) {
             Ok(Some((b, f))) => {
@@ -230,7 +266,10 @@ pub extern "C" fn solve(n: u32, max_depth: u32, max_states: u32) -> i32 {
             Err(()) => return -1,
         }
     }
-    let Some((f, b)) = hit else { return -1 };
+    unsafe {
+        LAST_VISITED = (fwd.keys.len() + bwd.keys.len()) as u32;
+    }
+    let Some((f, b)) = hit else { return -2 };
 
     let mut moves: Vec<i32> = fwd.path(f).into_iter().map(|m| m as i32).collect();
     // bwd path is solved -> meeting; going meeting -> solved applies each
@@ -239,7 +278,7 @@ pub extern "C" fn solve(n: u32, max_depth: u32, max_states: u32) -> i32 {
         moves.push(m as i32 + NUM_MOVES as i32);
     }
     if moves.len() > MAX_OUT {
-        return -1;
+        return -4;
     }
     unsafe {
         let out = &mut *(&raw mut OUT);

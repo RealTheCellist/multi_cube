@@ -23,7 +23,7 @@
 // separately.
 import { applyRoyalMove, ALL_ROYAL_MOVE_NAMES } from "./royalPyraminxMoves";
 import { AXIAL_COUNT, createSolvedRoyalState, isSolvedRoyal, type RoyalPyraminxState } from "./royalPyraminxState";
-import { setRoyalOrbitWasm, solveAxialByCommutator, solveCentersByCommutator, solveEdgesByCommutator, solveTips, type RoyalOrbitWasmExports } from "./royalPyraminxCommutators";
+import { setRoyalOrbitWasm, takeOrbitSolveInfo, type OrbitSolveInfo, solveAxialByCommutator, solveCentersByCommutator, solveEdgesByCommutator, solveTips, type RoyalOrbitWasmExports } from "./royalPyraminxCommutators";
 
 function invertMoveName(move: string): string {
   return move.endsWith("'") ? move.slice(0, -1) : `${move}'`;
@@ -582,11 +582,28 @@ function applyMoveSeq(state: RoyalPyraminxState, seq: readonly string[]): RoyalP
  * `start`, reaches the solved state -- callers that want the resulting
  * state too can just apply it themselves.
  */
-export async function solveRoyalPyraminx(start: RoyalPyraminxState, axialMaxDepthEachSide: number, axialMaxStates: number): Promise<string[]> {
+/** Where a solve's time went -- reported to `trace` so a slow solve can say why (the page logs it when a solve takes > 3s). */
+export interface RoyalSolveTrace {
+  totalMs: number;
+  /** wasm/JS axial meet-in-the-middle attempt (before the commutator fallback). */
+  axialSearchMs: number;
+  axialSearchFound: boolean;
+  /** commutator fallback (only when the axial search failed), and how its orbit2+5 search was solved. */
+  fallbackMs: number;
+  orbit: OrbitSolveInfo | null;
+  /** tips + edges + centers. */
+  restMs: number;
+  moves: number;
+}
+
+export async function solveRoyalPyraminx(start: RoyalPyraminxState, axialMaxDepthEachSide: number, axialMaxStates: number, trace?: (t: RoyalSolveTrace) => void): Promise<string[]> {
   const moves: string[] = [];
   let cur = start;
+  const t0 = performance.now();
+  takeOrbitSolveInfo(); // clear anything left from an earlier solve
 
   const axialSolution = await solveRoyalAxialOnlyWasm(cur.axial, axialMaxDepthEachSide, axialMaxStates);
+  const t1 = performance.now();
   if (axialSolution) {
     moves.push(...axialSolution);
     cur = applyMoveSeq(cur, axialSolution);
@@ -597,6 +614,7 @@ export async function solveRoyalPyraminx(start: RoyalPyraminxState, axialMaxDept
     cur = fallback.state;
   }
 
+  const t2 = performance.now();
   const tipsResult = solveTips(cur);
   moves.push(...tipsResult.moves);
   cur = tipsResult.state;
@@ -609,5 +627,9 @@ export async function solveRoyalPyraminx(start: RoyalPyraminxState, axialMaxDept
   moves.push(...centersResult.moves);
   cur = centersResult.state;
 
+  if (trace) {
+    const t3 = performance.now();
+    trace({ totalMs: Math.round(t3 - t0), axialSearchMs: Math.round(t1 - t0), axialSearchFound: axialSolution !== null, fallbackMs: Math.round(t2 - t1), orbit: takeOrbitSolveInfo(), restMs: Math.round(t3 - t2), moves: moves.length });
+  }
   return moves;
 }
