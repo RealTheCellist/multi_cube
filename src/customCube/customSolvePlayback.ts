@@ -5,16 +5,18 @@ import { experimentalSolve2x2x2 } from "cubing/search";
 import { computeSolveHint, type SolveHint } from "../solvePlayback";
 import type { Axis } from "./cubeMath";
 import type { CustomCubeScene } from "./CustomCubeScene";
-import { cloneCubies, FACE_TURNS, outerLayerCoordinate, type Cubie, type Face } from "./cubeState";
+import { applyRawQuarterTurn, cloneCubies, FACE_TURNS, outerLayerCoordinate, type Cubie, type Face } from "./cubeState";
 import { solveCenters } from "./fourByFourCenters";
 import { solveEdgePairing, warmupFourByFourEdgeLibrary } from "./fourByFourEdges";
 import { solveReduced, warmupFourByFourReductionSolver } from "./fourByFourReduction";
 import { computeFourByFourStateHash } from "./fourByFourStateHash";
 import { decideNextPlanMove, isCubiesStateAt } from "./planCursor";
-import { solveTrueCenterPositions5 } from "./fiveByFiveCenters";
+import { solveTrueCenterPositions5, wrongCenterCount as wrongCenterCount5 } from "./fiveByFiveCenters";
 import { wrongWingCount5 } from "./fiveByFiveEdges";
 import { computeEdgeSolverStateHash } from "./fiveByFiveEdgeStateHash";
 import { FiveByFiveEdgeSolverEngine, warmupFiveByFiveEdgeLibraries } from "./fiveByFiveEdgeSolverEngine";
+import { solveCentersByCommutator5 } from "./fiveByFiveCentersCommutator";
+import { planPairing5 } from "./fiveByFivePlan";
 import { solveCentersHumanStyle } from "./fiveByFiveHumanCenters";
 import { solveReduced5 } from "./fiveByFiveReduction";
 
@@ -369,6 +371,26 @@ let edgeLibrariesWarmed = false;
  * is what actually fixes that, matching how the wing-pairing phase
  * (FiveByFiveEdgeSolverEngine) and the 4x4x4 hint already work.
  */
+/**
+ * X/T-center moves for `cubies` (true centers already in place; mutated to the solved-centers
+ * state, like solveCentersHumanStyle did). The commutator solver takes milliseconds; the old
+ * search (up to its 15s budget) stays only as a fallback if that ever throws or fails to verify.
+ */
+function solveCenterMoves(cubies: Cubie[]): Move[] {
+  try {
+    const moves = solveCentersByCommutator5(cubies);
+    const check = cloneCubies(cubies);
+    for (const [axis, layer, sign] of moves) applyRawQuarterTurn(check, axis, layer, sign);
+    if (wrongCenterCount5(check) === 0) {
+      for (const [axis, layer, sign] of moves) applyRawQuarterTurn(cubies, axis, layer, sign);
+      return [...moves];
+    }
+  } catch (err) {
+    console.error("5x5 commutator centers solver failed (non-fatal, using the slower search):", err);
+  }
+  return solveCentersHumanStyle(cubies, 15000).moves;
+}
+
 class CenterPhaseEngine {
   private plan: Move[] | null = null;
   private cursor = 0;
@@ -382,9 +404,21 @@ class CenterPhaseEngine {
   /** `cubies` must be a clone the caller owns -- solveTrueCenterPositions5/solveCentersHumanStyle mutate it in place as they search. */
   solve(cubies: Cubie[]): void {
     const startCubies = cloneCubies(cubies);
-    const trueCenterResult = solveTrueCenterPositions5(cubies);
-    const centerResult = solveCentersHumanStyle(cubies, 15000);
-    this.plan = [...trueCenterResult.moves, ...centerResult.moves];
+    // Preferred: one constructive plan for true centers, X/T-centers and wing pairing (milliseconds). It
+    // leaves nothing for the old wing search below, which stays only as the fallback.
+    let pairing: Move[] | null = null;
+    try {
+      pairing = planPairing5(cubies);
+    } catch (err) {
+      console.error("5x5 pairing planner failed (non-fatal, using the older search):", err);
+    }
+    if (pairing) {
+      this.plan = pairing;
+    } else {
+      const trueCenterResult = solveTrueCenterPositions5(cubies);
+      const centerMoves = solveCenterMoves(cubies);
+      this.plan = [...trueCenterResult.moves, ...centerMoves];
+    }
     this.cursor = 0;
     this.planStartCubies = startCubies;
   }

@@ -23,6 +23,7 @@ import {
   type SolveProgress,
   type TetraMove,
 } from "./masterTetraminxSolver";
+import { solveAxialDecomposed } from "./tetraAxialDecomposed";
 import { applyRawThirdTurn, isSolved, type TetraState } from "./tetraState";
 
 /**
@@ -54,6 +55,21 @@ export function computeMasterTetraSolveMoves(state: TetraState): MasterTetraSolv
  * Worker support.
  */
 export async function computeMasterTetraSolveMovesAsync(state: TetraState): Promise<MasterTetraSolveResult> {
+  const t0 = performance.now();
+  const trace: Record<string, number | boolean | string> = {};
+  const result = await computeMasterTetraSolveMovesTraced(state, trace);
+  const total = performance.now() - t0;
+  if (total > 3000) console.warn(`[master-tetra] slow N=${state.layerCount} solve: ${Math.round(total)}ms`, trace);
+  return result;
+}
+
+async function computeMasterTetraSolveMovesTraced(state: TetraState, trace: Record<string, number | boolean | string>): Promise<MasterTetraSolveResult> {
+  let mark = performance.now();
+  const lap = (name: string) => {
+    const now = performance.now();
+    trace[name] = Math.round(now - mark);
+    mark = now;
+  };
   const [{ preloadEdgePdbWorker, solveEdgesViaPdbWorker }, { preloadAxialWorker, solveAxialViaWorker }] = await Promise.all([import("./edgePdbClient"), import("./axialWorkerClient")]);
 
   // Fire this before the axial worker call below so both workers' fetches
@@ -71,7 +87,9 @@ export async function computeMasterTetraSolveMovesAsync(state: TetraState): Prom
   // network never holds up a solve by more than that --
   // solveN5EdgesInTwoPhases degrades gracefully to its existing
   // meet-in-the-middle attempt either way.
-  await Promise.race([preloadOuterPdb(), new Promise<void>((resolve) => setTimeout(resolve, 3000))]);
+  // Started now, awaited only after the (short) axial step below, so a first-time download
+  // overlaps with it instead of delaying it.
+  const outerPdbReady = Promise.race([preloadOuterPdb(), new Promise<void>((resolve) => setTimeout(resolve, 3000))]);
 
   const pre = precompute(state.layerCount);
   // Try the worker's axial-only search (wasm-backed) FIRST, instead of
@@ -86,7 +104,17 @@ export async function computeMasterTetraSolveMovesAsync(state: TetraState): Prom
   // deterministic, essentially-always-succeeding commutator
   // (solveCentersByCommutator) -- same "fallback" path already proven
   // correct for the hard cases, now used unconditionally here.
-  const axialMoves = await solveAxialViaWorker(state.layerCount, patternFromState(state, pre), 10, 16_000_000);
+  // Decomposed solve first (one 12-slot orbit search + a precomputed kernel word -- see
+  // tetraAxialDecomposed.ts); the whole-axial worker search below is only the fallback.
+  const pattern = patternFromState(state, pre);
+  let axialMoves = solveAxialDecomposed(pre, pattern);
+  lap("decomposedMs");
+  trace.decomposed = !!axialMoves;
+  if (!axialMoves) axialMoves = await solveAxialViaWorker(state.layerCount, pattern, 10, 16_000_000);
+  lap("axialMs");
+  await outerPdbReady;
+  lap("preloadWaitMs");
+  trace.axialFound = !!axialMoves;
 
   let progress: SolveProgress;
   if (axialMoves) {
@@ -95,6 +123,7 @@ export async function computeMasterTetraSolveMovesAsync(state: TetraState): Prom
     applyPhaseTo(working, moves, axialMoves);
     const { edgePhaseFailed } = continueAfterAxialSolved(pre, working, moves, true);
     progress = { moves, working, edgePhaseFailed, axialOnlyFailed: false };
+    lap("afterAxialMs");
   } else {
     // Worker/Worker API unavailable, or the search genuinely failed within
     // its 16,000,000-state budget (should be rare to never -- the 3
@@ -102,7 +131,9 @@ export async function computeMasterTetraSolveMovesAsync(state: TetraState): Prom
     // back to the fully synchronous path so a hint press still returns
     // something.
     progress = computeMasterTetraSolveProgress(state);
+    lap("syncFallbackMs");
   }
+  trace.edgePhaseFailed = progress.edgePhaseFailed;
 
   if (!progress.edgePhaseFailed) {
     return { moves: progress.moves, solved: isSolved(progress.working) };
@@ -116,6 +147,7 @@ export async function computeMasterTetraSolveMovesAsync(state: TetraState): Prom
   // single worst-case attempt bounded to roughly a minute rather than
   // several).
   const edgeMoves = await solveEdgesViaPdbWorker(progress.working.layerCount, patternFromState(progress.working, pre), 9, 8_000_000);
+  lap("edgePdbMs");
   if (!edgeMoves) return { moves: progress.moves, solved: false };
 
   const moves = [...progress.moves];

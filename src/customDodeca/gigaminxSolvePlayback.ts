@@ -8,6 +8,7 @@
 import type { CustomDodecaScene } from "./CustomDodecaScene";
 import type { DodecaState } from "./dodecaState";
 import { dodecaStateToGigaminxState, gigaminxTurnToRawTurn, type GigaminxTurn } from "./gigaminxState";
+import { solveFullGigaminxOffThread } from "./gigaminxSolveWorkerClient";
 
 export interface GigaminxSolveHint {
   move: GigaminxTurn | null;
@@ -47,16 +48,11 @@ class GigaminxSolverEngine {
     const promise = (async () => {
       const state: DodecaState = { layerCount: scene.layerCount, stickers: scene.getStickers() };
       const solverState = dodecaStateToGigaminxState(state);
-      // Dynamic import: gigaminxSolver.ts bundles the 5 precomputed commutator
-      // libraries (~179KB gzip, see GIGAMINX_SOLVE_PRODUCTION_ACCEPTANCE_V1).
-      // Loading it only here (not from a static top-level import) keeps that
-      // weight out of every DodecaView mount -- Cube/Tetra players, and even
-      // players on N=2..4 dodeca puzzles, never pay for it; only an actual
-      // Gigaminx Solve press does, exactly once (the dynamic import is
-      // memoized by the module loader after the first call).
-      const { solveFullGigaminx } = await import("./gigaminxSolver");
-      const result = solveFullGigaminx(solverState);
-      this.plan = result.moves;
+      const startedAt = performance.now();
+      const moves = await solveFullGigaminxOffThread(solverState);
+      const ms = performance.now() - startedAt;
+      if (ms > 3000) console.warn(`[gigaminx] slow solve: ${Math.round(ms)}ms`, { moves: moves.length });
+      this.plan = moves;
       this.cursor = 0;
       this.planStartUndoCount = undoCountAtStart;
     })();

@@ -3,6 +3,7 @@ import type { Rng } from "./customCube/cubeState";
 import { CustomDodecaScene } from "./customDodeca/CustomDodecaScene";
 import { attachDodecaSwipeTurning, type DodecaSwipeController } from "./customDodeca/dodecaSwipeControls";
 import { applyNextGigaminxSolveMove, prewarmGigaminxSolve, type GigaminxSolveHint } from "./customDodeca/gigaminxSolvePlayback";
+import { preloadGigaminxSolveWorker } from "./customDodeca/gigaminxSolveWorkerClient";
 import { applyNextKilominxFamilySolveMove, prewarmKilominxFamilySolve, type KilominxFamilySolveHint } from "./customDodeca/kilominxFamilySolvePlayback";
 
 export interface DodecaViewHandle {
@@ -57,6 +58,8 @@ const DodecaView = forwardRef<DodecaViewHandle, DodecaViewProps>(function Dodeca
     moveCountRef.current = 0;
     const scene = new CustomDodecaScene(container, layerCount);
     sceneRef.current = scene;
+    // Gigaminx's solver is a heavy module; start loading it in its worker now, not on the first solve.
+    if (layerCount === 5 && interactiveRef.current) preloadGigaminxSolveWorker();
     scene.setOrbitEnabled(interactiveRef.current && orbitModeRef.current);
 
     const controller = attachDodecaSwipeTurning(scene, moveCountRef);
