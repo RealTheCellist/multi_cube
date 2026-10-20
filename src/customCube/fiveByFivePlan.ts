@@ -26,8 +26,9 @@ function simplify(moves: Move[]): Move[] {
 }
 
 /**
- * Whole pre-3x3 plan for a 5x5x5: true centers, X/T-centers, then wing pairing (with a parity fix and a
- * center re-solve in between when the wing target is odd). Returns null if it cannot reach a state with every
+ * Whole pre-3x3 plan for a 5x5x5: true centers, then (when the wing target is odd) the cheapest parity-fixing inner turn,
+ * then X/T-centers, then wing pairing. The parity is decided right after the true centers -- the X/T-center 3-cycles
+ * never touch wings -- so the centers are solved only once. Returns null if it cannot reach a state with every
  * center solved and every wing paired. Does not mutate `cubies`.
  */
 export function planPairing5(cubies: readonly Cubie[]): Move[] | null {
@@ -35,26 +36,27 @@ export function planPairing5(cubies: readonly Cubie[]): Move[] | null {
   const plan: Move[] = [];
   const trueCenters = solveTrueCenterPositions5(work);
   plan.push(...trueCenters.moves);
-  const centers = solveCentersByCommutator5(work);
-  applyAll(work, centers);
-  plan.push(...centers);
 
-  let wings = solveWingsByCommutator5(work);
-  if (!wings) {
+  if (!solveWingsByCommutator5(work)) {
+    let best: { fix: Move; cost: number } | null = null;
     for (const f of PARITY_FIXERS) {
       const trial = cloneCubies(work);
       const fix = WING_MOVES[f];
       applyAll(trial, [fix]);
-      const recenter = solveCentersByCommutator5(trial);
-      applyAll(trial, recenter);
-      const afterFix = solveWingsByCommutator5(trial);
-      if (!afterFix) continue;
-      plan.push(fix, ...recenter);
-      applyAll(work, [fix, ...recenter]);
-      wings = afterFix;
-      break;
+      const wings = solveWingsByCommutator5(trial);
+      if (!wings) continue;
+      const cost = solveCentersByCommutator5(trial).length + wings.length;
+      if (!best || cost < best.cost) best = { fix, cost };
     }
+    if (!best) return null;
+    applyAll(work, [best.fix]);
+    plan.push(best.fix);
   }
+  const centers = solveCentersByCommutator5(work);
+  applyAll(work, centers);
+  plan.push(...centers);
+
+  const wings = solveWingsByCommutator5(work);
   if (!wings) return null;
   applyAll(work, wings);
   plan.push(...wings);
