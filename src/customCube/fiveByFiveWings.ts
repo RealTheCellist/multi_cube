@@ -1,7 +1,9 @@
 import type { Axis } from "./cubeMath";
 import { applyRawQuarterTurn, buildSolvedCube, cloneCubies, roundedComponent, type Cubie, type Face } from "./cubeState";
 import { pieceType5 } from "./fiveByFivePieces";
+import commutatorData from "./data/fiveByFiveCommutators.json";
 import type { Move } from "./fiveByFiveCenters";
+import { buildCycleTools, type CommutatorWords, type CycleTools } from "./threeCycleTools";
 
 // ============================================================================
 // 5x5x5 wing pairing by pure wing 3-cycles.
@@ -29,12 +31,11 @@ export const WING_MOVES: readonly Move[] = (() => {
   return out;
 })();
 
-/** [A, B] = A B A' B' as indices into WING_MOVES (found offline: moves exactly three wings). */
-const COMMUTATOR = { a: [16], b: [13, 23, 12] };
+/** Commutators [A, B] = A B A' B' (indices into WING_MOVES) that each move exactly three wings and nothing else (found offline, wings5-gen/). */
+const COMMUTATORS: CommutatorWords[] = commutatorData.W.map(([a, b]) => ({ a, b }));
 
 const posKey = (x: number, y: number, z: number) => `${Math.round(x)},${Math.round(y)},${Math.round(z)}`;
 const dirKey = (x: number, y: number, z: number) => `${Math.round(x)},${Math.round(y)},${Math.round(z)}`;
-const inverseWord = (w: readonly number[]): number[] => [...w].reverse().map((m) => m ^ 1);
 
 interface WingModel {
   n: number; // 24
@@ -121,57 +122,10 @@ function getModel(): WingModel {
   return modelCache;
 }
 
-interface Tools {
-  base: [number, number, number];
-  commutator: number[];
-  pathTo: Map<number, number[]>;
-}
-let toolsCache: Tools | null = null;
-const tripleKey = (a: number, b: number, c: number) => (a * 32 + b) * 32 + c;
-
-function getTools(): Tools {
-  if (toolsCache) return toolsCache;
-  const model = getModel();
-  const commutator = [...COMMUTATOR.a, ...COMMUTATOR.b, ...inverseWord(COMMUTATOR.a), ...inverseWord(COMMUTATOR.b)];
-  let perm: Uint8Array = Uint8Array.from({ length: model.n }, (_, i) => i);
-  for (const m of commutator) perm = perm.map((s) => model.slotDest[m][s]);
-  const moved: number[] = [];
-  perm.forEach((to, from) => {
-    if (to !== from) moved.push(from);
-  });
-  if (moved.length !== 3) throw new Error("fiveByFiveWings: commutator does not move exactly three wings");
-  const base: [number, number, number] = [moved[0], perm[moved[0]], perm[perm[moved[0]]]];
-
-  const parent = new Map<number, { prev: number; move: number }>();
-  parent.set(tripleKey(...base), { prev: -1, move: -1 });
-  let frontier: [number, number, number][] = [base];
-  while (frontier.length) {
-    const next: [number, number, number][] = [];
-    for (const t of frontier) {
-      const tk = tripleKey(...t);
-      for (let m = 0; m < WING_MOVES.length; m++) {
-        const nt: [number, number, number] = [model.slotDest[m][t[0]], model.slotDest[m][t[1]], model.slotDest[m][t[2]]];
-        const k = tripleKey(...nt);
-        if (parent.has(k)) continue;
-        parent.set(k, { prev: tk, move: m });
-        next.push(nt);
-      }
-    }
-    frontier = next;
-  }
-  const pathTo = new Map<number, number[]>();
-  for (const k of parent.keys()) {
-    const word: number[] = [];
-    for (let cur = k; parent.get(cur)!.prev !== -1; cur = parent.get(cur)!.prev) word.push(parent.get(cur)!.move);
-    pathTo.set(k, word.reverse());
-  }
-  toolsCache = { base, commutator, pathTo };
+let toolsCache: CycleTools | null = null;
+function getTools(): CycleTools {
+  if (!toolsCache) toolsCache = buildCycleTools(getModel().slotDest, COMMUTATORS);
   return toolsCache;
-}
-
-function macroFor(tools: Tools, q: number, p: number, r: number): number[] | null {
-  const w = tools.pathTo.get(tripleKey(q, p, r));
-  return w ? [...inverseWord(w), ...tools.commutator, ...w] : null;
 }
 
 function simplify(word: number[]): number[] {
@@ -266,7 +220,7 @@ export function solveWingsByCommutator5(cubies: readonly Cubie[]): Move[] | null
           else if (!was(s) && now) after++;
         }
         if (after >= wrong.length) continue;
-        const macro = macroFor(tools, q, p, r);
+        const macro = tools.macroFor(q, p, r);
         if (!macro) continue;
         if (!best || after < best.after || (after === best.after && macro.length < best.cost)) best = { after, cost: macro.length, q, p, r, macro };
       }

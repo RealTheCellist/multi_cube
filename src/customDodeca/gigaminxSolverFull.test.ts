@@ -45,3 +45,24 @@ describe("gigaminxSolver Phase 1-5: full solve (corners, wings, inner corners, e
     );
   }, 7_000_000);
 });
+
+// solveFullGigaminxStaged must produce exactly the plan solveFullGigaminx does, just delivered phase by phase
+describe("solveFullGigaminxStaged", () => {
+  it("delivers phase chunks whose concatenation equals solveFullGigaminx's moves", async () => {
+    const { solveFullGigaminxStaged, solveFullGigaminx } = await import("./gigaminxSolver");
+    const { applyGigaminxScramble, randomGigaminxScramble, solvedGigaminxState } = await import("./gigaminxState");
+    let seed = 4242;
+    const rng = () => {
+      seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+      return seed / 0x7fffffff;
+    };
+    for (let i = 0; i < 3; i++) {
+      const state = applyGigaminxScramble(solvedGigaminxState(), randomGigaminxScramble(20, rng));
+      const chunks: unknown[][] = [];
+      const staged = solveFullGigaminxStaged(state, (c) => chunks.push(c));
+      expect(chunks.length).toBeGreaterThan(0);
+      expect(chunks.flat()).toEqual(staged);
+      expect(staged).toEqual(solveFullGigaminx(state).moves);
+    }
+  }, 120_000);
+});

@@ -395,6 +395,13 @@ class CenterPhaseEngine {
   private plan: Move[] | null = null;
   private cursor = 0;
   private planStartCubies: Cubie[] | null = null;
+  // The 3x3x3-style reduction moves are computed right after the pairing plan (cubing's solver is async) and
+  // APPENDED to the same plan, so the whole solve is one cached plan stepped through by the cursor. Replanning
+  // the reduction on every press instead let two equally good solutions alternate forever (z2- then z2+ ...).
+  private tailPending = false;
+  private tailSolved = false;
+  private generation = 0;
+  private tailWaiters: (() => void)[] = [];
 
   hasValidPlan(liveCubies: readonly Cubie[]): boolean {
     if (!this.plan || !this.planStartCubies) return false;
@@ -414,6 +421,7 @@ class CenterPhaseEngine {
     }
     if (pairing) {
       this.plan = pairing;
+      this.startReductionTail(startCubies, pairing);
     } else {
       const trueCenterResult = solveTrueCenterPositions5(cubies);
       const centerMoves = solveCenterMoves(cubies);
@@ -423,10 +431,54 @@ class CenterPhaseEngine {
     this.planStartCubies = startCubies;
   }
 
+  /** Computes the reduction of the paired cube asynchronously and appends it to the plan when ready. */
+  private startReductionTail(startCubies: Cubie[], pairing: readonly Move[]): void {
+    const generation = ++this.generation;
+    const plan = this.plan!;
+    const end = cloneCubies(startCubies);
+    for (const [axis, layer, sign] of pairing) applyRawQuarterTurn(end, axis, layer, sign);
+    this.tailPending = true;
+    this.tailSolved = false;
+    const finish = () => {
+      if (generation !== this.generation) return;
+      this.tailPending = false;
+      const waiters = this.tailWaiters;
+      this.tailWaiters = [];
+      for (const w of waiters) w();
+    };
+    solveReduced5(end, 5)
+      .then((result) => {
+        if (generation !== this.generation) return;
+        for (const m of result.moves) plan.push(m);
+        this.tailSolved = result.solved;
+      })
+      .catch((err) => console.error("5x5 reduction planning failed (non-fatal):", err))
+      .then(finish);
+  }
+
+  /** True while the reduction moves are still being computed (more moves may yet be appended). */
+  isTailPending(): boolean {
+    return this.tailPending;
+  }
+
+  waitForTail(): Promise<void> {
+    return this.tailPending ? new Promise((resolve) => this.tailWaiters.push(resolve)) : Promise.resolve();
+  }
+
+  /** Whether the finished plan (pairing + reduction) ends at a solved cube. */
+  planSolves(): boolean {
+    return this.tailSolved;
+  }
+
   invalidate(): void {
+    this.generation++;
     this.plan = null;
     this.cursor = 0;
     this.planStartCubies = null;
+    this.tailPending = false;
+    const waiters = this.tailWaiters;
+    this.tailWaiters = [];
+    for (const w of waiters) w();
   }
 
   syncAndPeekNextMove(liveCubies: readonly Cubie[]): Move | null {
@@ -456,10 +508,6 @@ const centerPhaseEngine = new CenterPhaseEngine();
  * gets stepped through rather than rebuilt.
  */
 export function prewarmFiveByFiveSolve(scene: CustomCubeScene): void {
-  if (!edgeLibrariesWarmed) {
-    warmupFiveByFiveEdgeLibraries();
-    edgeLibrariesWarmed = true;
-  }
   const liveCubies = scene.getCubies();
   if (centerPhaseEngine.hasValidPlan(liveCubies)) return;
   // Synchronous and long-running (up to 15s, same as a real "솔브" press
@@ -494,23 +542,30 @@ async function commitFirstMove(scene: CustomCubeScene, moves: readonly Move[]): 
  * comments).
  */
 export async function applyNextFiveByFiveMove(scene: CustomCubeScene): Promise<FiveByFiveHint> {
-  if (!edgeLibrariesWarmed) {
-    warmupFiveByFiveEdgeLibraries();
-    edgeLibrariesWarmed = true;
-  }
   const liveCubies = scene.getCubies();
   let centerMove = centerPhaseEngine.syncAndPeekNextMove(liveCubies);
   if (!centerMove && !centerPhaseEngine.hasValidPlan(liveCubies)) {
     centerPhaseEngine.solve(cloneCubies(liveCubies));
     centerMove = centerPhaseEngine.syncAndPeekNextMove(liveCubies);
   }
+  // Played everything computed so far but the reduction tail is still on its way: wait for it.
+  while (!centerMove && centerPhaseEngine.isTailPending()) {
+    await centerPhaseEngine.waitForTail();
+    centerMove = centerPhaseEngine.syncAndPeekNextMove(liveCubies);
+  }
   if (centerMove) {
     await commitFirstMove(scene, [centerMove]);
-    return { hasMove: true, movesRemaining: centerPhaseEngine.remainingMoves(), solved: false };
+    return { hasMove: true, movesRemaining: centerPhaseEngine.remainingMoves(), solved: centerPhaseEngine.planSolves() };
   }
 
   const cubies = cloneCubies(scene.getCubies());
   if (wrongWingCount5(cubies) > 0) {
+    // Only reached if the constructive pairing plan failed: the older wing search needs its libraries
+    // (~1.7s to build), so they are built here instead of eagerly on every scramble.
+    if (!edgeLibrariesWarmed) {
+      warmupFiveByFiveEdgeLibraries();
+      edgeLibrariesWarmed = true;
+    }
     let move = edgeSolverEngine.syncAndPeekNextMove(cubies);
     if (!move && !edgeSolverEngine.hasValidPlan(cubies)) {
       edgeSolverEngine.solve(cubies);

@@ -1,7 +1,9 @@
 import { type Axis } from "./cubeMath";
 import { applyRawQuarterTurn, buildSolvedCube, cloneCubies, roundedComponent, type Cubie, type Face } from "./cubeState";
 import { pieceType5 } from "./fiveByFivePieces";
+import commutatorData from "./data/fiveByFiveCommutators.json";
 import type { Move } from "./fiveByFiveCenters";
+import { buildCycleTools, type CommutatorWords, type CycleTools } from "./threeCycleTools";
 
 // ============================================================================
 // 5x5x5 centers by 3-cycle commutators on an abstract permutation model.
@@ -33,11 +35,8 @@ const MOVES: readonly Move[] = (() => {
   return out;
 })();
 
-/** Commutator [A, B] = A B A' B' as indices into MOVES, one per orbit (found offline). */
-const COMMUTATORS: Record<"X" | "T", { a: number[]; b: number[] }> = {
-  X: { a: [14], b: [20, 13, 21] },
-  T: { a: [2, 8, 3], b: [4, 19, 5] },
-};
+/** Commutators [A, B] = A B A' B' (as indices into MOVES) that each move exactly three pieces of one orbit, found offline (centers5-gen/). */
+const COMMUTATORS: Record<"X" | "T", CommutatorWords[]> = { X: commutatorData.X.map(([a, b]) => ({ a, b })), T: commutatorData.T.map(([a, b]) => ({ a, b })) };
 
 interface Model {
   n: number;
@@ -80,76 +79,20 @@ function getModel(): Model {
   return modelCache;
 }
 
-function wordPerm(model: Model, word: readonly number[]): Uint8Array {
-  let p: Uint8Array = Uint8Array.from({ length: model.n }, (_, i) => i);
-  for (const m of word) p = p.map((s) => model.dest[m][s]);
-  return p;
-}
-const inverseWord = (w: readonly number[]): number[] => [...w].reverse().map((m) => m ^ 1);
-
 interface OrbitTools {
   slots: number[]; // slots of this orbit
-  base: [number, number, number]; // commutator's own cycle: piece at base[0] -> base[1] -> base[2] -> base[0]
-  commutator: number[];
-  /** For an ordered target triple (q,p,r): move word W with W carrying base -> (q,p,r) (apply W after the commutator, its inverse before). */
-  pathTo: Map<number, number[]>;
+  tools: CycleTools;
 }
 
 const toolsCache = new Map<"X" | "T", OrbitTools>();
-const tripleKey = (a: number, b: number, c: number) => (a * 48 + b) * 48 + c;
 
 function getTools(kind: "X" | "T"): OrbitTools {
   const cached = toolsCache.get(kind);
   if (cached) return cached;
   const model = getModel();
-  const { a, b } = COMMUTATORS[kind];
-  const commutator = [...a, ...b, ...inverseWord(a), ...inverseWord(b)];
-  const perm = wordPerm(model, commutator);
-  const moved: number[] = [];
-  perm.forEach((to, from) => {
-    if (to !== from) moved.push(from);
-  });
-  if (moved.length !== 3 || moved.some((s) => model.type[s] !== kind)) throw new Error(`fiveByFiveCentersCommutator: ${kind} commutator is not a pure 3-cycle`);
-  // orient the cycle: base[0] -> base[1] -> base[2] -> base[0]
-  const first = moved[0];
-  const base: [number, number, number] = [first, perm[first], perm[perm[first]]];
-
-  // BFS over ordered triples of slots, starting from `base`
-  const pathTo = new Map<number, number[]>();
-  const parent = new Map<number, { prev: number; move: number }>();
-  const startKey = tripleKey(...base);
-  parent.set(startKey, { prev: -1, move: -1 });
-  let frontier: [number, number, number][] = [base];
-  while (frontier.length) {
-    const next: [number, number, number][] = [];
-    for (const t of frontier) {
-      const tk = tripleKey(...t);
-      for (let m = 0; m < MOVES.length; m++) {
-        const nt: [number, number, number] = [model.dest[m][t[0]], model.dest[m][t[1]], model.dest[m][t[2]]];
-        const k = tripleKey(...nt);
-        if (parent.has(k)) continue;
-        parent.set(k, { prev: tk, move: m });
-        next.push(nt);
-      }
-    }
-    frontier = next;
-  }
-  for (const k of parent.keys()) {
-    const word: number[] = [];
-    for (let cur = k; parent.get(cur)!.prev !== -1; cur = parent.get(cur)!.prev) word.push(parent.get(cur)!.move);
-    pathTo.set(k, word.reverse());
-  }
-  const tools: OrbitTools = { slots: model.type.map((t, i) => (t === kind ? i : -1)).filter((i) => i >= 0), base, commutator, pathTo };
+  const tools: OrbitTools = { slots: model.type.map((t, i) => (t === kind ? i : -1)).filter((i) => i >= 0), tools: buildCycleTools(model.dest, COMMUTATORS[kind]) };
   toolsCache.set(kind, tools);
   return tools;
-}
-
-/** The macro that moves the piece at q to p, the piece at p to r and the piece at r to q. */
-function macroFor(tools: OrbitTools, q: number, p: number, r: number): number[] | null {
-  const w = tools.pathTo.get(tripleKey(q, p, r));
-  if (!w) return null;
-  // setup S = inverse(w) (carries q,p,r onto the base slots), then the commutator, then w.
-  return [...inverseWord(w), ...tools.commutator, ...w];
 }
 
 /** Cancels adjacent inverse pairs (m followed by m^1) left where setups and the commutator meet. */
@@ -189,7 +132,7 @@ function solveOrbit(model: Model, kind: "X" | "T", colors: Face[]): number[] {
             else if (!was && now) after++;
           }
           if (after >= wrong.length) continue; // must make real progress
-          const macro = macroFor(tools, q, p, r);
+          const macro = tools.tools.macroFor(q, p, r);
           if (!macro) continue;
           const cost = macro.length;
           if (!best || after < best.after || (after === best.after && cost < best.cost)) best = { after, cost, q, p, r, macro };

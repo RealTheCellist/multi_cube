@@ -14,3 +14,7 @@ that leaves all non-wing stickers untouched and moves exactly three wings. Short
 ```
 cargo run --release -- model.txt 3 3 > out33.txt   # a few seconds
 ```
+
+`../data/fiveByFiveCommutators.json` (`W`) holds all 912 commutators it finds (8 or 10 quarter turns); the wing solver
+uses every one of them as a source of a multi-source search (`threeCycleTools.ts`), which keeps setup words to 0-2 moves.
+Regenerate with `cargo run --release -- model.txt 3 3 > out33.txt` and turn each `A=[..] B=[..]` line into an `[A, B]` pair.

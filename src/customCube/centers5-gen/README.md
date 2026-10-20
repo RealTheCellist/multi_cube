@@ -14,3 +14,7 @@ T = 12 (`A=[2,8,3]`, `B=[4,19,5]`) -- the two constants in `COMMUTATORS`.
 ```
 cargo run --release -- model.txt 3 > out3.txt   # ~20 s
 ```
+
+`../data/fiveByFiveCommutators.json` (`X`, `T`) holds every commutator this search found at the shortest lengths
+(X up to 10 quarter turns, T 12): `fiveByFiveCentersCommutator.ts` uses them all as sources of a multi-source search
+(`threeCycleTools.ts`), which keeps the conjugating setup words to 0-2 moves.

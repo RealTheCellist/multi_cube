@@ -2521,6 +2521,32 @@ export function solveFullGigaminx(state: GigaminxState, maxAttempts = 400): { mo
   return { moves: [...cwieMoves, ...centerBridgesResult.moves], cornersTrace, wingsTrace, innerCornersTrace, edgeBridgesTrace, centerBridgesTrace: centerBridgesResult.trace };
 }
 
+/**
+ * Same solve as solveFullGigaminx -- identical phases in the identical order, so the concatenated moves are
+ * identical -- but hands each phase's moves to `onPhase` as soon as that phase finishes. Every phase starts
+ * from the state the previous phases left, so the moves of phase k are a true prefix of the final plan: a
+ * caller can start playing the corner moves while the later (and slower) phases are still being computed.
+ */
+export function solveFullGigaminxStaged(state: GigaminxState, onPhase: (phaseMoves: GigaminxTurn[]) => void, maxAttempts = 400): GigaminxTurn[] {
+  const phases: ((s: GigaminxState) => { moves: GigaminxTurn[]; trace: PhaseTrace })[] = [
+    (s) => solveCorners(s, maxAttempts),
+    (s) => solveWings(s, maxAttempts),
+    (s) => solveInnerCorners(s, maxAttempts),
+    (s) => solveEdgeBridges(s, maxAttempts),
+    (s) => solveCenterBridges(s, maxAttempts),
+  ];
+  const all: GigaminxTurn[] = [];
+  let current = state;
+  for (const run of phases) {
+    const result = run(current);
+    onPhase(result.moves);
+    for (const m of result.moves) all.push(m);
+    if (!result.trace.succeeded) break;
+    current = applySeq(current, result.moves);
+  }
+  return all;
+}
+
 /** Dev-only re-exports for ad-hoc experimentation against a saved checkpoint. Not part of the public solver API. */
 export const __dev = {
   applySeq,

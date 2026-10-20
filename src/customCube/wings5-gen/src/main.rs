@@ -77,6 +77,6 @@ fn main() {
     }
     let mut out: Vec<_> = best.iter().collect();
     out.sort_by_key(|(_, v)| v.0);
-    for (sup, (len, a, b)) in out.iter().take(30) { println!("len {} support {:?} A={:?} B={:?}", len, sup, a, b); }
+    for (sup, (len, a, b)) in out.iter().take(1000000) { println!("len {} support {:?} A={:?} B={:?}", len, sup, a, b); }
     eprintln!("distinct pure wing 3-cycles: {}", best.len());
 }

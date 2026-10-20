@@ -8,7 +8,7 @@
 import type { CustomDodecaScene } from "./CustomDodecaScene";
 import type { DodecaState } from "./dodecaState";
 import { dodecaStateToGigaminxState, gigaminxTurnToRawTurn, type GigaminxTurn } from "./gigaminxState";
-import { solveFullGigaminxOffThread } from "./gigaminxSolveWorkerClient";
+import { solveFullGigaminxStreaming } from "./gigaminxSolveWorkerClient";
 
 export interface GigaminxSolveHint {
   move: GigaminxTurn | null;
@@ -28,9 +28,15 @@ class GigaminxSolverEngine {
   private plan: GigaminxTurn[] | null = null;
   private cursor = 0;
   private planStartUndoCount = -1;
+  // The plan arrives phase by phase (see solveFullGigaminxStreaming): `complete` flips once every phase has
+  // been delivered, and `generation` makes chunks of a superseded solve (new scramble, reset, undo) harmless.
+  private complete = true;
+  private generation = 0;
+  private progressWaiters: (() => void)[] = [];
   // Dedupes a background prewarm (fired right after scramble) against a
   // real click landing before it finishes -- same reasoning as
   // kilominxFamilySolvePlayback.ts's own KilominxFamilySolverEngine.pending.
+  // Resolves when the FIRST moves are available (not when the whole plan is).
   private pending: { undoCountAtStart: number; promise: Promise<void> } | null = null;
 
   private expectedUndoCount(): number {
@@ -41,21 +47,54 @@ class GigaminxSolverEngine {
     return this.plan !== null && this.expectedUndoCount() === scene.getUndoCount();
   }
 
+  private notifyProgress(): void {
+    const waiters = this.progressWaiters;
+    this.progressWaiters = [];
+    for (const w of waiters) w();
+  }
+
+  /** Resolves at the next delivered chunk or when the plan completes (immediately if it already has). */
+  waitForProgress(): Promise<void> {
+    if (this.complete) return Promise.resolve();
+    return new Promise((resolve) => this.progressWaiters.push(resolve));
+  }
+
+  isComplete(): boolean {
+    return this.complete;
+  }
+
   async solve(scene: CustomDodecaScene): Promise<void> {
     const undoCountAtStart = scene.getUndoCount();
     if (this.pending && this.pending.undoCountAtStart === undoCountAtStart) return this.pending.promise;
 
-    const promise = (async () => {
+    const generation = ++this.generation;
+    const plan: GigaminxTurn[] = [];
+    this.plan = plan;
+    this.cursor = 0;
+    this.planStartUndoCount = undoCountAtStart;
+    this.complete = false;
+
+    const promise = new Promise<void>((resolveFirst) => {
       const state: DodecaState = { layerCount: scene.layerCount, stickers: scene.getStickers() };
       const solverState = dodecaStateToGigaminxState(state);
       const startedAt = performance.now();
-      const moves = await solveFullGigaminxOffThread(solverState);
-      const ms = performance.now() - startedAt;
-      if (ms > 3000) console.warn(`[gigaminx] slow solve: ${Math.round(ms)}ms`, { moves: moves.length });
-      this.plan = moves;
-      this.cursor = 0;
-      this.planStartUndoCount = undoCountAtStart;
-    })();
+      solveFullGigaminxStreaming(solverState, (chunk) => {
+        if (generation !== this.generation) return;
+        for (const m of chunk) plan.push(m);
+        if (chunk.length > 0) resolveFirst();
+        this.notifyProgress();
+      })
+        .catch((err) => console.error("gigaminx solve failed:", err))
+        .then(() => {
+          if (generation === this.generation) {
+            this.complete = true;
+            const ms = performance.now() - startedAt;
+            if (ms > 3000) console.warn(`[gigaminx] slow solve: ${Math.round(ms)}ms`, { moves: plan.length });
+          }
+          resolveFirst();
+          this.notifyProgress();
+        });
+    });
     this.pending = { undoCountAtStart, promise };
     try {
       await promise;
@@ -65,9 +104,12 @@ class GigaminxSolverEngine {
   }
 
   invalidate(): void {
+    this.generation++;
     this.plan = null;
     this.cursor = 0;
     this.planStartUndoCount = -1;
+    this.complete = true;
+    this.notifyProgress();
   }
 
   peekNextMove(): GigaminxTurn | null {
@@ -116,7 +158,12 @@ function animateProgress(scene: CustomDodecaScene, from: number, to: number, dur
 export async function applyNextGigaminxSolveMove(scene: CustomDodecaScene): Promise<GigaminxSolveHint> {
   if (!engine.hasValidPlan(scene)) await engine.solve(scene);
 
-  const move = engine.peekNextMove();
+  // The plan streams in phase by phase; if the player has played everything delivered so far, wait for more.
+  let move = engine.peekNextMove();
+  while (!move && !engine.isComplete()) {
+    await engine.waitForProgress();
+    move = engine.peekNextMove();
+  }
   if (!move) return { move: null, movesRemaining: 0 };
 
   const raw = gigaminxTurnToRawTurn(move);

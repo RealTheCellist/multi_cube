@@ -1,23 +1,31 @@
 // Main-thread side of gigaminxSolveWorker.ts. One long-lived worker (unlike
 // solver/n6/royalSolveWorkerClient.ts's per-solve worker, there is no wasm
 // memory to hand back here, and keeping the worker alive keeps its JIT warm
-// and the heavy solver module loaded). Degrades gracefully: where Workers
-// aren't available (Node/Vitest, old browsers) or the worker errors, the same
-// solveFullGigaminx runs on the calling thread instead -- slower to respond
-// (it blocks the page) but with an identical result.
+// and the heavy solver module loaded). The solve is streamed: each finished
+// phase's moves arrive as a chunk, so the first move is available after the
+// (fast) corner phase instead of after the whole ~2s solve. Degrades
+// gracefully: where Workers aren't available (Node/Vitest, old browsers) or
+// the worker errors, the same staged solve runs on the calling thread
+// instead -- slower to respond (it blocks the page) but with identical moves.
 import type { GigaminxState, GigaminxTurn } from "./gigaminxState";
 import type { GigaminxSolveWorkerRequest, GigaminxSolveWorkerResponse } from "./gigaminxSolveWorker";
+
+interface Pending {
+  onChunk: (moves: GigaminxTurn[]) => void;
+  resolve: () => void;
+  fallback: () => Promise<void>;
+}
 
 let worker: Worker | null = null;
 let workerBroken = false;
 let nextRequestId = 1;
-const pending = new Map<number, { resolve: (moves: GigaminxTurn[]) => void; fallback: () => Promise<GigaminxTurn[]> }>();
+const pending = new Map<number, Pending>();
 
-async function solveOnMainThread(state: GigaminxState): Promise<GigaminxTurn[]> {
+async function solveOnMainThread(state: GigaminxState, onChunk: (moves: GigaminxTurn[]) => void): Promise<void> {
   // Dynamic import: the solver bundles 5 precomputed commutator libraries (~179KB gzip) that
   // only an actual Gigaminx solve needs.
-  const { solveFullGigaminx } = await import("./gigaminxSolver");
-  return solveFullGigaminx(state).moves;
+  const { solveFullGigaminxStaged } = await import("./gigaminxSolver");
+  solveFullGigaminxStaged(state, onChunk);
 }
 
 function getWorker(): Worker | null {
@@ -28,10 +36,13 @@ function getWorker(): Worker | null {
     w.onmessage = (ev: MessageEvent<GigaminxSolveWorkerResponse>) => {
       const entry = pending.get(ev.data.id);
       if (!entry) return;
-      pending.delete(ev.data.id);
-      if (ev.data.moves) entry.resolve(ev.data.moves);
-      else {
+      if (ev.data.chunk) entry.onChunk(ev.data.chunk);
+      else if (ev.data.done) {
+        pending.delete(ev.data.id);
+        entry.resolve();
+      } else {
         console.error("gigaminx solve worker reported an error (non-fatal, solving on the main thread):", ev.data.error);
+        pending.delete(ev.data.id);
         entry.fallback().then(entry.resolve);
       }
     };
@@ -58,12 +69,38 @@ export function preloadGigaminxSolveWorker(): void {
   getWorker();
 }
 
-export function solveFullGigaminxOffThread(state: GigaminxState): Promise<GigaminxTurn[]> {
+/**
+ * Solves `state`, calling `onChunk` with the moves of each finished phase (in plan order; the chunks
+ * concatenate to the whole plan). Resolves once every chunk has been delivered. On a worker failure partway
+ * through, the solve restarts on the main thread and the already-delivered chunks are not repeated.
+ */
+export function solveFullGigaminxStreaming(state: GigaminxState, onChunk: (moves: GigaminxTurn[]) => void): Promise<void> {
   const w = getWorker();
-  if (!w) return solveOnMainThread(state);
-  return new Promise<GigaminxTurn[]>((resolve) => {
+  if (!w) return solveOnMainThread(state, onChunk);
+  return new Promise<void>((resolve) => {
     const id = nextRequestId++;
-    pending.set(id, { resolve, fallback: () => solveOnMainThread(state) });
+    let delivered = 0;
+    const countingChunk = (moves: GigaminxTurn[]) => {
+      delivered += moves.length;
+      onChunk(moves);
+    };
+    pending.set(id, {
+      onChunk: countingChunk,
+      resolve,
+      // restart on the main thread; skip what the worker already delivered
+      fallback: () => {
+        let skip = delivered;
+        return solveOnMainThread(state, (moves) => {
+          if (skip >= moves.length) {
+            skip -= moves.length;
+            return;
+          }
+          const rest = skip > 0 ? moves.slice(skip) : moves;
+          skip = 0;
+          onChunk(rest);
+        });
+      },
+    });
     const request: GigaminxSolveWorkerRequest = { id, state };
     w.postMessage(request);
   });

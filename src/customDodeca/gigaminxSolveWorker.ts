@@ -5,7 +5,7 @@
 // about a second on a warm engine (its commutator libraries make the module
 // heavy to load too), so running it here keeps the page responsive while the
 // plan is prepared right after a scramble.
-import { solveFullGigaminx } from "./gigaminxSolver";
+import { solveFullGigaminx, solveFullGigaminxStaged } from "./gigaminxSolver";
 import { applyGigaminxScramble, randomGigaminxScramble, solvedGigaminxState, type GigaminxState, type GigaminxTurn } from "./gigaminxState";
 
 export interface GigaminxSolveWorkerRequest {
@@ -13,17 +13,23 @@ export interface GigaminxSolveWorkerRequest {
   state: GigaminxState;
 }
 
+/** One message per finished phase (`chunk`), then one with `done`; or `error`. Chunks concatenate to the full plan. */
 export interface GigaminxSolveWorkerResponse {
   id: number;
-  moves?: GigaminxTurn[];
+  chunk?: GigaminxTurn[];
+  done?: true;
   error?: string;
 }
 
 self.onmessage = (ev: MessageEvent<GigaminxSolveWorkerRequest>) => {
   const { id, state } = ev.data;
   try {
-    const response: GigaminxSolveWorkerResponse = { id, moves: solveFullGigaminx(state).moves };
-    self.postMessage(response);
+    solveFullGigaminxStaged(state, (chunk) => {
+      const response: GigaminxSolveWorkerResponse = { id, chunk };
+      self.postMessage(response);
+    });
+    const done: GigaminxSolveWorkerResponse = { id, done: true };
+    self.postMessage(done);
   } catch (err) {
     const response: GigaminxSolveWorkerResponse = { id, error: err instanceof Error ? err.message : String(err) };
     self.postMessage(response);
