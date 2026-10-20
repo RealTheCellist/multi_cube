@@ -121,7 +121,11 @@ export async function applyNextSolveMove(scene: CustomCubeScene): Promise<SolveH
  */
 export function warmupFourByFour(): void {
   preloadFourByFourWorker();
-  void warmupFourByFourReductionSolver();
+  // The reduction solver's warmup runs on the main thread; starting it while the scene is still being built
+  // added long tasks right after opening the puzzle, so wait for an idle moment (or 3s at the latest).
+  const run = () => void warmupFourByFourReductionSolver();
+  if (typeof requestIdleCallback === "function") requestIdleCallback(run, { timeout: 3000 });
+  else setTimeout(run, 1500);
 }
 
 export interface FourByFourSolvePlan {
