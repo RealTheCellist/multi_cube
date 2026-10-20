@@ -102,8 +102,11 @@ export function axialSplit(pre: PrecomputedMoves): AxialSplit | null {
   return split;
 }
 
-/** Meet-in-the-middle over one orbit's own arrangement; returns move indices (into pre.allMoves) or null. */
-function searchOrbit(start: Uint8Array, perms: Uint8Array[], maxDepthEachSide: number, maxStates: number): number[] | null {
+/**
+ * Meet-in-the-middle over one orbit's own arrangement (at most 12 slots, so a state packs into a number); returns
+ * move indices into `perms` or null. Moves must come in inverse pairs: move m's inverse is m ^ 1.
+ */
+export function searchPermutationOrbit(start: Uint8Array, perms: Uint8Array[], maxDepthEachSide: number, maxStates: number): number[] | null {
   const n = start.length;
   const keyOf = (s: Uint8Array): number => {
     let k = 0;
@@ -202,7 +205,7 @@ export function solveAxialDecomposed(pre: PrecomputedMoves, startPieces: readonl
 
   const mainPos = new Map<number, number>(split.main.map((s, i) => [s, i]));
   const start = Uint8Array.from(split.main.map((s) => mainPos.get(startPieces[s])!));
-  const mainMoves = searchOrbit(start, split.mainPerms, 10, maxStates);
+  const mainMoves = searchPermutationOrbit(start, split.mainPerms, 10, maxStates);
   if (!mainMoves) return null;
 
   // follow the real full-slot pattern through those moves

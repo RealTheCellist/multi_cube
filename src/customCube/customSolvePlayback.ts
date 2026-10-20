@@ -6,8 +6,7 @@ import { computeSolveHint, type SolveHint } from "../solvePlayback";
 import type { Axis } from "./cubeMath";
 import type { CustomCubeScene } from "./CustomCubeScene";
 import { applyRawQuarterTurn, cloneCubies, FACE_TURNS, outerLayerCoordinate, type Cubie, type Face } from "./cubeState";
-import { solveCenters } from "./fourByFourCenters";
-import { solveEdgePairing, warmupFourByFourEdgeLibrary } from "./fourByFourEdges";
+import { preloadFourByFourWorker, solveEdgesAndCentersStreaming } from "./fourByFourWorkerClient";
 import { solveReduced, warmupFourByFourReductionSolver } from "./fourByFourReduction";
 import { computeFourByFourStateHash } from "./fourByFourStateHash";
 import { decideNextPlanMove, isCubiesStateAt } from "./planCursor";
@@ -121,7 +120,7 @@ export async function applyNextSolveMove(scene: CustomCubeScene): Promise<SolveH
  * memoized/guarded.
  */
 export function warmupFourByFour(): void {
-  warmupFourByFourEdgeLibrary();
+  preloadFourByFourWorker();
   void warmupFourByFourReductionSolver();
 }
 
@@ -147,25 +146,34 @@ export interface FourByFourSolvePlan {
  * fix algorithms (see fourByFourReduction.ts) before giving up, so this
  * only needs to check its final result.
  */
-export async function computeFourByFourSolveMoves(scene: CustomCubeScene): Promise<FourByFourSolvePlan> {
+export async function computeFourByFourSolveMoves(scene: CustomCubeScene, onMoves?: (moves: readonly Move[]) => void): Promise<FourByFourSolvePlan> {
   const cubies = cloneCubies(scene.getCubies());
   const moves: Move[] = [];
+  const emit = (chunk: readonly Move[]) => {
+    for (const m of chunk) moves.push(m);
+    for (const [axis, layer, sign] of chunk) applyRawQuarterTurn(cubies, axis, layer, sign);
+    onMoves?.(chunk);
+  };
 
   // Edges first: pairing doesn't care about center state, but its tail
   // phase can disturb centers (see fourByFourEdges.ts) -- so solving
   // centers first would just get undone. Centers only once, after, since
   // nothing downstream of it (the reduction solve's single-outer-layer
   // turns) ever touches centers again.
-  const edgeResult = await solveEdgePairing(cubies, 150000);
-  moves.push(...edgeResult.moves);
-  if (!edgeResult.solved) return { solved: false, moves };
-
-  const centerResult = solveCenters(cubies, 15000);
-  moves.push(...centerResult.moves);
-  if (!centerResult.solved) return { solved: false, moves };
+  // Edge pairing and center solving are long uninterrupted computations: they run in a worker (see
+  // fourByFourWorker.ts) and arrive phase by phase, so `onMoves` can hand the edge moves to the player before
+  // the centers are even done.
+  let edgesSolved = false;
+  let centersSolved = false;
+  await solveEdgesAndCentersStreaming(cubies, (chunk) => {
+    emit(chunk.moves);
+    if (chunk.phase === "edges") edgesSolved = chunk.solved;
+    else centersSolved = chunk.solved;
+  });
+  if (!edgesSolved || !centersSolved) return { solved: false, moves };
 
   const reductionResult = await solveReduced(cubies, scene.gridSize);
-  moves.push(...reductionResult.moves);
+  emit(reductionResult.moves);
   return { solved: reductionResult.solved, moves };
 }
 
@@ -206,16 +214,62 @@ class FourByFourSolverEngine {
   private plan: FourByFourPlan | null = null;
   private planStartCubies: Cubie[] | null = null;
 
-  async solve(scene: CustomCubeScene): Promise<void> {
-    const startCubies = cloneCubies(scene.getCubies());
-    const result = await computeFourByFourSolveMoves(scene);
-    this.plan = { moveQueue: result.moves, currentMove: 0, solved: result.solved };
-    this.planStartCubies = startCubies;
+  // The plan arrives phase by phase (edges, centers, reduction), appended to `moveQueue` as each finishes.
+  // `computing` stays true until the last phase has been delivered; `generation` makes the leftovers of a
+  // superseded solve (new scramble, reset, undo) harmless.
+  private computing = false;
+  private generation = 0;
+  private waiters: (() => void)[] = [];
+
+  private notify(): void {
+    const waiters = this.waiters;
+    this.waiters = [];
+    for (const w of waiters) w();
+  }
+
+  /** True while more moves may still be appended to the current plan. */
+  isComputing(): boolean {
+    return this.computing;
+  }
+
+  /** Resolves at the next delivered chunk or when the computation ends (immediately if it already has). */
+  waitForProgress(): Promise<void> {
+    return this.computing ? new Promise((resolve) => this.waiters.push(resolve)) : Promise.resolve();
+  }
+
+  /** Starts a solve for the scene's current state; resolves once the first moves are available (or the solve ended). */
+  solve(scene: CustomCubeScene): Promise<void> {
+    const generation = ++this.generation;
+    const plan: FourByFourPlan = { moveQueue: [], currentMove: 0, solved: false };
+    this.plan = plan;
+    this.planStartCubies = cloneCubies(scene.getCubies());
+    this.computing = true;
+    return new Promise<void>((resolveFirst) => {
+      computeFourByFourSolveMoves(scene, (chunk) => {
+        if (generation !== this.generation) return;
+        for (const m of chunk) plan.moveQueue.push(m);
+        if (chunk.length > 0) resolveFirst();
+        this.notify();
+      })
+        .then((result) => {
+          if (generation !== this.generation) return;
+          plan.solved = result.solved;
+        })
+        .catch((err) => console.error("4x4 solve failed:", err))
+        .then(() => {
+          if (generation === this.generation) this.computing = false;
+          resolveFirst();
+          this.notify();
+        });
+    });
   }
 
   invalidatePlan(): void {
+    this.generation++;
     this.plan = null;
     this.planStartCubies = null;
+    this.computing = false;
+    this.notify();
   }
 
   /** True only if a plan exists AND the live cube matches exactly where the
@@ -287,6 +341,12 @@ export async function applyNextFourByFourMove(scene: CustomCubeScene): Promise<F
   const liveCubies = scene.getCubies();
   let move = fourByFourEngine.syncAndPeekNextMove(liveCubies);
 
+  // Everything delivered so far has been played but later phases are still being computed: wait for more.
+  while (!move && fourByFourEngine.isComputing() && fourByFourEngine.hasValidPlan(liveCubies)) {
+    await fourByFourEngine.waitForProgress();
+    move = fourByFourEngine.syncAndPeekNextMove(liveCubies);
+  }
+
   if (!move && fourByFourEngine.hasValidPlan(liveCubies)) {
     // Plan is still valid (nothing diverged) but its queue is exhausted --
     // this genuinely is the end of the solve, whatever it did or didn't
@@ -303,6 +363,10 @@ export async function applyNextFourByFourMove(scene: CustomCubeScene): Promise<F
     // the actual current state.
     await fourByFourEngine.solve(scene);
     move = fourByFourEngine.syncAndPeekNextMove(liveCubies);
+    while (!move && fourByFourEngine.isComputing()) {
+      await fourByFourEngine.waitForProgress();
+      move = fourByFourEngine.syncAndPeekNextMove(liveCubies);
+    }
     if (!move) {
       const solved = fourByFourEngine.isSolved();
       fourByFourEngine.invalidatePlan();

@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { depthFromVertex, nearestFaceIndex, thirdTurnQuaternion, VERTEX_INDICES, type VertexIndex } from "./tetraMath";
 import { applyRawThirdTurn, buildSolvedTetra, type PieceType, type TetraState } from "./tetraState";
+import { searchPermutationOrbit } from "./tetraAxialDecomposed";
 // edgePdbClient/axialWorkerClient are deliberately NOT imported here (not
 // even dynamically -- that was tried and didn't help, see below): each owns
 // a `new Worker(new URL("./edgePdbWorker"/"./axialWorker", ...))` call, and
@@ -1673,6 +1674,48 @@ export function applyPhaseTo(working: TetraState, moves: TetraMove[], phaseMoves
 }
 
 /**
+ * N=4 edge pairing, fast path. The 16 edge-safe generators act on the 24 edge slots as ONE copy of A12 on two
+ * locked 12-slot orbits (checked by group order with a computer-algebra system: the action on either orbit alone
+ * already has the full order 239,500,800), so searching one orbit's 12 slots solves both. It is the same
+ * bidirectional search as meetInMiddleSolveEdges, over the same states, but each state is one number and the
+ * per-state data sits in flat arrays instead of a string key plus a Uint8Array, which is what made the old
+ * version block the page for up to ~1.3s. Returns null (caller falls back to the old search) if anything
+ * does not check out.
+ */
+function solveEdgesN4Fast(pre: PrecomputedMoves, startPieces: readonly number[], maxDepthEachSide: number, maxStates: number): TetraMove[] | null {
+  const gens = edgeGeneratorMoves(pre);
+  const edgeSlots: number[] = [];
+  for (let i = 0; i < pre.ns; i++) if (pre.pieceTypes[i] === "edge") edgeSlots.push(i);
+  // the orbit of the first edge slot under the generators
+  const orbit = new Set<number>([edgeSlots[0]]);
+  for (let grew = true; grew; ) {
+    grew = false;
+    for (const gm of gens) for (const s of [...orbit]) if (!orbit.has(gm.perm[s])) (orbit.add(gm.perm[s]), (grew = true));
+  }
+  const main = [...orbit].sort((a, b) => a - b);
+  if (main.length > 12) return null;
+  const pos = new Map(main.map((s, i) => [s, i]));
+  const perms: Uint8Array[] = [];
+  for (const gm of gens) {
+    const fwd = Uint8Array.from(main.map((s) => pos.get(gm.perm[s])!));
+    const inv = new Uint8Array(fwd.length);
+    fwd.forEach((to, from) => (inv[to] = from));
+    perms.push(fwd, inv);
+  }
+  const start = Uint8Array.from(main.map((s) => pos.get(startPieces[s])!));
+  const found = searchPermutationOrbit(start, perms, maxDepthEachSide, maxStates);
+  if (!found) return null;
+  const moves = found.flatMap((m) => (m % 2 === 0 ? gens[m >> 1].primitives : gens[m >> 1].invPrimitives));
+  // verify on the real permutations: every edge slot (both orbits) must end up solved
+  let pieces = startPieces.slice();
+  for (const m of moves) {
+    const perm = pre.permByMove.get(moveKey(m))!;
+    pieces = pieces.map((_, i) => pieces[perm[i]]);
+  }
+  return edgeSlots.every((s) => pieces[s] === s) ? [...moves] : null;
+}
+
+/**
  * Everything that happens once axial (and only axial -- centers don't-care
  * yet) is known to be correct, regardless of how it got that way (the
  * normal synchronous search, or axialWorkerClient's bigger-budget retry):
@@ -1705,8 +1748,8 @@ export function continueAfterAxialSolved(pre: PrecomputedMoves, working: TetraSt
     pre.layerCount === 5
       ? applyPhaseTo(working, moves, solveN5EdgesInTwoPhases(pre, patternFromState(working, pre), usedFallback ? 8 : 6, usedFallback ? 6_000_000 : MAX_SEARCH_STATES))
       : usedFallback
-        ? applyPhaseTo(working, moves, meetInMiddleSolveEdges(pre, patternFromState(working, pre), 8, 6_000_000))
-        : applyPhaseTo(working, moves, meetInMiddleSolveEdges(pre, patternFromState(working, pre), 6));
+        ? applyPhaseTo(working, moves, solveEdgesN4Fast(pre, patternFromState(working, pre), 8, 6_000_000) ?? meetInMiddleSolveEdges(pre, patternFromState(working, pre), 8, 6_000_000))
+        : applyPhaseTo(working, moves, solveEdgesN4Fast(pre, patternFromState(working, pre), 6, MAX_SEARCH_STATES) ?? meetInMiddleSolveEdges(pre, patternFromState(working, pre), 6));
   if (!edgeOk) return { edgePhaseFailed: true };
 
   applyPhaseTo(working, moves, tipSolveMoves(working));

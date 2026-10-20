@@ -1,4 +1,4 @@
-import { applyKilominxMove, type KilominxState, type KilominxTurn } from "./kilominxState";
+import { applyKilominxMove, MOVE_TABLE, type KilominxState, type KilominxTurn } from "./kilominxState";
 import { uploadLibraryWasm, findSafeApplicationWasm, findFinishingApplicationWasm } from "./kilominxSearchWasm";
 export { warmupKilominxSearchWasm } from "./kilominxSearchWasm";
 import { FACE_VERTEX_INDICES, FACE_INDICES, FACE_NORMALS, type FaceIndex } from "./dodecaMath";
@@ -31,72 +31,7 @@ function invertSeq(seq: readonly KilominxTurn[]): KilominxTurn[] {
     .map((t) => ({ face: t.face, sign: (t.sign * -1) as 1 | -1 }));
 }
 
-/**
- * Bidirectional (meet-in-the-middle) BFS from `state` to `target`, where
- * `keyFn` decides which states count as "the same" (a PROJECTION -- e.g.
- * only caring where a handful of specific pieces ended up, ignoring the
- * rest). Search forward from `state` and backward from `target`
- * simultaneously and stop as soon as the two frontiers share a key, so
- * reaching a real combined depth of d only costs exploring roughly
- * 2 * branching^(d/2) states instead of branching^d.
- *
- * Kept as pure JS (not ported to Wasm): used only by solveFirstLayer below,
- * which was never the slow phase (sub-3s per scramble, measured) -- the
- * actual bottleneck this module's own WASM port targets is solveRemaining's
- * commutator-insertion loop (see findSafeApplication/findFinishingApplication
- * below), which used to run a fresh JS BFS per candidate.
- */
-interface Reached {
-  state: KilominxState;
-  path: KilominxTurn[];
-}
-
-function bidirectionalSearch(state: KilominxState, target: KilominxState, keyFn: (s: KilominxState) => string, maxHalfDepth: number, maxFrontierSize = 150_000): KilominxTurn[] | null {
-  const targetKey = keyFn(target);
-  let forward = new Map<string, Reached>([[keyFn(state), { state, path: [] }]]);
-  let backward = new Map<string, Reached>([[targetKey, { state: target, path: [] }]]);
-
-  const tryMeet = (): KilominxTurn[] | null => {
-    for (const [key, f] of forward) {
-      const b = backward.get(key);
-      if (!b) continue;
-      const joined = [...f.path, ...b.path];
-      if (keyFn(applySeq(state, joined)) !== targetKey) throw new Error("kilominxSolver: bidirectionalSearch keyFn is not a sound projection");
-      return joined;
-    }
-    return null;
-  };
-
-  let meet = tryMeet();
-  if (meet) return meet;
-
-  for (let depth = 0; depth < maxHalfDepth; depth++) {
-    const expandForward = forward.size <= backward.size;
-    const frontier = expandForward ? forward : backward;
-    const next = new Map<string, Reached>();
-    for (const { state: base, path } of frontier.values()) {
-      for (const face of FACE_INDICES) {
-        for (const sign of [1, -1] as const) {
-          const child = applyKilominxMove(base, face, sign);
-          const childKey = keyFn(child);
-          if (next.has(childKey)) continue;
-          if (next.size >= maxFrontierSize) return null;
-          const childPath = expandForward
-            ? [...path, { face, sign }]
-            : [{ face, sign: (sign * -1) as 1 | -1 }, ...path];
-          next.set(childKey, { state: child, path: childPath });
-        }
-      }
-    }
-    if (expandForward) forward = next;
-    else backward = next;
-    meet = tryMeet();
-    if (meet) return meet;
-  }
-  return null;
-}
-
-/** Where each of `pieces` currently sits, and how it is oriented -- a sound projection (see bidirectionalSearch). */
+/** Where each of `pieces` currently sits, and how it is oriented -- a sound projection of the state. */
 function pieceKeyFor(pieces: readonly number[]): (s: KilominxState) => string {
   const sorted = [...pieces].sort((a, b) => a - b);
   return (s: KilominxState) => {
@@ -123,10 +58,114 @@ const LAST_LAYER_FACE: FaceIndex = FACE_INDICES.reduce((best, f) => (FACE_NORMAL
 const LAST_LAYER_POSITIONS: readonly number[] = FACE_VERTEX_INDICES[LAST_LAYER_FACE];
 const MIDDLE_LAYER_POSITIONS: readonly number[] = Array.from({ length: 20 }, (_, i) => i).filter((p) => !FIRST_LAYER_POSITIONS.includes(p) && !LAST_LAYER_POSITIONS.includes(p));
 
+/**
+ * Bidirectional (meet-in-the-middle) BFS over just the 5 first-layer pieces: search forward from the scramble
+ * and backward from the solved layer with the same 24 moves, always expanding the smaller side, until the two
+ * share a state. A state is packed into one number (7 bits per piece: position and orientation) and per-state
+ * data lives in flat arrays. The earlier version kept a state object, a path array and a string key per state and
+ * spent up to 15s on the hardest of 100 random scrambles (median 0.75s); this one: median 27ms, max 1.4s.
+ */
+function searchFirstLayerPacked(state: KilominxState, maxHalfDepth: number, maxStates: number): KilominxTurn[] | null {
+  const pieces = [...FIRST_LAYER_POSITIONS].sort((a, b) => a - b);
+  const np = pieces.length;
+  const moves: KilominxTurn[] = [];
+  const destOf: Uint8Array[] = [];
+  const deltaAt: Uint8Array[] = []; // orientation delta by DESTINATION position
+  for (const face of FACE_INDICES) {
+    for (const sign of [1, -1] as const) {
+      const table = MOVE_TABLE[face][sign === 1 ? 0 : 1];
+      const dest = new Uint8Array(20);
+      table.perm.forEach((from, pos) => (dest[from] = pos));
+      destOf.push(dest);
+      deltaAt.push(Uint8Array.from(table.orientDelta));
+      moves.push({ face, sign });
+    }
+  }
+  const nm = moves.length;
+  const pack = (loc: ArrayLike<number>, ori: ArrayLike<number>): number => {
+    let k = 0;
+    for (let i = 0; i < np; i++) k = k * 128 + loc[i] * 4 + ori[i];
+    return k;
+  };
+  const startLoc = new Array<number>(np);
+  const startOri = new Array<number>(np);
+  pieces.forEach((piece, i) => {
+    const pos = state.perm.indexOf(piece);
+    startLoc[i] = pos;
+    startOri[i] = state.orient[pos];
+  });
+  const goalKey = pack(pieces, new Array(np).fill(0));
+  const startKey = pack(startLoc, startOri);
+  if (startKey === goalKey) return [];
+
+  interface Side {
+    index: Map<number, number>;
+    keys: number[];
+    parent: number[];
+    move: number[];
+    frontier: number[];
+  }
+  const makeSide = (root: number): Side => ({ index: new Map([[root, 0]]), keys: [root], parent: [-1], move: [-1], frontier: [0] });
+  const fwd = makeSide(startKey);
+  const bwd = makeSide(goalKey);
+  const loc = new Array<number>(np);
+  const ori = new Array<number>(np);
+
+  const pathFromRoot = (side: Side, idx: number): number[] => {
+    const out: number[] = [];
+    for (let i = idx; side.move[i] !== -1; i = side.parent[i]) out.push(side.move[i]);
+    return out.reverse();
+  };
+  const invertMove = (m: number) => m ^ 1; // moves come in (sign +1, sign -1) pairs per face
+  const finish = (f: number, b: number): KilominxTurn[] => {
+    const seq = [...pathFromRoot(fwd, f), ...pathFromRoot(bwd, b).reverse().map(invertMove)];
+    return seq.map((m) => moves[m]);
+  };
+
+  for (let depth = 0; depth < maxHalfDepth; depth++) {
+    const expandForward = fwd.keys.length <= bwd.keys.length;
+    const me = expandForward ? fwd : bwd;
+    const other = expandForward ? bwd : fwd;
+    const next: number[] = [];
+    for (const row of me.frontier) {
+      let k = me.keys[row];
+      for (let i = np - 1; i >= 0; i--) {
+        const v = k % 128;
+        k = (k - v) / 128;
+        loc[i] = v >> 2;
+        ori[i] = v & 3;
+      }
+      for (let m = 0; m < nm; m++) {
+        const dest = destOf[m];
+        const delta = deltaAt[m];
+        let key = 0;
+        for (let i = 0; i < np; i++) {
+          const d = dest[loc[i]];
+          key = key * 128 + d * 4 + ((ori[i] + delta[d]) % 3);
+        }
+        if (me.index.has(key)) continue;
+        const idx = me.keys.length;
+        me.index.set(key, idx);
+        me.keys.push(key);
+        me.parent.push(row);
+        me.move.push(m);
+        next.push(idx);
+        if (fwd.keys.length + bwd.keys.length > maxStates) return null;
+        const o = other.index.get(key);
+        if (o !== undefined) return expandForward ? finish(idx, o) : finish(o, idx);
+      }
+    }
+    me.frontier = next;
+  }
+  return null;
+}
+
 export function solveFirstLayer(state: KilominxState, maxHalfDepth = 11): KilominxTurn[] {
   if (isFirstLayerSolved(state)) return [];
-  const solution = bidirectionalSearch(state, SOLVED_STATE, firstLayerKey, maxHalfDepth, 1_500_000);
+  const solution = searchFirstLayerPacked(state, maxHalfDepth, 6_000_000);
   if (!solution) throw new Error(`kilominxSolver: first layer not solved within half-depth ${maxHalfDepth}`);
+  // keep the old defensive check: the replayed solution must really solve the first layer
+  if (!isFirstLayerSolved(applySeq(state, solution))) throw new Error("kilominxSolver: packed first-layer search returned a wrong solution");
   return solution;
 }
 
