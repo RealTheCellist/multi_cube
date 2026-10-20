@@ -6,7 +6,9 @@
 import type { Move } from "./customSolvePlayback";
 import { deserializeCubies, type SerializedCubie } from "./cubieSerialization";
 import { solveCenters } from "./fourByFourCenters";
-import { solveEdgePairing, warmupFourByFourEdgeLibrary } from "./fourByFourEdges";
+import { warmupFourByFourEdgeLibrary } from "./fourByFourEdges";
+import { pairWings4 } from "./fourByFourPairing";
+import { warmupWingCycleSolver4 } from "./fourByFourWingsCycle";
 
 export interface FourByFourWorkerRequest {
   id: number;
@@ -27,7 +29,7 @@ self.onmessage = async (ev: MessageEvent<FourByFourWorkerRequest>) => {
   const { id, cubies: data } = ev.data;
   try {
     const cubies = deserializeCubies(data);
-    const edges = await solveEdgePairing(cubies, 150000);
+    const edges = await pairWings4(cubies, 150000);
     const edgeMessage: FourByFourWorkerResponse = { id, phase: "edges", moves: edges.moves, solved: edges.solved };
     self.postMessage(edgeMessage);
     if (edges.solved) {
@@ -44,4 +46,5 @@ self.onmessage = async (ev: MessageEvent<FourByFourWorkerRequest>) => {
 };
 
 // Build the edge algorithm library as soon as the worker starts, so the first real solve doesn't pay for it.
+warmupWingCycleSolver4();
 warmupFourByFourEdgeLibrary();

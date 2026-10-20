@@ -8,7 +8,8 @@ import { cloneCubies, type Cubie } from "./cubeState";
 import { serializeCubies } from "./cubieSerialization";
 import type { Move } from "./customSolvePlayback";
 import { solveCenters } from "./fourByFourCenters";
-import { solveEdgePairing, warmupFourByFourEdgeLibrary } from "./fourByFourEdges";
+import { warmupFourByFourEdgeLibrary } from "./fourByFourEdges";
+import { pairWings4 } from "./fourByFourPairing";
 import type { FourByFourWorkerRequest, FourByFourWorkerResponse } from "./fourByFourWorker";
 
 export interface PairingChunk {
@@ -30,7 +31,7 @@ const pending = new Map<number, Pending>();
 
 async function solveOnMainThread(cubies: readonly Cubie[], onChunk: (chunk: PairingChunk) => void): Promise<void> {
   const work = cloneCubies(cubies as Cubie[]);
-  const edges = await solveEdgePairing(work, 150000);
+  const edges = await pairWings4(work, 150000);
   onChunk({ phase: "edges", moves: edges.moves, solved: edges.solved });
   if (!edges.solved) return;
   const centers = solveCenters(work, 15000);
