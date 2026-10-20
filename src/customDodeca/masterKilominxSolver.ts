@@ -1,3 +1,4 @@
+import { solveMegaminxByCycles } from "./megaminxCycleSolver";
 import { applyMasterKilominxMove, EDGES, type MasterKilominxState, type MasterKilominxTurn } from "./masterKilominxState";
 import { uploadLibraryWasm, findSafeApplicationWasm, findFinishingApplicationWasm, solveCrossWasm, solveCrossCachedBackwardV1Wasm } from "./masterKilominxSearchWasm";
 export { warmupMasterKilominxSearchWasm } from "./masterKilominxSearchWasm";
@@ -1044,6 +1045,18 @@ export function solveLastLayer(state: MasterKilominxState, maxRounds = 12): Mast
 
 /** Full solve: all 6 phases in sequence, top layer down to bottom layer. */
 export function solveMasterKilominx(state: MasterKilominxState): MasterKilominxTurn[] {
+  // Preferred: short macros (megaminxCycleSolver.ts -- the Master Kilominx has the Megaminx's exact piece model and move
+  // tables, ~340 moves); the layer-by-layer solve below is the fallback.
+  try {
+    const turns = solveMegaminxByCycles(state) as MasterKilominxTurn[];
+    if (isMasterKilominxFullySolved(applySeq(state, turns))) return turns;
+  } catch (err) {
+    console.error("master kilominx macro solver failed (non-fatal, using the layer-by-layer solver):", err);
+  }
+  return solveMasterKilominxLayerByLayer(state);
+}
+
+function solveMasterKilominxLayerByLayer(state: MasterKilominxState): MasterKilominxTurn[] {
   const solution: MasterKilominxTurn[] = [];
   let current = state;
   const phases = [solveFirstLayer, solveUpperEdges, solveMiddleLayer, solveLowerLowerEdges, solveLastLayer];

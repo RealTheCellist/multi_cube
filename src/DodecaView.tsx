@@ -4,6 +4,7 @@ import { CustomDodecaScene } from "./customDodeca/CustomDodecaScene";
 import { attachDodecaSwipeTurning, type DodecaSwipeController } from "./customDodeca/dodecaSwipeControls";
 import { applyNextGigaminxSolveMove, prewarmGigaminxSolve, type GigaminxSolveHint } from "./customDodeca/gigaminxSolvePlayback";
 import { preloadGigaminxSolveWorker } from "./customDodeca/gigaminxSolveWorkerClient";
+import { preloadMegaminxCycleWorker } from "./customDodeca/megaminxCycleWorkerClient";
 import { applyNextKilominxFamilySolveMove, prewarmKilominxFamilySolve, type KilominxFamilySolveHint } from "./customDodeca/kilominxFamilySolvePlayback";
 
 export interface DodecaViewHandle {
@@ -60,6 +61,8 @@ const DodecaView = forwardRef<DodecaViewHandle, DodecaViewProps>(function Dodeca
     sceneRef.current = scene;
     // Gigaminx's solver is a heavy module; start loading it in its worker now, not on the first solve.
     if (layerCount === 5 && interactiveRef.current) preloadGigaminxSolveWorker();
+    // Kilominx / Megaminx / Master Kilominx: same idea for the macro solver's worker (it builds its tables on startup).
+    if (layerCount >= 2 && layerCount <= 4 && interactiveRef.current) preloadMegaminxCycleWorker();
     scene.setOrbitEnabled(interactiveRef.current && orbitModeRef.current);
 
     const controller = attachDodecaSwipeTurning(scene, moveCountRef);

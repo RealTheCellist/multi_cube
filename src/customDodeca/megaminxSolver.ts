@@ -1,3 +1,4 @@
+import { solveMegaminxByCycles } from "./megaminxCycleSolver";
 import { applyMegaminxMove, EDGES, type MegaminxState, type MegaminxTurn } from "./megaminxState";
 import { uploadLibraryWasm, findSafeApplicationWasm, findFinishingApplicationWasm, solveCrossWasm, solveCrossCachedBackwardV1Wasm } from "./megaminxSearchWasm";
 export { warmupMegaminxSearchWasm } from "./megaminxSearchWasm";
@@ -1044,6 +1045,17 @@ export function solveLastLayer(state: MegaminxState, maxRounds = 12): MegaminxTu
 
 /** Full solve: all 6 phases in sequence, top layer down to bottom layer. */
 export function solveMegaminx(state: MegaminxState): MegaminxTurn[] {
+  // Preferred: short macros (megaminxCycleSolver.ts, ~340 moves); the layer-by-layer solve below is the fallback.
+  try {
+    const turns = solveMegaminxByCycles(state) as MegaminxTurn[];
+    if (isMegaminxFullySolved(applySeq(state, turns))) return turns;
+  } catch (err) {
+    console.error("megaminx macro solver failed (non-fatal, using the layer-by-layer solver):", err);
+  }
+  return solveMegaminxLayerByLayer(state);
+}
+
+function solveMegaminxLayerByLayer(state: MegaminxState): MegaminxTurn[] {
   const solution: MegaminxTurn[] = [];
   let current = state;
   const phases = [solveFirstLayer, solveUpperEdges, solveMiddleLayer, solveLowerLowerEdges, solveLastLayer];

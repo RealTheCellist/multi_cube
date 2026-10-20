@@ -8,6 +8,7 @@
 // comment for why these 3 sizes never use depth>=2).
 import type { CustomDodecaScene } from "./CustomDodecaScene";
 import type { DodecaState } from "./dodecaState";
+import { solveByCyclesOffThread } from "./megaminxCycleWorkerClient";
 
 export interface KilominxFamilySolveHint {
   move: { face: number; sign: 1 | -1 } | null;
@@ -109,22 +110,43 @@ function animateProgress(scene: CustomDodecaScene, from: number, to: number, dur
   });
 }
 
+/** Re-checks a macro-solver plan on the real move tables before trusting it (cheap: a few hundred moves). */
+function solvesIt<S>(turns: Turn[], start: S, apply: (s: S, face: any, sign: 1 | -1) => S, isSolved: (s: S) => boolean): boolean {
+  let s = start;
+  for (const t of turns) s = apply(s, t.face, t.sign);
+  return isSolved(s);
+}
+
 async function solveKilominx2(state: DodecaState): Promise<Turn[]> {
-  const [{ dodecaStateToKilominxState }, solverMod] = await Promise.all([import("./kilominxState"), import("./kilominxSolver")]);
+  const { dodecaStateToKilominxState, applyKilominxMove, isKilominxSolved } = await import("./kilominxState");
+  const ks = dodecaStateToKilominxState(state);
+  // First choice: the short macro solve in its worker (see megaminxCycleSolver.ts); the older solver is the fallback.
+  const turns = await solveByCyclesOffThread("kilominx", { perm: [...ks.perm], orient: [...ks.orient] });
+  if (turns && solvesIt(turns, ks, applyKilominxMove, isKilominxSolved)) return turns;
+  const solverMod = await import("./kilominxSolver");
   await solverMod.warmupKilominxSearchWasm();
-  return solverMod.solveKilominx(dodecaStateToKilominxState(state));
+  return solverMod.solveKilominx(ks);
 }
 
 async function solveMegaminx3(state: DodecaState): Promise<Turn[]> {
-  const [{ dodecaStateToMegaminxState }, solverMod] = await Promise.all([import("./megaminxState"), import("./megaminxSolver")]);
+  const { dodecaStateToMegaminxState, applyMegaminxMove } = await import("./megaminxState");
+  const ms = dodecaStateToMegaminxState(state);
+  const turns = await solveByCyclesOffThread("megaminx", { cornerPerm: [...ms.cornerPerm], cornerOrient: [...ms.cornerOrient], edgePerm: [...ms.edgePerm], edgeOrient: [...ms.edgeOrient] });
+  if (turns && solvesIt(turns, ms, applyMegaminxMove, (s) => s.cornerPerm.every((p, i) => p === i) && s.cornerOrient.every((o) => o === 0) && s.edgePerm.every((p, i) => p === i) && s.edgeOrient.every((o) => o === 0))) return turns;
+  const solverMod = await import("./megaminxSolver");
   await solverMod.warmupMegaminxSearchWasm();
-  return solverMod.solveMegaminx(dodecaStateToMegaminxState(state));
+  return solverMod.solveMegaminx(ms);
 }
 
 async function solveMasterKilominx4(state: DodecaState): Promise<Turn[]> {
-  const [{ dodecaStateToMasterKilominxState }, solverMod] = await Promise.all([import("./masterKilominxState"), import("./masterKilominxSolver")]);
+  const { dodecaStateToMasterKilominxState, applyMasterKilominxMove } = await import("./masterKilominxState");
+  const ms = dodecaStateToMasterKilominxState(state);
+  // Same piece model and move tables as the Megaminx, so the same macro solver applies.
+  const turns = await solveByCyclesOffThread("megaminx", { cornerPerm: [...ms.cornerPerm], cornerOrient: [...ms.cornerOrient], edgePerm: [...ms.edgePerm], edgeOrient: [...ms.edgeOrient] });
+  if (turns && solvesIt(turns, ms, applyMasterKilominxMove, (s) => s.cornerPerm.every((p, i) => p === i) && s.cornerOrient.every((o) => o === 0) && s.edgePerm.every((p, i) => p === i) && s.edgeOrient.every((o) => o === 0))) return turns;
+  const solverMod = await import("./masterKilominxSolver");
   await solverMod.warmupMasterKilominxSearchWasm();
-  return solverMod.solveMasterKilominx(dodecaStateToMasterKilominxState(state));
+  return solverMod.solveMasterKilominx(ms);
 }
 
 function solveFnFor(layerCount: number): ((state: DodecaState) => Promise<Turn[]>) | null {

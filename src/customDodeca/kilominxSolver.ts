@@ -1,3 +1,4 @@
+import { solveKilominxByCycles } from "./megaminxCycleSolver";
 import { applyKilominxMove, MOVE_TABLE, type KilominxState, type KilominxTurn } from "./kilominxState";
 import { uploadLibraryWasm, findSafeApplicationWasm, findFinishingApplicationWasm } from "./kilominxSearchWasm";
 export { warmupKilominxSearchWasm } from "./kilominxSearchWasm";
@@ -532,6 +533,17 @@ export function solveRemaining(state: KilominxState): KilominxTurn[] {
 
 /** Full solve: first layer, then everything else. */
 export function solveKilominx(state: KilominxState): KilominxTurn[] {
+  // Preferred: short macros on the 20 corners (megaminxCycleSolver.ts, ~120 moves); the layer-by-layer solve below is the fallback.
+  try {
+    const turns = solveKilominxByCycles(state) as KilominxTurn[];
+    if (isKilominxFullySolved(applySeq(state, turns))) return turns;
+  } catch (err) {
+    console.error("kilominx macro solver failed (non-fatal, using the layer-by-layer solver):", err);
+  }
+  return solveKilominxLayerByLayer(state);
+}
+
+function solveKilominxLayerByLayer(state: KilominxState): KilominxTurn[] {
   const layerSolution = solveFirstLayer(state);
   const s = applySeq(state, layerSolution);
   const restSolution = solveRemaining(s);
