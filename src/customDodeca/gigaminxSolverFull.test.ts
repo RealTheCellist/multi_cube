@@ -46,23 +46,28 @@ describe("gigaminxSolver Phase 1-5: full solve (corners, wings, inner corners, e
   }, 7_000_000);
 });
 
-// solveFullGigaminxStaged must produce exactly the plan solveFullGigaminx does, just delivered phase by phase
+// solveFullGigaminxStaged is the solve the app runs: corners and wings by the nested-commutator search, then the
+// inner corners, edge bridges and center bridges by short 3-cycles. It must solve the whole puzzle, deliver its phases
+// as chunks whose concatenation is the returned plan, and be far shorter than the all-nested solveFullGigaminx.
 describe("solveFullGigaminxStaged", () => {
-  it("delivers phase chunks whose concatenation equals solveFullGigaminx's moves", async () => {
-    const { solveFullGigaminxStaged, solveFullGigaminx } = await import("./gigaminxSolver");
-    const { applyGigaminxScramble, randomGigaminxScramble, solvedGigaminxState } = await import("./gigaminxState");
+  it("solves completely, delivers phase chunks, and stays under 4,000 moves", async () => {
+    const { solveFullGigaminxStaged } = await import("./gigaminxSolver");
+    const { applyGigaminxScramble, randomGigaminxScramble, solvedGigaminxState, applyGigaminxMove } = await import("./gigaminxState");
     let seed = 4242;
     const rng = () => {
       seed = (seed * 1103515245 + 12345) & 0x7fffffff;
       return seed / 0x7fffffff;
     };
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 4; i++) {
       const state = applyGigaminxScramble(solvedGigaminxState(), randomGigaminxScramble(20, rng));
       const chunks: unknown[][] = [];
-      const staged = solveFullGigaminxStaged(state, (c) => chunks.push(c));
-      expect(chunks.length).toBeGreaterThan(0);
-      expect(chunks.flat()).toEqual(staged);
-      expect(staged).toEqual(solveFullGigaminx(state).moves);
+      const plan = solveFullGigaminxStaged(state, (c) => chunks.push(c));
+      expect(chunks.length).toBe(5);
+      expect(chunks.flat()).toEqual(plan);
+      let s = state;
+      for (const t of plan) s = applyGigaminxMove(s, t.face, t.sign, t.depth);
+      expect(areCornersSolved(s) && areWingsSolved(s) && areInnerCornersSolved(s) && areEdgeBridgesSolved(s) && areCenterBridgesSolved(s)).toBe(true);
+      expect(plan.length).toBeLessThan(4000);
     }
   }, 120_000);
 });

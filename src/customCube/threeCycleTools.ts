@@ -1,12 +1,12 @@
-// Shared by the 5x5x5 center and wing solvers: given the move permutations of a piece set and a list of
-// commutators [A, B] that each move exactly three pieces, builds the cheapest "3-cycle macro" for any
-// ordered triple of slots -- a conjugate  W' C W  of one of the commutators C, where W carries C's own
-// three slots onto the requested ones.
+// Shared by the 5x5x5 center/wing solvers and the Gigaminx solver: given the move permutations of a piece set and
+// a list of commutators [A, B] that each move exactly three pieces, builds the cheapest "3-cycle macro" for any
+// ordered triple of slots -- a conjugate  W' C W  of one of the commutators C, where W carries C's own three
+// slots onto the requested ones.
 //
 // The setup words W come from a multi-source Dijkstra over ordered slot triples: every commutator (in both
-// directions and all three rotations of its cycle) is a source whose starting cost is its own length, and
-// each setup move costs 2 (it is played once before the commutator and once, inverted, after). Having
-// hundreds of commutators as sources keeps the typical setup to 0-2 moves.
+// directions and all three rotations of its cycle) is a source whose starting cost is its own length, and each
+// setup move costs 2 (it is played once before the commutator and once, inverted, after). Having hundreds of
+// commutators as sources keeps the typical setup to 0-2 moves. Slots must number at most 64.
 
 export interface CommutatorWords {
   a: number[];
@@ -19,10 +19,13 @@ export interface CycleTools {
 }
 
 const inverseWord = (w: readonly number[]): number[] => [...w].reverse().map((m) => m ^ 1);
-const key3 = (a: number, b: number, c: number) => (a * 64 + b) * 64 + c;
+const key3 = (a: number, b: number, c: number) => (a << 12) | (b << 6) | c; // 18 bits for slots < 64
+const UNSEEN = 32767;
 
 export function buildCycleTools(dest: readonly Uint8Array[], commutators: readonly CommutatorWords[]): CycleTools {
   const n = dest[0].length;
+  if (n > 64) throw new Error("threeCycleTools: at most 64 slots");
+  const nm = dest.length;
   const words: number[][] = [];
   for (const { a, b } of commutators) {
     words.push([...a, ...b, ...inverseWord(a), ...inverseWord(b)]);
@@ -30,18 +33,15 @@ export function buildCycleTools(dest: readonly Uint8Array[], commutators: readon
   }
   words.sort((x, y) => x.length - y.length);
 
-  interface Entry {
-    cost: number;
-    prev: number;
-    move: number;
-    root: number;
-  }
-  const best = new Map<number, Entry>();
-  const buckets = new Map<number, number[][]>();
-  const push = (cost: number, triple: number[]) => {
-    const list = buckets.get(cost) ?? [];
-    list.push(triple);
-    buckets.set(cost, list);
+  const size = 1 << 18;
+  const cost = new Int16Array(size).fill(UNSEEN);
+  const prev = new Int32Array(size).fill(-1);
+  const move = new Int16Array(size).fill(-1);
+  const root = new Int32Array(size).fill(-1);
+  const buckets: number[][] = [];
+  const push = (c: number, k: number) => {
+    while (buckets.length <= c) buckets.push([]);
+    buckets[c].push(k);
   };
   words.forEach((word, id) => {
     let perm: Uint8Array = Uint8Array.from({ length: n }, (_, i) => i);
@@ -54,46 +54,49 @@ export function buildCycleTools(dest: readonly Uint8Array[], commutators: readon
     const x = moved[0];
     const cyc = [x, perm[x], perm[perm[x]]];
     for (let rot = 0; rot < 3; rot++) {
-      const t = [cyc[rot], cyc[(rot + 1) % 3], cyc[(rot + 2) % 3]];
-      const k = key3(t[0], t[1], t[2]);
-      const have = best.get(k);
-      if (have && have.cost <= word.length) continue;
-      best.set(k, { cost: word.length, prev: -1, move: -1, root: id });
-      push(word.length, t);
+      const k = key3(cyc[rot], cyc[(rot + 1) % 3], cyc[(rot + 2) % 3]);
+      if (cost[k] <= word.length) continue;
+      cost[k] = word.length;
+      root[k] = id;
+      push(word.length, k);
     }
   });
 
-  while (buckets.size > 0) {
-    const cost = Math.min(...buckets.keys());
-    const list = buckets.get(cost)!;
-    buckets.delete(cost);
-    for (const t of list) {
-      const k = key3(t[0], t[1], t[2]);
-      if (best.get(k)!.cost !== cost) continue; // stale
-      for (let m = 0; m < dest.length; m++) {
-        const nt = [dest[m][t[0]], dest[m][t[1]], dest[m][t[2]]];
-        const nk = key3(nt[0], nt[1], nt[2]);
-        const nc = cost + 2;
-        const have = best.get(nk);
-        if (have && have.cost <= nc) continue;
-        best.set(nk, { cost: nc, prev: k, move: m, root: best.get(k)!.root });
-        push(nc, nt);
+  for (let c = 0; c < buckets.length; c++) {
+    const list = buckets[c];
+    for (let li = 0; li < list.length; li++) {
+      const k = list[li];
+      if (cost[k] !== c) continue; // stale
+      const a = k >> 12;
+      const b = (k >> 6) & 63;
+      const cc = k & 63;
+      for (let m = 0; m < nm; m++) {
+        const d = dest[m];
+        const nk = key3(d[a], d[b], d[cc]);
+        const nc = c + 2;
+        if (cost[nk] <= nc) continue;
+        cost[nk] = nc;
+        prev[nk] = k;
+        move[nk] = m;
+        root[nk] = root[k];
+        push(nc, nk);
       }
     }
+    buckets[c] = []; // free as we go
   }
 
   const memo = new Map<number, number[] | null>();
   return {
     macroFor(q, p, r) {
       const k = key3(q, p, r);
-      if (memo.has(k)) return memo.get(k)!;
-      const entry = best.get(k);
+      const hit = memo.get(k);
+      if (hit !== undefined) return hit;
       let result: number[] | null = null;
-      if (entry) {
+      if (cost[k] !== UNSEEN) {
         const setup: number[] = [];
-        for (let cur: Entry | undefined = entry; cur && cur.prev !== -1; cur = best.get(cur.prev)) setup.push(cur.move);
+        for (let cur = k; prev[cur] !== -1; cur = prev[cur]) setup.push(move[cur]);
         setup.reverse();
-        result = [...inverseWord(setup), ...words[entry.root], ...setup];
+        result = [...inverseWord(setup), ...words[root[k]], ...setup];
       }
       memo.set(k, result);
       return result;

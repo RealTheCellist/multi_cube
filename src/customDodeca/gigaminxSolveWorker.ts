@@ -5,6 +5,7 @@
 // about a second on a warm engine (its commutator libraries make the module
 // heavy to load too), so running it here keeps the page responsive while the
 // plan is prepared right after a scramble.
+import { warmupGigaminxCycleSolver } from "./gigaminxCycleSolver";
 import { solveFullGigaminx, solveFullGigaminxStaged } from "./gigaminxSolver";
 import { applyGigaminxScramble, randomGigaminxScramble, solvedGigaminxState, type GigaminxState, type GigaminxTurn } from "./gigaminxState";
 
@@ -40,6 +41,7 @@ self.onmessage = (ev: MessageEvent<GigaminxSolveWorkerRequest>) => {
 // loaded, so the first real solve doesn't pay for it. A fixed-seed scramble keeps this deterministic.
 setTimeout(() => {
   try {
+    warmupGigaminxCycleSolver();
     let seed = 12345;
     const rng = () => {
       seed = (seed * 1103515245 + 12345) & 0x7fffffff;

@@ -1,3 +1,4 @@
+import { solveOrbitByCyclesVerified, type CycleOrbit } from "./gigaminxCycleSolver";
 import { applyGigaminxMove, solvedGigaminxState, type GigaminxState, type GigaminxDepth, type GigaminxTurn } from "./gigaminxState";
 import { FACE_INDICES } from "./dodecaMath";
 // Pre-built commutator libraries (GIGAMINX_COMMUTATOR_LIBRARY_PRECOMPUTE_V1):
@@ -2521,19 +2522,32 @@ export function solveFullGigaminx(state: GigaminxState, maxAttempts = 400): { mo
   return { moves: [...cwieMoves, ...centerBridgesResult.moves], cornersTrace, wingsTrace, innerCornersTrace, edgeBridgesTrace, centerBridgesTrace: centerBridgesResult.trace };
 }
 
+function solveOrbitWithFallback(state: GigaminxState, orbit: CycleOrbit, fallback: () => { moves: GigaminxTurn[]; trace: PhaseTrace }): { moves: GigaminxTurn[]; trace: PhaseTrace } {
+  try {
+    const moves = solveOrbitByCyclesVerified(state, orbit);
+    return { moves, trace: { name: orbit, rounds: moves.length, movesEmitted: moves.length, succeeded: true } };
+  } catch (err) {
+    console.error(`gigaminx ${orbit} cycle solver failed (non-fatal, using the nested-commutator solver):`, err);
+    return fallback();
+  }
+}
+
 /**
- * Same solve as solveFullGigaminx -- identical phases in the identical order, so the concatenated moves are
- * identical -- but hands each phase's moves to `onPhase` as soon as that phase finishes. Every phase starts
- * from the state the previous phases left, so the moves of phase k are a true prefix of the final plan: a
- * caller can start playing the corner moves while the later (and slower) phases are still being computed.
+ * The solve the app runs: corners as in solveFullGigaminx, then wings, inner corners, edge bridges and center
+ * bridges by short 3-cycles (about 1,200 moves in all instead of ~41,000). Hands each phase's moves to
+ * `onPhase` as soon as that phase finishes. Every phase starts from the state the previous phases left, so the
+ * moves of phase k are a true prefix of the final plan: a caller can start playing the corner moves while the
+ * later phases are still being computed.
  */
 export function solveFullGigaminxStaged(state: GigaminxState, onPhase: (phaseMoves: GigaminxTurn[]) => void, maxAttempts = 400): GigaminxTurn[] {
   const phases: ((s: GigaminxState) => { moves: GigaminxTurn[]; trace: PhaseTrace })[] = [
     (s) => solveCorners(s, maxAttempts),
-    (s) => solveWings(s, maxAttempts),
-    (s) => solveInnerCorners(s, maxAttempts),
-    (s) => solveEdgeBridges(s, maxAttempts),
-    (s) => solveCenterBridges(s, maxAttempts),
+    (s) => solveOrbitWithFallback(s, "wing", () => solveWings(s, maxAttempts)),
+    // Wings and the last three orbits use short pure 3-cycles (gigaminxCycleSolver.ts); the older
+    // nested-commutator solvers stay as the fallback if that ever throws.
+    (s) => solveOrbitWithFallback(s, "innerCorner", () => solveInnerCorners(s, maxAttempts)),
+    (s) => solveOrbitWithFallback(s, "edgeBridge", () => solveEdgeBridges(s, maxAttempts)),
+    (s) => solveOrbitWithFallback(s, "centerBridge", () => solveCenterBridges(s, maxAttempts)),
   ];
   const all: GigaminxTurn[] = [];
   let current = state;
