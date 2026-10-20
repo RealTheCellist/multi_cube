@@ -244,11 +244,16 @@ class FourByFourSolverEngine {
     this.plan = plan;
     this.planStartCubies = cloneCubies(scene.getCubies());
     this.computing = true;
+    const startedAt = performance.now();
+    let firstMoveMs: number | null = null;
     return new Promise<void>((resolveFirst) => {
       computeFourByFourSolveMoves(scene, (chunk) => {
         if (generation !== this.generation) return;
         for (const m of chunk) plan.moveQueue.push(m);
-        if (chunk.length > 0) resolveFirst();
+        if (chunk.length > 0) {
+          if (firstMoveMs === null) firstMoveMs = performance.now() - startedAt;
+          resolveFirst();
+        }
         this.notify();
       })
         .then((result) => {
@@ -257,7 +262,12 @@ class FourByFourSolverEngine {
         })
         .catch((err) => console.error("4x4 solve failed:", err))
         .then(() => {
-          if (generation === this.generation) this.computing = false;
+          if (generation === this.generation) {
+            this.computing = false;
+            // Same idea as the [royal]/[master-tetra]/[gigaminx] diagnostics: a slow outlier (most likely on a slower device) explains itself.
+            const totalMs = performance.now() - startedAt;
+            if ((firstMoveMs ?? totalMs) > 3000) console.warn(`[cube4] slow first move: ${Math.round(firstMoveMs ?? totalMs)}ms`, { totalMs: Math.round(totalMs), moves: plan.moveQueue.length });
+          }
           resolveFirst();
           this.notify();
         });
@@ -478,11 +488,14 @@ class CenterPhaseEngine {
     // Preferred: one constructive plan for true centers, X/T-centers and wing pairing (milliseconds). It
     // leaves nothing for the old wing search below, which stays only as the fallback.
     let pairing: Move[] | null = null;
+    const planningStartedAt = performance.now();
     try {
       pairing = planPairing5(cubies);
     } catch (err) {
       console.error("5x5 pairing planner failed (non-fatal, using the older search):", err);
     }
+    const planningMs = performance.now() - planningStartedAt;
+    if (planningMs > 1500 || !pairing) console.warn(`[cube5] slow or failed pairing plan: ${Math.round(planningMs)}ms`, { planned: !!pairing, moves: pairing?.length });
     if (pairing) {
       this.plan = pairing;
       this.startReductionTail(startCubies, pairing);
