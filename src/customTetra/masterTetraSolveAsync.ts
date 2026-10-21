@@ -89,7 +89,8 @@ async function computeMasterTetraSolveMovesTraced(state: TetraState, trace: Reco
   // meet-in-the-middle attempt either way.
   // Started now, awaited only after the (short) axial step below, so a first-time download
   // overlaps with it instead of delaying it.
-  const outerPdbReady = Promise.race([preloadOuterPdb(), new Promise<void>((resolve) => setTimeout(resolve, 3000))]);
+  // Only the N=5 edge phase uses it (solveN5EdgesInTwoPhases); N=4 solves in under a second without.
+  const outerPdbReady = state.layerCount === 5 ? Promise.race([preloadOuterPdb(), new Promise<void>((resolve) => setTimeout(resolve, 3000))]) : Promise.resolve();
 
   const pre = precompute(state.layerCount);
   // Try the worker's axial-only search (wasm-backed) FIRST, instead of

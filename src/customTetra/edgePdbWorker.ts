@@ -37,17 +37,18 @@ function loadPdb(): Promise<Map<string, number>> {
         if (!res.ok) throw new Error(`edge PDB fetch failed: HTTP ${res.status}`);
         return res.arrayBuffer();
       })
-      .then((buf) => parseEdgePdbBuffer(buf));
+      .then((buf) => parseEdgePdbBuffer(buf))
+      .catch((err) => {
+        pdbPromise = null; // let the next request try again
+        throw err;
+      });
   }
   return pdbPromise;
 }
 
-// Kick off the fetch the moment this worker is created, not only once a
-// request arrives -- overlaps the download/parse with whatever the main
-// thread's own synchronous solve phases are doing in the meantime.
-loadPdb().catch((err) => {
-  console.error("edge PDB worker: background preload fetch failed (will retry on first request):", err);
-});
+// The PDB (about 62 MB) is only fetched when a request actually arrives. The normal N=4/5 solve (decomposed
+// axial search + outer PDB) never reaches this worker -- it is the fallback for a failed edge phase -- so
+// fetching it eagerly cost every player a 62 MB download on their first solve.
 
 self.onmessage = async (ev: MessageEvent<EdgePdbWorkerRequest>) => {
   const { id, layerCount, edgePattern, maxThreshold, maxNodes } = ev.data;
